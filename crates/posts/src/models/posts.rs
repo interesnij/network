@@ -170,6 +170,7 @@ impl Post {
                 .filter(schema::users::id.eq(self.user_id))
                 .filter(schema::users::types.lt(10))
                 .select((
+                    schema::users::id,
                     schema::users::first_name,
                     schema::users::last_name,
                     schema::users::link,
@@ -212,12 +213,12 @@ impl Post {
             let creator = c.get_owner_meta();
             json.push (CardCommentJson {
                 content:        c.content.clone(),
-                owner_name:     creator.first_name.clone() + &" ".to_string() + &creator.last_name.clone(),
+                owner_name:     creator.name.clone(),
                 owner_link:     creator.link.clone(),
                 owner_image:    creator.image.clone(),
                 created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
                 reactions:      c.reactions,
-                types:          c.types.clone(), // например cpo1
+                types:          c.get_types(),       // например cpo1
                 replies:        c.replies,    // кол-во ответов
                 reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
                 items:          None,
@@ -355,7 +356,7 @@ impl Post {
             }
 
             for reaction in reactions_list.iter() {
-                let count = self.get_count_model_for_reaction(reaction).count;
+                let count = self.get_count_model_for_reaction(*reaction).count;
                 if count > 0 {
                     reactions_json.push(self.get_6_user_of_reaction(reaction, Some(user_reaction)));
                 }
@@ -472,7 +473,7 @@ impl Post {
             );
         }
         return ReactionBlockJson {
-                count:    self.get_count_model_for_reaction(reaction_id).count,
+                count:    self.get_count_model_for_reaction(*reaction_id).count,
                 reaction: *reaction_id,
                 users:    user_json,
             };
@@ -522,8 +523,8 @@ impl Post {
             );
         }
         return ReactionBlockJson {
-                count:    self.get_count_model_for_reaction(reaction_id).count,
-                reaction: reaction_id,
+                count:    self.get_count_model_for_reaction(*reaction_id).count,
+                reaction: *reaction_id,
                 users:    user_json,
             };
     }

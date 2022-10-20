@@ -188,7 +188,7 @@ pub struct CardParentPostJson {
 pub struct RepostsPostJson {
     pub message_reposts: String,
     pub copy_count:      String,
-    pub posts:           Vec<CardUserJson>,
+    pub posts:           Vec<CardOwnerJson>,
 }
 
 #[derive(Serialize)]

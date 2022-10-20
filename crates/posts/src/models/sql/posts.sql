@@ -226,7 +226,7 @@ CREATE TABLE post_list_perms (
     id              SERIAL PRIMARY KEY, -- id записи
     user_id         INT NOT NULL,       -- id пользователя
     post_list_id    INT NOT NULL,       -- id списка записей
-    types           SMALLINT NULL       -- статус доступа
+    types           SMALLINT NOT NULL       -- статус доступа
 );
 CREATE UNIQUE INDEX post_list_perms_unq ON post_list_perms (user_id, post_list_id);
 
