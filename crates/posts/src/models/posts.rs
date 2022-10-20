@@ -433,7 +433,7 @@ impl Post {
     pub fn get_6_user_of_reaction (
         &self,
         reaction_id: &i32,
-        user_reaction: Option<i16>,
+        user_reaction: Option<i32>,
     ) -> ReactionBlockJson {
         use crate::schema::post_reactions::dsl::post_reactions;
         use crate::utils::CardReactionPostJson;
@@ -480,7 +480,7 @@ impl Post {
     pub fn get_users_of_reaction (
         &self,
         reaction_id:   &i32,
-        user_reaction: Option<i16>,
+        user_reaction: Option<i32>,
         limit:         i64,
         offset:        i64,
     ) -> ReactionBlockJson {

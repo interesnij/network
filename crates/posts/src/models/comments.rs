@@ -87,7 +87,7 @@ impl PostComment {
     pub fn get_6_user_of_reaction (
         &self,
         reaction_id: &i32,
-        user_reaction: Option<i16>,
+        user_reaction: Option<i32>,
     ) -> ReactionBlockJson {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
         use crate::utils::CardReactionPostJson;
@@ -134,7 +134,7 @@ impl PostComment {
     pub fn get_users_of_reaction (
         &self,
         reaction_id:   &i32,
-        user_reaction: Option<i16>,
+        user_reaction: Option<i32>,
         limit:         i64,
         offset:        i64,
     ) -> ReactionBlockJson {
@@ -176,7 +176,7 @@ impl PostComment {
             );
         }
         return ReactionBlockJson {
-                count:    self.get_count_model_for_reaction(reaction_id).count,
+                count:    self.get_count_model_for_reaction(*reaction_id).count,
                 reaction: *reaction_id,
                 users:    user_json,
             };

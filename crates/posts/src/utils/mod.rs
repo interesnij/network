@@ -88,7 +88,7 @@ pub struct PostListDetailJson {
     pub image:             Option<String>,
     pub types:             i16,             // здесь просто тип, остальное на месте пририсуем, а такой тип нужен так и так
     pub count:             i32,
-    pub reactions_list:    Vec<i16>,
+    pub reactions_list:    Vec<i32>,
     pub posts:             Vec<CardPostJson>,
     pub lists:             Vec<CardPostListJson>,
     pub next_page:         i32,
@@ -195,7 +195,7 @@ pub struct RepostsPostJson {
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct ReactionBlockJson {
     pub count:    i32,
-    pub reaction: i16,
+    pub reaction: i32,
     pub users:    Vec<CardReactionPostJson>,
 }
 #[derive(Serialize)]
