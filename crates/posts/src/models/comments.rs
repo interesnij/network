@@ -177,7 +177,7 @@ impl PostComment {
         }
         return ReactionBlockJson {
                 count:    self.get_count_model_for_reaction(reaction_id).count,
-                reaction: reaction_id,
+                reaction: *reaction_id,
                 users:    user_json,
             };
     }

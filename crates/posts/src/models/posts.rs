@@ -296,9 +296,9 @@ impl Post {
                 let creator = r.get_owner_meta();
                 reposts_json.push (
                     CardUserJson {
-                        owner_name:  creator.name.clone(),
-                        owner_link:  creator.link.clone(),
-                        owner_image: creator.image.clone(),
+                        name:  creator.name.clone(),
+                        link:  creator.link.clone(),
+                        image: creator.image.clone(),
                     }
                 );
             }
@@ -322,10 +322,10 @@ impl Post {
             for r in self.reposts(limit.into(), offset).iter() {
                 let creator = r.get_owner_meta();
                 reposts_json.push (
-                    CardUserJson {
-                        owner_name:  creator.name.clone(),
-                        owner_link:  creator.link.clone(),
-                        owner_image: creator.image.clone(),
+                    CardOwnerJson {
+                        name:  creator.name.clone(),
+                        link:  creator.link.clone(),
+                        image: creator.image.clone(),
                     }
                 );
             }

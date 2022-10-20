@@ -54,7 +54,6 @@ pub struct CardCommunityJson {
 }
 // это объект данных владельца объекта
 pub struct CardOwnerJson {
-    pub id:    i32,
     pub name:  String,
     pub link:  String,
     pub image: Option<String>,

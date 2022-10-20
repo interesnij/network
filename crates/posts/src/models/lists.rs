@@ -98,11 +98,11 @@ pub struct PostList {
     pub repost:         i32,
     pub copy:           i32,
 
-    pub see_el:         String,
-    pub see_comment:    String,
-    pub create_el:      String,
-    pub create_comment: String,
-    pub copy_el:        String,
+    pub see_el:         i16,
+    pub see_comment:    i16,
+    pub create_el:      i16,
+    pub create_comment: i16,
+    pub copy_el:        i16,
     pub reactions:      Option<String>,
 }
 #[derive(Deserialize, Insertable)]
@@ -121,11 +121,11 @@ pub struct NewPostList {
     pub repost:         i32,
     pub copy:           i32,
 
-    pub see_el:         String,
-    pub see_comment:    String,
-    pub create_el:      String,
-    pub create_comment: String,
-    pub copy_el:        String,
+    pub see_el:         i16,
+    pub see_comment:    i16,
+    pub create_el:      i16,
+    pub create_comment: i16,
+    pub copy_el:        i16,
     pub reactions:      Option<String>,
 }
 #[derive(Queryable, Serialize, Deserialize, AsChangeset, Debug)]
@@ -134,11 +134,11 @@ pub struct EditPostList {
     pub name:           String,
     pub description:    Option<String>,
     pub image:          Option<String>,
-    pub see_el:         String,
-    pub see_comment:    String,
-    pub create_el:      String,
-    pub create_comment: String,
-    pub copy_el:        String,
+    pub see_el:         i16,
+    pub see_comment:    i16,
+    pub create_el:      i16,
+    pub create_comment: i16,
+    pub copy_el:        i16,
     pub reactions:      Option<String>,
 }
 
@@ -1533,11 +1533,11 @@ impl PostList {
             count:          0,
             repost:         0,
             copy:           0,
-            see_el:         see_el.clone(),
-            see_comment:    see_comment.clone(),
-            create_el:      create_el.clone(),
-            create_comment: create_comment.clone(),
-            copy_el:        copy_el.clone(),
+            see_el:         see_el,
+            see_comment:    see_comment,
+            create_el:      create_el,
+            create_comment: create_comment,
+            copy_el:        copy_el,
             reactions:      reactions,
         };
         let new_list = diesel::insert_into(schema::post_lists::table)
