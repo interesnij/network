@@ -1155,7 +1155,7 @@ impl PostList {
 
     pub fn is_user_see_el(&self, user_id: i32) -> bool {
         let private_field = self.see_el;
-        if self.user_id == user_id || private_field == 1 {
+        if self.user_id == user_id || private_field == &1 {
             return true;
         }
 
@@ -1176,7 +1176,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1194,7 +1194,7 @@ impl PostList {
 
     pub fn is_user_see_comment(&self, user_id: i32) -> bool {
         let private_field = &self.see_comment;
-        if self.user_id == user_id || private_field == 1 {
+        if self.user_id == user_id || private_field == &1 {
             return true;
         }
 
@@ -1215,7 +1215,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1232,7 +1232,7 @@ impl PostList {
     }
     pub fn is_user_create_el(&self, user_id: i32) -> bool {
         let private_field = &self.create_el;
-        if self.user_id == user_id || private_field == 1 {
+        if self.user_id == user_id || private_field == &1 {
             return true;
         }
 
@@ -1253,7 +1253,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1270,7 +1270,7 @@ impl PostList {
     }
     pub fn is_user_create_comment(&self, user_id: i32) -> bool {
         let private_field = &self.create_comment;
-        if self.user_id == user_id || private_field == 1 {
+        if self.user_id == user_id || private_field == &1 {
             return true;
         }
 
@@ -1291,7 +1291,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1308,7 +1308,7 @@ impl PostList {
     }
     pub fn is_user_copy_el(&self, user_id: i32) -> bool {
         let private_field = &self.copy_el;
-        if self.user_id == user_id || private_field == 1 {
+        if self.user_id == user_id || private_field == &1 {
             return true;
         }
 
@@ -1329,7 +1329,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),

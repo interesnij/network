@@ -293,7 +293,7 @@ impl Post {
             for r in self.window_reposts().iter() {
                 let creator = r.get_owner_meta();
                 reposts_json.push (
-                    CardUserJson {
+                    CardOwnerJson {
                         name:  creator.name.clone(),
                         link:  creator.link.clone(),
                         image: creator.image.clone(),
