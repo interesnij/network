@@ -197,7 +197,7 @@ impl PostComment {
             }
 
             for reaction in reactions_list.iter() {
-                let count = self.get_count_model_for_reaction(reaction.id).count;
+                let count = self.get_count_model_for_reaction(reaction).count;
                 if count > 0 {
                     reactions_json.push(self.get_6_user_of_reaction(reaction, Some(user_reaction)));
                 }

@@ -341,6 +341,7 @@ impl Post {
         }
         return reposts_window;
     }
+
     pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i16>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
@@ -349,7 +350,6 @@ impl Post {
         }
         else {
             let mut reactions_json: Vec<ReactionBlockJson> = Vec::new();
-            let object_reactions_count = self.get_count_model_for_reaction();
             let mut user_reaction = 0;
 
             if self.is_have_user_reaction(user_id) {
@@ -357,10 +357,9 @@ impl Post {
             }
 
             for reaction in reactions_list.iter() {
-                let count = reaction.get_count_model_for_reaction();
-                let count = object_reactions_count.get_count_model_for_reaction(reaction_id);
+                let count = self.get_count_model_for_reaction(reaction).count;
                 if count > 0 {
-                    reactions_json.push(self.get_6_reactions_of_types(reaction, Some(user_reaction), count));
+                    reactions_json.push(self.get_6_user_of_reaction(reaction, Some(user_reaction)));
                 }
             }
             reactions_blocks = Some(reactions_json);
@@ -583,7 +582,7 @@ impl Post {
             let votes = post_reactions
                 .filter(schema::post_reactions::user_id.eq(user_id))
                 .filter(schema::post_reactions::post_id.eq(self.id))
-                .load::<PosttReaction>(&_connection)
+                .load::<PostReaction>(&_connection)
                 .expect("E.");
 
             // если пользователь уже реагировал на товар
@@ -686,44 +685,6 @@ impl Post {
             .nth(0)
             .unwrap();
         return vote;
-    }
-    pub fn plus_reactions(&self, count: i32, _user_id: i32) -> () {
-        let _connection = establish_connection();
-        diesel::update(self)
-            .set(schema::posts::reactions.eq(self.reactions + count))
-            .get_result::<Post>(&_connection)
-            .expect("Error.");
-    }
-    pub fn minus_reactions(&self, count: i32) -> () {
-        let _connection = establish_connection();
-        diesel::update(self)
-            .set(schema::posts::reactions.eq(self.reactions - count))
-            .get_result::<Post>(&_connection)
-            .expect("Error.");
-    }
-    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i16>) -> Option<Vec<ReactionBlockJson>> {
-        // получаем реакции и отреагировавших
-        let reactions_blocks: Option<Vec<ReactionBlockJson>>;
-        if reactions_list.len() == 0 {
-            reactions_blocks = None;
-        }
-        else {
-            let mut reactions_json: Vec<ReactionBlockJson> = Vec::new();
-            let mut user_reaction = 0;
-
-            if self.is_have_user_reaction(user_id) {
-                user_reaction = self.get_user_reaction(user_id);
-            }
-
-            for reaction in reactions_list.iter() {
-                let count = self.get_count_model_for_reaction(reaction.id).count;
-                if count > 0 {
-                    reactions_json.push(self.get_6_user_of_reaction(reaction, Some(user_reaction)));
-                }
-            }
-            reactions_blocks = Some(reactions_json);
-        }
-        return reactions_blocks;
     }
 
     pub fn get_str_id(&self) -> String {

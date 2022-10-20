@@ -362,8 +362,8 @@ CREATE TABLE post_reposts (
       FOREIGN KEY(post_id)
           REFERENCES posts(id)
 );
-CREATE INDEX post_list_reposts_post_id_idx ON post_list_reposts (post_id);
-CREATE INDEX post_list_reposts_message_id_idx ON post_list_reposts (message_id);
+CREATE INDEX post_reposts_post_id_idx ON post_list_reposts (post_id);
+CREATE INDEX post_reposts_message_id_idx ON post_list_reposts (message_id);
 
 -- Ключи новостей -------
 -- таблица содержит id пользователей и сообществ,
@@ -414,10 +414,10 @@ CREATE UNIQUE INDEX follows_user_followed_unq ON follows (user_id, target_id);
 -- 4 рекламщик
 -- 5 администратор
 CREATE TABLE communities_memberships (
-    id                SERIAL PRIMARY KEY,          -- id объекта
-    user_id           INT NOT NULL,                -- id пользователя
-    community_id      INT NOT NULL,                -- id сообщества
-    level             SMALLINT NOT NULL DEFAULT 1, -- уровень доступа
+    id                SERIAL PRIMARY KEY,         -- id объекта
+    user_id           INT NOT NULL,               -- id пользователя
+    community_id      INT NOT NULL,               -- id сообщества
+    level             SMALLINT NOT NULL DEFAULT 1 -- уровень доступа
 );
 CREATE UNIQUE INDEX communities_memberships_unq ON communities_memberships (user_id, community_id);
 
@@ -441,7 +441,7 @@ CREATE TABLE community_visible_perms (
     target_id    INT NOT NULL,
     types        SMALLINT NOT NULL
 );
-CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (user_id, id);
+CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (community_id, id);
 
 
 -- включения и исключения для пользователей касательно конкретного пользоватетеля

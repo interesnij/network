@@ -238,7 +238,7 @@ impl PostList {
         }
 
         let mut lists_json = Vec::new();
-        let list_owner = self.get_owner_meta();
+        let list_owner = list.get_owner_meta();
 
         for i in lists.iter() {
             let owner = i.get_owner_meta();
@@ -288,7 +288,7 @@ impl PostList {
         }
 
         let mut lists_json = Vec::new();
-        let list_owner = self.get_owner_meta();
+        let list_owner = list.get_owner_meta();
         for i in lists.iter() {
             let owner = i.get_owner_meta();
             lists_json.push (
@@ -335,7 +335,7 @@ impl PostList {
             lists = PostList::get_user_post_lists(user_id, 20, 0);
         }
         let mut lists_json = Vec::new();
-        let list_owner = self.get_owner_meta();
+        let list_owner = list.get_owner_meta();
 
         for i in lists.iter() {
             let owner = i.get_owner_meta();
@@ -1184,7 +1184,7 @@ impl PostList {
                 7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
                 8 => !self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
                 9 => self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && screatorelf.get_follows_ids().iter().any(|&i| i==user_id),
+                10 => !self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 11 => self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 12 => creator.user_id == user_id,
                 _ => false,
@@ -1223,7 +1223,7 @@ impl PostList {
                 7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
                 8 => !self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
                 9 => self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && screatorelf.get_follows_ids().iter().any(|&i| i==user_id),
+                10 => !self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 11 => self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 12 => creator.user_id == user_id,
                 _ => false,
@@ -1261,7 +1261,7 @@ impl PostList {
                 7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
                 8 => !self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
                 9 => self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && screatorelf.get_follows_ids().iter().any(|&i| i==user_id),
+                10 => !self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 11 => self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 12 => creator.user_id == user_id,
                 _ => false,
@@ -1299,7 +1299,7 @@ impl PostList {
                 7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
                 8 => !self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
                 9 => self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && screatorelf.get_follows_ids().iter().any(|&i| i==user_id),
+                10 => !self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 11 => self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 12 => creator.user_id == user_id,
                 _ => false,
@@ -1337,7 +1337,7 @@ impl PostList {
                 7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
                 8 => !self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
                 9 => self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && screatorelf.get_follows_ids().iter().any(|&i| i==user_id),
+                10 => !self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 11 => self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
                 12 => creator.user_id == user_id,
                 _ => false,
