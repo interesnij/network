@@ -432,7 +432,7 @@ impl Post {
 
     pub fn get_6_user_of_reaction (
         &self,
-        reaction_id: &i16,
+        reaction_id: &i32,
         user_reaction: Option<i16>,
     ) -> ReactionBlockJson {
         use crate::schema::post_reactions::dsl::post_reactions;
@@ -473,13 +473,13 @@ impl Post {
         }
         return ReactionBlockJson {
                 count:    self.get_count_model_for_reaction(reaction_id).count,
-                reaction: reaction_id,
+                reaction: *reaction_id,
                 users:    user_json,
             };
     }
     pub fn get_users_of_reaction (
         &self,
-        reaction_id:   &i16,
+        reaction_id:   &i32,
         user_reaction: Option<i16>,
         limit:         i64,
         offset:        i64,

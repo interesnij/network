@@ -86,7 +86,7 @@ pub struct EditPostComment {
 impl PostComment {
     pub fn get_6_user_of_reaction (
         &self,
-        reaction_id: &i16,
+        reaction_id: &i32,
         user_reaction: Option<i16>,
     ) -> ReactionBlockJson {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
@@ -133,7 +133,7 @@ impl PostComment {
     }
     pub fn get_users_of_reaction (
         &self,
-        reaction_id:   &i16,
+        reaction_id:   &i32,
         user_reaction: Option<i16>,
         limit:         i64,
         offset:        i64,
