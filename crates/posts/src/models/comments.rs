@@ -127,7 +127,7 @@ impl PostComment {
         }
         return ReactionBlockJson {
                 count:    self.get_count_model_for_reaction(reaction_id).count,
-                reaction: reaction_id,
+                reaction: *reaction_id,
                 users:    user_json,
             };
     }
@@ -364,7 +364,6 @@ impl PostComment {
                 .filter(schema::communitys::id.eq(self.community_id))
                 .filter(schema::communitys::types.lt(10))
                 .select((
-                    schema::communitys::id,
                     schema::communitys::name,
                     schema::communitys::link,
                     schema::communitys::s_avatar.nullable(),
@@ -394,7 +393,6 @@ impl PostComment {
                 .unwrap();
 
             return CardOwnerJson {
-                id:    _user.id,
                 name:  _user.first_name.clone() + &" ".to_string() + _user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,

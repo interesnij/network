@@ -170,7 +170,6 @@ impl Post {
                 .filter(schema::users::id.eq(self.user_id))
                 .filter(schema::users::types.lt(10))
                 .select((
-                    schema::users::id,
                     schema::users::first_name,
                     schema::users::last_name,
                     schema::users::link,
@@ -183,7 +182,6 @@ impl Post {
                 .unwrap();
 
             return CardOwnerJson {
-                id:    _user.id,
                 name:  _user.first_name.clone() + &" ".to_string() + _user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
