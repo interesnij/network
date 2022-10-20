@@ -182,7 +182,7 @@ impl PostComment {
             };
     }
 
-    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i16>) -> Option<Vec<ReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
         if reactions_list.len() == 0 {
@@ -207,7 +207,7 @@ impl PostComment {
         return reactions_blocks;
     }
 
-    pub fn get_comment_json (&self, user_id: i32, reactions_list: Vec<i16>) -> CardCommentJson {
+    pub fn get_comment_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardCommentJson {
         let creator = self.get_owner_meta();
         let card = CardCommentJson {
             content:        self.content.clone(),
@@ -223,7 +223,7 @@ impl PostComment {
         };
         return card;
     }
-    pub fn get_reply_json (&self, user_id: i32, reactions_list: Vec<i16>) -> CardReplyJson {
+    pub fn get_reply_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardReplyJson {
         let creator = self.get_owner_meta();
         let card = CardReplyJson {
             content:        self.content.clone(),
@@ -241,7 +241,7 @@ impl PostComment {
     pub fn get_replies_json (
         &self,
         user_id: i32,
-        reactions_list: Vec<i16>,
+        reactions_list: Vec<i32>,
         page: i32, limit: i32
     ) -> RepliesSmallJson {
         let mut comments_json = Vec::new();
@@ -471,8 +471,7 @@ impl PostComment {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
-        let user_types = &self.types;
-        let close_case = match user_types.as_str() {
+        let close_case = match self.types {
             1 => 11,
             2 => 12,
             _ => 11,
