@@ -35,7 +35,7 @@ pub struct UserListJson {
     pub users:     Vec<CardUserJson>,
     pub next_page: i32,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
     pub id:         i32,
@@ -44,7 +44,7 @@ pub struct CardUserJson {
     pub link:       String,
     pub image:      Option<String>,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct CardCommunityJson {
     pub id:    i32,
@@ -53,6 +53,7 @@ pub struct CardCommunityJson {
     pub image: Option<String>,
 }
 // это объект данных владельца объекта
+#[derive(Serialize, Queryable)]
 pub struct CardOwnerJson {
     pub name:  String,
     pub link:  String,
@@ -191,14 +192,14 @@ pub struct RepostsPostJson {
     pub posts:           Vec<CardOwnerJson>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct ReactionBlockJson {
     pub count:    i32,
     pub reaction: i32,
     pub users:    Vec<CardReactionPostJson>,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // // это карточка того, кто поставил реакцию
 pub struct CardReactionPostJson {
     pub owner_name:       String,
@@ -237,7 +238,7 @@ pub struct RepliesSmallJson {
     pub next_page:      i32,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это коммент
 pub struct CardCommentJson {
     pub content:        Option<String>,
@@ -251,7 +252,7 @@ pub struct CardCommentJson {
     pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
     pub items:          Option<()>,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это ответ на коммент
 pub struct CardReplyJson {
     pub content:        Option<String>,
@@ -265,7 +266,7 @@ pub struct CardReplyJson {
     pub items:          Option<()>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // // это карточка того, кто поставил реакцию
 pub struct CardReactionPostCommentJson {
     pub owner_name:  String,
@@ -273,10 +274,9 @@ pub struct CardReactionPostCommentJson {
     pub owner_image: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct ReactionsCommentJson {
-    pub status: i32,
     pub count:  String,
     pub users:  Vec<CardReactionPostJson>,
 }

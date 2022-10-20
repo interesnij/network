@@ -1141,7 +1141,7 @@ impl PostList {
             .filter(schema::post_list_perms::types.eq(5))
             .limit(limit)
             .offset(offset)
-            .select((
+            .select(( 
                 schema::users::id,
                 schema::users::first_name,
                 schema::users::last_name,
@@ -1155,7 +1155,7 @@ impl PostList {
 
     pub fn is_user_see_el(&self, user_id: i32) -> bool {
         let private_field = self.see_el;
-        if self.user_id == user_id || private_field == &1 {
+        if self.user_id == user_id || self.see_el == 1 {
             return true;
         }
 
@@ -1176,7 +1176,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1215,7 +1215,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1253,7 +1253,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1291,7 +1291,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1329,7 +1329,7 @@ impl PostList {
             let creator = self.get_creator();
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || self.get_follows_ids().iter().any(|&i| i==user_id),
+                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
                 3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
                 5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
@@ -1366,7 +1366,7 @@ impl PostList {
         let _connection = establish_connection();
         let _post_list_positions = community_post_list_positions
             .filter(schema::community_post_list_positions::community_id.eq(community_id))
-            .filter(schema::community_post_list_positions::types.eq("a"))
+            .filter(schema::community_post_list_positions::types.eq(1))
             .limit(1)
             .select(schema::community_post_list_positions::list_id)
             .load::<i32>(&_connection)
@@ -1388,7 +1388,7 @@ impl PostList {
 
         let _post_list_positions = user_post_list_positions
             .filter(schema::user_post_list_positions::user_id.eq(user_id))
-            .filter(schema::user_post_list_positions::types.eq("a"))
+            .filter(schema::user_post_list_positions::types.eq(1))
             .limit(1)
             .select(schema::user_post_list_positions::list_id)
             .load::<i32>(&_connection)
