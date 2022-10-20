@@ -277,7 +277,7 @@ impl PostComment {
         let _connection = establish_connection();
         return post_comments
             .filter(schema::post_comments::parent_id.eq(self.id))
-            .filter(schema::post_comments::types.eq_any(vec!["a","b"]))
+            .filter(schema::post_comments::types.eq_any(vec![1, 2]))
             .limit(limit)
             .offset(offset)
             .load::<PostComment>(&_connection)
@@ -361,7 +361,7 @@ impl PostComment {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             let _community = communitys
-                .filter(schema::communitys::id.eq(self.community_id))
+                .filter(schema::communitys::id.eq(self.community_id.unwrap()))
                 .filter(schema::communitys::types.lt(10))
                 .select((
                     schema::communitys::name,
@@ -384,7 +384,7 @@ impl PostComment {
                     schema::users::first_name,
                     schema::users::last_name,
                     schema::users::link,
-                    schema::users::s_avatar,
+                    schema::users::s_avatar.nullable(),
                 ))
                 .load::<CardUserJson>(&_connection)
                 .expect("E")
@@ -645,7 +645,7 @@ impl PostComment {
         use crate::utils::get_count_for_ru;
 
         return get_count_for_ru (
-            self.get_count_model_for_reaction(reaction_id),
+            self.get_count_model_for_reaction(reaction_id).count,
             " человек".to_string(),
             " человека".to_string(),
             " человек".to_string(),
@@ -683,7 +683,7 @@ impl PostComment {
         return self.reactions_ids().iter().any(|&i| i==user_id);
     }
 
-    pub fn get_user_reaction(&self, user_id: i32) -> i16 {
+    pub fn get_user_reaction(&self, user_id: i32) -> i32 {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
         // "/static/images/reactions/" + get_user_reaction + ".jpg"
         let _connection = establish_connection();

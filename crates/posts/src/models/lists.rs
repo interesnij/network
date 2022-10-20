@@ -175,7 +175,7 @@ impl PostList {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             let _community = communitys
-                .filter(schema::communitys::id.eq(self.community_id))
+                .filter(schema::communitys::id.eq(self.community_id.unwrap()))
                 .filter(schema::communitys::types.lt(10))
                 .select((
                     schema::communitys::id,

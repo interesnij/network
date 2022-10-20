@@ -245,14 +245,14 @@ impl PostCounterReaction {
             diesel::delete(prev_reactions)
                 .execute(&_connection)
                 .expect("E");
-            return new_count;
+            return &new_count;
         }
         else {
             let new_count = diesel::update(self)
                 .set(schema::post_counter_reactions::count.eq(self.count - 1))
                 .get_result::<PostCounterReaction>(&_connection)
                 .expect("Error.");
-            return new_count;
+            return &new_count;
         }
     }
 }

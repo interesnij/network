@@ -150,7 +150,7 @@ impl Post {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             let _community = communitys
-                .filter(schema::communitys::id.eq(self.community_id))
+                .filter(schema::communitys::id.eq(self.community_id.unwrap()))
                 .filter(schema::communitys::types.lt(10))
                 .select((
                     schema::communitys::id,
@@ -636,7 +636,7 @@ impl Post {
         use crate::schema::post_counter_reactions::dsl::post_counter_reactions;
 
         return get_count_for_ru (
-            self.get_count_model_for_reaction(reaction_id),
+            self.get_count_model_for_reaction(reaction_id).count,
             " человек".to_string(),
             " человека".to_string(),
             " человек".to_string(),
@@ -669,7 +669,7 @@ impl Post {
     pub fn is_have_user_reaction(&self, user_id: i32) -> bool {
         return self.reactions_ids().iter().any(|&i| i==user_id);
     }
-    pub fn get_user_reaction(&self, user_id: i32) -> i16 {
+    pub fn get_user_reaction(&self, user_id: i32) -> i32 {
         use crate::schema::post_reactions::dsl::post_reactions;
         // "/static/images/reactions/" + get_user_reaction + ".jpg"
         let _connection = establish_connection();
