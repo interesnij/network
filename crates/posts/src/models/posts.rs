@@ -182,7 +182,7 @@ impl Post {
                 .unwrap();
 
             return CardOwnerJson {
-                name:  _user.first_name.clone() + &" ".to_string() + _user.last_name.clone(),
+                name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
             }
@@ -677,7 +677,7 @@ impl Post {
             .filter(schema::post_reactions::user_id.eq(user_id))
             .filter(schema::post_reactions::post_id.eq(self.id))
             .select(schema::post_reactions::reaction_id)
-            .load::<i16>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .into_iter()
             .nth(0)

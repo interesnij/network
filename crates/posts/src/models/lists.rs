@@ -209,7 +209,7 @@ impl PostList {
 
             return CardOwnerJson {
                 id:    _user.id,
-                name:  _user.first_name.clone() + &" ".to_string() + _user.last_name.clone(),
+                name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
             }

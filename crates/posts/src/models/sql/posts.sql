@@ -315,7 +315,7 @@ CREATE TABLE post_reactions (
   id          SERIAL PRIMARY KEY,
   user_id     INT NOT NULL,
   post_id     INT NOT NULL,
-  reaction_id SMALLINT NOT NULL
+  reaction_id INT NOT NULL
 );
 CREATE UNIQUE INDEX post_reactions_unq ON post_reactions (user_id, post_id);
 
@@ -326,7 +326,7 @@ CREATE TABLE post_comment_reactions (
   id              SERIAL PRIMARY KEY,
   user_id         INT NOT NULL,
   post_comment_id INT NOT NULL,
-  reaction_id     SMALLINT NOT NULL
+  reaction_id     INT NOT NULL
 );
 CREATE UNIQUE INDEX post_comment_reactions_unq ON post_comment_reactions (user_id, post_comment_id);
 

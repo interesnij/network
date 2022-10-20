@@ -380,11 +380,11 @@ impl PostComment {
                 .filter(schema::users::id.eq(self.user_id))
                 .filter(schema::users::types.lt(10))
                 .select((
-                    schema::users::id,
+                    schema::users::user_id,
                     schema::users::first_name,
                     schema::users::last_name,
                     schema::users::link,
-                    schema::users::s_avatar.nullable(),
+                    schema::users::s_avatar,
                 ))
                 .load::<CardUserJson>(&_connection)
                 .expect("E")
@@ -393,7 +393,7 @@ impl PostComment {
                 .unwrap();
 
             return CardOwnerJson {
-                name:  _user.first_name.clone() + &" ".to_string() + _user.last_name.clone(),
+                name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
             }
@@ -645,7 +645,7 @@ impl PostComment {
         use crate::utils::get_count_for_ru;
 
         return get_count_for_ru (
-            self.count_reaction(types),
+            self.get_count_model_for_reaction(reaction_id),
             " человек".to_string(),
             " человека".to_string(),
             " человек".to_string(),
@@ -691,7 +691,7 @@ impl PostComment {
             .filter(schema::post_comment_reactions::user_id.eq(user_id))
             .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
             .select(schema::post_comment_reactions::reaction_id)
-            .load::<i16>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .into_iter()
             .nth(0)
