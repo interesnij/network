@@ -207,8 +207,8 @@ impl Community {
     pub fn plus_lists(&self, count: i32) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::users::lists.eq(self.lists + count))
-            .get_result::<User>(&_connection)
+            .set(schema::communitys::lists.eq(self.lists + count))
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -216,8 +216,8 @@ impl Community {
         if self.lists > 0 {
             let _connection = establish_connection();
             diesel::update(self)
-                .set(schema::users::lists.eq(self.lists - count))
-                .get_result::<User>(&_connection)
+                .set(schema::communitys::lists.eq(self.lists - count))
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -226,8 +226,8 @@ impl Community {
     pub fn plus_posts(&self, count: i32) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::users::posts.eq(self.posts + count))
-            .get_result::<User>(&_connection)
+            .set(schema::communitys::posts.eq(self.posts + count))
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -235,8 +235,8 @@ impl Community {
         if self.posts > 0 {
             let _connection = establish_connection();
             diesel::update(self)
-                .set(schema::users::posts.eq(self.posts - count))
-                .get_result::<User>(&_connection)
+                .set(schema::communitys::posts.eq(self.posts - count))
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -245,8 +245,8 @@ impl Community {
     pub fn plus_comments(&self, count: i32) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::users::comments.eq(self.comments + count))
-            .get_result::<User>(&_connection)
+            .set(schema::communitys::comments.eq(self.comments + count))
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -254,8 +254,8 @@ impl Community {
         if self.comments > 0 {
             let _connection = establish_connection();
             diesel::update(self)
-                .set(schema::users::comments.eq(self.comments - count))
-                .get_result::<User>(&_connection)
+                .set(schema::communitys::comments.eq(self.comments - count))
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -386,7 +386,7 @@ impl Community {
             .filter(schema::community_visible_perms::types.eq(20))
             .limit(1)
             .select(schema::community_visible_perms::id)
-            .load::<CommunityVisiblePerm>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -901,7 +901,7 @@ impl Community {
         for user_id in users_ids.iter() {
             let _new_perm = NewCommunityVisiblePerm {
                 community_id: self.community_id,
-                target_id:    user_id,
+                target_id:    *user_id,
                 types:        types,
             };
             diesel::insert_into(schema::community_visible_perms::table)

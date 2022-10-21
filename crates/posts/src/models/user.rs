@@ -107,14 +107,13 @@ impl User {
             .filter(schema::users::user_id.eq(user.user_id))
             .limit(1)
             .select(schema::users::id)
-            .load::<User>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E")
             .len() == 0 {
                 return users
                     .filter(schema::users::user_id.eq(user.user_id))
                     .limit(1)
-                    .select(schema::users::id)
-                    .load::<i32>(&_connection)
+                    .load::<User>(&_connection)
                     .expect("E")
                     .into_iter()
                     .nth(0)
