@@ -392,7 +392,7 @@ impl Community {
 
         diesel::delete(community_visible_perms
                 .filter(schema::community_visible_perms::community_id.eq(self.community_id))
-                .filter(schema::community_visible_perms::user_id.eq(user_id))
+                .filter(schema::community_visible_perms::target_id.eq(user_id))
             )
             .execute(&_connection)
             .expect("E");
@@ -413,7 +413,7 @@ impl Community {
         let _connection = establish_connection();
         diesel::delete(community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.community_id))
-            .filter(schema::community_visible_perms::user_id.eq(user_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
             .filter(schema::community_visible_perms::types.eq(20))
             )
             .execute(&_connection)

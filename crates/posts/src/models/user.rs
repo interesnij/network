@@ -100,6 +100,8 @@ pub struct NewUserJson {
 
 impl User {
     pub fn create_user(user: NewUserJson) -> User {
+        use crate::schema::users::dsl::users;
+
         let _connection = establish_connection();
         if users
             .filter(schema::users::user_id.eq(user.user_id))
@@ -118,7 +120,7 @@ impl User {
                     .nth(0)
                     .unwrap();
         }
-        let new_form = NewUserForm {
+        let new_form = NewUser {
             user_id:        user.user_id,
             first_name:     user.first_name,
             last_name:      user.last_name,
@@ -144,6 +146,8 @@ impl User {
         let new_user_id = user.user_id;
 
         if user.friends.is_some() {
+            use crate::schema::friends::dsl::friends;
+
             for user_id in user.friends.unwrap() {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
@@ -165,8 +169,10 @@ impl User {
             }
         }
         if user.follows.is_some() {
+            use crate::schema::follows::dsl::follows;
+
             for user_id in user.follows.unwrap() {
-                if friends
+                if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
                     .limit(1)
@@ -202,47 +208,6 @@ impl User {
     }
     pub fn get_code(&self) -> String {
         return "use".to_string() + &self.get_str_id();
-    }
-    pub fn is_women(&self) -> bool {
-        return self.is_man == false;
-    }
-    pub fn is_man(&self) -> bool {
-        return self.is_man;
-    }
-    pub fn is_suspended(&self) -> bool {
-        return 40 > self.types && self.types > 30;
-    }
-    pub fn is_have_warning_banner(&self) -> bool {
-        return 50 > self.types && self.types > 40;
-    }
-    pub fn is_deleted(&self) -> bool {
-        return 20 > self.types && self.types > 10;
-    }
-    pub fn is_closed(&self) -> bool {
-        return 30 > self.types && self.types > 20;
-    }
-    pub fn is_identified_send(&self) -> bool {
-        return self.types == 6;
-    }
-    pub fn is_identified(&self) -> bool {
-        return self.types == 7;
-    }
-
-    pub fn is_online(&self) -> bool {
-        use chrono::Duration;
-        return (self.last_activity + Duration::seconds(300)) > chrono::Local::now().naive_utc();
-    }
-    pub fn get_online_status(&self) -> String {
-        if self.is_online() {
-            return "Онлайн".to_string();
-        }
-        else {
-            if self.is_women() {
-                return "Была ".to_string() + &self.last_activity.to_string();
-            } else {
-                return "Был ".to_string() + &self.last_activity.to_string();
-            }
-        }
     }
 
     pub fn get_see_el_exclude_friends_ids(&self) -> Vec<i32> {
