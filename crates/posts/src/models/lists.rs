@@ -170,15 +170,14 @@ impl PostList {
             .unwrap();
     }
     pub fn get_owner_meta(&self) -> CardOwnerJson {
-        use crate::schema::users::dsl::users;
-
         let _connection = establish_connection();
         if self.community_id.is_some() {
+            use crate::schema::communitys::dsl::communitys;
+
             let _community = communitys
                 .filter(schema::communitys::id.eq(self.community_id.unwrap()))
                 .filter(schema::communitys::types.lt(10))
                 .select((
-                    schema::communitys::id,
                     schema::communitys::name,
                     schema::communitys::link,
                     schema::communitys::s_avatar.nullable(),
@@ -191,11 +190,13 @@ impl PostList {
             return _community;
         }
         else {
+            use crate::schema::users::dsl::users;
+
             let _user = users
                 .filter(schema::users::id.eq(self.user_id))
                 .filter(schema::users::types.lt(10))
                 .select((
-                    schema::users::id,
+                    schema::users::user_id,
                     schema::users::first_name,
                     schema::users::last_name,
                     schema::users::link,
