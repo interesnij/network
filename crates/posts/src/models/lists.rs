@@ -646,12 +646,12 @@ impl PostList {
         });
     }
     pub fn get_see_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(11))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_see_el_exclude_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -689,12 +689,12 @@ impl PostList {
         });
     }
     pub fn get_see_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(1))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_see_el_include_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -758,12 +758,12 @@ impl PostList {
         });
     }
     pub fn get_see_comment_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(12))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_see_comment_exclude_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -800,12 +800,12 @@ impl PostList {
         });
     }
     pub fn get_see_comment_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(2))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_see_comment_include_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -869,12 +869,12 @@ impl PostList {
         });
     }
     pub fn get_create_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(13))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_create_el_exclude_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -911,12 +911,12 @@ impl PostList {
         });
     }
     pub fn get_create_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(3))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_create_el_include_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -980,12 +980,12 @@ impl PostList {
         });
     }
     pub fn get_create_comment_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(14))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_create_comment_exclude_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -1022,12 +1022,12 @@ impl PostList {
         });
     }
     pub fn get_create_comment_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(4))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_create_comment_include_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -1091,12 +1091,12 @@ impl PostList {
         });
     }
     pub fn get_copy_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(15))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_copy_el_exclude_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
             .select((
@@ -1133,15 +1133,15 @@ impl PostList {
         });
     }
     pub fn get_copy_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(5))
+        let items = users
+            .filter(schema::users::user_id.eq_any(self.get_copy_el_include_users_ids()))
+            .filter(schema::users::types.lt(10))
             .limit(limit)
             .offset(offset)
-            .select(( 
+            .select((
                 schema::users::id,
                 schema::users::first_name,
                 schema::users::last_name,

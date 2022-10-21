@@ -218,7 +218,7 @@ impl Post {
                 owner_image:    creator.image.clone(),
                 created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
                 reactions:      c.reactions,
-                types:          c.get_types(),       // например cpo1
+                types:          c.get_code(),       // например cpo1
                 replies:        c.replies,    // кол-во ответов
                 reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
                 items:          None,
