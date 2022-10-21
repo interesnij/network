@@ -89,7 +89,10 @@ impl PostComment {
         reaction_id: &i32,
         user_reaction: Option<i32>,
     ) -> ReactionBlockJson {
-        use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
+        use crate::schema::{
+            post_comment_reactions::dsl::post_comment_reactions,
+            users::dsl::users,
+        };
         use crate::utils::CardReactionPostJson;
         use crate::models::PostCommentReaction;
 
@@ -138,7 +141,10 @@ impl PostComment {
         limit:         i64,
         offset:        i64,
     ) -> ReactionBlockJson {
-        use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
+        use crate::schema::{
+            post_comment_reactions::dsl::post_comment_reactions,
+            users::dsl::users,
+        };
         use crate::utils::CardReactionPostJson;
         use crate::models::PostCommentReaction;
 

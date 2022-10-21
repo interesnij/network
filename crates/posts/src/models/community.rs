@@ -203,7 +203,7 @@ impl Community {
 
     pub fn plus_lists(&self, count: i32) -> bool {
         let _connection = establish_connection();
-        diesel::update(&self)
+        diesel::update(self)
             .set(schema::users::lists.eq(self.lists + count))
             .get_result::<User>(&_connection)
             .expect("Error.");
@@ -212,7 +212,7 @@ impl Community {
     pub fn minus_lists(&self, count: i32) -> bool {
         if self.lists > 0 {
             let _connection = establish_connection();
-            diesel::update(&self)
+            diesel::update(self)
                 .set(schema::users::lists.eq(self.lists - count))
                 .get_result::<User>(&_connection)
                 .expect("Error.");
@@ -222,7 +222,7 @@ impl Community {
     }
     pub fn plus_posts(&self, count: i32) -> bool {
         let _connection = establish_connection();
-        diesel::update(&self)
+        diesel::update(self)
             .set(schema::users::posts.eq(self.posts + count))
             .get_result::<User>(&_connection)
             .expect("Error.");
@@ -231,7 +231,7 @@ impl Community {
     pub fn minus_posts(&self, count: i32) -> bool {
         if self.posts > 0 {
             let _connection = establish_connection();
-            diesel::update(&self)
+            diesel::update(self)
                 .set(schema::users::posts.eq(self.posts - count))
                 .get_result::<User>(&_connection)
                 .expect("Error.");
@@ -241,7 +241,7 @@ impl Community {
     }
     pub fn plus_comments(&self, count: i32) -> bool {
         let _connection = establish_connection();
-        diesel::update(&self)
+        diesel::update(self)
             .set(schema::users::comments.eq(self.comments + count))
             .get_result::<User>(&_connection)
             .expect("Error.");
@@ -250,7 +250,7 @@ impl Community {
     pub fn minus_comments(&self, count: i32) -> bool {
         if self.comments > 0 {
             let _connection = establish_connection();
-            diesel::update(&self)
+            diesel::update(self)
                 .set(schema::users::comments.eq(self.comments - count))
                 .get_result::<User>(&_connection)
                 .expect("Error.");
