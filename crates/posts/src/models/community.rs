@@ -186,17 +186,17 @@ impl Community {
                     .filter(schema::communities_memberships::community_id.eq(community_id))
                     .limit(1)
                     .select(schema::communities_memberships::id)
-                    .load::<CommunityMembership>(&_connection)
+                    .load::<CommunitiesMembership>(&_connection)
                     .expect("E")
                     .len() == 0 {
-                        let new_form = NewCommunityMembership {
+                        let new_form = NewCommunitiesMembership {
                             user_id:      user_id,
                             community_id: community_id,
                             level:        level,
                         };
                         diesel::insert_into(schema::communities_memberships::table)
                             .values(&new_form)
-                            .get_result::<CommunityMembership>(&_connection)
+                            .get_result::<CommunitiesMembership>(&_connection)
                             .expect("Error.");
                 }
             }
@@ -391,6 +391,8 @@ impl Community {
             .len() > 0;
     }
     pub fn create_banned_user(&self, user_id: i32) -> () {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
         let _connection = establish_connection();
 
         diesel::delete(community_visible_perms
@@ -411,13 +413,14 @@ impl Community {
             .expect("Error.");
     }
     pub fn delete_banned_user(&self, user_id: i32) -> () {
-        use crate::schema::community_banned_users::dsl::community_banned_users;
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
         let _connection = establish_connection();
-        diesel::delete(community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
-            .filter(schema::community_visible_perms::target_id.eq(user_id))
-            .filter(schema::community_visible_perms::types.eq(20))
+        diesel::delete(
+            community_visible_perms
+                .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                .filter(schema::community_visible_perms::target_id.eq(user_id))
+                .filter(schema::community_visible_perms::types.eq(20))
             )
             .execute(&_connection)
             .expect("E");
@@ -913,7 +916,7 @@ impl Community {
     }
 }
 
-/////// CommunityMembership //////
+/////// CommunitiesMembership //////
 // level
 // 1 подписчик
 // 2 модератор

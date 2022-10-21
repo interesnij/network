@@ -365,6 +365,15 @@ CREATE TABLE post_reposts (
 CREATE INDEX post_reposts_post_id_idx ON post_list_reposts (post_id);
 CREATE INDEX post_reposts_message_id_idx ON post_list_reposts (message_id);
 
+------------------
+------------------
+-- Список ключей новостей, уведомлений или рекомендаций (если пользователь хочет их группировать) -------
+CREATE TABLE list_user_communities_keys (
+    id    SERIAL PRIMARY KEY,
+    types SMALLINT NOT NULL,     -- тип списка: 0 - неактивен, 1 - основной, 2 - пользовательский
+    name  VARCHAR(100) NOT NULL, -- название
+    owner INT NOT NULL           -- владелец
+); 
 -- Ключи новостей -------
 -- таблица содержит id пользователей и сообществ,
 -- для получения их записей в разделе новостей и рекомендаций

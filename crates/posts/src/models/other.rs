@@ -19,6 +19,7 @@ use crate::schema::{
     post_reactions,
     post_comment_reactions,
     post_reposts,
+    list_user_communities_keys,
     notify_user_communities,
     news_user_communities,
 };
@@ -360,7 +361,24 @@ pub struct NewPostCommentCounterReaction {
     pub count:           i32,
 }
 
-/////// NewsUC //////
+
+/////// ListUserCommunitiesKeys //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct ListUserCommunitiesKeys {
+    pub id:    i32,
+    pub types: i16,
+    pub name:  String,
+    pub owner: i32,
+}
+#[derive(Deserialize, Insertable, AsChangeset)]
+#[table_name="list_user_communities_keys"]
+pub struct NewListUserCommunitiesKeys {
+    pub types: i16,
+    pub name:  String,
+    pub owner: i32,
+}
+
+/////// NewsUserCommunitie //////
 #[derive(Queryable, Serialize, Deserialize, Identifiable)]
 pub struct NewsUserCommunitie {
     pub id:           i32,
@@ -382,7 +400,7 @@ pub struct NewNewsUserCommunitie {
     pub sleep:        Option<chrono::NaiveDateTime>
 }
 
-/////// NotifyUC //////
+/////// NotifyUserCommunitie //////
 #[derive(Queryable, Serialize, Deserialize, Identifiable)]
 pub struct NotifyUserCommunitie {
     pub id:           i32,
