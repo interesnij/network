@@ -129,7 +129,7 @@ pub struct NewCommunityJson {
     pub types:        i16,
     pub link:         String,
     pub s_avatar:     Option<String>,
-    pub follows:      Option<Vec<(i32, i32)>>,  // список id подписчтков сообщества (1) и их права (2)
+    pub follows:      Option<Vec<(i32, i16)>>,  // список id подписчтков сообщества (1) и их права (2)
 }
 
 impl Community {
@@ -186,7 +186,7 @@ impl Community {
                     .filter(schema::communities_memberships::community_id.eq(community_id))
                     .limit(1)
                     .select(schema::communities_memberships::id)
-                    .load::<CommunitiesMembership>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .len() == 0 {
                         let new_form = NewCommunitiesMembership {

@@ -22,6 +22,7 @@ use crate::schema::{
     list_user_communities_keys,
     notify_user_communities,
     news_user_communities,
+    featured_user_communities,
 };
 use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};
@@ -420,4 +421,26 @@ pub struct NewNotifyUserCommunitie {
     pub community_id: Option<i32>,
     pub mute:         bool,
     pub sleep:        Option<chrono::NaiveDateTime>,
+}
+
+/////// FeaturedUC //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct FeaturedUserCommunitie {
+    pub id:           i32,
+    pub owner:        i32,
+    pub list_id:      Option<i32>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub mute:         bool,
+    pub sleep:        Option<chrono::NaiveDateTime>
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="featured_user_communities"]
+pub struct NewFeaturedUserCommunitie {
+    pub owner:        i32,
+    pub list_id:      Option<i32>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub mute:         bool,
+    pub sleep:        Option<chrono::NaiveDateTime>
 }

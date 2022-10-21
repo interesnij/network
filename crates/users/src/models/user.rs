@@ -404,169 +404,6 @@ impl User {
         }
     }
 
-    pub fn get_featured_friends_ids(&self) -> Vec<i32> {
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-
-        let _connection = establish_connection();
-        let featured_friends = featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
-            .filter(schema::featured_user_communities::community_id.is_null())
-            .order(schema::featured_user_communities::id.desc())
-            .select(schema::featured_user_communities::user_id.nullable())
-            .load::<Option<i32>>(&_connection)
-            .expect("E.");
-
-        let mut stack = Vec::new();
-        for i in featured_friends {
-            stack.push(i.unwrap())
-        }
-        return stack;
-    }
-    pub fn get_6_featured_friends_ids(&self) -> Vec<i32> {
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-
-        let _connection = establish_connection();
-        let featured_friends = featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
-            .filter(schema::featured_user_communities::community_id.is_null())
-            .order(schema::featured_user_communities::id.desc())
-            .limit(6)
-            .select(schema::featured_user_communities::user_id.nullable())
-            .load::<Option<i32>>(&_connection)
-            .expect("E.");
-
-        let mut stack = Vec::new();
-        for i in featured_friends {
-            stack.push(i.unwrap())
-        }
-        return stack;
-    }
-    pub fn get_featured_friends_json(&self, page: i32, limit: i32) -> Json<UniversalUserCommunityKeysJson> {
-        let mut next_page_number = 0;
-        let keys: Vec<UniversalUserCommunityKeyJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            keys = self.get_featured_friends(limit.into(), have_next.into());
-        }
-        else {
-            have_next = page * limit + 1;
-            keys = self.get_featured_friends(limit.into(), 0);
-        }
-        if self.get_featured_friends(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UniversalUserCommunityKeysJson {
-            keys: keys,
-            next_page: next_page_number,
-        });
-    }
-    pub fn get_featured_friends(&self, limit: i64, offset: i64) -> Vec<UniversalUserCommunityKeyJson> {
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-        use crate::models::FeaturedUserCommunitie;
-
-        let _connection = establish_connection();
-        let featured_friends = featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
-            .filter(schema::featured_user_communities::community_id.is_null())
-            .order(schema::featured_user_communities::id.desc())
-            .limit(limit)
-            .offset(offset)
-            .load::<FeaturedUserCommunitie>(&_connection)
-            .expect("E.");
-
-        let mut stack = Vec::new();
-        for i in featured_friends {
-            stack.push(UniversalUserCommunityKeyJson {
-                id:           i.id,
-                list_id:      i.list_id,
-                mute:         i.mute,
-                sleep:        i.sleep.unwrap().format("%d-%m-%Y в %H:%M").to_string(),
-            })
-        }
-        return stack;
-    }
-    pub fn get_6_featured_friends(&self) -> Vec<UniversalUserCommunityKeyJson> {
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-        use crate::models::FeaturedUserCommunitie;
-
-        let _connection = establish_connection();
-        let featured_friends = featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
-            .filter(schema::featured_user_communities::community_id.is_null())
-            .order(schema::featured_user_communities::id.desc())
-            .limit(6)
-            .load::<FeaturedUserCommunitie>(&_connection)
-            .expect("E.");
-
-        let mut stack = Vec::new();
-        for i in featured_friends {
-            stack.push(UniversalUserCommunityKeyJson {
-                id:           i.id,
-                list_id:      i.list_id,
-                mute:         i.mute,
-                sleep:        i.sleep.unwrap().format("%d-%m-%Y в %H:%M").to_string(),
-            })
-        }
-        return stack;
-    }
-    pub fn get_featured_friends_count(&self) -> usize {
-        return self.get_featured_friends_ids().len();
-    }
-    pub fn get_featured_communities_ids(&self) -> Vec<i32> {
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-
-        let _connection = establish_connection();
-        let mut stack = Vec::new();
-        let featured_communities = featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
-            .filter(schema::featured_user_communities::user_id.is_null())
-            .order(schema::featured_user_communities::id.desc())
-            .select(schema::featured_user_communities::community_id.nullable())
-            .load::<Option<i32>>(&_connection)
-            .expect("E.");
-        for _item in featured_communities.iter() {
-            stack.push(_item.unwrap());
-        };
-        return stack;
-    }
-    pub fn get_6_featured_communities_ids(&self) -> Vec<i32> {
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-
-        let _connection = establish_connection();
-        let mut stack = Vec::new();
-        let featured_communities = &featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
-            .filter(schema::featured_user_communities::user_id.is_null())
-            .order(schema::featured_user_communities::id.desc())
-            .limit(6)
-            .select(schema::featured_user_communities::community_id.nullable())
-            .load::<Option<i32>>(&_connection)
-            .expect("E.");
-        for _item in featured_communities.iter() {
-            stack.push(_item.unwrap());
-        };
-        return stack;
-    }
-    pub fn get_featured_communities_count(&self) -> usize {
-        return self.get_featured_communities_ids().len();
-    }
-    pub fn is_user_in_block(&self, user_id: i32) -> bool {
-        // user_id заблокирован у self
-        use crate::schema::user_blocks::dsl::user_blocks;
-
-        let _connection = establish_connection();
-        return user_blocks
-            .filter(schema::user_blocks::target_id.eq(user_id))
-            .filter(schema::user_blocks::user_id.eq(self.id))
-            .limit(1)
-            .select(schema::user_blocks::id)
-            .load::<UserBlock>(&_connection)
-            .expect("E.")
-            .len() > 0;
-    }
     pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_blocks::dsl::user_blocks;
 
@@ -1946,55 +1783,6 @@ impl User {
         }
     }
 
-    pub fn get_or_create_featured_objects(&self, user: User) -> () {
-        use crate::models::{NewFeaturedUserCommunitie, FeaturedUserCommunitie};
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
-
-        let _connection = establish_connection();
-        for friend in user.get_6_friends().iter() {
-            if !self.is_connected_with_user_with_id(friend.id) && featured_user_communities
-                .filter(schema::featured_user_communities::owner.eq(self.id))
-                .filter(schema::featured_user_communities::user_id.eq(friend.id))
-                .load::<FeaturedUserCommunitie>(&_connection)
-                .expect("E")
-                .len() == 0 {
-                    let new_featured = NewFeaturedUserCommunitie {
-                            owner: self.id,
-                            list_id: None,
-                            user_id: Some(friend.id),
-                            community_id: None,
-                            mute: false,
-                            sleep: None,
-                        };
-                        diesel::insert_into(schema::featured_user_communities::table)
-                            .values(&new_featured)
-                            .get_result::<FeaturedUserCommunitie>(&_connection)
-                            .expect("Error.");
-                }
-            }
-
-            //for community_id in user.get_6_communities_ids().iter() {
-            //    if !self.is_member_of_community(*community_id) && featured_user_communities
-            //        .filter(schema::featured_user_communities::owner.eq(self.id))
-            //        .filter(schema::featured_user_communities::community_id.eq(community_id))
-            //        .load::<FeaturedUserCommunitie>(&_connection)
-            //        .expect("E").len() == 0 {
-            //            let new_featured = NewFeaturedUserCommunitie {
-            //                    owner: self.id,
-            //                    list_id: None,
-            //                    user_id: None,
-            //                    community_id: Some(*community_id),
-            //                    mute: false,
-            //                    sleep: None,
-            //                };
-            //                diesel::insert_into(schema::featured_user_communities::table)
-            //                    .values(&new_featured)
-            //                    .get_result::<FeaturedUserCommunitie>(&_connection)
-            //                    .expect("Error.");
-            //    }
-            //}
-    }
-
     pub fn follow_user(&self, user: User) -> () {
         if self.id == user.id || self.is_self_user_in_block(user.id) || self.is_followers_user_with_id(user.id) || self.is_following_user_with_id(user.id) {
             return;
@@ -2068,7 +1856,6 @@ impl User {
         }
         use crate::models::NewFriend;
         use crate::schema::follows::dsl::follows;
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
 
         let _connection = establish_connection();
         let _new_friend = NewFriend {
@@ -2097,20 +1884,14 @@ impl User {
                 .filter(schema::follows::target_id.eq(self.id)))
                 .execute(&_connection)
                 .expect("E");
-        diesel::delete(
-            featured_user_communities
-                .filter(schema::featured_user_communities::owner.eq(self.id))
-                .filter(schema::featured_user_communities::user_id.eq(user.id)))
-                .execute(&_connection)
-                .expect("E");
 
         user.plus_friends(1);
         self.plus_friends(1);
         self.minus_follows(1);
-        if !user.is_user_see_all(self.id) {
-            self.add_new_user_subscriber(&user);
-            self.get_or_create_featured_objects(user);
-        }
+        //if !user.is_user_see_all(self.id) {
+        //    self.add_new_user_subscriber(&user);
+        //    self.get_or_create_featured_objects(user);
+        //}
     }
     pub fn unfrend_user(&self, user: User) -> () {
         if self.id == user.id || !self.is_connected_with_user_with_id(user.id) {

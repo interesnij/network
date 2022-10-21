@@ -154,17 +154,6 @@ CREATE TABLE list_user_communities_keys (
     owner INT NOT NULL           -- владелец
 );
 
--- Ключи рекомендаций -------
-CREATE TABLE featured_user_communities (
-    id            SERIAL PRIMARY KEY,
-    owner         INT NOT NULL,                   -- кто получает рекомендации
-    list_id       INT,                            -- список, если есть
-    user_id       INT,                            -- рекомендуемый друг
-    community_id  INT,                            -- рекомендуемое сообщество
-    mute          BOOLEAN NOT NULL DEFAULT false, -- не получать рекомендации источника
-    sleep         TIMESTAMP
-);
-
 -- Настройки приватности пользователя -------
 
 CREATE TABLE user_privates (

@@ -1784,15 +1784,16 @@ impl PostList {
         let exclude_vec = vec![3, 5, 8, 10, 18];
         let include_vec = vec![4, 6, 9, 11, 19];
 
+        diesel::delete (
+          post_list_perms
+            .filter(schema::post_list_perms::post_list_id.eq(self.id))
+            .filter(schema::post_list_perms::types.ne(20))
+        )
+        .execute(&_connection)
+        .expect("E");
+
         if exclude_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
-                diesel::delete (
-                  post_list_perms
-                    .filter(schema::post_list_perms::post_list_id.eq(self.id))
-                    .filter(schema::post_list_perms::see_item.is_not_null())
-                )
-                  .execute(&_connection)
-                  .expect("E");
                 for user_id in see_el_users.unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,

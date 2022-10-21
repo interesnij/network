@@ -14,7 +14,6 @@ use crate::schema::{
     user_colleagues_ones,
     user_blocks,
     list_user_communities_keys,
-    featured_user_communities,
     user_populate_smiles,
     user_populate_stickers,
     user_infos,
@@ -328,28 +327,6 @@ pub struct NewListUserCommunitiesKey {
     pub types: i16,
     pub name:  String,
     pub owner: i32,
-}
-
-/////// FeaturedUC //////
-#[derive(Queryable, Serialize, Deserialize, Identifiable)]
-pub struct FeaturedUserCommunitie {
-    pub id:           i32,
-    pub owner:        i32,
-    pub list_id:      Option<i32>,
-    pub user_id:      Option<i32>,
-    pub community_id: Option<i32>,
-    pub mute:         bool,
-    pub sleep:        Option<chrono::NaiveDateTime>
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="featured_user_communities"]
-pub struct NewFeaturedUserCommunitie {
-    pub owner:        i32,
-    pub list_id:      Option<i32>,
-    pub user_id:      Option<i32>,
-    pub community_id: Option<i32>,
-    pub mute:         bool,
-    pub sleep:        Option<chrono::NaiveDateTime>
 }
 
 /////====================================////

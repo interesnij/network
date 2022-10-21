@@ -70,34 +70,6 @@ pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
     return json;
 }
 
-pub fn get_featured_friends(&self, limit: i64, offset: i64) -> Vec<UniversalUserCommunityKeyJson> {
-    use crate::schema::featured_user_communities::dsl::featured_user_communities;
-    use crate::models::FeaturedUserCommunitie;
-
-    let _connection = establish_connection();
-    let featured_friends = featured_user_communities
-        .filter(schema::featured_user_communities::owner.eq(self.id))
-        .filter(schema::featured_user_communities::community_id.is_null())
-        .order(schema::featured_user_communities::id.desc())
-        .limit(limit)
-        .offset(offset)
-        .load::<FeaturedUserCommunitie>(&_connection)
-        .expect("E.");
-
-    let mut stack = Vec::new();
-    for i in featured_friends {
-        stack.push(UniversalUserCommunityKeyJson {
-            id:           i.id,
-            list_id:      i.list_id,
-            mute:         i.mute,
-            sleep:        i.sleep.unwrap().format("%d-%m-%Y в %H:%M").to_string(),
-            owner_name:   i.owner_name.clone(),
-            owner_link:   i.owner_link.clone(),
-            owner_image:  i.owner_image.clone(),
-        })
-    }
-    return stack;
-}
 pub fn get_populate_smiles_json(&self) -> Json<Vec<UserPopulateSmileJson>> {
     use crate::schema::user_populate_smiles::dsl::user_populate_smiles;
 
