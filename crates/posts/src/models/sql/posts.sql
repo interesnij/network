@@ -373,7 +373,7 @@ CREATE TABLE list_user_communities_keys (
     types SMALLINT NOT NULL,     -- тип списка: 0 - неактивен, 1 - основной, 2 - пользовательский
     name  VARCHAR(100) NOT NULL, -- название
     owner INT NOT NULL           -- владелец
-); 
+);
 -- Ключи новостей -------
 -- таблица содержит id пользователей и сообществ,
 -- для получения их записей в разделе новостей и рекомендаций
@@ -474,3 +474,16 @@ CREATE TABLE user_visible_perms (
   types      SMALLINT NOT NULL
 );
 CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, id);
+
+-- Your SQL goes here
+
+-- Ключи рекомендаций -------
+CREATE TABLE featured_user_communities (
+    id            SERIAL PRIMARY KEY,
+    owner         INT NOT NULL,                   -- кто получает рекомендации
+    list_id       INT,                            -- список, если есть
+    user_id       INT,                            -- рекомендуемый друг
+    community_id  INT,                            -- рекомендуемое сообщество
+    mute          BOOLEAN NOT NULL DEFAULT false, -- не получать рекомендации и>
+    sleep         TIMESTAMP
+);

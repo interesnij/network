@@ -24,7 +24,7 @@ use crate::schema::{
     news_user_communities,
     featured_user_communities,
 };
-use diesel::{Queryable, Insertable};
+
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
@@ -363,9 +363,9 @@ pub struct NewPostCommentCounterReaction {
 }
 
 
-/////// ListUserCommunitiesKeys //////
+/////// ListUserCommunitiesKey //////
 #[derive(Queryable, Serialize, Deserialize, Identifiable)]
-pub struct ListUserCommunitiesKeys {
+pub struct ListUserCommunitiesKey {
     pub id:    i32,
     pub types: i16,
     pub name:  String,
@@ -373,7 +373,7 @@ pub struct ListUserCommunitiesKeys {
 }
 #[derive(Deserialize, Insertable, AsChangeset)]
 #[table_name="list_user_communities_keys"]
-pub struct NewListUserCommunitiesKeys {
+pub struct NewListUserCommunitiesKey {
     pub types: i16,
     pub name:  String,
     pub owner: i32,

@@ -441,7 +441,6 @@ impl Post {
             post_reactions::dsl::post_reactions,
             users::dsl::users,
         };
-        use crate::schema::post_reactions::dsl::post_reactions;
         use crate::utils::CardReactionPostJson;
         use crate::models::PostReaction;
 
