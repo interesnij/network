@@ -422,7 +422,7 @@ impl User {
         return items;
     }
 
-    pub fn get_copy_el_friends_ids(&self) -> Vec<i32> {
+    pub fn get_copy_el_exclude_friends_ids(&self) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
