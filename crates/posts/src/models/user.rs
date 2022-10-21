@@ -1186,7 +1186,7 @@ impl User {
             .filter(schema::user_visible_perms::types.eq(20))
             .limit(1)
             .select(schema::user_visible_perms::id)
-            .load::<UserVisiblePerm>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -1200,7 +1200,7 @@ impl User {
             .filter(schema::user_visible_perms::types.eq(20))
             .limit(1)
             .select(schema::user_visible_perms::id)
-            .load::<UserVisiblePerm>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -1213,7 +1213,7 @@ impl User {
             .filter(schema::friends::target_id.eq(self.user_id))
             .limit(1)
             .select(schema::friends::id)
-            .load::<Friend>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -1226,7 +1226,7 @@ impl User {
             .filter(schema::follows::target_id.eq(user_id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.").len() > 0;
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
@@ -1238,7 +1238,7 @@ impl User {
             .filter(schema::follows::user_id.eq(user_id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -1312,8 +1312,9 @@ impl User {
                 .or_filter(schema::follows::target_id.eq(self.user_id))
                 .filter(schema::follows::target_id.eq(user_id))
                 .or_filter(schema::follows::user_id.eq(self.user_id))
-                .execute(&_connection)
-                .expect("E");
+            )
+            .execute(&_connection)
+            .expect("E");
     }
     pub fn unfrend_user(&self, user_id: i32) -> () {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
