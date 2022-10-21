@@ -1344,9 +1344,9 @@ impl User {
         diesel::delete (
             follows
                 .filter(schema::follows::user_id.eq(user_id))
-                .or_filter(schema::follows::target_id.eq(self.user_id)))
+                .or_filter(schema::follows::target_id.eq(self.user_id))
                 .filter(schema::follows::target_id.eq(user_id))
-                .or_filter(schema::follows::user_id.eq(self.user_id)))
+                .or_filter(schema::follows::user_id.eq(self.user_id))
                 .execute(&_connection)
                 .expect("E");
     }
@@ -1390,9 +1390,10 @@ impl User {
             diesel::delete (
                 friends
                     .filter(schema::friends::user_id.eq(self.user_id))
-                    .filter(schema::friends::target_id.eq(user_id)))
-                    .execute(&_connection)
-                    .expect("E");
+                    .filter(schema::friends::target_id.eq(user_id))
+                )
+                .execute(&_connection)
+                .expect("E");
         }
         else if self.is_followers_user_with_id(user_id) {
             use crate::schema::follows::dsl::follows;
@@ -1451,8 +1452,6 @@ impl User {
         }
         return "Женский".to_string();
     }
-
-
 }
 
 
