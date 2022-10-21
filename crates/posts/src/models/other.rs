@@ -213,7 +213,7 @@ impl PostCounterReaction {
         reaction_id: i32,
         user_id:     i32,
         plus:        bool,
-    ) -> &PostCounterReaction {
+    ) -> () {
         use crate::schema::{
             post_counter_reactions::dsl::post_counter_reactions,
             post_reactions::dsl::post_reactions,
@@ -254,14 +254,12 @@ impl PostCounterReaction {
             )
             .execute(&_connection)
             .expect("E");
-            return &new_count;
         }
         else {
             let new_count = diesel::update(self)
                 .set(schema::post_counter_reactions::count.eq(self.count - 1))
-                .get_result::<PostCounterReaction>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
-            return &new_count;
         }
     }
 }
@@ -301,7 +299,7 @@ impl PostCommentCounterReaction {
         reaction_id:     i32,
         user_id:         i32,
         plus:            bool,
-    ) -> &PostCommentCounterReaction {
+    ) -> () {
         use crate::schema::{
             post_comment_counter_reactions::dsl::post_comment_counter_reactions,
             post_comment_reactions::dsl::post_comment_reactions,
@@ -342,14 +340,12 @@ impl PostCommentCounterReaction {
                 )
                 .execute(&_connection)
                 .expect("E");
-            return &new_count;
         }
         else {
             let new_count = diesel::update(self)
                 .set(schema::post_comment_counter_reactions::count.eq(self.count - 1))
-                .get_result::<PostCommentCounterReaction>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
-            return &new_count;
         }
     }
 }
