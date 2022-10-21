@@ -130,25 +130,27 @@ impl User {
     }
 
     pub fn get_or_create_user(user: NewUserJson) -> User {
+        use crate::schema::users::dsl::users;
+
         let _connection = establish_connection();
         if users
             .filter(schema::users::user_id.eq(user.user_id))
             .limit(1)
             .select(schema::users::id)
-            .load::<User>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E")
             .len() == 0 {
                 return users
                     .filter(schema::users::user_id.eq(user.user_id))
                     .limit(1)
                     .select(schema::users::id)
-                    .load::<User>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .into_iter()
                     .nth(0)
                     .unwrap();
         }
-        let new_form = NewUserForm {
+        let new_form = NewUser {
             user_id:       user.user_id,
             first_name:    user.first_name.clone(),
             last_name:     user.last_name.clone(),
@@ -167,13 +169,15 @@ impl User {
         let new_user_id = user.user_id;
 
         if user.friends.is_some() {
+            use crate::schema::friends::dsl::friends;
+
             for user_id in user.friends.unwrap() {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
                     .filter(schema::friends::target_id.eq(user_id))
                     .limit(1)
                     .select(schema::friends::id)
-                    .load::<Friend>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .len() == 0 {
                         let new_form = NewFriend {
@@ -188,13 +192,15 @@ impl User {
             }
         }
         if user.follows.is_some() {
+            use crate::schema::follows::dsl::follows;
+
             for user_id in user.follows.unwrap() {
                 if friends
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
                     .limit(1)
                     .select(schema::follows::id)
-                    .load::<Follow>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .len() == 0 {
                         let new_form = NewFollow {

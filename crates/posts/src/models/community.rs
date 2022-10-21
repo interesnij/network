@@ -134,18 +134,19 @@ pub struct NewCommunityJson {
 
 impl Community {
     pub fn create_community(community: NewCommunityJson) -> Community {
+        use crate::schema::communitys::dsl::communitys;
+
         let _connection = establish_connection();
         if communitys
             .filter(schema::communitys::community_id.eq(community.community_id))
             .limit(1)
             .select(schema::communitys::id)
-            .load::<Community>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E")
             .len() == 0 {
                 return communitys
                     .filter(schema::communitys::community_id.eq(community.community_id))
                     .limit(1)
-                    .select(schema::communitys::id)
                     .load::<Community>(&_connection)
                     .expect("E")
                     .into_iter()
@@ -177,6 +178,8 @@ impl Community {
 
         let community_id = community.community_id;
         if community.follows.is_some() {
+            use crate::schema::communities_memberships::dsl::communities_memberships;
+
             for (user_id, level) in community.follows.unwrap() {
                 if communities_memberships
                     .filter(schema::communities_memberships::user_id.eq(user_id))

@@ -114,7 +114,7 @@ impl User {
                     .filter(schema::users::user_id.eq(user.user_id))
                     .limit(1)
                     .select(schema::users::id)
-                    .load::<User>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .into_iter()
                     .nth(0)
@@ -154,7 +154,7 @@ impl User {
                     .filter(schema::friends::target_id.eq(user_id))
                     .limit(1)
                     .select(schema::friends::id)
-                    .load::<Friend>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .len() == 0 {
                         let new_form = NewFriend {
@@ -177,7 +177,7 @@ impl User {
                     .filter(schema::follows::target_id.eq(user_id))
                     .limit(1)
                     .select(schema::follows::id)
-                    .load::<Follow>(&_connection)
+                    .load::<i32>(&_connection)
                     .expect("E")
                     .len() == 0 {
                         let new_form = NewFollow {
