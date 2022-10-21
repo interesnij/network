@@ -208,7 +208,6 @@ impl PostList {
                 .unwrap();
 
             return CardOwnerJson {
-                id:    _user.id,
                 name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
@@ -412,7 +411,7 @@ impl PostList {
                 let v: Vec<&str> = react_string.split(", ").collect();
                 for item in v.iter() {
                     if !item.is_empty() {
-                        let pk: i16 = item.parse().unwrap();
+                        let pk: i32 = item.parse().unwrap();
                         stack.push(pk);
                     }
                 }
@@ -560,7 +559,7 @@ impl PostList {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.eq_any(1))
+            .filter(schema::posts::types.eq(1))
             .order(schema::posts::created.desc())
             .load::<Post>(&_connection)
             .expect("E.");

@@ -212,6 +212,11 @@ impl PostCounterReaction {
         user_id:     i32,
         plus:        bool,
     ) -> &PostCounterReaction {
+        use crate::schema::{
+            post_counter_reactions::dsl::post_counter_reactions,
+            post_reactions::dsl::post_reactions,
+        };
+
         let _connection = establish_connection();
         if plus {
             let new_count = diesel::update(self)
@@ -222,7 +227,6 @@ impl PostCounterReaction {
             let prev_reactions = post_reactions
                 .filter(schema::post_reactions::post_id.eq(post_id))
                 .filter(schema::post_reactions::user_id.eq(user_id))
-                .limit(6)
                 .load::<PostReaction>(&_connection)
                 .expect("E");
             if prev_reactions.len() > 0 {
@@ -293,6 +297,11 @@ impl PostCommentCounterReaction {
         user_id:         i32,
         plus:            bool,
     ) -> &PostCommentCounterReaction {
+        use crate::schema::{
+            post_comment_counter_reactions::dsl::post_comment_counter_reactions,
+            post_comment_reactions::dsl::post_comment_reactions,
+        };
+
         let _connection = establish_connection();
         if plus {
             let new_count = diesel::update(self)
@@ -303,7 +312,6 @@ impl PostCommentCounterReaction {
             let prev_reactions = post_comment_reactions
                 .filter(schema::post_comment_reactions::post_comment_id.eq(post_comment_id))
                 .filter(schema::post_comment_reactions::user_id.eq(user_id))
-                .limit(6)
                 .load::<PostCommentReaction>(&_connection)
                 .expect("E");
             if prev_reactions.len() > 0 {

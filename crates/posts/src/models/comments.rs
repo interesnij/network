@@ -641,7 +641,7 @@ impl PostComment {
         });
     }
 
-    pub fn count_reaction_ru(&self, types: i16) -> String {
+    pub fn count_reaction_ru(&self, reaction_id: i32) -> String {
         use crate::utils::get_count_for_ru;
 
         return get_count_for_ru (
