@@ -10,6 +10,7 @@ use crate::schema::{
     community_visible_perms,
     community_banned_users,
     community_follows,
+    featured_communities,
 };
 use diesel::{
     Queryable,
@@ -1853,4 +1854,20 @@ pub struct NewCommunityFollow {
     pub community_id: i32,
     pub view:         bool,
     pub visited:      i16,
+}
+
+/////// FeaturedCommunitie //////
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct FeaturedCommunitie {
+    pub id:           i32,
+    pub user_id:      i32,
+    pub community_id: i32,
+    pub hidden:       bool,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="featured_communities"]
+pub struct NewFeaturedCommunitie {
+    pub user_id:      i32,
+    pub community_id: i32,
+    pub hidden:       bool,
 }

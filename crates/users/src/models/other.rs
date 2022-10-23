@@ -2,6 +2,7 @@
 use crate::schema::{
     phone_codes,
     user_visible_perms,
+    featured_friends,
 };
 use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};
@@ -45,4 +46,21 @@ pub struct NewUserVisiblePerm {
     pub user_id:   i32,
     pub target_id: i32,
     pub types:     i16,
+}
+
+
+/////// FeaturedFriend //////
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct FeaturedFriend {
+    pub id:        i32,
+    pub user_id:   i32,
+    pub target_id: i32,
+    pub hidden:    bool,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="featured_friends"]
+pub struct NewFeaturedFriend {
+    pub user_id:   i32,
+    pub target_id: i32,
+    pub hidden:    bool,
 }

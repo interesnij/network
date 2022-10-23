@@ -19,7 +19,7 @@ pub async fn index_page() -> impl Responder {
     HttpResponse::Ok().body (
         "<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
             <p style='text-align: center'>
-                hello, I posts server.
+                hello, I'm posts server.
             </p>
         </div>")
 }

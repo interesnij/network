@@ -182,3 +182,12 @@ CREATE TABLE follows (
     target_id INT NOT NULL
 );
 CREATE UNIQUE INDEX follows_user_followed_unq ON follows (user_id, target_id);
+
+-- рекомендованные друзья -------
+CREATE TABLE featured_communities (
+    id           SERIAL PRIMARY KEY,
+    user_id      INT NOT NULL,
+    community_id INT NOT NULL,
+    hidden       BOOLEAN NOT NULL DEFAULT FALSE,
+);
+CREATE UNIQUE INDEX featured_communities_unq ON featured_communities (user_id, target_id);

@@ -4,6 +4,7 @@ mod comments;
 mod other;
 mod community;
 mod user;
+mod items;
 
 pub use self::{
     lists::*,
@@ -12,4 +13,5 @@ pub use self::{
     other::*,
     community::*,
     user::*,
+    items::*,
 };
