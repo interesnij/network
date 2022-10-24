@@ -19,7 +19,7 @@ pub struct CardUserJson {
 }
 
 ////////
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct CommunityCategoryJson {
     pub id:     i32,
     pub name:   String,
@@ -27,7 +27,7 @@ pub struct CommunityCategoryJson {
 }
 
 ////////
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct CommunitySubcategoryJson {
     pub id:     i32,
     pub name:   String,

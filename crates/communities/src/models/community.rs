@@ -344,7 +344,7 @@ impl Community {
         }
     }
 
-    pub fn plus_members(&self, count: i16) -> () {
+    pub fn plus_members(&self, count: i32) -> () {
         let profile = self.get_info_model();
         let _connection = establish_connection();
         diesel::update(&profile)
@@ -352,7 +352,7 @@ impl Community {
             .execute(&_connection)
             .expect("Error.");
     }
-    pub fn minus_members(&self, count: i16) -> () {
+    pub fn minus_members(&self, count: i32) -> () {
         let profile = self.get_info_model();
         let _connection = establish_connection();
         diesel::update(&profile)
