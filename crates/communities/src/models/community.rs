@@ -57,7 +57,7 @@ impl CommunityCategory {
             ))
             .load::<CommunityCategoryJson>(&_connection)
             .expect("E");
-        return Json(json);
+        return Json(cats);
     }
     pub fn create_category(name: String, avatar: Option<String>,
         position: i16) -> CommunityCategory {
@@ -138,7 +138,7 @@ impl CommunitySubcategory {
             ))
             .load::<CommunitySubcategoryJson>(&_connection)
             .expect("E");
-        return Json(json);
+        return Json(cats);
     }
     pub fn edit_subcategory(&self, name: String, category_id: i32,
         avatar: Option<String>, position: i16) -> &CommunitySubcategory {
