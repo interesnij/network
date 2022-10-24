@@ -194,7 +194,7 @@ impl User {
             use crate::schema::follows::dsl::follows;
 
             for user_id in user.follows.unwrap() {
-                if friends
+                if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
                     .limit(1)

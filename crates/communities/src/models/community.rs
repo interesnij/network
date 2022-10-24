@@ -1337,7 +1337,10 @@ impl Community {
         });
     }
     pub fn get_members(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = communities_memberships
@@ -1362,7 +1365,10 @@ impl Community {
         return _users;
     }
     pub fn get_6_members(&self) -> Vec<CardUserJson> {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = communities_memberships
@@ -1408,7 +1414,10 @@ impl Community {
         });
     }
     pub fn get_administrators(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = communities_memberships
@@ -1456,7 +1465,10 @@ impl Community {
         });
     }
     pub fn get_editors(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = communities_memberships
@@ -1504,7 +1516,10 @@ impl Community {
         });
     }
     pub fn get_moderators(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = communities_memberships
@@ -1552,7 +1567,10 @@ impl Community {
         });
     }
     pub fn get_advertisers(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = communities_memberships
@@ -1793,7 +1811,10 @@ impl Community {
         });
     }
     pub fn get_follows_users(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::community_follows::dsl::community_follows;
+        use crate::schema::{
+            community_follows::dsl::community_follows,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = community_follows
@@ -1840,7 +1861,10 @@ impl Community {
         });
     }
     pub fn get_banned_user(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::community_banned_users::dsl::community_banned_users;
+        use crate::schema::{
+            community_banned_users::dsl::community_banned_users,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = community_banned_users
@@ -1869,6 +1893,7 @@ impl Community {
     pub fn set_members_visible_perms(&self, users: String, types: i16) -> bool {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
+        let _connection = establish_connection();
         let mut users_ids = Vec::new();
         let v: Vec<&str> = users.split(", ").collect();
         for item in v.iter() {

@@ -72,7 +72,7 @@ CREATE TABLE community_infos (
     cover        VARCHAR(500),
     created      TIMESTAMP NOT NULL,
     description  VARCHAR(500),
-    members      SMALLINT NOT NULL
+    members      INT NOT NULL
 );
 CREATE UNIQUE INDEX community_infos_unq ON community_infos (community_id, id);
 
