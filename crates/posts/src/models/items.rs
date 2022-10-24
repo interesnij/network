@@ -56,11 +56,6 @@ pub struct ItemList {
     pub types:          i16,
     pub image:          Option<String>,
     pub count:          i32,
-    pub see_el:         i16,
-    pub see_comment:    i16,
-    pub create_el:      i16,
-    pub create_comment: i16,
-    pub copy_el:        i16,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="item_lists"]
@@ -73,11 +68,6 @@ pub struct NewItemList {
     pub types:          i16,
     pub image:          Option<String>,
     pub count:          i32,
-    pub see_el:         i16,
-    pub see_comment:    i16,
-    pub create_el:      i16,
-    pub create_comment: i16,
-    pub copy_el:        i16,
 }
 
 /////// ItemComment //////
@@ -102,8 +92,6 @@ pub struct ItemComment {
     pub comment_types: i16,
     pub item_id:       i32,
     pub item_types:    i16,
-    pub list_id:       i32,
-    pub list_types:    i16,
     pub types:         i16,
     pub created:       chrono::NaiveDateTime,
 }
@@ -119,8 +107,6 @@ pub struct NewItemComment {
     pub comment_types: i16,
     pub item_id:       i32,
     pub item_types:    i16,
-    pub list_id:       i32,
-    pub list_types:    i16,
     pub types:         i16,
     pub created:       chrono::NaiveDateTime,
 }

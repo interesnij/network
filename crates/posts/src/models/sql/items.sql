@@ -29,13 +29,7 @@ CREATE TABLE item_lists (
     list_types     INT NOT NULL,          -- тип списка (выше)
     types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
     image          VARCHAR(500),          -- миниатюра
-    count          INT NOT NULL,          -- кол-во элементов
-
-    see_el         SMALLINT NOT NULL,     -- кто может видеть записи
-    see_comment    SMALLINT NOT NULL,     -- кто может видеть комменты
-    create_el      SMALLINT NOT NULL,     -- кто может создавать записи
-    create_comment SMALLINT NOT NULL,     -- кто может создавать комменты
-    copy_el        SMALLINT NOT NULL      -- кто может копировать / репостить
+    count          INT NOT NULL           -- кол-во элементов
 );
 
 -- объекты комментарий универсальные -------
@@ -59,8 +53,6 @@ CREATE TABLE item_comments (
     comment_types INT NOT NULL,       -- тип коммента
     item_id       INT NOT NULL,       -- id объекта
     item_types    INT NOT NULL,       -- тип объекта
-    list_id       INT NOT NULL,       -- id списка
-    list_types    INT NOT NULL,       -- тип списка
     types         SMALLINT NOT NULL,  -- тип (активен, удален, закрыт...)
     created       TIMESTAMP NOT NULL  -- время создания
 );
