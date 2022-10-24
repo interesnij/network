@@ -413,7 +413,20 @@ impl User {
             .filter(schema::user_blocks::target_id.eq(self.id))
             .limit(1)
             .select(schema::user_blocks::id)
-            .load::<UserBlock>(&_connection)
+            .load::<i32>(&_connection)
+            .expect("E.")
+            .len() > 0;
+    }
+    pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
+        use crate::schema::user_blocks::dsl::user_blocks;
+
+        let _connection = establish_connection();
+        return user_blocks
+            .filter(schema::user_blocks::user_id.eq(self.id))
+            .filter(schema::user_blocks::target_id.eq(user_id))
+            .limit(1)
+            .select(schema::user_blocks::id)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -426,7 +439,7 @@ impl User {
             .filter(schema::friends::target_id.eq(self.id))
             .limit(1)
             .select(schema::friends::id)
-            .load::<Friend>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -440,7 +453,7 @@ impl User {
             .filter(schema::follows::target_id.eq(user_id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.").len() > 0;
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
@@ -452,7 +465,7 @@ impl User {
             .filter(schema::follows::user_id.eq(user_id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -466,7 +479,7 @@ impl User {
             .filter(schema::follows::view.eq(true))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -546,7 +559,7 @@ impl User {
             .filter(schema::follows::user_id.eq(self.id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -558,7 +571,7 @@ impl User {
             .filter(schema::user_blocks::user_id.eq(self.id))
             .limit(1)
             .select(schema::user_blocks::id)
-            .load::<UserBlock>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -574,7 +587,7 @@ impl User {
             .filter(schema::follows::target_id.eq(self.id))
             .filter(schema::follows::view.eq(false))
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len();
     }
@@ -585,7 +598,7 @@ impl User {
         return follows
             .filter(schema::follows::user_id.eq(self.id))
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len();
     }
@@ -1724,37 +1737,37 @@ impl User {
         // с противоположными правами.
         let previous_user_list_delete = match types {
             1 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
                     user_visible_perms.filter(schema::user_visible_perms::types.eq(11))
                 )
                 .execute(&_connection)
                 .expect("E"),
             2 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
                     user_visible_perms.filter(schema::user_visible_perms::types.eq(12))
                 )
                 .execute(&_connection)
                 .expect("E"),
             3 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
                     user_visible_perms.filter(schema::user_visible_perms::types.eq(13))
                 )
                 .execute(&_connection)
                 .expect("E"),
             11 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
                     user_visible_perms.filter(schema::user_visible_perms::types.eq(1))
                 )
                 .execute(&_connection)
                 .expect("E"),
             12 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
                     user_visible_perms.filter(schema::user_visible_perms::types.eq(2))
                 )
                 .execute(&_connection)
                 .expect("E"),
             13 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
                     user_visible_perms.filter(schema::user_visible_perms::types.eq(3))
                 )
                 .execute(&_connection)
@@ -1763,7 +1776,7 @@ impl User {
         };
         for user_id in users_ids.iter() {
             let _new_perm = NewUserVisiblePerm {
-                user_id:   self.user_id,
+                user_id:   self.id,
                 target_id: user_id,
                 types:     types,
             };

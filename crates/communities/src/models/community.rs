@@ -1549,61 +1549,61 @@ impl Community {
 
         let previous_user_list_delete = match types {
             1 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(11))
                 )
                 .execute(&_connection)
                 .expect("E"),
             11 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(1))
                 )
                 .execute(&_connection)
                 .expect("E"),
             2 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(12))
                 )
                 .execute(&_connection)
                 .expect("E"),
             12 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(2))
                 )
                 .execute(&_connection)
                 .expect("E"),
             3 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(13))
                 )
                 .execute(&_connection)
                 .expect("E"),
             13 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(3))
                 )
                 .execute(&_connection)
                 .expect("E"),
             4 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(14))
                 )
                 .execute(&_connection)
                 .expect("E"),
             14 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(4))
                 )
                 .execute(&_connection)
                 .expect("E"),
             5 => diesel::delete (
-                    community_visible_perms.filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::user_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(15))
                 )
                 .execute(&_connection)
                 .expect("E"),
             15 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.community_id))
+                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
                     community_visible_perms.filter(schema::community_visible_perms::types.eq(5))
                 )
                 .execute(&_connection)
@@ -1613,7 +1613,7 @@ impl Community {
 
         for user_id in users_ids.iter() {
             let _new_perm = NewCommunityVisiblePerm {
-                community_id: self.community_id,
+                community_id: self.id,
                 target_id:    user_id,
                 types:        types,
             };
