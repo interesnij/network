@@ -878,7 +878,7 @@ impl Community {
 
           let _connection = establish_connection();
           let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))v
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(1))
             .limit(limit)

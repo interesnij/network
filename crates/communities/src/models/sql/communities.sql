@@ -10,8 +10,8 @@ CREATE TABLE users (
     s_avatar      VARCHAR(500),
     last_activity TIMESTAMP NOT NULL,
 
-    see_community SMALLINT NOT NULL  -- кто может видеть сообщества
-    communities   INT NOT NULL,      -- кол-во сообществ
+    see_community SMALLINT NOT NULL, -- кто может видеть сообщества
+    communities   INT NOT NULL       -- кол-во сообществ
 );
 
 -- Категории сообществ -------
@@ -150,7 +150,7 @@ CREATE TABLE community_visible_perms (
     target_id    INT NOT NULL,
     types        SMALLINT NOT NULL
 );
-CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (user_id, id);
+CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (target_id, community_id);
 
 
 -- включения и исключения для пользователей касательно конкретного пользоватетеля
@@ -165,7 +165,7 @@ CREATE TABLE user_visible_perms (
   target_id  INT NOT NULL,
   types      SMALLINT NOT NULL
 );
-CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, id);
+CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, target_id);
 
 -- друзья пользователей -------
 CREATE TABLE friends (
@@ -188,6 +188,6 @@ CREATE TABLE featured_communities (
     id           SERIAL PRIMARY KEY,
     user_id      INT NOT NULL,
     community_id INT NOT NULL,
-    hidden       BOOLEAN NOT NULL DEFAULT FALSE,
+    hidden       BOOLEAN NOT NULL DEFAULT FALSE
 );
-CREATE UNIQUE INDEX featured_communities_unq ON featured_communities (user_id, target_id);
+CREATE UNIQUE INDEX featured_communities_unq ON featured_communities (community_id, user_id);
