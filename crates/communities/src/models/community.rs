@@ -936,7 +936,383 @@ impl Community {
               users: users,
               next_page: next_page_number,
           });
+    }
+
+
+    pub fn get_see_settings_exclude_users_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(13))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items_ids;
+    }
+    pub fn get_see_settings_include_users_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(3))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items_ids;
+    }
+
+    pub fn get_see_settings_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+          let _connection = establish_connection();
+          let items = community_visible_perms
+              .filter(schema::community_visible_perms::community_id.eq(self.id))
+              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+              .filter(schema::community_visible_perms::types.eq(13))
+              .limit(limit)
+              .offset(offset)
+              .select(schema::community_visible_perms::target_id)
+              .load::<i32>(&_connection)
+              .expect("E");
+
+          let _users = users
+              .filter(schema::users::id.eq_any(items))
+              .select((
+                  schema::users::user_id,
+                  schema::users::first_name,
+                  schema::users::last_name,
+                  schema::users::link,
+                  schema::users::s_avatar.nullable(),
+              ))
+              .load::<CardUserJson>(&_connection)
+              .expect("E");
+          return _users;
       }
+      pub fn get_see_settings_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+          let _connection = establish_connection();
+          let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(3))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+          let _users = users
+              .filter(schema::users::id.eq_any(items))
+              .select((
+                  schema::users::user_id,
+                  schema::users::first_name,
+                  schema::users::last_name,
+                  schema::users::link,
+                  schema::users::s_avatar.nullable(),
+              ))
+              .load::<CardUserJson>(&_connection)
+              .expect("E");
+          return _users;
+      }
+
+      pub fn get_see_settings_include_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
+          let mut next_page_number = 0;
+          let users: Vec<CardUserJson>;
+          let have_next: i32;
+
+          if page > 1 {
+              have_next = page * limit + 1;
+              users = self.get_see_settings_include(limit.into(), ((page - 1) * limit).into());
+          }
+          else {
+              users = self.get_see_settings_include(limit.into(), 0);
+              have_next = limit + 1;
+          }
+          if self.get_see_settings_include(1, have_next.into()).len() > 0 {
+              next_page_number = page + 1;
+          }
+          return Json(UsersJson {
+              users: users,
+              next_page: next_page_number,
+          });
+      }
+      pub fn get_see_settings_exclude_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
+          let mut next_page_number = 0;
+          let users: Vec<CardUserJson>;
+          let have_next: i32;
+
+          if page > 1 {
+              have_next = page * limit + 1;
+              users = self.get_see_settings_exclude(limit.into(), ((page - 1) * limit).into());
+          }
+          else {
+              users = self.get_see_settings_exclude(limit.into(), 0);
+              have_next = limit + 1;
+          }
+          if self.get_see_settings_exclude(1, have_next.into()).len() > 0 {
+              next_page_number = page + 1;
+          }
+          return Json(UsersJson {
+              users: users,
+              next_page: next_page_number,
+          });
+    }
+
+    pub fn get_see_log_exclude_users_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(14))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items_ids;
+    }
+    pub fn get_see_log_include_users_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(4))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items_ids;
+    }
+
+    pub fn get_see_log_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+          let _connection = establish_connection();
+          let items = community_visible_perms
+              .filter(schema::community_visible_perms::community_id.eq(self.id))
+              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+              .filter(schema::community_visible_perms::types.eq(14))
+              .limit(limit)
+              .offset(offset)
+              .select(schema::community_visible_perms::target_id)
+              .load::<i32>(&_connection)
+              .expect("E");
+
+          let _users = users
+              .filter(schema::users::id.eq_any(items))
+              .select((
+                  schema::users::user_id,
+                  schema::users::first_name,
+                  schema::users::last_name,
+                  schema::users::link,
+                  schema::users::s_avatar.nullable(),
+              ))
+              .load::<CardUserJson>(&_connection)
+              .expect("E");
+          return _users;
+      }
+      pub fn get_see_log_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+          let _connection = establish_connection();
+          let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(4))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+          let _users = users
+              .filter(schema::users::id.eq_any(items))
+              .select((
+                  schema::users::user_id,
+                  schema::users::first_name,
+                  schema::users::last_name,
+                  schema::users::link,
+                  schema::users::s_avatar.nullable(),
+              ))
+              .load::<CardUserJson>(&_connection)
+              .expect("E");
+          return _users;
+      }
+
+      pub fn get_see_log_include_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
+          let mut next_page_number = 0;
+          let users: Vec<CardUserJson>;
+          let have_next: i32;
+
+          if page > 1 {
+              have_next = page * limit + 1;
+              users = self.get_see_log_include(limit.into(), ((page - 1) * limit).into());
+          }
+          else {
+              users = self.get_see_log_include(limit.into(), 0);
+              have_next = limit + 1;
+          }
+          if self.get_see_log_include(1, have_next.into()).len() > 0 {
+              next_page_number = page + 1;
+          }
+          return Json(UsersJson {
+              users: users,
+              next_page: next_page_number,
+          });
+      }
+      pub fn get_see_log_exclude_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
+          let mut next_page_number = 0;
+          let users: Vec<CardUserJson>;
+          let have_next: i32;
+
+          if page > 1 {
+              have_next = page * limit + 1;
+              users = self.get_see_log_exclude(limit.into(), ((page - 1) * limit).into());
+          }
+          else {
+              users = self.get_see_log_exclude(limit.into(), 0);
+              have_next = limit + 1;
+          }
+          if self.get_see_log_exclude(1, have_next.into()).len() > 0 {
+              next_page_number = page + 1;
+          }
+          return Json(UsersJson {
+              users: users,
+              next_page: next_page_number,
+          });
+    }
+
+    pub fn get_see_stat_exclude_users_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(15))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items_ids;
+    }
+    pub fn get_see_stat_include_users_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(5))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items_ids;
+    }
+
+    pub fn get_see_stat_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+          let _connection = establish_connection();
+          let items = community_visible_perms
+              .filter(schema::community_visible_perms::community_id.eq(self.id))
+              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+              .filter(schema::community_visible_perms::types.eq(15))
+              .limit(limit)
+              .offset(offset)
+              .select(schema::community_visible_perms::target_id)
+              .load::<i32>(&_connection)
+              .expect("E");
+
+          let _users = users
+              .filter(schema::users::id.eq_any(items))
+              .select((
+                  schema::users::user_id,
+                  schema::users::first_name,
+                  schema::users::last_name,
+                  schema::users::link,
+                  schema::users::s_avatar.nullable(),
+              ))
+              .load::<CardUserJson>(&_connection)
+              .expect("E");
+          return _users;
+      }
+      pub fn get_see_stat_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+          let _connection = establish_connection();
+          let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(5))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+          let _users = users
+              .filter(schema::users::id.eq_any(items))
+              .select((
+                  schema::users::user_id,
+                  schema::users::first_name,
+                  schema::users::last_name,
+                  schema::users::link,
+                  schema::users::s_avatar.nullable(),
+              ))
+              .load::<CardUserJson>(&_connection)
+              .expect("E");
+          return _users;
+      }
+
+      pub fn get_see_stat_include_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
+          let mut next_page_number = 0;
+          let users: Vec<CardUserJson>;
+          let have_next: i32;
+
+          if page > 1 {
+              have_next = page * limit + 1;
+              users = self.get_see_stat_include(limit.into(), ((page - 1) * limit).into());
+          }
+          else {
+              users = self.get_see_stat_include(limit.into(), 0);
+              have_next = limit + 1;
+          }
+          if self.get_see_stat_include(1, have_next.into()).len() > 0 {
+              next_page_number = page + 1;
+          }
+          return Json(UsersJson {
+              users: users,
+              next_page: next_page_number,
+          });
+      }
+      pub fn get_see_stat_exclude_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
+          let mut next_page_number = 0;
+          let users: Vec<CardUserJson>;
+          let have_next: i32;
+
+          if page > 1 {
+              have_next = page * limit + 1;
+              users = self.get_see_stat_exclude(limit.into(), ((page - 1) * limit).into());
+          }
+          else {
+              users = self.get_see_stat_exclude(limit.into(), 0);
+              have_next = limit + 1;
+          }
+          if self.get_see_stat_exclude(1, have_next.into()).len() > 0 {
+              next_page_number = page + 1;
+          }
+          return Json(UsersJson {
+              users: users,
+              next_page: next_page_number,
+          });
+    }
 
     pub fn get_members_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
         let mut next_page_number = 0;
@@ -1489,7 +1865,7 @@ impl Community {
     }
 
 
-    pub fn set_members_visible_perms(&self, users: Vec<String>, types: i16) -> bool {
+    pub fn set_members_visible_perms(&self, users: String, types: i16) -> bool {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
         let mut users_ids = Vec::new();
@@ -1578,7 +1954,7 @@ impl Community {
         for user_id in users_ids.iter() {
             let _new_perm = NewCommunityVisiblePerm {
                 community_id: self.id,
-                target_id:    user_id,
+                target_id:    *user_id,
                 types:        types,
             };
             diesel::insert_into(schema::community_visible_perms::table)

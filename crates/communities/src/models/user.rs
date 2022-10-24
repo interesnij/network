@@ -111,7 +111,7 @@ impl User {
     }
     pub fn plus_communities(&self, count: i32) -> bool {
         let _connection = establish_connection();
-        diesel::update(&self)
+        diesel::update(self)
             .set(schema::users::communities.eq(self.communities + count))
             .get_result::<User>(&_connection)
             .expect("Error.");
@@ -120,7 +120,7 @@ impl User {
     pub fn minus_communities(&self, count: i32) -> bool {
         if self.communities > 0 {
             let _connection = establish_connection();
-            diesel::update(&self)
+            diesel::update(self)
                 .set(schema::users::communities.eq(self.communities - count))
                 .get_result::<User>(&_connection)
                 .expect("Error.");
@@ -143,8 +143,7 @@ impl User {
                 return users
                     .filter(schema::users::user_id.eq(user.user_id))
                     .limit(1)
-                    .select(schema::users::id)
-                    .load::<i32>(&_connection)
+                    .load::<User>(&_connection)
                     .expect("E")
                     .into_iter()
                     .nth(0)
@@ -365,7 +364,7 @@ impl User {
                 )
                 .execute(&_connection)
                 .expect("E"),
-            _ => (),
+            _ => 0,
         };
         for user_id in users_ids.iter() {
             let _new_perm = NewUserVisiblePerm {
