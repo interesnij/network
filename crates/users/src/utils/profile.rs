@@ -14,7 +14,7 @@ pub struct UserDetailJson {
     pub city:          Option<String>,
     pub status:        Option<String>,
     pub image:         Option<String>,
-    pub birthday:      Option<String>,
+    pub birthday:      String,
     pub last_activity: String,
 }
 

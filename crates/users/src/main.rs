@@ -37,9 +37,6 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-
-    let _connection = establish_connection();
-
     let app_state = AppState{
         key: Arc::new(env::var("KEY").unwrap()),
     };

@@ -104,6 +104,13 @@ pub struct GetSessionFields {
 impl User {
     pub fn get_user_detail_json(&self) -> Json<UserDetailJson> {
         let info = self.get_info_model();
+        let _b: String;
+        if info.birthday.is_some() {
+            _b = info.birthday.unwrap().format("%d-%m-%Y").to_string();
+        }
+        else {
+            _b = "".to_string();
+        }
         let user_json = UserDetailJson {
              id:            self.id,
              first_name:    self.first_name.clone(),
@@ -115,7 +122,7 @@ impl User {
              city:          info.city,
              status:        info.status,
              image:         info.b_avatar,
-             birthday:      info.birthday.format("%d-%m-%Y").to_string(), 
+             birthday:      _b,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
          };
          return Json(user_json);

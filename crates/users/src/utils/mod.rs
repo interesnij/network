@@ -9,15 +9,14 @@ use diesel::{
     Connection,
 };
 use crate::schema;
-
 mod lists;
 mod profile;
-mod settings;
 pub use self::{
     lists::*,
     profile::*,
-    settings::*,
 };
+use crate::models::User;
+
 
 pub fn establish_connection() -> PgConnection {
     use dotenv::dotenv;
