@@ -15,6 +15,14 @@ use crate::utils::{
 use actix_web::web::Json;
 use crate::models::User;
 use crate::schema;
+use diesel::{
+    Queryable,
+    Insertable,
+    RunQueryDsl,
+    ExpressionMethods,
+    QueryDsl,
+    NullableExpressionMethods,
+};
 
 
 pub fn get_blocked_users_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {

@@ -24,7 +24,7 @@ CREATE TABLE user_infos (
     id        SERIAL PRIMARY KEY,
     user_id   INT NOT NULL,
     avatar_id INT,
-    language  SMALLINT NOT NULL,
+    language  VARCHAR(10) NOT NULL, 
     email     VARCHAR(100),
     birthday  DATE,
     b_avatar  VARCHAR(500),
