@@ -536,6 +536,7 @@ impl User {
             let _user_info = NewUserInfo {
                 user_id:   self.id,
                 avatar_id: None,
+                language:  "Ru".to_string(),
                 email:     None,
                 birthday:  None,
                 b_avatar:  None,
@@ -1745,47 +1746,53 @@ impl User {
         // с противоположными правами.
         let previous_user_list_delete = match types {
             1 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(11))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(11))
                 )
                 .execute(&_connection)
                 .expect("E"),
             2 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(12))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(12))
                 )
                 .execute(&_connection)
                 .expect("E"),
             3 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(13))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(13))
                 )
                 .execute(&_connection)
                 .expect("E"),
             11 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(1))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(1))
                 )
                 .execute(&_connection)
                 .expect("E"),
             12 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(2))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(2))
                 )
                 .execute(&_connection)
                 .expect("E"),
             13 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(3))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(3))
                 )
                 .execute(&_connection)
                 .expect("E"),
-            _ => (),
+            _ => false,
         };
         for user_id in users_ids.iter() {
             let _new_perm = NewUserVisiblePerm {
                 user_id:   self.id,
-                target_id: user_id,
+                target_id: *user_id,
                 types:     types,
             };
             diesel::insert_into(schema::user_visible_perms::table)
@@ -1822,10 +1829,10 @@ impl User {
             .get_result::<Follow>(&_connection)
             .expect("Error.");
         user.plus_follows(1);
-        if user.is_user_see_all(self.id) {
-            self.add_new_user_subscriber(&user);
-            self.get_or_create_featured_objects(user);
-        }
+        //if user.is_user_see_all(self.id) {
+        //    self.add_new_user_subscriber(&user);
+        //    self.get_or_create_featured_objects(user);
+        //}
     }
     pub fn follow_view_user(&self, user: User) -> () {
         if self.id == user.id || !self.is_followers_user_with_id(user.id) {
@@ -1868,7 +1875,7 @@ impl User {
                 )
                 .execute(&_connection)
                 .expect("E");
-            self.delete_new_subscriber(user.id);
+            //self.delete_new_subscriber(user.id);
             user.minus_follows(1);
         }
     }
@@ -1954,9 +1961,9 @@ impl User {
         user.minus_friends(1);
         self.minus_friends(1);
         self.plus_follows(1);
-        if !user.is_user_see_all(self.id) {
-            self.delete_new_subscriber(user.id);
-        }
+        //if !user.is_user_see_all(self.id) {
+        //    self.delete_new_subscriber(user.id);
+        //}
     }
 
     pub fn block_user(&self, user: User) -> () {
@@ -2016,8 +2023,8 @@ impl User {
             .values(&_user_block)
             .get_result::<UserBlock>(&_connection)
             .expect("Error.");
-        self.delete_new_subscriber(user.id);
-        self.delete_notification_subscriber(user.id);
+        //self.delete_new_subscriber(user.id);
+        //self.delete_notification_subscriber(user.id);
     }
     pub fn unblock_user(&self, user: User) -> () {
         if self.id == user.id || !self.is_user_in_block(user.id) {

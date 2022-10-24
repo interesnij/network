@@ -31,7 +31,7 @@ use utils::establish_connection;
 
 #[derive(Clone)]
 pub struct AppState {
-    pg:  Arc<String>,
+    pg:  Arc<diesel::PgConnection>,
     key: Arc<String>,
 }
 
