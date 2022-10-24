@@ -1,6 +1,38 @@
 -- объекты других сервисов -------
 ----------------------------------
 
+-- пользователи - владельцы прикрепленных объектов -------
+-- таблица нужна для ассоциации прикрепленных объектов с их создателями,
+-- а также для самостоятельности сервиса.
+CREATE TABLE item_users (
+    id         SERIAL PRIMARY KEY,           -- id записи
+    user_id    INT NOT NULL,                 -- id пользователя (ссылка на основную таблицу)
+    first_name VARCHAR(100) NOT NULL,        -- имя пользователя
+    last_name  VARCHAR(100) NOT NULL,        -- фамилия пользователя
+    types      SMALLINT NOT NULL DEFAULT 1,  -- тип (активен, удален, закрыт...)
+    link       VARCHAR(100) NOT NULL,        -- ссылка и связь с основной таблицей
+    s_avatar   VARCHAR(500),                 -- миниатюра
+
+    UNIQUE(link)
+);
+CREATE INDEX item_users_id_idx ON item_users (user_id);
+
+-- сообщества - владельцы прикрепленных объектов -------
+-- таблица нужна для ассоциации ассоциации прикрепленных объектов с их сообществами,
+-- а также для самостоятельности сервиса.
+CREATE TABLE item_communitys (
+    id           SERIAL PRIMARY KEY,    -- id записи
+    community_id INT NOT NULL,          -- копия id сообщества с сервиса сообществ
+    name         VARCHAR(100) NOT NULL, -- название
+    types        SMALLINT NOT NULL,     -- тип
+    link         VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
+    s_avatar     VARCHAR(500),          -- миниатюра
+
+    UNIQUE(link)
+);
+CREATE INDEX item_communitys_id_idx ON item_communitys (community_id);
+
+
 -- объекты списков объектов универсальные -------
 -- аватар, фио, ссылку легко получить из объекта владельца.
 -- Владелец либо будет на этом сервисе, либо мы его создадим.

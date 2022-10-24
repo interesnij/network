@@ -2408,7 +2408,7 @@ impl PostList {
           user_id:         user_id,
           post_list_id:    self.id,
           types:           _types,
-          attach:          attach,
+          attach:          attach.clone(),
           comment_enabled: comment_enabled,
           created:         chrono::Local::now().naive_utc(),
           comment:         0,
@@ -2425,51 +2425,12 @@ impl PostList {
             .get_result::<Post>(&_connection)
             .expect("Error.");
 
-        //if self.community_id.is_some() {
-        //    use crate::models::{create_community_wall, create_community_notify};
+        if attach.is_some() {
+            use crate::models::NewAttachItem;
+            use crate::schema::attach_items::dsl::attach_items;
 
-        //    let community = self.get_community();
-        //    community.plus_posts(1);
-        //    create_community_wall (
-        //        &creator,
-        //        &community,
-        //        "создал запись".to_string(),
-        //        51,
-        //        new_post.id,
-        //        None,
-        //        false
-        //    );
-        //    create_community_notify (
-        //        &creator,
-        //        &community,
-        //        "создал запись".to_string(),
-        //        51,
-        //        new_post.id,
-        //        None,
-        //        false
-        //    );
-        //}
-        //else {
-        //    use crate::models::{create_user_wall, create_user_notify};
 
-        //    creator.plus_posts(1);
-        //    create_user_wall (
-        //        &creator,
-        //        "создал запись".to_string(),
-        //        51,
-        //        new_post.id,
-        //        None,
-        //        false
-        //    );
-        //    create_user_notify (
-        //        &creator,
-        //        "создал запись".to_string(),
-        //        51,
-        //        new_post.id,
-        //        None,
-        //        false
-        //    );
-        //}
+        }
         return new_post;
     }
 }

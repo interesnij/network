@@ -8,6 +8,8 @@ use diesel::{
     NullableExpressionMethods,
 };
 use crate::schema::{
+    item_users,
+    item_communitys,
     item_lists,
     item_comments,
     //item_posts,
@@ -29,6 +31,49 @@ use crate::utils::{
     establish_connection,
 };
 //use actix_web::web::Json;
+
+
+#[derive(Serialize, Identifiable, Queryable)]
+pub struct User {
+    pub id:         i32,
+    pub user_id:    i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub types:      i16,
+    pub link:       String,
+    pub s_avatar:   Option<String>,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="item_users"]
+pub struct NewUser {
+    pub user_id:    i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub types:      i16,
+    pub link:       String,
+    pub s_avatar:   Option<String>,
+}
+
+/////// ItemCommunity //////
+#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
+pub struct ItemCommunity {
+    pub id:           i32,
+    pub community_id: i32,
+    pub name:         String,
+    pub types:        i16,
+    pub link:         String,
+    pub s_avatar:     Option<String>,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="item_communitys"]
+pub struct NewItemCommunity {
+    pub community_id: i32,
+    pub name:         String,
+    pub types:        i16,
+    pub link:         String,
+    pub s_avatar:     Option<String>,
+}
 
 /////// ItemList //////
 // list_types ↓
