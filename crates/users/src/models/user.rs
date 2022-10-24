@@ -359,17 +359,6 @@ impl User {
         return Json(stickers_json);
     }
 
-    pub fn calculate_age(&self) -> i32 {
-        use chrono::{NaiveDate, Datelike};
-
-        let info = self.get_info_model();
-        if info.birthday.is_some() {
-            let birthday = self.birthday.unwrap();
-            let d = NaiveDate::from_ymd(2015, 6, 3);
-            return d.year() - birthday.year();
-        }
-        return 0;
-    }
     pub fn is_women(&self) -> bool {
         return self.is_man == false;
     }
@@ -493,9 +482,6 @@ impl User {
     }
     pub fn get_buttons_profile(&self, user_id: i32) -> String {
         let mut suffix: String = "".to_string();
-        if self.perm > 19 {
-            suffix = "staff_".to_string();
-        }
         if self.is_user_in_block(user_id) {
             return "desctop/users/button/".to_owned() + &suffix + &"blocked_user.stpl".to_string();
         }
@@ -1620,8 +1606,7 @@ impl User {
             return true;
         }
         let private = self.get_private_model();
-        let char = private.see_friend;
-        return match char.as_str() {
+        return match private.see_friend {
             1 => true,
             2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
             3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
@@ -1680,8 +1665,7 @@ impl User {
         };
         bool_stack.push(bool_see_info);
 
-        let see_friend = private.see_friend;
-        let bool_see_friend = match see_friend.as_str() {
+        let bool_see_friend = match private.see_friend {
             1 => true,
             2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
             3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
@@ -1787,7 +1771,7 @@ impl User {
                 )
                 .execute(&_connection)
                 .expect("E"),
-            _ => false,
+            _ => 0,
         };
         for user_id in users_ids.iter() {
             let _new_perm = NewUserVisiblePerm {

@@ -10,7 +10,9 @@ use crate::utils::{
     UserVisiblePermJson,
     PhoneCodeJson,
     UsersListJson,
+    CardUserJson,
 };
+use actix_web::web::Json;
 
 
 pub fn get_blocked_users_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {

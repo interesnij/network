@@ -8,10 +8,8 @@ pub struct UserDetailJson {
     pub first_name:    String,
     pub last_name:     String,
     pub types:         i16,
-    pub gender:        String,
-    pub device:        String,
+    pub is_man:        String,
     pub language:      String,
-    pub perm:          i16,
     pub link:          String, // community.get_link()
     pub city:          Option<String>,
     pub status:        Option<String>,
