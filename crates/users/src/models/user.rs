@@ -9,7 +9,16 @@ use diesel::{
     NullableExpressionMethods,
 };
 use crate::schema;
-use crate::models::{UserLocation, UserInfo, UserPrivate, UserBlock};
+use crate::models::{
+    UserLocation,
+    UserInfo,
+    UserPrivate,
+    UserBlock
+};
+use crate::utils::{
+    UserPrivateJson,
+
+}
 use crate::schema::users;
 use actix_web::web::Json;
 
@@ -417,7 +426,7 @@ impl User {
             .expect("E.")
             .len() > 0;
     }
-    pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
+    pub fn is_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_blocks::dsl::user_blocks;
 
         let _connection = establish_connection();
@@ -1824,6 +1833,7 @@ impl User {
             return;
         }
         use crate::schema::follows::dsl::follows;
+        use crate::models::Follow;
 
         let _connection = establish_connection();
 
@@ -1843,6 +1853,7 @@ impl User {
             return;
         }
         use crate::schema::follows::dsl::follows;
+        use crate::models::Follow;
 
         let _connection = establish_connection();
         let _follow = follows
@@ -1867,7 +1878,7 @@ impl User {
         if self.id == user.id || !self.is_followers_user_with_id(user.id) {
             return;
         }
-        use crate::models::NewFriend;
+        use crate::models::{NewFriend, Friend};
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
@@ -1910,7 +1921,7 @@ impl User {
         if self.id == user.id || !self.is_connected_with_user_with_id(user.id) {
             return;
         }
-        use crate::models::NewFollow;
+        use crate::models::{NewFollow, Follow};
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
@@ -2025,6 +2036,7 @@ impl User {
     }
     pub fn plus_friend_visited(&self, user_id: i32) -> () {
         use crate::schema::friends::dsl::friends;
+        use crate::models::Friend;
 
         let _connection = establish_connection();
         let _connect = friends

@@ -63,7 +63,7 @@ async fn login (
 
     let user = user.unwrap();
 
-    if (bcrypt::verify(_data.password.as_str(), user.password.as_str()).unwrap()) {
+    if bcrypt::verify(_data.password.as_str(), user.password.as_str()).unwrap() {
             let token = gen_jwt(user.id, _state.key.as_ref()).await;
 
             match token {

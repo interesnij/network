@@ -9,17 +9,6 @@
 //};
 
 //use crate::schema;
-use argonautica::{Hasher, Verifier};
-
-
-pub fn verify(hash: &str, password: &str) -> Result<bool, AuthError> {
-  Verifier::default()
-      .with_hash(hash)
-      .with_password(password)
-      .with_secret_key(vars::secret_key().as_str())
-      .verify()
-      .map_err(|_| AuthError::AuthenticationError(String::from("Не удалось подтвердить пароль")))
-}
 
 pub fn get_count_for_ru(count: i32, word1: String, word2: String, word3: String) -> String {
     let a = count % 10;
