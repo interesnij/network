@@ -87,7 +87,7 @@ pub struct NewUserJson {
 
 impl User {
     pub fn count_communities(&self) -> i32 {
-        return self.get_profile().communities;
+        return self.communities;
     }
     pub fn count_communities_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
@@ -139,7 +139,7 @@ impl User {
             .select(schema::users::id)
             .load::<i32>(&_connection)
             .expect("E")
-            .len() == 0 {
+            .len() > 0 {
                 return users
                     .filter(schema::users::user_id.eq(user.user_id))
                     .limit(1)
@@ -392,14 +392,16 @@ impl User {
         // с противоположными правами.
         let previous_user_list_delete = match types {
             1 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(11))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(11))
                 )
                 .execute(&_connection)
                 .expect("E"),
             11 => diesel::delete (
-                    user_visible_perms.filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                    user_visible_perms.filter(schema::user_visible_perms::types.eq(1))
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(1))
                 )
                 .execute(&_connection)
                 .expect("E"),
@@ -408,7 +410,7 @@ impl User {
         for user_id in users_ids.iter() {
             let _new_perm = NewUserVisiblePerm {
                 user_id:   self.user_id,
-                target_id: user_id,
+                target_id: *user_id,
                 types:     types,
             };
             diesel::insert_into(schema::user_visible_perms::table)
@@ -432,7 +434,7 @@ impl User {
         };
         diesel::update(self)
             .set(schema::users::types.eq(_case))
-            .get_result::<User>(&_connection)
+            .execute(&_connection)
             .expect("E");
 
         //hide_wall_notify_items(1, self.id);
@@ -450,7 +452,7 @@ impl User {
         };
         diesel::update(self)
             .set(schema::users::types.eq(close_case))
-            .get_result::<User>(&_connection)
+            .execute(&_connection)
             .expect("E");
         //show_wall_notify_items(1, self.id);
     }
@@ -513,7 +515,7 @@ impl User {
             .filter(schema::user_visible_perms::types.eq(20))
             .limit(1)
             .select(schema::user_visible_perms::id)
-            .load::<UserVisiblePerm>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -527,7 +529,7 @@ impl User {
             .filter(schema::user_visible_perms::types.eq(20))
             .limit(1)
             .select(schema::user_visible_perms::id)
-            .load::<UserVisiblePerm>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -540,7 +542,7 @@ impl User {
             .filter(schema::friends::target_id.eq(self.user_id))
             .limit(1)
             .select(schema::friends::id)
-            .load::<Friend>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -553,7 +555,7 @@ impl User {
             .filter(schema::follows::target_id.eq(user_id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.").len() > 0;
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
@@ -565,7 +567,7 @@ impl User {
             .filter(schema::follows::user_id.eq(user_id))
             .limit(1)
             .select(schema::follows::id)
-            .load::<Follow>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len() > 0;
     }
@@ -586,7 +588,7 @@ impl User {
         };
         diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
     }
     pub fn unfollow_user(&self, user_id: i32) -> () {

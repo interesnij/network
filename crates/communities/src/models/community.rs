@@ -282,27 +282,6 @@ impl Community {
             return "/static/images/no_img/list.jpg".to_string();
         }
     }
-    pub fn get_bb_avatar(&self) -> String {
-        let info = self.get_info_model();
-        let some_img = info.b_avatar;
-        if some_img.is_some() {
-            return some_img.as_deref().unwrap().to_string();
-        }
-        else {
-            return "/static/images/no_img/list.jpg".to_string();
-        }
-    }
-    pub fn get_b_avatar(&self) -> String {
-        let avatar_pk = self.get_avatar_pk();
-        if avatar_pk != 0 {
-            let info = self.get_info_model();
-            let some_img = info.b_avatar;
-            return "<img src='".to_string() + &some_img.as_ref().unwrap() + &"' class='detail_photo pointer' photo-pk='".to_string() + &avatar_pk.to_string() + &"'>".to_string();
-        }
-        else {
-            return "<img src='/static/images/no_img/b_avatar.png' />".to_string();
-        }
-    }
     pub fn get_s_avatar(&self) -> String {
         if self.s_avatar.is_some() {
             return "<img style='border-radius:30px;width:30px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
@@ -376,7 +355,7 @@ impl Community {
         let _connection = establish_connection();
         diesel::update(&profile)
             .set(schema::community_infos::members.eq(profile.members + count))
-            .get_result::<CommunityInfo>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
     }
     pub fn minus_members(&self, count: i16) -> () {
@@ -384,7 +363,7 @@ impl Community {
         let _connection = establish_connection();
         diesel::update(&profile)
             .set(schema::community_infos::members.eq(profile.members - count))
-            .get_result::<CommunityInfo>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
     }
     pub fn is_deleted(&self) -> bool {
@@ -420,7 +399,7 @@ impl Community {
         };
         diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
-            .get_result::<CommunityBannedUser>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
     }
     pub fn delete_banned_user(&self, user_id: i32) -> () {
@@ -464,25 +443,6 @@ impl Community {
 
         let community_id = new_community.id;
 
-        // создаем профиль нового сообщества
-        let _community_profile = NewCommunityProfile {
-            community_id: community_id,
-            posts:        0,
-            members:      0,
-            photos:       0,
-            goods:        0,
-            tracks:       0,
-            videos:       0,
-            docs:         0,
-            articles:     0,
-            survey:       0,
-            planners:     0,
-        };
-        diesel::insert_into(schema::community_profiles::table)
-            .values(&_community_profile)
-            .get_result::<CommunityProfile>(&_connection)
-            .expect("E.");
-
         // создаем приватность нового сообщества
         let _private = NewCommunityPrivate {
             community_id: community_id,
@@ -494,7 +454,7 @@ impl Community {
         };
         diesel::insert_into(schema::community_privates::table)
             .values(&_private)
-            .get_result::<CommunityPrivate>(&_connection)
+            .execute(&_connection)
             .expect("Error saving community_private.");
 
         // создаем информацию нового сообщества
@@ -510,7 +470,7 @@ impl Community {
         };
         diesel::insert_into(schema::community_infos::table)
             .values(&_info)
-            .get_result::<CommunityInfo>(&_connection)
+            .execute(&_connection)
             .expect("E.");
 
         // создаем уведомления нового сообщества
@@ -522,7 +482,7 @@ impl Community {
         };
         diesel::insert_into(schema::community_notifications::table)
             .values(&_community_notification)
-            .get_result::<CommunityNotification>(&_connection)
+            .execute(&_connection)
             .expect("Error saving community_notification.");
 
         CommunitiesMembership::create_membership (
@@ -782,7 +742,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -809,7 +769,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -907,7 +867,7 @@ impl Community {
                   schema::users::first_name,
                   schema::users::last_name,
                   schema::users::link,
-                  schema::users::image.nullable(),
+                  schema::users::s_avatar.nullable(),
               ))
               .load::<CardUserJson>(&_connection)
               .expect("E");
@@ -934,7 +894,7 @@ impl Community {
                   schema::users::first_name,
                   schema::users::last_name,
                   schema::users::link,
-                  schema::users::image.nullable(),
+                  schema::users::s_avatar.nullable(),
               ))
               .load::<CardUserJson>(&_connection)
               .expect("E");
@@ -1024,7 +984,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1048,7 +1008,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1086,7 +1046,7 @@ impl Community {
             .limit(limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
-            .load::<CommunitiesMembership>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E");
 
         let _users = users
@@ -1096,7 +1056,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1134,7 +1094,7 @@ impl Community {
             .limit(limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
-            .load::<CommunitiesMembership>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E");
 
         let _users = users
@@ -1144,7 +1104,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1182,7 +1142,7 @@ impl Community {
             .limit(limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
-            .load::<CommunitiesMembership>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E");
 
         let _users = users
@@ -1192,7 +1152,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1230,7 +1190,7 @@ impl Community {
             .limit(limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
-            .load::<CommunitiesMembership>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E");
 
         let _users = users
@@ -1240,7 +1200,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1480,7 +1440,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1527,7 +1487,7 @@ impl Community {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image.nullable(),
+                schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
@@ -1549,66 +1509,76 @@ impl Community {
 
         let previous_user_list_delete = match types {
             1 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(11))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(11))
                 )
                 .execute(&_connection)
                 .expect("E"),
             11 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(1))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(1))
                 )
                 .execute(&_connection)
                 .expect("E"),
             2 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(12))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(12))
                 )
                 .execute(&_connection)
                 .expect("E"),
             12 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(2))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(2))
                 )
                 .execute(&_connection)
                 .expect("E"),
             3 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(13))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(13))
                 )
                 .execute(&_connection)
                 .expect("E"),
             13 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(3))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(3))
                 )
                 .execute(&_connection)
                 .expect("E"),
             4 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(14))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(14))
                 )
                 .execute(&_connection)
                 .expect("E"),
             14 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(4))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(4))
                 )
                 .execute(&_connection)
                 .expect("E"),
             5 => diesel::delete (
-                    community_visible_perms.filter(schema::user_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(15))
+                    community_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(15))
                 )
                 .execute(&_connection)
                 .expect("E"),
             15 => diesel::delete (
-                    community_visible_perms.filter(schema::community_visible_perms::community_id.eq(self.id))
-                    community_visible_perms.filter(schema::community_visible_perms::types.eq(5))
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(5))
                 )
                 .execute(&_connection)
                 .expect("E"),
-            _ => (),
+            _ => 0,
         };
 
         for user_id in users_ids.iter() {

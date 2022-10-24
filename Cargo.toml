@@ -3,4 +3,5 @@
 members = [
   "crates/posts",
   "crates/users",
+  "crates/communities",
 ]
