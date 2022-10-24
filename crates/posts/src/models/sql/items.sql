@@ -200,7 +200,7 @@ CREATE TABLE item_sites (
     user_id      INT NOT NULL,
     community_id INT,
     item_id      INT NOT NULL,
-    types        SMALLINT NOT NULL,
+    types        SMALLINT NOT NULL
 );
 
 ----------------------------------

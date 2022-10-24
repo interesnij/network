@@ -348,34 +348,6 @@ pub struct NewItemVideo {
     pub view:         i32,
 }
 
-/////// ItemVideo //////
-#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct ItemVideo {
-    pub id:           i32,
-    pub title:        String,
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
-    pub list_id:      i32,
-    pub item_id:      i32,
-    pub types:        i16,
-    pub image:        Option<String>,
-    pub file:         String,
-    pub view:         i32,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="item_videos"]
-pub struct NewItemVideo {
-    pub title:        String,
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
-    pub list_id:      i32,
-    pub item_id:      i32,
-    pub types:        i16,
-    pub image:        Option<String>,
-    pub file:         String,
-    pub view:         i32,
-}
-
 /////// ItemSite //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct ItemSite {
