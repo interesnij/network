@@ -570,6 +570,7 @@ impl Post {
         reaction_id: i32,
     ) -> Json<JsonItemReactions> {
         use crate::schema::post_reactions::dsl::post_reactions;
+        use crate::models::{PostReaction, NewPostReaction};
 
         let _connection = establish_connection();
         let list = self.get_list();
