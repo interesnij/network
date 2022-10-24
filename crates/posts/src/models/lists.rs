@@ -7,11 +7,7 @@ use diesel::{
     QueryDsl,
     NullableExpressionMethods,
 };
-use crate::schema::{
-    post_lists,
-    communitys,
-    users,
-};
+use crate::schema::post_lists;
 
 use serde::{Serialize, Deserialize};
 use crate::utils::{

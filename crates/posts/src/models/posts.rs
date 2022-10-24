@@ -25,15 +25,10 @@ use crate::utils::{
 use actix_web::web::Json;
 use crate::models::{
     PostComment, NewPostComment,
-    PostReaction, NewPostReaction,
     PostList, PostRepost,
     PostCounterReaction, User, Community,
 };
-use crate::schema::{
-    posts,
-    communitys,
-    users,
-};
+use crate::schema::posts;
 
 /////// Post //////
 
@@ -442,7 +437,6 @@ impl Post {
             users::dsl::users,
         };
         use crate::utils::CardReactionPostJson;
-        use crate::models::PostReaction;
 
         let _connection = establish_connection();
         let user_ids = post_reactions
@@ -494,7 +488,6 @@ impl Post {
             users::dsl::users,
         };
         use crate::utils::CardReactionPostJson;
-        use crate::models::PostReaction;
 
         let _connection = establish_connection();
         let user_ids = post_reactions
@@ -577,7 +570,6 @@ impl Post {
         reaction_id: i32,
     ) -> Json<JsonItemReactions> {
         use crate::schema::post_reactions::dsl::post_reactions;
-        use crate::models::{NewPostReaction, PostReaction};
 
         let _connection = establish_connection();
         let list = self.get_list();
@@ -603,7 +595,7 @@ impl Post {
                         )
                         .execute(&_connection)
                         .expect("E");
-                    react_model.update_count(self.id, reaction_id, user_id, false);
+                    react_model.update_count(self.id, user_id, false);
                     self.minus_reactions(1);
                 }
                 // если пользователь уже реагировал другой реакцией на этот товар
@@ -613,7 +605,7 @@ impl Post {
                         .get_result::<PostReaction>(&_connection)
                         .expect("Error.");
 
-                    react_model.update_count(self.id, reaction_id, user_id, false);
+                    react_model.update_count(self.id, user_id, false);
                 }
             }
 
@@ -629,7 +621,7 @@ impl Post {
                     .get_result::<PostReaction>(&_connection)
                     .expect("Error.");
 
-                react_model.update_count(self.id, reaction_id, user_id, true);
+                react_model.update_count(self.id, user_id, true);
                 self.plus_reactions(1, user_id);
             }
         }
@@ -641,7 +633,6 @@ impl Post {
     }
     pub fn count_reaction_ru(&self, reaction_id: i32) -> String {
         use crate::utils::get_count_for_ru;
-        use crate::schema::post_counter_reactions::dsl::post_counter_reactions;
 
         return get_count_for_ru (
             self.get_count_model_for_reaction(reaction_id).count,

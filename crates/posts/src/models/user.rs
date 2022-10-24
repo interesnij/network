@@ -612,7 +612,6 @@ impl User {
         return _follows;
     }
     pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {
-        use crate::models::{UserVisiblePerm, NewUserVisiblePerm};
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
@@ -1256,7 +1255,6 @@ impl User {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return;
         }
-        use crate::models::NewFollow;
 
         let _connection = establish_connection();
         let _new_follow = NewFollow {
@@ -1299,7 +1297,6 @@ impl User {
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
             return;
         }
-        use crate::models::NewFriend;
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
@@ -1326,7 +1323,6 @@ impl User {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
             return;
         }
-        use crate::models::NewFollow;
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();

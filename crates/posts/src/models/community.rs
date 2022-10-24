@@ -813,7 +813,6 @@ impl Community {
     }
 
     pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {
-        use crate::models::{CommunityVisiblePerm, NewCommunityVisiblePerm};
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
         let _connection = establish_connection();

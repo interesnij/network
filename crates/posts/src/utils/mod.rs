@@ -6,17 +6,17 @@ pub use self::{
 };
 
 use diesel::{
-    Queryable,
-    Insertable,
+    //Queryable,
+    //Insertable,
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
+    //NullableExpressionMethods,
     PgConnection,
     Connection,
 };
 use crate::schema;
-use serde::{Serialize, Deserialize};
+//use serde::{Serialize, Deserialize};
 use crate::models::{
     PostList,
     Post,

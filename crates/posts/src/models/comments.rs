@@ -23,15 +23,10 @@ use crate::utils::{
 use actix_web::web::Json;
 use crate::models::{
     Post, User, Community,
-    PostCommentReaction,
     PostList,
     PostCommentCounterReaction,
 };
-use crate::schema::{
-    post_comments,
-    communitys,
-    users,
-};
+use crate::schema::post_comments;
 
 
 /////// PostComment //////
@@ -94,7 +89,6 @@ impl PostComment {
             users::dsl::users,
         };
         use crate::utils::CardReactionPostJson;
-        use crate::models::PostCommentReaction;
 
         let _connection = establish_connection();
         let user_ids = post_comment_reactions
@@ -146,7 +140,6 @@ impl PostComment {
             users::dsl::users,
         };
         use crate::utils::CardReactionPostJson;
-        use crate::models::PostCommentReaction;
 
         let _connection = establish_connection();
         let user_ids = post_comment_reactions
@@ -586,7 +579,7 @@ impl PostComment {
         reaction_id: i32,
     ) -> Json<JsonItemReactions> {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
-        use crate::models::{NewPostCommentReaction, PostCommentReaction};
+        use crate::models::NewPostCommentReaction;
 
         let _connection = establish_connection();
         let list = self.get_list();
@@ -612,7 +605,7 @@ impl PostComment {
                         )
                         .execute(&_connection)
                         .expect("E");
-                    react_model.update_count(self.id, reaction_id, user_id, false);
+                    react_model.update_count(self.id, user_id, false);
                     self.minus_reactions(1);
                 }
                 // если пользователь уже реагировал другой реакцией на этот товар
@@ -622,7 +615,7 @@ impl PostComment {
                         .get_result::<PostCommentReaction>(&_connection)
                         .expect("Error.");
 
-                    react_model.update_count(self.id, reaction_id, user_id, false);
+                    react_model.update_count(self.id, user_id, false);
                 }
             }
 
@@ -638,7 +631,7 @@ impl PostComment {
                     .get_result::<PostCommentReaction>(&_connection)
                     .expect("Error.");
 
-                react_model.update_count(self.id, reaction_id, user_id, true);
+                react_model.update_count(self.id, user_id, true);
                 self.plus_reactions(1, user_id);
             }
         }
