@@ -461,6 +461,7 @@ impl Community {
             cover:        None,
             created:      chrono::Local::now().naive_utc(),
             description:  None,
+            members:      0,
         };
         diesel::insert_into(schema::community_infos::table)
             .values(&_info)
@@ -2071,8 +2072,10 @@ pub struct CommunityInfo {
     pub b_avatar:     Option<String>,
     pub status:       Option<String>,
     pub level:        i16,
+    pub cover:        Option<String>,
     pub created:      chrono::NaiveDateTime,
     pub description:  Option<String>,
+    pub members:      i32,
 }
 
 #[derive(Deserialize, Insertable)]
@@ -2083,8 +2086,10 @@ pub struct NewCommunityInfo {
     pub b_avatar:     Option<String>,
     pub status:       Option<String>,
     pub level:        i16,
+    pub cover:        Option<String>,
     pub created:      chrono::NaiveDateTime,
     pub description:  Option<String>,
+    pub members:      i32,
 }
 
 /////// CommunityPrivate //////
