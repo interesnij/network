@@ -1,6 +1,5 @@
-#![allow(unused_must_use)]
 #[macro_use]
-extern crate rbatis;
+extern crate diesel;
 
 use std::sync::Arc;
 use dotenv::dotenv;
@@ -21,19 +20,19 @@ mod models;
 mod handlers;
 mod repositories;
 mod config;
+mod utils;
 
 use handlers::{
     auth_handlers::auth_scope,
     user_handlers::user_scope,
 };
-use rbatis::{rbatis::Rbatis, plugin::snowflake::Snowflake};
+use utils::establish_connection;
 
 
 #[derive(Clone)]
-pub struct AppState{
-    rb: Arc<Rbatis>,
+pub struct AppState {
+    pg:  Arc<String>,
     key: Arc<String>,
-    sflake: Arc<Snowflake>,
 }
 
 #[actix_web::main]
@@ -42,23 +41,16 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("Load config:");
     dotenv().ok();
-    for (key, value) in env::vars() {
-        println!("{}: {}", key, value);
-    }
 
-    let rb = Rbatis::new();
-    log::info!("Link database");
-    rb.link(env::var("DATABASE_URL").unwrap().as_str()).await.expect("faile to link database");
+    let _connection = establish_connection();
 
     let app_state = AppState{
-        rb: Arc::new(rb),
+        pg: Arc::new(_connection),
         key: Arc::new(env::var("KEY").unwrap()),
-        sflake: Arc::new(Snowflake::new(161476480000, 1, 1))
     };
 
     log::info!("Start server");
     HttpServer::new(move || {
-        //let cors = Cors::permissive();
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8000")
             .allowed_methods(vec!["GET", "POST"])

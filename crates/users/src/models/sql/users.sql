@@ -34,7 +34,7 @@ CREATE TABLE user_infos (
     cover     VARCHAR(500),
     created   TIMESTAMP NOT NULL,
     friends   INT NOT NULL,
-    follows   INT NOT NULL,
+    follows   INT NOT NULL
 );
 CREATE UNIQUE INDEX user_infos_unq ON user_infos (user_id, id);
 
@@ -161,7 +161,7 @@ CREATE TABLE user_privates (
     user_id    INT NOT NULL,
     see_all    SMALLINT NOT NULL, -- Для кого профиль открыт...
     see_info   SMALLINT NOT NULL, -- Кто видит информацию
-    see_friend SMALLINT NOT NULL, -- Кто видит друзей
+    see_friend SMALLINT NOT NULL  -- Кто видит друзей
 );
 CREATE UNIQUE INDEX user_privates_unq ON user_privates (user_id, id);
 
@@ -237,6 +237,6 @@ CREATE TABLE featured_friends (
     id        SERIAL PRIMARY KEY,
     user_id   INT NOT NULL,
     target_id INT NOT NULL,
-    hidden    BOOLEAN NOT NULL DEFAULT FALSE,
+    hidden    BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX featured_friends_unq ON featured_friends (user_id, target_id);

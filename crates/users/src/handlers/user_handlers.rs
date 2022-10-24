@@ -9,7 +9,6 @@ use actix_web::{
 };
 use actix_web_httpauth::{extractors::bearer::BearerAuth};
 use chrono::Utc;
-use rbatis::crud::CRUD;
 use crate::{
     AppState,
     config::crypto::{unwrap_jwt, verify_jwt},
@@ -22,7 +21,7 @@ pub fn user_scope() -> actix_web::Scope{
 }
 
 #[get("/{user_id}")]
-async fn user_profile(_state: web::Data<AppState>, user_id: web::Path<u64>) -> impl Responder{
+async fn user_profile(_state: web::Data<AppState>, user_id: web::Path<i32>) -> impl Responder{
     println!("user_profile!");
     use std::str;
 

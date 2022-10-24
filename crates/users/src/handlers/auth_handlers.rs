@@ -15,7 +15,6 @@ use actix_web::{
     http::header::HeaderValue,
     http::header
 };
-//use rbatis::crud::CRUD;
 
 use crate::handlers::HandlersError;
 use crate::models::{UserSignup, UserLogin, UserToken};
@@ -38,7 +37,7 @@ async fn signup (
     _state: web::Data<AppState>
 ) -> impl Responder {
     let user_data: UserSignup = _data.into_inner();
-    match user_repository::create(&user_data, _state.rb.as_ref(), _state.sflake.as_ref()).await{
+    match user_repository::create(&user_data, _state.pg.as_ref()).await {
         Some(_) => {
             HttpResponse::Ok().finish()
         },
@@ -55,7 +54,7 @@ async fn login (
     _state: web::Data<AppState>
 ) -> impl Responder {
     log::info!("Try login: {}, {}", _data.phone, _data.password);
-    let user = user_repository::find_by_phone(&_data.phone, _state.rb.as_ref()).await;
+    let user = user_repository::find_by_phone(&_data.phone, _state.pg.as_ref()).await;
 
     if let None = user {
         let msg = format!("User not found by phone {}", _data.phone);
