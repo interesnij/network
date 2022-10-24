@@ -221,7 +221,7 @@ impl PostCounterReaction {
 
         let _connection = establish_connection();
         if plus {
-            let new_count = diesel::update(self)
+            diesel::update(self)
                 .set(schema::post_counter_reactions::count.eq(self.count + 1))
                 .get_result::<PostCounterReaction>(&_connection)
                 .expect("Error.");
@@ -235,7 +235,7 @@ impl PostCounterReaction {
                 for react in prev_reactions.iter() {
                     let prev_react_count = post_counter_reactions
                         .filter(schema::post_counter_reactions::post_id.eq(post_id))
-                        .filter(schema::post_counter_reactions::reaction_id.eq(reaction_id))
+                        .filter(schema::post_counter_reactions::reaction_id.eq(react.reaction_id))
                         .limit(1)
                         .load::<PostCounterReaction>(&_connection)
                         .expect("E")
@@ -256,7 +256,7 @@ impl PostCounterReaction {
             .expect("E");
         }
         else {
-            let new_count = diesel::update(self)
+            diesel::update(self)
                 .set(schema::post_counter_reactions::count.eq(self.count - 1))
                 .execute(&_connection)
                 .expect("Error.");
@@ -307,7 +307,7 @@ impl PostCommentCounterReaction {
 
         let _connection = establish_connection();
         if plus {
-            let new_count = diesel::update(self)
+            diesel::update(self)
                 .set(schema::post_comment_counter_reactions::count.eq(self.count + 1))
                 .get_result::<PostCommentCounterReaction>(&_connection)
                 .expect("Error.");
@@ -321,7 +321,7 @@ impl PostCommentCounterReaction {
                 for react in prev_reactions.iter() {
                     let prev_react_count = post_comment_counter_reactions
                         .filter(schema::post_comment_counter_reactions::post_comment_id.eq(post_comment_id))
-                        .filter(schema::post_comment_counter_reactions::reaction_id.eq(reaction_id))
+                        .filter(schema::post_comment_counter_reactions::reaction_id.eq(react.reaction_id))
                         .limit(1)
                         .load::<PostCommentCounterReaction>(&_connection)
                         .expect("E")
@@ -342,7 +342,7 @@ impl PostCommentCounterReaction {
                 .expect("E");
         }
         else {
-            let new_count = diesel::update(self)
+            diesel::update(self)
                 .set(schema::post_comment_counter_reactions::count.eq(self.count - 1))
                 .execute(&_connection)
                 .expect("Error.");

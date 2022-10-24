@@ -627,7 +627,7 @@ impl User {
 
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
-        let previous_user_list_delete = match types {
+        match types {
             1 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))

@@ -828,7 +828,7 @@ impl Community {
 
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
-        let previous_user_list_delete = match types {
+        match types {
             1 => diesel::delete (
                     community_visible_perms
                         .filter(schema::community_visible_perms::community_id.eq(self.community_id))
