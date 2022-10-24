@@ -693,7 +693,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -777,25 +777,7 @@ impl User {
             .expect("E.");
         return _follows;
     }
-    pub fn get_friend_and_follows_ids(&self) -> Vec<i32> {
-        use crate::schema::{
-            follows::dsl::follows,
-            friends::dsl::friends,
-        };
 
-        let _connection = establish_connection();
-        let _follows = follows
-            .filter(schema::follows::user_id.eq(self.id))
-            .select(schema::follows::target_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-        let _friends = friends
-            .filter(schema::friends::user_id.eq(self.id))
-            .select(schema::friends::target_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-        return _follows.append(&mut _friends);
-    }
     pub fn get_6_friends_ids(&self) -> Vec<i32> {
         use crate::schema::friends::dsl::friends;
 
@@ -886,7 +868,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -904,7 +886,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -959,7 +941,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -992,7 +974,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1045,7 +1027,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1074,7 +1056,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1087,7 +1069,7 @@ impl User {
         return users
             .filter(schema::users::types.lt(10))
             .select(schema::users::id)
-            .load::<User>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len();
     }
@@ -1127,7 +1109,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1146,7 +1128,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1184,7 +1166,7 @@ impl User {
         return users
             .filter(schema::users::types.lt(10))
             .select(schema::users::id)
-            .load::<User>(&_connection)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len();
     }
@@ -1234,7 +1216,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1286,7 +1268,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -1314,7 +1296,7 @@ impl User {
                 schema::users::first_name,
                 schema::users::last_name,
                 schema::users::link,
-                schema::users::image,
+                schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
