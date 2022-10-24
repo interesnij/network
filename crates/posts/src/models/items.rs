@@ -113,7 +113,7 @@ pub struct NewItemComment {
 
 /////// ItemPhotos //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct ItemPhotos {
+pub struct ItemPhoto {
     pub id:           i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
@@ -126,7 +126,7 @@ pub struct ItemPhotos {
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="item_photos"]
-pub struct NewItemPhotos {
+pub struct NewItemPhoto {
     pub user_id:      i32,
     pub community_id: Option<i32>,
     pub list_id:      i32,
