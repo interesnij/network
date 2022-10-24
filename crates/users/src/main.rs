@@ -13,7 +13,7 @@ use actix_web::{
     Result
 };
 use actix_cors::Cors;
-use log::Level;
+//use log::Level;
 
 
 mod models;
@@ -21,6 +21,7 @@ mod handlers;
 mod repositories;
 mod config;
 mod utils;
+mod schema;
 
 //use handlers::{
 //    auth_handlers::auth_scope,
@@ -55,8 +56,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(app_state.to_owned()))
             .wrap(cors)
-            .service(user_scope())
-            .service(auth_scope())
+            //.service(user_scope())
+            //.service(auth_scope())
 
     })
     .bind("194.58.90.123:9001")?

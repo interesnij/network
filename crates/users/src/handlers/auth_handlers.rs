@@ -53,7 +53,7 @@ async fn login (
     _data: web::Json<UserLogin>,
     _state: web::Data<AppState>
 ) -> impl Responder {
-    log::info!("Try login: {}, {}", _data.phone, _data.password);
+    //log::info!("Try login: {}, {}", _data.phone, _data.password);
     let user = user_repository::find_by_phone(&_data.phone, _state.pg.as_ref()).await;
 
     if let None = user {
@@ -75,13 +75,13 @@ async fn login (
                     HttpResponse::Ok().body(body)
                 },
                 Err(err) => {
-                    log::error!("Failed create token: {}", err);
+                    //log::error!("Failed create token: {}", err);
                     let msg = format!("Failed create token {}", err);
                     HttpResponse::InternalServerError().body(HandlersError::new_str(msg))
                 }
             }
     } else {
-        log::info!("Bad password for user {}", user.last_name);
+        //log::info!("Bad password for user {}", user.last_name);
         let msg = format!("Bad password for user {}", user.last_name);
         HttpResponse::BadRequest().body(HandlersError::new_str(msg))
     }

@@ -52,7 +52,7 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
         return Err(403);
     }
 
-    log::info!("Headers: {:?}", claims.as_ref().unwrap().header);
+    //log::info!("Headers: {:?}", claims.as_ref().unwrap().header);
     let claims = claims.unwrap().claims;
 
     if claims.exp < Utc::now().timestamp(){

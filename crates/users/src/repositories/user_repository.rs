@@ -5,7 +5,7 @@ use rbatis::{core::Result, rbatis::Rbatis, snowflake::Snowflake};
 use crate::models::{User, UserSignup};
 
 pub async fn create(user_data: &UserSignup, rb: &Rbatis, sflake: &Snowflake) -> Option<User> {
-    log::info!("Create user");
+    //log::info!("Create user");
     let users_count = rb.fetch_list_by_column("id",&["1".to_string()]).await.unwrap().len() + 1;
     let link = "/id".to_string() + &users_count.to_string() + &"/".to_string();
 

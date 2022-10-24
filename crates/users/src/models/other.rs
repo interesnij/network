@@ -79,7 +79,7 @@ pub struct UserLogin {
 
 #[derive(Deserialize)]
 pub struct UserSignup {
-    pub id:            u64,
+    pub id:            i32,
     pub first_name:    String,
     pub last_name:     String,
     pub phone:         String,
@@ -87,5 +87,5 @@ pub struct UserSignup {
     pub is_man:        bool,
     pub password:      String,
     pub link:          String,
-    pub last_activity: DateTimeNative,
+    pub last_activity: chrono::NaiveDateTime,
 }

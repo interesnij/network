@@ -103,13 +103,19 @@ pub struct GetSessionFields {
 
 impl User {
     pub fn get_user_detail_json(&self) -> Json<UserDetailJson> {
-         let user_json = UserDetailJson {
+        let info = self.get_info_model();
+        let user_json = UserDetailJson {
              id:            self.id,
              first_name:    self.first_name.clone(),
              last_name:     self.last_name.clone(),
              types:         self.types,
              is_man:        self.is_man.clone(),
+             language:      info.language,
              link:          self.get_slug(), // community.get_link()
+             city:          info.city,
+             status:        info.status,
+             image:         info.b_avatar,
+             birthday:      info.birthday,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
          };
          return Json(user_json);
