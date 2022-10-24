@@ -126,7 +126,7 @@ pub struct ItemPhotos {
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="item_photos"]
-pub struct NewItemComment {
+pub struct NewItemPhotos {
     pub user_id:      i32,
     pub community_id: Option<i32>,
     pub list_id:      i32,
