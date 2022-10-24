@@ -53,7 +53,7 @@ impl CommunityCategory {
             .select((
                 schema::community_categorys::id,
                 schema::community_categorys::name,
-                schema::community_categorys::avatar.nullable(),
+                schema::community_categorys::avatar,
             ))
             .load::<CommunityCategoryJson>(&_connection)
             .expect("E");
@@ -134,7 +134,7 @@ impl CommunitySubcategory {
             .select((
                 schema::community_categorys::id,
                 schema::community_categorys::name,
-                schema::community_categorys::avatar.nullable(),
+                schema::community_categorys::avatar,
             ))
             .load::<CommunitySubcategoryJson>(&_connection)
             .expect("E");
