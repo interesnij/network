@@ -17,6 +17,10 @@ use crate::models::{
 };
 use crate::utils::{
     UserPrivateJson,
+    CardUserJson,
+    UsersListJson,
+    UserPopulateStickerJson,
+    UserPopulateSmileJson,
 };
 use crate::schema::users;
 use actix_web::web::Json;
@@ -1799,7 +1803,7 @@ impl User {
         if self.id == user.id || self.is_self_user_in_block(user.id) || self.is_followers_user_with_id(user.id) || self.is_following_user_with_id(user.id) {
             return;
         }
-        use crate::models::NewFollow;
+        use crate::models::{Follow, NewFollow};
 
         let _connection = establish_connection();
         let _new_follow = NewFollow {
