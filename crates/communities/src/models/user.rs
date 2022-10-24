@@ -634,9 +634,6 @@ impl User {
         if self.user_id == user_id || self.is_user_in_block(user_id) {
             return;
         }
-        //use crate::schema::user_blocks::dsl::user_blocks;
-        use crate::models::NewUserBlock;
-
         let _connection = establish_connection();
 
         if self.is_connected_with_user_with_id(user_id) {

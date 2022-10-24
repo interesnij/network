@@ -126,17 +126,17 @@ pub struct CommunitySubcategory {
 
 impl CommunitySubcategory {
     pub fn get_categories_json() -> Json<Vec<CommunitySubcategoryJson>> {
-        use crate::schema::community_subcategorys::dsl::community_subcategorys;
+        use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
-        let cats = community_subcategorys
-            .order(schema::community_subcategorys::position)
+        let cats = community_categorys
+            .order(schema::community_categorys::position)
             .select((
                 schema::community_categorys::id,
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
-            ))
-            .load::<CommunitySubcategoryJson>(&_connection)
+            )) 
+            .load::<CommunityCategoryJson>(&_connection)
             .expect("E");
         return Json(cats);
     }
@@ -717,7 +717,10 @@ impl Community {
     }
 
     pub fn get_see_info_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = community_visible_perms
@@ -744,7 +747,10 @@ impl Community {
         return _users;
     }
     pub fn get_see_info_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let items = community_visible_perms
@@ -842,7 +848,10 @@ impl Community {
     }
 
     pub fn get_see_member_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -869,7 +878,10 @@ impl Community {
           return _users;
       }
       pub fn get_see_member_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+          use crate::schema::{
+              community_visible_perms::dsl::community_visible_perms,
+              users::dsl::users,
+          };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -968,7 +980,10 @@ impl Community {
     }
 
     pub fn get_see_settings_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -995,7 +1010,10 @@ impl Community {
           return _users;
       }
       pub fn get_see_settings_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+          use crate::schema::{
+              community_visible_perms::dsl::community_visible_perms,
+              users::dsl::users,
+          };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -1093,7 +1111,10 @@ impl Community {
     }
 
     pub fn get_see_log_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -1120,7 +1141,10 @@ impl Community {
           return _users;
       }
       pub fn get_see_log_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+          use crate::schema::{
+              community_visible_perms::dsl::community_visible_perms,
+              users::dsl::users,
+          };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -1218,7 +1242,10 @@ impl Community {
     }
 
     pub fn get_see_stat_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -1245,7 +1272,10 @@ impl Community {
           return _users;
       }
       pub fn get_see_stat_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-          use crate::schema::community_visible_perms::dsl::community_visible_perms;
+          use crate::schema::{
+              community_visible_perms::dsl::community_visible_perms,
+              users::dsl::users,
+          };
 
           let _connection = establish_connection();
           let items = community_visible_perms
@@ -2055,38 +2085,6 @@ impl CommunitiesMembership {
         community.plus_members(1);
         return new_member;
     }
-}
-
-/////// CommunityProfile //////
-#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct CommunityProfile {
-    pub id:           i32,
-    pub community_id: i32,
-    pub posts:        i16,
-    pub members:      i16,
-    pub photos:       i16,
-    pub goods:        i16,
-    pub tracks:       i16,
-    pub videos:       i16,
-    pub docs:         i16,
-    pub articles:     i16,
-    pub survey:       i16,
-    pub planners:     i16,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="community_profiles"]
-pub struct NewCommunityProfile {
-    pub community_id: i32,
-    pub posts:        i16,
-    pub members:      i16,
-    pub photos:       i16,
-    pub goods:        i16,
-    pub tracks:       i16,
-    pub videos:       i16,
-    pub docs:         i16,
-    pub articles:     i16,
-    pub survey:       i16,
-    pub planners:     i16,
 }
 
 #[derive(Queryable, Serialize, Deserialize, Identifiable)]
