@@ -63,14 +63,14 @@ pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         .select(schema::friends::target_id)
         .load::<i32>(&_connection)
         .expect("E.");
-    let friends = users
+    let _friends = users
         .filter(schema::users::id.eq_any(friend_ids))
         .filter(schema::users::types.lt(10))
         .load::<User>(&_connection)
         .expect("E.");
 
     let mut json = Vec::new();
-    for user in friends {
+    for user in _friends {
         json.push (CardUserJson {
             id:         user.id,
             first_name: user.first_name.clone(),

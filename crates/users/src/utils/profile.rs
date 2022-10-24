@@ -24,7 +24,7 @@ pub struct LocationsJson {
     pub locations: Vec<LocationJson>,
     pub next_page: i32,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct LocationJson {
     pub city_ru:    Option<String>,
     //pub city_en:    Option<String>,
@@ -57,7 +57,7 @@ pub struct IpsJson {
     pub ips:       Vec<IpJson>,
     pub next_page: i32,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct IpJson {
     pub ip: String,
 }
@@ -68,7 +68,7 @@ pub struct ListsUserCommunitiesJson {
     pub lists:     Vec<ListUserCommunitiesJson>,
     pub next_page: i32,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct ListUserCommunitiesJson {
     pub id:    i32,
     pub name:  String,
@@ -90,7 +90,7 @@ pub struct UniversalUserCommunityKeysJson {
     pub keys:      Vec<UniversalUserCommunityKeyJson>,
     pub next_page: i32,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct UniversalUserCommunityKeyJson {
     pub id:           i32,
     pub list_id:      Option<i32>,
