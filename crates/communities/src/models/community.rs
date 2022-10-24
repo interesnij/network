@@ -255,12 +255,6 @@ impl Community {
     pub fn get_str_id(&self) -> String {
         return self.id.to_string();
     }
-    pub fn is_identified(&self) -> bool {
-        return self.types > 12 || self.types < 16;
-    }
-    pub fn is_identified_send(&self) -> bool {
-        return self.types > 6 || self.types < 10;
-    }
     pub fn get_description(&self) -> String {
         return "<a href='".to_string() + &self.link.to_string() + &"' target='_blank'>".to_string() + &self.name + &"</a>".to_string();
     }
