@@ -8,7 +8,7 @@ pub struct UsersJson {
     pub users:     Vec<CardUserJson>,
     pub next_page: i32,
 }
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
     pub id:         i32,
