@@ -1,14 +1,34 @@
-//mod profile;
-//mod settings;
-//mod lists;
+use diesel::{
+    //Queryable,
+    //Insertable,
+    RunQueryDsl,
+    ExpressionMethods,
+    QueryDsl,
+    //NullableExpressionMethods,
+    PgConnection,
+    Connection,
+};
+use crate::schema;
 
-//pub use self::{
-//    profile::*,
-//    settings::*,
-//    lists::*,
-//};
+mod lists;
+mod profile;
+mod settings;
+pub use self::{
+    lists::*,
+    profile::*,
+    settings::*,
+};
 
-//use crate::schema;
+pub fn establish_connection() -> PgConnection {
+    use dotenv::dotenv;
+
+    dotenv().ok();
+    let database_url = std::env::var("DATABASE_URL")
+        .expect("DATABASE_URL must be set");
+
+    PgConnection::establish(&database_url)
+        .expect(&format!("Error connecting to {}", database_url))
+}
 
 pub fn get_count_for_ru(count: i32, word1: String, word2: String, word3: String) -> String {
     let a = count % 10;

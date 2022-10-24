@@ -64,3 +64,28 @@ pub struct NewFeaturedFriend {
     pub target_id: i32,
     pub hidden:    bool,
 }
+
+
+#[derive(Deserialize, Debug, Serialize, PartialEq, Clone)]
+pub struct UserToken {
+    pub token: String
+}
+
+#[derive(Deserialize)]
+pub struct UserLogin {
+    pub phone: String,
+    pub password: String,
+}
+
+#[derive(Deserialize)]
+pub struct UserSignup {
+    pub id:            u64,
+    pub first_name:    String,
+    pub last_name:     String,
+    pub phone:         String,
+    pub types:         i16,
+    pub is_man:        bool,
+    pub password:      String,
+    pub link:          String,
+    pub last_activity: DateTimeNative,
+}

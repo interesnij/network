@@ -17,8 +17,7 @@ use crate::models::{
 };
 use crate::utils::{
     UserPrivateJson,
-
-}
+};
 use crate::schema::users;
 use actix_web::web::Json;
 
