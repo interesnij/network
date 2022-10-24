@@ -24,12 +24,12 @@ use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
 use actix_web::web::Json;
 use crate::utils::{
-    CommunitySubcategoryJson,
+    //CommunitySubcategoryJson,
     CommunityCategoryJson,
     UsersJson,
     CardUserJson,
-    CommunityInfoJson,
-    CommunityDetailJson,
+    //CommunityInfoJson,
+    //CommunityDetailJson,
     CommunityPrivateJson,
 };
 
@@ -1933,7 +1933,7 @@ impl Community {
             }
         }
 
-        let previous_user_list_delete = match types {
+        match types {
             1 => diesel::delete (
                     community_visible_perms
                         .filter(schema::community_visible_perms::community_id.eq(self.id))

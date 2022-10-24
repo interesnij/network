@@ -6,7 +6,6 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
 };
 use crate::schema;
 use crate::schema::{
@@ -15,7 +14,7 @@ use crate::schema::{
     follows,
     user_visible_perms,
 };
-use actix_web::web::Json;
+//use actix_web::web::Json;
 
 ///// Типы пользоватетеля
     // 1 стандартный тип пользователя
@@ -333,9 +332,7 @@ impl User {
         return _follows;
     }
     pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {
-        use crate::models::{UserVisiblePerm, NewUserVisiblePerm};
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
-        use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
         let mut users_ids = Vec::new();
@@ -349,7 +346,7 @@ impl User {
 
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
-        let previous_user_list_delete = match types {
+        match types {
             1 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
@@ -538,7 +535,6 @@ impl User {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return;
         }
-        use crate::models::NewFollow;
 
         let _connection = establish_connection();
         let _new_follow = NewFollow {
@@ -581,7 +577,6 @@ impl User {
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
             return;
         }
-        use crate::models::NewFriend;
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
@@ -608,7 +603,6 @@ impl User {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
             return;
         }
-        use crate::models::NewFollow;
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
