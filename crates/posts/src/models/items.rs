@@ -34,7 +34,7 @@ use crate::utils::{
 
 
 #[derive(Serialize, Identifiable, Queryable)]
-pub struct User {
+pub struct ItemUser {
     pub id:         i32,
     pub user_id:    i32,
     pub first_name: String,
@@ -46,7 +46,7 @@ pub struct User {
 
 #[derive(Deserialize, Insertable)]
 #[table_name="item_users"]
-pub struct NewUser {
+pub struct NewItemUser {
     pub user_id:    i32,
     pub first_name: String,
     pub last_name:  String,
