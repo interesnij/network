@@ -13,7 +13,7 @@ use crate::models::{
     UserLocation,
     UserInfo,
     UserPrivate,
-    UserBlock
+    UserBlock,
 };
 use crate::utils::{
     UserPrivateJson,
@@ -21,6 +21,9 @@ use crate::utils::{
     UsersListJson,
     UserPopulateStickerJson,
     UserPopulateSmileJson,
+    LocationJson,
+    UserDetailJson,
+
 };
 use crate::schema::users;
 use actix_web::web::Json;
@@ -82,7 +85,7 @@ pub struct UserSignup {
     pub is_man:        bool,
     pub password:      String,
     pub link:          String,
-    pub last_activity: DateTimeNative,
+    pub last_activity: chrono::NaiveDateTime,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -508,7 +511,7 @@ impl User {
             return "desctop/users/button/".to_owned() + &suffix + &"default_user.stpl".to_string();
         }
     }
-    pub fn get_info_model(&self) -> CommunityInfo {
+    pub fn get_info_model(&self) -> UserInfo {
         use crate::schema::user_infos::dsl::user_infos;
 
         let _connection = establish_connection();
@@ -769,7 +772,10 @@ impl User {
         return _follows;
     }
     pub fn get_friend_and_follows_ids(&self) -> Vec<i32> {
-        use crate::schema::follows::dsl::follows;
+        use crate::schema::{
+            follows::dsl::follows,
+            friends::dsl::friends,
+        };
 
         let _connection = establish_connection();
         let _follows = follows

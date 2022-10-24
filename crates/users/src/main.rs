@@ -22,10 +22,10 @@ mod repositories;
 mod config;
 mod utils;
 
-use handlers::{
-    auth_handlers::auth_scope,
-    user_handlers::user_scope,
-};
+//use handlers::{
+//    auth_handlers::auth_scope,
+//    user_handlers::user_scope,
+//};
 use utils::establish_connection;
 
 
@@ -37,9 +37,6 @@ pub struct AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    simple_logger::init_with_level(Level::Info).unwrap();
-
-    log::info!("Load config:");
     dotenv().ok();
 
     let _connection = establish_connection();
@@ -49,7 +46,6 @@ async fn main() -> std::io::Result<()> {
         key: Arc::new(env::var("KEY").unwrap()),
     };
 
-    log::info!("Start server");
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8000")
