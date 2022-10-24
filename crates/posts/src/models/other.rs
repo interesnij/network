@@ -209,10 +209,9 @@ impl PostCounterReaction {
     }
     pub fn update_count (
         &self,
-        post_id:     i32,
-        reaction_id: i32,
-        user_id:     i32,
-        plus:        bool,
+        post_id: i32,
+        user_id: i32,
+        plus:    bool,
     ) -> () {
         use crate::schema::{
             post_counter_reactions::dsl::post_counter_reactions,
@@ -296,7 +295,6 @@ impl PostCommentCounterReaction {
     pub fn update_count (
         &self,
         post_comment_id: i32,
-        reaction_id:     i32,
         user_id:         i32,
         plus:            bool,
     ) -> () {
