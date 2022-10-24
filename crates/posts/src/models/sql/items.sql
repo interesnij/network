@@ -26,7 +26,7 @@ CREATE TABLE item_lists (
     user_id        INT NOT NULL,          -- id пользователя (ссылка на таблицу выше)
     community_id   INT,                   -- id сообщества (ссылка на таблицу выше)
     list_id        INT NOT NULL,          -- id списка
-    list_types     INT NOT NULL,          -- тип списка (выше)
+    list_types     SMALLINT NOT NULL,     -- тип списка (выше)
     types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
     image          VARCHAR(500),          -- миниатюра
     count          INT NOT NULL           -- кол-во элементов
@@ -50,9 +50,9 @@ CREATE TABLE item_comments (
     content       VARCHAR(100),       -- часть содержания
     attach        VARCHAR(100),
     comment_id    INT NOT NULL,       -- id коммента
-    comment_types INT NOT NULL,       -- тип коммента
+    comment_types SMALLINT NOT NULL,  -- тип коммента
     item_id       INT NOT NULL,       -- id объекта
-    item_types    INT NOT NULL,       -- тип объекта
+    item_types    SMALLINT NOT NULL,  -- тип объекта
     types         SMALLINT NOT NULL,  -- тип (активен, удален, закрыт...)
     created       TIMESTAMP NOT NULL  -- время создания
 );
