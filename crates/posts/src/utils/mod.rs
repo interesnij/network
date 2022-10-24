@@ -3,7 +3,7 @@ mod attach_items;
 pub use self::{
     attach_items::*,
     items::*,
-}
+};
 
 use diesel::{
     Queryable,
