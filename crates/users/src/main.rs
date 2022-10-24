@@ -27,12 +27,10 @@ mod schema;
 //    auth_handlers::auth_scope,
 //    user_handlers::user_scope,
 //};
-use utils::establish_connection;
 
 
 #[derive(Clone)]
 pub struct AppState {
-    pg:  Arc<diesel::PgConnection>,
     key: Arc<String>,
 }
 
@@ -43,7 +41,6 @@ async fn main() -> std::io::Result<()> {
     let _connection = establish_connection();
 
     let app_state = AppState{
-        pg: Arc::new(_connection),
         key: Arc::new(env::var("KEY").unwrap()),
     };
 

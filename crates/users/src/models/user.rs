@@ -115,7 +115,7 @@ impl User {
              city:          info.city,
              status:        info.status,
              image:         info.b_avatar,
-             birthday:      info.birthday,
+             birthday:      info.birthday.format("%d-%m-%Y").to_string(), 
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
          };
          return Json(user_json);
@@ -2036,20 +2036,6 @@ impl User {
                 .set(schema::friends::visited.eq(_connect[0].visited + 1))
                 .execute(&_connection)
                 .expect("Error.");
-    }
-
-    pub fn get_members_for_notify_ids(&self) -> Vec<i32> {
-        use crate::schema::notify_user_communities::dsl::notify_user_communities;
-
-        let _connection = establish_connection();
-        let items = notify_user_communities
-            .filter(schema::notify_user_communities::user_id.eq(self.id))
-            .filter(schema::notify_user_communities::mute.eq(false))
-            .filter(schema::notify_user_communities::sleep.lt(chrono::Local::now().naive_utc()))
-            .select(schema::notify_user_communities::owner)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
     }
 
     pub fn get_gender_a(&self) -> String {

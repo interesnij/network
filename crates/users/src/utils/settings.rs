@@ -2,7 +2,6 @@ use crate::utils::{
     establish_connection,
     ListsUserCommunitiesJson,
     UniversalUserCommunityKeysJson,
-    DesignSettingsJson,
     UserPrivateJson,
     UserProfileNotificationJson,
     UserPopulateStickerJson,
