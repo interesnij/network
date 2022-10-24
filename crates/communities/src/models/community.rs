@@ -1962,7 +1962,7 @@ impl Community {
                 .expect("E"),
             5 => diesel::delete (
                     community_visible_perms
-                        .filter(schema::user_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
                         .filter(schema::community_visible_perms::types.eq(15))
                 )
                 .execute(&_connection)
