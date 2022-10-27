@@ -105,7 +105,7 @@ pub struct PostListPageJson {
 #[derive(Serialize)]
 // это инфо о тех, кто репостил, и цифры
 pub struct RepostsPostListJson {
-    pub message_reposts: String,
+    pub message_reposts: usize,
     pub copy_count:      i32,
     pub posts:           Vec<CardUserJson>,
 }
@@ -181,7 +181,7 @@ pub struct CardParentPostJson {
 #[derive(Serialize)]
 // это инфо о тех, кто репостил, и цифры
 pub struct RepostsPostJson {
-    pub message_reposts: String,
+    pub message_reposts: usize,
     pub copy_count:      String,
     pub creators:        Vec<CardOwnerJson>,
 }

@@ -557,8 +557,8 @@ impl Post {
                 next:                 next,
                 is_user_see_comments: list.is_user_see_comment(user_id),
                 is_user_create_el:    list.is_user_create_el(user_id),
-                comments:             self.get_comments_post_json(user_id, reactions_list.clone(), page, limit.into()),
-                attachment:           None,
+                comments:             self.get_comments_post_json(user_id, reactions_list.clone(), limit.into(), 0),
+                attachments:          None,
             };
     }
     pub fn get_post_json (&self, user_id: i32, reactions_list: Vec<i32>,) -> CardPostJson {
@@ -579,7 +579,7 @@ impl Post {
                 types:           self.get_code(),
                 parent:          self.get_parent_post_json(),
                 reactions_list:  self.get_reactions_json(user_id, reactions_list.clone()),
-                attachment:      None,
+                attachments:     None,
             };
     }
 

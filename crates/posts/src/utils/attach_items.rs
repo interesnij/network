@@ -10,7 +10,7 @@ pub struct AttachmentsJson {
     pub items:    Option<ItemsAttach>,
     pub lists:    Option<ListsAttach>,
     pub comments: Option<CommentsAttach>,
-    pub planners: Option<PlannersAttach>,
+    //pub planners: Option<PlannersAttach>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -147,7 +147,7 @@ pub struct ListsAttach {
     pub wiki_lists:     Option<Vec<WikiListAttach>>,
     pub articles_lists: Option<Vec<ArticleListAttach>>,
     pub folder_lists:   Option<Vec<ForumListAttach>>,
-    pub stickers_lists: Option<Vec<StickerListAttach>>,
+    pub stickers_lists: Option<Vec<StickersListAttach>>,
 }
 
 #[derive(Serialize, Deserialize)]
