@@ -262,9 +262,9 @@ impl Photo {
                 owner_name:           creator.name.clone(),
                 owner_link:           creator.link.clone(),
                 owner_image:          creator.image.clone(),
-                preview:              self.preview,
-                file:                 self.file,
-                description:          self.description,
+                preview:              self.preview.clone(),
+                file:                 self.file.clone(),
+                description:          self.description.clone(),
                 comments_on:          self.comments_on,
                 created:              self.created.format("%d-%m-%Y в %H:%M").to_string(),
                 comment:              self.comment,
@@ -283,8 +283,8 @@ impl Photo {
     pub fn get_photo_json (&self) -> CardPhotoJson {
         return CardPhotoJson {
                 id:      self.id,
-                preview: self.preview,
-                file:    self.file,
+                preview: self.preview.clone(),
+                file:    self.file.clone(),
             };
     }
 
