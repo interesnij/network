@@ -150,7 +150,7 @@ impl Post {
             .limit(limit)
             .offset(offset)
             .select(schema::item_reposts::post_id)
-            .load::<i32>(&_connection)
+            .load::<Option<i32>>(&_connection)
             .expect("E.");
         return posts
             .filter(schema::posts::id.eq_any(item_reposts_ids))
@@ -176,7 +176,7 @@ impl Post {
             .order(schema::item_reposts::id.desc())
             .limit(limit)
             .select(schema::item_reposts::post_id)
-            .load::<i32>(&_connection)
+            .load::<Option<i32>>(&_connection)
             .expect("E.");
         return posts
             .filter(schema::posts::id.eq_any(item_reposts_ids))
