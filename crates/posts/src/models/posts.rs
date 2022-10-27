@@ -816,23 +816,19 @@ impl Post {
         return "posts".to_string();
     }
 
-    pub fn message_reposts_count(&self) -> String {
-        use crate::schema::post_reposts::dsl::post_reposts;
+    pub fn message_reposts_count(&self) -> usize {
+        use crate::schema::item_reposts::dsl::item_reposts;
 
         let _connection = establish_connection();
 
-        let count = post_reposts
-            .filter(schema::post_reposts::post_id.eq(self.id))
-            .load::<PostRepost>(&_connection)
+        return item_reposts
+            .filter(schema::item_reposts::item_id.eq(self.id))
+            .filter(schema::item_reposts::item_types.eq(51))
+            .filter(schema::item_reposts::message_id.is_not_null())
+            .select(schema::item_reposts::id)
+            .load::<i32>(&_connection)
             .expect("E.")
             .len();
-
-        if count == 0 {
-            return "".to_string();
-        }
-        else {
-            return ", из них в сообщениях - ".to_string() + &count.to_string();
-        }
     }
 
 
