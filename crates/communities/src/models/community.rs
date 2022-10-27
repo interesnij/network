@@ -48,15 +48,22 @@ impl CommunityCategory {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
-        let cats = community_categorys
+        match community_categorys
             .order(schema::community_categorys::position)
             .select((
                 schema::community_categorys::id,
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
             ))
-            .load::<CommunityCategoryJson>(&_connection);
-        return cats;
+            .load::<CommunityCategoryJson>(&_connection) {
+                Ok(vec) => {
+                    Some(vec)
+                },
+                Err(_) => {
+                    None
+                },
+            };
+        //return cats;
     }
     pub fn create_category(name: String, avatar: Option<String>,
         position: i16) -> Option<CommunityCategory> {
