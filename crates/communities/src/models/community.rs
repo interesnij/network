@@ -44,7 +44,7 @@ pub struct CommunityCategory {
 }
 
 impl CommunityCategory {
-    pub fn get_categories_json() -> Option<Json<Vec<CommunityCategoryJson>>> {
+    pub fn get_categories_json() -> Option<Vec<CommunityCategoryJson>> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -55,9 +55,8 @@ impl CommunityCategory {
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
             ))
-            .load::<CommunityCategoryJson>(&_connection)
-            .expect("E");
-        return Json(cats);
+            .load::<CommunityCategoryJson>(&_connection)?;
+        return cats;
     }
     pub fn create_category(name: String, avatar: Option<String>,
         position: i16) -> Option<CommunityCategory> {
@@ -70,8 +69,7 @@ impl CommunityCategory {
         };
         let new_cat = diesel::insert_into(schema::community_categorys::table)
             .values(&new_form)
-            .get_result::<CommunityCategory>(&_connection)
-            .expect("Error.");
+            .get_result::<CommunityCategory>(&_connection)?;
         return new_cat;
     }
     pub fn create_subcategory(&self, name: String, avatar: Option<String>,
@@ -86,8 +84,7 @@ impl CommunityCategory {
         };
         let new_cat = diesel::insert_into(schema::community_subcategorys::table)
             .values(&new_form)
-            .get_result::<CommunitySubcategory>(&_connection)
-            .expect("Error.");
+            .get_result::<CommunitySubcategory>(&_connection)?;
         return new_cat;
     }
     pub fn edit_category(&self, name: String, avatar: Option<String>,
@@ -98,11 +95,10 @@ impl CommunityCategory {
             avatar:   avatar,
             position: position,
         };
-        diesel::update(self)
+        let updated = diesel::update(self)
             .set(new_form)
-            .get_result::<CommunityCategory>(&_connection)
-            .expect("Error.");
-        return self;
+            .get_result::<CommunityCategory>(&_connection)?;
+        return updated;
     }
 }
 
