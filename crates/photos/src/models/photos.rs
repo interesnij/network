@@ -210,7 +210,7 @@ impl Photo {
                 types:          c.get_code(),       // например cpo1
                 replies:        c.replies,    // кол-во ответов
                 reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
-                items:          None,
+                attachments:    None,
             });
         }
         return json;

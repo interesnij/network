@@ -218,7 +218,7 @@ impl PhotoComment {
             types:          self.get_code(),
             replies:        self.replies,
             reactions_list: self.get_reactions_json(user_id, reactions_list.clone()),
-            items:          None,
+            attachments:    None,
         };
         return card;
     }
@@ -233,7 +233,7 @@ impl PhotoComment {
             reactions:      self.reactions,
             types:          self.get_code(),
             reactions_list: self.get_reactions_json(user_id, reactions_list.clone()),
-            items:          None,
+            attachments:    None,
         };
         return card;
     }

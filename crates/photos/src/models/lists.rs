@@ -2300,13 +2300,10 @@ impl PhotoList {
 
     pub fn create_photo (
         &self,
-        content:      Option<String>,
-        user_id:      i32,
-        types:        Option<i16>,
-        attach:       Option<String>,
-        comments_on:  bool,
-        is_signature: bool,
-        parent_id:    Option<i32>
+        community_id: Option<i32>,
+        user_id: i32,
+        preview: String,
+        file: String
     ) -> Photo {
         use crate::models::NewPhoto;
 
@@ -2320,22 +2317,15 @@ impl PhotoList {
         //let mut _content: Option<String> = None;
         //let creator = get_user(user_id);
 
-        if types.is_some() {
-            _types = types.unwrap();
-        }
-        else {
-            _types = 1;
-        }
-
         //if content.is_some() {
         //    use crate::utils::get_formatted_text;
         //    _content = Some(get_formatted_text(&content.unwrap()));
         //}
         let new_photo_form = NewPhoto {
-          community_id:  self.community_id,
+          community_id:  community_id,
           user_id:       user_id,
           photo_list_id: self.id,
-          types:         _types,
+          types:         1,
           preview:       preview.clone(),
           file:          file.clone(),
           description:   None,

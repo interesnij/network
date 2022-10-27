@@ -75,7 +75,7 @@ CREATE INDEX communitys_user_id_idx ON communitys (user_id);
 -- 19 Некоторые подписчики
 -- 20 Владелец сообщества
 
-CREATE TABLE photos_lists (
+CREATE TABLE photo_lists (
     id             SERIAL PRIMARY KEY,    -- id списка записей
     name           VARCHAR(100) NOT NULL, -- название
 
@@ -136,10 +136,6 @@ CREATE TABLE photos (
         FOREIGN KEY(community_id)
             REFERENCES communitys(id),
 
-    CONSTRAINT fk_photos_parent
-        FOREIGN KEY(parent_id)
-            REFERENCES photos(id),
-
     CONSTRAINT fk_photos_list
         FOREIGN KEY(photo_list_id)
             REFERENCES photo_lists(id)
@@ -147,7 +143,6 @@ CREATE TABLE photos (
 CREATE INDEX photos_community_id_idx ON photos (community_id);
 CREATE INDEX photos_user_id_idx ON photos (user_id);
 CREATE INDEX photos_list_id_idx ON photos (photo_list_id);
-CREATE INDEX photos_parent_id_idx ON photos (parent_id);
 
 
 -- комментарии к записям -------
