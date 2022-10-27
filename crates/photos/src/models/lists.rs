@@ -2329,7 +2329,7 @@ impl PhotoList {
           preview:       preview.clone(),
           file:          file.clone(),
           description:   None,
-          comments_on:   comments_on,
+          comments_on:   true,
           created:       chrono::Local::now().naive_utc(),
           comment:       0,
           view:          0,
@@ -2344,16 +2344,16 @@ impl PhotoList {
             .expect("Error.");
 
         if attach.is_some() {
-            use crate::models::NewAttachItem;
-            use crate::schema::attach_items::dsl::attach_items;
+            //use crate::models::NewAttachItem;
+            //use crate::schema::attach_items::dsl::attach_items;
 
-            let v: Vec<&str> = attach.split(",").collect();
-            for item in v.iter() {
-                if item.len() > 3 {
-                    let pk: i32 = item[3..].parse().unwrap();
-                    let code = &item[..3];
-                }
-            }
+            //let v: Vec<&str> = attach.split(",").collect();
+            //for item in v.iter() {
+            //    if item.len() > 3 {
+            //        let pk: i32 = item[3..].parse().unwrap();
+            //        let code = &item[..3];
+            //    }
+            //}
         }
         return new_photo;
     }

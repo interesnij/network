@@ -272,7 +272,7 @@ impl Photo {
                 view:                 self.view,
                 repost:               self.repost,
                 reactions:            self.reactions,
-                types:                self.get_code(),
+                //types:                self.get_code(),
                 reactions_list:       self.get_reactions_json(user_id, reactions_list.clone()),
                 prev:                 prev,
                 next:                 next,
