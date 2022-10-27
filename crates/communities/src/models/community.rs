@@ -125,7 +125,7 @@ pub struct CommunitySubcategory {
 }
 
 impl CommunitySubcategory {
-    pub fn get_categories_json() -> Json<Option<Vec<CommunityCategoryJson>>> {
+    pub fn get_categories_json() -> Option<Vec<CommunityCategoryJson>> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -138,7 +138,7 @@ impl CommunitySubcategory {
             ))
         .load::<CommunityCategoryJson>(&_connection)?;
 
-        return Json(cats);
+        return cats;
         //match cats {
         //    Ok(res) => {
         //        Some(Json(res))
