@@ -21,6 +21,7 @@ use crate::utils::{
     CardOwnerJson,
     CommentsSmallJson,
     CardCommentJson,
+    AttachmentsJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -289,7 +290,7 @@ impl Post {
                 types:          c.get_code(),       // например cpo1
                 replies:        c.replies,    // кол-во ответов
                 reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
-                items:          None,
+                attachments:    None,
             });
         }
         return json;
@@ -346,7 +347,7 @@ impl Post {
                 owner_link:  creator.link.clone(),
                 owner_image: creator.image.clone(),
                 created:     _parent.created.format("%d-%m-%Y в %H:%M").to_string(),
-                items:       None,
+                attachments: None,
             })
         }
         else {

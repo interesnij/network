@@ -1,12 +1,12 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct AttachList {
-    pub attachments: Option<Attachments>,
+pub struct AttachListJson {
+    pub attachments: Option<AttachmentsJson>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Attachments {
+pub struct AttachmentsJson {
     pub items:    Option<ItemsAttach>,
     pub lists:    Option<ListsAttach>,
     pub comments: Option<CommentsAttach>,

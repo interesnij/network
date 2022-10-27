@@ -13,12 +13,11 @@ use crate::utils::{
     JsonItemReactions,
     CardUserJson,
     CardOwnerJson,
-    //RepliesJson,
     CardCommentJson,
     CardReplyJson,
-    //ReactionsCommentJson,
     ReactionBlockJson,
     RepliesSmallJson,
+    AttachmentsJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -217,7 +216,7 @@ impl PostComment {
             types:          self.get_code(),
             replies:        self.replies,
             reactions_list: self.get_reactions_json(user_id, reactions_list.clone()),
-            items:          None,
+            attachments:    None,
         };
         return card;
     }
@@ -232,7 +231,7 @@ impl PostComment {
             reactions:      self.reactions,
             types:          self.get_code(),
             reactions_list: self.get_reactions_json(user_id, reactions_list.clone()),
-            items:          None,
+            attachments:    None,
         };
         return card;
     }
