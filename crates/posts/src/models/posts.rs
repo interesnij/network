@@ -152,8 +152,12 @@ impl Post {
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
             .expect("E.");
+        let mut stack: Vec<i32> = Vec:new();
+        for id in item_reposts_ids.iter() {
+            stack.push(id.unwrap());
+        }
         return posts
-            .filter(schema::posts::id.eq_any(item_reposts_ids))
+            .filter(schema::posts::id.eq_any(stack))
             .filter(schema::posts::types.lt(10))
             .load::<Post>(&_connection)
             .expect("E");
@@ -178,8 +182,12 @@ impl Post {
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
             .expect("E.");
+        let mut stack: Vec<i32> = Vec:new();
+        for id in item_reposts_ids.iter() {
+            stack.push(id.unwrap());
+        }
         return posts
-            .filter(schema::posts::id.eq_any(item_reposts_ids))
+            .filter(schema::posts::id.eq_any(stack))
             .filter(schema::posts::types.lt(10))
             .load::<Post>(&_connection)
             .expect("E");
