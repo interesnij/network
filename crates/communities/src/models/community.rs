@@ -22,7 +22,7 @@ use diesel::{
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
-use actix_web::web::Json;
+use actix_web::{web::Json, Error};
 use crate::utils::{
     //CommunitySubcategoryJson,
     CommunityCategoryJson,
