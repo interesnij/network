@@ -55,7 +55,7 @@ impl CommunityCategory {
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
             ))
-            .load::<CommunityCategoryJson>(&_connection) {
+            .load::<CommunityCategoryJson>(&_connection)? {
                 Ok(vec) => {
                     Some(vec)
                 },
