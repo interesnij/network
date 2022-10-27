@@ -152,7 +152,7 @@ impl Post {
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
             .expect("E.");
-        let mut stack: Vec<i32> = Vec:new();
+        let mut stack: Vec<i32> = Vec::new();
         for id in item_reposts_ids.iter() {
             stack.push(id.unwrap());
         }
@@ -182,7 +182,7 @@ impl Post {
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
             .expect("E.");
-        let mut stack: Vec<i32> = Vec:new();
+        let mut stack: Vec<i32> = Vec::new();
         for id in item_reposts_ids.iter() {
             stack.push(id.unwrap());
         }
