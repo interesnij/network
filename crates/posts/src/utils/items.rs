@@ -157,7 +157,7 @@ pub struct PostDetailJson {
     pub reactions:            i32,
     pub types:                String,                         // например pos1
     pub parent:               Option<CardParentPostJson>,     // пост родитель
-    pub reposts:              Option<RepostsPostJson>,        // кто репостил пост (6 объектов)
+    pub reposts:              RepostsPostJson,                // кто репостил пост (6 объектов)
     pub reactions_list:       Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
     pub prev:                 Option<i32>,
     pub next:                 Option<i32>,

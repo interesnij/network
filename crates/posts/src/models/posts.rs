@@ -321,59 +321,49 @@ impl Post {
         item_id: i32,
         types: i16,
         limit: i64,
-    ) -> Option<RepostsPostJson> {
+    ) -> RepostsPostJson {
         // получаем репосты объекта, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in Post::get_item_reposts_with_limit(item_id, types, limit).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
 
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(item_id, types),
-                creators:        reposts_json,
-            });
+        let mut reposts_json = Vec::new();
+        for r in Post::get_item_reposts_with_limit(item_id, types, limit).iter() {
+            let creator = r.get_owner_meta();
+            reposts_json.push (
+                CardOwnerJson {
+                    name:  creator.name.clone(),
+                    link:  creator.link.clone(),
+                    image: creator.image.clone(),
+                }
+            );
         }
-        else {
-            reposts_window = None;
-        }
+
+        reposts_window = RepostsPostJson {
+            message_reposts: Post::item_message_reposts_count(item_id, types),
+            creators:        reposts_json,
+        };
         return reposts_window;
     }
     pub fn get_reposts_with_limit_json (
         &self,
         limit: i64,
-    ) -> Option<RepostsPostJson> {
+    ) -> RepostsPostJson {
         // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in self.get_reposts_with_limit(limit).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
 
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(self.id, 51),
-                creators:        reposts_json,
-            });
+        let mut reposts_json = Vec::new();
+        for r in self.get_reposts_with_limit(limit).iter() {
+            let creator = r.get_owner_meta();
+            reposts_json.push (
+                CardOwnerJson {
+                    name:  creator.name.clone(),
+                    link:  creator.link.clone(),
+                    image: creator.image.clone(),
+                }
+            );
         }
-        else {
-            reposts_window = None;
-        }
+
+        let reposts_window = RepostsPostJson {
+            message_reposts: Post::item_message_reposts_count(self.id, 51),
+            creators:        reposts_json,
+        };
         return reposts_window;
     }
 
@@ -382,60 +372,51 @@ impl Post {
         types: i16,
         limit: i64,
         offset: i64
-    ) -> Option<RepostsPostJson> {
+    ) -> RepostsPostJson {
         // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in Post::get_item_reposts(item_id, types, limit, offset).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
+        let mut reposts_json = Vec::new();
+        for r in Post::get_item_reposts(item_id, types, limit, offset).iter() {
+            let creator = r.get_owner_meta();
+            reposts_json.push (
+                CardOwnerJson {
+                    name:  creator.name.clone(),
+                    link:  creator.link.clone(),
+                    image: creator.image.clone(),
+                }
+            );
+        }
 
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(item_id, types),
-                creators:        reposts_json,
-            });
-        }
-        else {
-            reposts_window = None;
-        }
+        let reposts_window = RepostsPostJson {
+            message_reposts: Post::item_message_reposts_count(item_id, types),
+            creators:        reposts_json,
+        };
+
         return reposts_window;
     }
+
     pub fn get_reposts_json (
         &self,
         limit: i64,
         offset: i64
-    ) -> Option<RepostsPostJson> {
+    ) -> RepostsPostJson {
         // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in self.get_reposts(limit, offset).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
 
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(self.id, 51),
-                creators:        reposts_json,
-            });
+        let mut reposts_json = Vec::new();
+        for r in self.get_reposts(limit, offset).iter() {
+            let creator = r.get_owner_meta();
+            reposts_json.push (
+                CardOwnerJson {
+                    name:  creator.name.clone(),
+                    link:  creator.link.clone(),
+                    image: creator.image.clone(),
+                }
+            );
         }
-        else {
-            reposts_window = None;
-        }
+
+        let reposts_window = RepostsPostJson {
+            message_reposts: Post::item_message_reposts_count(self.id, 51),
+            creators:        reposts_json,
+        };
         return reposts_window;
     }
 
