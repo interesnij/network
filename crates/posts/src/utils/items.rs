@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::Attachments;
+use crate::utils::AttachmentsJson;
 
 
 #[derive(Deserialize)]

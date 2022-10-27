@@ -297,11 +297,11 @@ pub struct CommentAttach {
     pub created:      chrono::NaiveDateTime,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct PlannersAttach {
-    pub workspaces:       Option<Vec<WorkspaceAttach>>,
-    pub boards:           Option<Vec<BoardAttach>>,
-    pub columns:          Option<Vec<ColumnAttach>>,
-    pub planner_cards:    Option<Vec<PlannerCardAttach>>,
-    pub planner_comments: Option<Vec<PlannerCommentAttach>>,
-}
+//#[derive(Serialize, Deserialize)]
+//pub struct PlannersAttach {
+//    pub workspaces:       Option<Vec<WorkspaceAttach>>,
+//    pub boards:           Option<Vec<BoardAttach>>,
+//    pub columns:          Option<Vec<ColumnAttach>>,
+//    pub planner_cards:    Option<Vec<PlannerCardAttach>>,
+//    pub planner_comments: Option<Vec<PlannerCommentAttach>>,
+//}
