@@ -163,7 +163,7 @@ pub struct PostDetailJson {
     pub next:                 Option<i32>,
     pub is_user_see_comments: bool,
     pub is_user_create_el:    bool,
-    pub comments:             CommentsSmallJson,
+    pub comments:             Vec<CardCommentJson>,
     pub attachments:          Option<AttachmentsJson>,
 }
 
@@ -182,7 +182,6 @@ pub struct CardParentPostJson {
 // это инфо о тех, кто репостил, и цифры
 pub struct RepostsPostJson {
     pub message_reposts: usize,
-    pub copy_count:      String,
     pub creators:        Vec<CardOwnerJson>,
 }
 
@@ -208,12 +207,6 @@ pub struct CardReactionPostJson {
 // это объекты комментов
 pub struct CommentsJson {
     pub reactions_list: Vec<CardReactionPostJson>,
-    pub comments:       Vec<CardCommentJson>,
-    pub next_page:      i32,
-}
-#[derive(Serialize)]
-// это объекты комментов для встраивания
-pub struct CommentsSmallJson {
     pub comments:       Vec<CardCommentJson>,
     pub next_page:      i32,
 }

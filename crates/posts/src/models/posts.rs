@@ -322,7 +322,7 @@ impl Post {
         types: i16,
         limit: i64,
     ) -> Option<RepostsPostJson> {
-        // получаем репосты записи, если есть
+        // получаем репосты объекта, если есть
         let reposts_window: Option<RepostsPostJson>;
         if self.repost > 0 {
             let mut reposts_json = Vec::new();
@@ -339,7 +339,6 @@ impl Post {
 
             reposts_window = Some(RepostsPostJson {
                 message_reposts: Post::item_message_reposts_count(item_id, types),
-                copy_count:      self.count_copy(),
                 creators:        reposts_json,
             });
         }
@@ -368,8 +367,7 @@ impl Post {
             }
 
             reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(item_id, types),
-                copy_count:      self.count_copy(),
+                message_reposts: Post::item_message_reposts_count(self.id, 51),
                 creators:        reposts_json,
             });
         }
@@ -401,8 +399,7 @@ impl Post {
             }
 
             reposts_window = Some(RepostsPostJson {
-                message_reposts: self.message_reposts_count(),
-                copy_count:      self.count_copy(),
+                message_reposts: Post::item_message_reposts_count(item_id, types),
                 creators:        reposts_json,
             });
         }
@@ -432,8 +429,7 @@ impl Post {
             }
 
             reposts_window = Some(RepostsPostJson {
-                message_reposts: self.message_reposts_count(),
-                copy_count:      self.count_copy(),
+                message_reposts: Post::item_message_reposts_count(self.id, 51),
                 creators:        reposts_json,
             });
         }
