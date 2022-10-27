@@ -125,7 +125,7 @@ pub struct CommunitySubcategory {
 }
 
 impl CommunitySubcategory {
-    pub fn get_categories_json() -> Json<Option<Vec<CommunityCategoryJson>>>> {
+    pub fn get_categories_json() -> Json<Option<Vec<CommunityCategoryJson>>> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -136,9 +136,17 @@ impl CommunitySubcategory {
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
             ))
-            .load::<CommunityCategoryJson>(&_connection)
-            .expect("E");
-        return Json(cats);
+        .load::<CommunityCategoryJson>(&_connection)?;
+        return match cats {
+            Ok(res) => {
+                //log::info!("Successfully create medicine {}", medicine.name.clone());
+                Some(Json(res))
+            },
+            Err(err) => {
+                //log::error!("Failed create medicine: {}", err.to_string());
+                None
+            }
+        }
     }
     pub fn edit_subcategory(&self, name: String, category_id: i32,
         avatar: Option<String>, position: i16) -> Option<&CommunitySubcategory> {
