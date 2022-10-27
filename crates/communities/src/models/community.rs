@@ -55,7 +55,7 @@ impl CommunityCategory {
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
             ))
-            .load::<CommunityCategoryJson>(&_connection)?;
+            .load::<CommunityCategoryJson>(&_connection).ok()?;
         return cats;
     }
     pub fn create_category(name: String, avatar: Option<String>,
