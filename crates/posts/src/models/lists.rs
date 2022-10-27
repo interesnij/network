@@ -2358,8 +2358,8 @@ impl PostList {
         if attach.is_some() {
             use crate::models::NewAttachItem;
             use crate::schema::attach_items::dsl::attach_items;
-
-            let v: Vec<&str> = attach.unwrap().split(",").collect();
+            let _attach = attach.unwrap().to_string();
+            let v: Vec<&str> = _attach.split(",").collect();
             for item in v.iter() {
                 if item.len() > 3 {
                     let pk: i32 = item[3..].parse().unwrap();
