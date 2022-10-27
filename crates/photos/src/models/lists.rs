@@ -7,29 +7,28 @@ use diesel::{
     QueryDsl,
     NullableExpressionMethods,
 };
-use crate::schema::post_lists;
+use crate::schema::photo_lists;
 
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
-    get_post_list,
-    PostListDetailJson,
-    PostListPageJson,
+    get_photo_list,
+    PhotoListDetailJson,
+    PhotoListPageJson,
     UserListJson,
     CardUserJson,
     CardOwnerJson,
 };
 use actix_web::web::Json;
 use crate::models::{
-    Post, User, Community,
-    UserPostListCollection, NewUserPostListCollection,
-    UserPostListPosition, CommunityPostListPosition,
-    CommunityPostListCollection, NewCommunityPostListCollection,
-    PostListPerm, NewPostListPerm,
-    //PostListRepost,
+    Photo, User, Community,
+    UserPhotoListCollection, NewUserPhotoListCollection,
+    UserPhotoListPosition, CommunityPhotoListPosition,
+    CommunityPohotoListCollection, NewCommunityPhotoListCollection,
+    PhotoListPerm, NewPhotoListPerm,
 };
 
-/////// PostList //////
+/////// PhotoList //////
 ////////// Тип списка
     // 1 основной список
     // 2 пользовательский список
@@ -77,9 +76,9 @@ use crate::models::{
     // 19 Некоторые подписчики
     // 20 Владелец сообщества
 
-/////// PostList //////
+/////// PhotoList //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct PostList {
+pub struct PhotoList {
     pub id:             i32,
     pub name:           String,
     pub community_id:   Option<i32>,
@@ -102,8 +101,8 @@ pub struct PostList {
     pub reactions:      Option<String>,
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="post_lists"]
-pub struct NewPostList {
+#[table_name="photo_lists"]
+pub struct NewPhotoList {
     pub name:           String,
     pub community_id:   Option<i32>,
     pub user_id:        i32,
@@ -125,8 +124,8 @@ pub struct NewPostList {
     pub reactions:      Option<String>,
 }
 #[derive(Queryable, Serialize, Deserialize, AsChangeset, Debug)]
-#[table_name="post_lists"]
-pub struct EditPostList {
+#[table_name="photo_lists"]
+pub struct EditPhotoList {
     pub name:           String,
     pub description:    Option<String>,
     pub image:          Option<String>,
@@ -138,7 +137,7 @@ pub struct EditPostList {
     pub reactions:      Option<String>,
 }
 
-impl PostList {
+impl PhotoList {
     pub fn get_creator(&self) -> User {
         use crate::schema::users::dsl::users;
 
@@ -212,24 +211,24 @@ impl PostList {
         }
     }
 
-    pub fn get_json_user_post_page(user_id: i32, page: i32, limit: i32) -> Json<PostListPageJson> {
-        use crate::utils::CardPostListJson;
+    pub fn get_json_user_photo_page(user_id: i32, page: i32, limit: i32) -> Json<PhotoListPageJson> {
+        use crate::utils::CardPhotoListJson;
 
         let mut next_page_number = 0;
-        let selected_post_list_pk = PostList::get_user_selected_post_list_pk(user_id);
-        let list = get_post_list(selected_post_list_pk);
-        let lists: Vec<PostList>;
+        let selected_photo_list_pk = PhotoList::get_user_selected_photo_list_pk(user_id);
+        let list = get_photo_list(selected_photo_list_pk);
+        let lists: Vec<PhotoList>;
         let have_next: i32;
 
         if page > 1 {
             have_next = page * limit + 1;
-            lists = PostList::get_user_post_lists(user_id, limit.into(), have_next.into());
+            lists = PhotoList::get_user_photo_lists(user_id, limit.into(), have_next.into());
         }
         else {
             have_next = limit + 1;
-            lists = PostList::get_user_post_lists(user_id, limit.into(), 0);
+            lists = PhotoList::get_user_photo_lists(user_id, limit.into(), 0);
         }
-        if PostList::get_user_post_lists(user_id, 1, have_next.into()).len() > 0 {
+        if PhotoList::get_user_photo_lists(user_id, 1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
 
@@ -239,7 +238,7 @@ impl PostList {
         for i in lists.iter() {
             let owner = i.get_owner_meta();
             lists_json.push (
-                CardPostListJson {
+                CardPhotoListJson {
                     name:        i.name.clone(),
                     owner_name:  owner.name.clone(),
                     owner_link:  owner.link.clone(),
@@ -251,8 +250,8 @@ impl PostList {
             );
         }
 
-        let data = PostListPageJson {
-            selected_list_id: selected_post_list_pk,
+        let data = PhotoListPageJson {
+            selected_list_id: selected_photo_list_pk,
             owner_name:       list_owner.name.clone(),
             owner_link:       list_owner.link.clone(),
             owner_image:      list_owner.image.clone(),
@@ -262,24 +261,24 @@ impl PostList {
         };
         return Json(data);
     }
-    pub fn get_json_community_post_page(community_id: i32, page: i32, limit: i32) -> Json<PostListPageJson> {
-        use crate::utils::CardPostListJson;
+    pub fn get_json_community_photo_page(community_id: i32, page: i32, limit: i32) -> Json<PhotoListPageJson> {
+        use crate::utils::CardPhotoListJson;
 
         let mut next_page_number = 0;
-        let selected_post_list_pk = PostList::get_community_selected_post_list_pk(community_id);
-        let list = get_post_list(selected_post_list_pk);
-        let lists: Vec<PostList>;
+        let selected_photo_list_pk = PhotoList::get_community_selected_photo_list_pk(community_id);
+        let list = get_photo_list(selected_photo_list_pk);
+        let lists: Vec<PhotoList>;
 
         let have_next: i32;
         if page > 1 {
             have_next = page * limit + 1;
-            lists = PostList::get_community_post_lists(community_id, limit.into(), have_next.into());
+            lists = PhotoList::get_community_photo_lists(community_id, limit.into(), have_next.into());
         }
         else {
             have_next = limit + 1;
-            lists = PostList::get_community_post_lists(community_id, limit.into(), 0);
+            lists = PhotoList::get_community_photo_lists(community_id, limit.into(), 0);
         }
-        if PostList::get_community_post_lists(community_id, 1, have_next.into()).len() > 0 {
+        if PhotoList::get_community_photo_lists(community_id, 1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
 
@@ -288,7 +287,7 @@ impl PostList {
         for i in lists.iter() {
             let owner = i.get_owner_meta();
             lists_json.push (
-                CardPostListJson {
+                CardPhotoListJson {
                     name:        i.name.clone(),
                     owner_name:  owner.name.clone(),
                     owner_link:  owner.link.clone(),
@@ -301,8 +300,8 @@ impl PostList {
         }
 
 
-        let data = PostListPageJson {
-            selected_list_id: selected_post_list_pk,
+        let data = PhotoListPageJson {
+            selected_list_id: selected_photo_list_pk,
             owner_name:       list_owner.name.clone(),
             owner_link:       list_owner.link.clone(),
             owner_image:      list_owner.image.clone(),
@@ -313,22 +312,22 @@ impl PostList {
         return Json(data);
     }
 
-    pub fn get_json_post_list (
+    pub fn get_json_photo_list (
         user_id: i32,
         list_id: i32,
         page: i32,
         limit: i32
-    ) -> Json<PostListDetailJson> {
-        use crate::utils::CardPostListJson;
+    ) -> Json<PhotoListDetailJson> {
+        use crate::utils::CardPhotoListJson;
 
         let mut next_page_number = 0;
-        let list = get_post_list(list_id);
-        let lists: Vec<PostList>;
+        let list = get_photo_list(list_id);
+        let lists: Vec<PhotoList>;
         if list.community_id.is_some() {
-            lists = PostList::get_community_post_lists(list.community_id.unwrap(), 20, 0);
+            lists = PhotoList::get_community_photo_lists(list.community_id.unwrap(), 20, 0);
         }
         else {
-            lists = PostList::get_user_post_lists(user_id, 20, 0);
+            lists = PhotoList::get_user_photo_lists(user_id, 20, 0);
         }
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta();
@@ -336,7 +335,7 @@ impl PostList {
         for i in lists.iter() {
             let owner = i.get_owner_meta();
             lists_json.push (
-                CardPostListJson {
+                CardPhotoListJson {
                     name:        i.name.clone(),
                     owner_name:  owner.name.clone(),
                     owner_link:  owner.link.clone(),
@@ -348,28 +347,28 @@ impl PostList {
             );
         }
 
-        let posts: Vec<Post>;
+        let photos: Vec<Photo>;
         let have_next: i32;
         let reactions_list = list.get_reactions_list();
 
         if page > 1 {
             have_next = page * limit + 1;
-            posts = list.get_paginate_items(limit.into(), have_next.into());
+            photos = list.get_paginate_items(limit.into(), have_next.into());
         }
         else {
             have_next = limit + 1;
-            posts = list.get_paginate_items(limit.into(), 0);
+            photos = list.get_paginate_items(limit.into(), 0);
         }
         if list.get_paginate_items(1, have_next.into()).len() > 0 {
             next_page_number = page + 1;
         }
 
-        let mut posts_json = Vec::new();
-        for i in posts.iter() {
-            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
+        let mut photos_json = Vec::new();
+        for i in photos.iter() {
+            photos_json.push ( i.get_photo_json(user_id, reactions_list.clone()) )
         }
 
-        let data = PostListDetailJson {
+        let data = PhotoListDetailJson {
             id:                list.id,
             name:              list.name.clone(),
             owner_name:        list_owner.name.clone(),
@@ -379,7 +378,7 @@ impl PostList {
             types:             list.types,
             count:             list.count,
             reactions_list:    reactions_list,
-            posts:             posts_json,
+            photos:            photos_json,
             lists:             lists_json,
             next_page:         next_page_number,
             is_user_create_el: list.is_user_create_el(user_id),
@@ -390,7 +389,7 @@ impl PostList {
     pub fn get_str_id(&self) -> String {
         return self.id.to_string();
     }
-    pub fn is_post_list(&self) -> bool {
+    pub fn is_photo_list(&self) -> bool {
         return true;
     }
     pub fn get_code(&self) -> String {
@@ -440,7 +439,7 @@ impl PostList {
     }
 
     pub fn get_description(&self) -> String {
-        return "<a data-postlist='".to_string() + &self.get_str_id() + &"' class='ajax'>".to_string() + &self.name + &"</a>".to_string();
+        return "<a data-photolist='".to_string() + &self.get_str_id() + &"' class='ajax'>".to_string() + &self.name + &"</a>".to_string();
     }
     pub fn is_user_list(&self, user_id: i32) -> bool {
         return self.user_id == user_id;
@@ -449,23 +448,23 @@ impl PostList {
         return self.community_id.unwrap() == community_id;
     }
     pub fn get_users_ids(&self) -> Vec<i32> {
-        use crate::schema::user_post_list_collections::dsl::user_post_list_collections;
+        use crate::schema::user_photo_list_collections::dsl::user_photo_list_collections;
 
         let _connection = establish_connection();
-        let ids = user_post_list_collections
-            .filter(schema::user_post_list_collections::post_list_id.eq(self.id))
-            .select(schema::user_post_list_collections::user_id)
+        let ids = user_photo_list_collections
+            .filter(schema::user_photo_list_collections::photo_list_id.eq(self.id))
+            .select(schema::user_photo_list_collections::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
         return ids;
     }
     pub fn get_communities_ids(&self) -> Vec<i32> {
-        use crate::schema::community_post_list_collections::dsl::community_post_list_collections;
+        use crate::schema::community_photo_list_collections::dsl::community_photo_list_collections;
 
         let _connection = establish_connection();
-        let ids = community_post_list_collections
-            .filter(schema::community_post_list_collections::post_list_id.eq(self.id))
-            .select(schema::community_post_list_collections::community_id)
+        let ids = community_photo_list_collections
+            .filter(schema::community_photo_list_collections::photo_list_id.eq(self.id))
+            .select(schema::community_photo_list_collections::community_id)
             .load::<i32>(&_connection)
             .expect("E.");
         return ids;
@@ -484,28 +483,28 @@ impl PostList {
             return "".to_string()
         }
     }
-    pub fn get_items(&self) -> Vec<Post> {
-        use crate::schema::posts::dsl::posts;
+    pub fn get_items(&self) -> Vec<Photo> {
+        use crate::schema::photos::dsl::photos;
 
         let _connection = establish_connection();
-        return posts
-            .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.eq(1))
-            .order(schema::posts::created.desc())
-            .load::<Post>(&_connection)
+        return photos
+            .filter(schema::photos::photo_list_id.eq(self.id))
+            .filter(schema::photos::types.eq(1))
+            .order(schema::photos::created.desc())
+            .load::<Photo>(&_connection)
             .expect("E.");
     }
-    pub fn get_paginate_items(&self, limit: i64, offset: i64) -> Vec<Post> {
-        use crate::schema::posts::dsl::posts;
+    pub fn get_paginate_items(&self, limit: i64, offset: i64) -> Vec<Photo> {
+        use crate::schema::photos::dsl::photos;
 
         let _connection = establish_connection();
-        return posts
-            .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.eq(1))
+        return photos
+            .filter(schema::photos::photo_list_id.eq(self.id))
+            .filter(schema::photos::types.eq(1))
             .limit(limit)
             .offset(offset)
-            .order(schema::posts::created.desc())
-            .load::<Post>(&_connection)
+            .order(schema::photos::created.desc())
+            .load::<Photo>(&_connection)
             .expect("E.");
     }
     pub fn count_items(&self) -> String {
@@ -528,26 +527,26 @@ impl PostList {
     }
 
     pub fn get_see_el_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(11))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(11))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
         return items;
     }
     pub fn get_see_el_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(1))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(1))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -640,26 +639,26 @@ impl PostList {
     }
 
     pub fn get_see_comment_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(12))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(12))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
         return items;
     }
     pub fn get_see_comment_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(2))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(2))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -751,26 +750,26 @@ impl PostList {
     }
 
     pub fn get_create_el_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(13))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(13))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
         return items;
     }
     pub fn get_create_el_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(3))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(3))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -862,26 +861,26 @@ impl PostList {
     }
 
     pub fn get_create_comment_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(14))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(14))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
         return items;
     }
     pub fn get_create_comment_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(4))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(4))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -973,26 +972,26 @@ impl PostList {
     }
 
     pub fn get_copy_el_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(15))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(15))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
         return items;
     }
     pub fn get_copy_el_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(5))
-            .select(schema::post_list_perms::user_id)
+        let items = photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.eq(5))
+            .select(schema::photo_list_perms::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -1290,134 +1289,134 @@ impl PostList {
         return self.copy_el == 1 || self.copy_el == 14;
     }
 
-    pub fn get_community_selected_post_list_pk(community_id: i32) -> i32 {
-        use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
+    pub fn get_community_selected_photo_list_pk(community_id: i32) -> i32 {
+        use crate::schema::community_photo_list_positions::dsl::community_photo_list_positions;
 
         let _connection = establish_connection();
-        let _post_list_positions = community_post_list_positions
-            .filter(schema::community_post_list_positions::community_id.eq(community_id))
-            .filter(schema::community_post_list_positions::types.eq(1))
+        let _photo_list_positions = community_photo_list_positions
+            .filter(schema::community_photo_list_positions::community_id.eq(community_id))
+            .filter(schema::community_photo_list_positions::types.eq(1))
             .limit(1)
-            .select(schema::community_post_list_positions::list_id)
+            .select(schema::community_photo_list_positions::list_id)
             .load::<i32>(&_connection)
             .expect("E.");
-        if _post_list_positions.len() > 0 {
-            return _post_list_positions
+        if _photo_list_positions.len() > 0 {
+            return _photo_list_positions
             .into_iter()
             .nth(0)
             .unwrap();
         }
         else {
-            return PostList::get_community_post_list(community_id).id;
+            return PhotoList::get_community_photo_list(community_id).id;
         }
     }
-    pub fn get_user_selected_post_list_pk(user_id: i32) -> i32 {
+    pub fn get_user_selected_photo_list_pk(user_id: i32) -> i32 {
         let _connection = establish_connection();
 
-        use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
+        use crate::schema::user_photo_list_positions::dsl::user_photo_list_positions;
 
-        let _post_list_positions = user_post_list_positions
-            .filter(schema::user_post_list_positions::user_id.eq(user_id))
-            .filter(schema::user_post_list_positions::types.eq(1))
+        let _photo_list_positions = user_photo_list_positions
+            .filter(schema::user_photo_list_positions::user_id.eq(user_id))
+            .filter(schema::user_photo_list_positions::types.eq(1))
             .limit(1)
-            .select(schema::user_post_list_positions::list_id)
+            .select(schema::user_photo_list_positions::list_id)
             .load::<i32>(&_connection)
             .expect("E.");
-        if _post_list_positions.len() > 0 {
-            return _post_list_positions
+        if _photo_list_positions.len() > 0 {
+            return _photo_list_positions
             .into_iter()
             .nth(0)
             .unwrap();
         }
         else {
-            return PostList::get_user_post_list(user_id).id;
+            return PhotoList::get_user_photo_list(user_id).id;
         }
     }
-    pub fn get_user_post_list(user_id: i32) -> PostList {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn get_user_photo_list(user_id: i32) -> PhotoList {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        let lists = post_lists
-            .filter(schema::post_lists::user_id.eq(user_id))
-            .filter(schema::post_lists::community_id.is_null())
-            .filter(schema::post_lists::types.eq(1))
-            .load::<PostList>(&_connection)
+        let lists = photo_lists
+            .filter(schema::photo_lists::user_id.eq(user_id))
+            .filter(schema::photo_lists::community_id.is_null())
+            .filter(schema::photo_lists::types.eq(1))
+            .load::<PhotoList>(&_connection)
             .expect("E.");
 
         return lists.into_iter().nth(0).unwrap();
     }
-    pub fn get_community_post_list(community_id: i32) -> PostList {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn get_community_photo_list(community_id: i32) -> PhotoList {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        let lists = post_lists
-            .filter(schema::post_lists::community_id.eq(community_id))
-            .filter(schema::post_lists::types.eq(1))
-            .load::<PostList>(&_connection)
+        let lists = photo_lists
+            .filter(schema::photo_lists::community_id.eq(community_id))
+            .filter(schema::photo_lists::types.eq(1))
+            .load::<PhotoList>(&_connection)
             .expect("E.");
         return lists.into_iter().nth(0).unwrap();
     }
 
-    pub fn get_user_post_lists(user_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn get_user_photo_lists(user_id: i32, limit: i64, offset: i64) -> Vec<PhotoList> {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::user_id.eq(user_id))
-            .filter(schema::post_lists::community_id.is_null())
-            .filter(schema::post_lists::types.lt(10))
-            .order(schema::post_lists::created.desc())
+        return photo_lists
+            .filter(schema::photo_lists::user_id.eq(user_id))
+            .filter(schema::photo_lists::community_id.is_null())
+            .filter(schema::photo_lists::types.lt(10))
+            .order(schema::photo_lists::created.desc())
             .limit(limit)
             .offset(offset)
-            .load::<PostList>(&_connection)
+            .load::<PhotoList>(&_connection)
             .expect("E.");
     }
-    pub fn count_user_post_lists(user_id: i32) -> usize {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn count_user_photo_lists(user_id: i32) -> usize {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::user_id.eq(user_id))
-            .filter(schema::post_lists::community_id.is_null())
-            .filter(schema::post_lists::types.lt(10))
-            .select(schema::post_lists::id)
+        return photo_lists
+            .filter(schema::photo_lists::user_id.eq(user_id))
+            .filter(schema::photo_lists::community_id.is_null())
+            .filter(schema::photo_lists::types.lt(10))
+            .select(schema::photo_lists::id)
             .load::<i32>(&_connection)
             .expect("E.")
             .len();
     }
 
-    pub fn get_community_post_lists(community_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn get_community_photo_lists(community_id: i32, limit: i64, offset: i64) -> Vec<PhotoList> {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::community_id.eq(community_id))
-            .filter(schema::post_lists::types.lt(10))
-            .order(schema::post_lists::created.desc())
+        return photo_lists
+            .filter(schema::photo_lists::community_id.eq(community_id))
+            .filter(schema::photo_lists::types.lt(10))
+            .order(schema::photo_lists::created.desc())
             .limit(limit)
             .offset(offset)
-            .load::<PostList>(&_connection)
+            .load::<PhotoList>(&_connection)
             .expect("E.");
     }
 
-    pub fn count_community_post_lists(community_id: i32) -> usize {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn count_community_photo_lists(community_id: i32) -> usize {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::community_id.eq(community_id))
-            .filter(schema::post_lists::types.lt(10))
-            .select(schema::post_lists::id)
+        return photo_lists
+            .filter(schema::photo_lists::community_id.eq(community_id))
+            .filter(schema::photo_lists::types.lt(10))
+            .select(schema::photo_lists::id)
             .load::<i32>(&_connection)
             .expect("E.")
             .len();
     }
 
-    pub fn get_user_post_lists_new_position(user_id: i32) -> i16 {
-        return (PostList::count_user_post_lists(user_id) + 1).try_into().unwrap();
+    pub fn get_user_photo_lists_new_position(user_id: i32) -> i16 {
+        return (PhotoList::count_user_photo_lists(user_id) + 1).try_into().unwrap();
     }
-    pub fn get_community_post_lists_new_position(community_id: i32) -> i16 {
-        return (PostList::count_community_post_lists(community_id) + 1).try_into().unwrap();
+    pub fn get_community_photo_lists_new_position(community_id: i32) -> i16 {
+        return (PhotoList::count_community_photo_lists(community_id) + 1).try_into().unwrap();
     }
 
     pub fn create_list (
@@ -1437,10 +1436,10 @@ impl PostList {
         create_comment_users: Option<Vec<i32>>,
         copy_el_users:        Option<Vec<i32>>,
         reactions:            Option<String>
-    ) -> PostList {
+    ) -> PhotoList {
         use crate::models::{
-            NewCommunityPostListPosition,
-            NewUserPostListPosition,
+            NewCommunityPhotoListPosition,
+            NewUserPhotoListPosition,
         };
 
         let _connection = establish_connection();
@@ -1452,7 +1451,7 @@ impl PostList {
             _name = name;
         }
 
-        let new_post_list = NewPostList {
+        let new_photo_list = NewPhotoList {
             name:           _name,
             community_id:   community_id,
             user_id:        creator_id,
@@ -1470,34 +1469,34 @@ impl PostList {
             copy_el:        copy_el,
             reactions:      reactions,
         };
-        let new_list = diesel::insert_into(schema::post_lists::table)
-            .values(&new_post_list)
-            .get_result::<PostList>(&_connection)
+        let new_list = diesel::insert_into(schema::photo_lists::table)
+            .values(&new_photo_list)
+            .get_result::<PhotoList>(&_connection)
             .expect("Error.");
 
         if community_id.is_some() {
             let community_pk = community_id.unwrap();
-            let _new_posts_list_position = NewCommunityPostListPosition {
+            let _new_photos_list_position = NewCommunityPhotoListPosition {
                 community_id: community_pk,
                 list_id:      new_list.id,
-                position:     PostList::get_community_post_lists_new_position(community_pk),
+                position:     PhotoList::get_community_photo_lists_new_position(community_pk),
                 types:        1,
             };
-            let _posts_list_position = diesel::insert_into(schema::community_post_list_positions::table)
-                .values(&_new_posts_list_position)
-                .get_result::<CommunityPostListPosition>(&_connection)
+            let _photos_list_position = diesel::insert_into(schema::community_photo_list_positions::table)
+                .values(&_new_photos_list_position)
+                .get_result::<CommunityPhotoListPosition>(&_connection)
                 .expect("Error.");
         }
         else {
-            let _new_posts_list_position = NewUserPostListPosition {
+            let _new_photos_list_position = NewUserPhotoListPosition {
                 user_id:  creator_id,
                 list_id:  new_list.id,
-                position: PostList::get_user_post_lists_new_position(creator_id),
+                position: PhotoList::get_user_photo_lists_new_position(creator_id),
                 types:    1,
             };
-            let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)
-                .values(&_new_posts_list_position)
-                .get_result::<UserPostListPosition>(&_connection)
+            let _photos_list_position = diesel::insert_into(schema::user_photo_list_positions::table)
+                .values(&_new_photos_list_position)
+                .get_result::<UserPhotoListPosition>(&_connection)
                 .expect("Error.");
         }
         let exclude_vec = vec![3, 5, 8, 10, 18];
@@ -1506,14 +1505,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
                 for user_id in see_el_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
+                    let _new_exclude = NewPhotoListPerm {
                         user_id:      user_id,
-                        post_list_id: new_list.id,
+                        photo_list_id: new_list.id,
                         types:        11,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1521,14 +1520,14 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
                 for user_id in see_el_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        1,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         1,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1537,14 +1536,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
                 for user_id in see_comment_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        12,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         12,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1552,14 +1551,14 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
                 for user_id in see_comment_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        2,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         2,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1568,14 +1567,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
                 for user_id in create_el_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        13,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         13,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1583,14 +1582,14 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
                 for user_id in create_el_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        3,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         3,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1599,14 +1598,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
                 for user_id in create_comment_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        14,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         14,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1614,15 +1613,15 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
                 for user_id in create_comment_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        4,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         4,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
-                        .expect("Error saving post_list_position.");
+                        .get_result::<PhotoListPerm>(&_connection)
+                        .expect("Error saving photo_list_position.");
                 }
             }
         }
@@ -1630,30 +1629,30 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
                 for user_id in copy_el_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        15,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         15,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
-                        .expect("Error saving post_list_position.");
+                        .get_result::<PhotoListPerm>(&_connection)
+                        .expect("Error saving photo_list_position.");
                 }
             }
         }
         else if include_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
                 for user_id in copy_el_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: new_list.id,
-                        types:        5,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: new_list.id,
+                        types:         5,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
-                        .expect("Error saving post_list_position.");
+                        .get_result::<PhotoListPerm>(&_connection)
+                        .expect("Error saving photo_list_position.");
                 }
             }
         }
@@ -1675,9 +1674,9 @@ impl PostList {
         create_comment_users: Option<Vec<i32>>,
         copy_el_users:        Option<Vec<i32>>,
         reactions:            Option<String>,
-    ) -> &PostList {
+    ) -> &PhotoList {
 
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::photo_list_perms::dsl::photo_list_perms;
 
         let _connection = establish_connection();
         let _name: String;
@@ -1696,7 +1695,7 @@ impl PostList {
             react = reactions;
         }
 
-        let edit_post_list = EditPostList {
+        let edit_photo_list = EditPhotoList {
             name:           _name,
             description:    descr,
             image:          image,
@@ -1708,16 +1707,16 @@ impl PostList {
             reactions:      react,
         };
         diesel::update(self)
-            .set(edit_post_list)
-            .get_result::<PostList>(&_connection)
+            .set(edit_photo_list)
+            .get_result::<PhotoList>(&_connection)
             .expect("Error.");
         let exclude_vec = vec![3, 5, 8, 10, 18];
         let include_vec = vec![4, 6, 9, 11, 19];
 
         diesel::delete (
-          post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.ne(20))
+          photo_list_perms
+            .filter(schema::photo_list_perms::photo_list_id.eq(self.id))
+            .filter(schema::photo_list_perms::types.ne(20))
         )
         .execute(&_connection)
         .expect("E");
@@ -1725,14 +1724,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
                 for user_id in see_el_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        11,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         11,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1740,14 +1739,14 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
                 for user_id in see_el_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        1,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         1,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1756,29 +1755,29 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
                 for user_id in see_comment_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        12,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         12,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
-                        .expect("Error saving post_list_position.");
+                        .get_result::<PhotoListPerm>(&_connection)
+                        .expect("Error saving photo_list_position.");
                 }
             }
         }
         else if include_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
                 for user_id in see_comment_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        2,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         2,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1787,14 +1786,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
                 for user_id in create_el_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        13,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         13,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1802,14 +1801,14 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
                 for user_id in create_el_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        3,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         3,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1818,14 +1817,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
                 for user_id in create_comment_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        14,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         14,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1833,14 +1832,14 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
                 for user_id in create_comment_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        4,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         4,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1849,14 +1848,14 @@ impl PostList {
         if exclude_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
                 for user_id in copy_el_users.unwrap() {
-                    let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        15,
+                    let _new_exclude = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         15,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1864,139 +1863,139 @@ impl PostList {
         else if include_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
                 for user_id in copy_el_users.unwrap() {
-                    let _new_include = NewPostListPerm {
-                        user_id:      user_id,
-                        post_list_id: self.id,
-                        types:        5,
+                    let _new_include = NewPhotoListPerm {
+                        user_id:       user_id,
+                        photo_list_id: self.id,
+                        types:         5,
                     };
-                    diesel::insert_into(schema::post_list_perms::table)
+                    diesel::insert_into(schema::photo_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .get_result::<PhotoListPerm>(&_connection)
                         .expect("Error.");
                 }
             }
         }
         return self;
     }
-    pub fn get_order(&self) -> UserPostListPosition {
-        use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
+    pub fn get_order(&self) -> UserPhotoListPosition {
+        use crate::schema::user_photo_list_positions::dsl::user_photo_list_positions;
 
         let _connection = establish_connection();
-        return user_post_list_positions
-            .filter(schema::user_post_list_positions::list_id.eq(self.id))
-            .filter(schema::user_post_list_positions::types.eq(1))
-            .load::<UserPostListPosition>(&_connection)
+        return user_photo_list_positions
+            .filter(schema::user_photo_list_positions::list_id.eq(self.id))
+            .filter(schema::user_photo_list_positions::types.eq(1))
+            .load::<UserPhotoListPosition>(&_connection)
             .expect("E")
             .into_iter()
             .nth(0)
             .unwrap();
     }
     pub fn add_in_community_collections(&self, community_id: i32) -> () {
-        use crate::models::NewCommunityPostListPosition;
+        use crate::models::NewCommunityPhotoListPosition;
 
         if !self.get_communities_ids().iter().any(|&i| i==community_id) && self.community_id.is_some() && self.community_id.unwrap() == community_id {
             return;
         }
         let _connection = establish_connection();
-        let new_item = NewCommunityPostListCollection {
-            community_id: community_id,
-            post_list_id: self.id,
+        let new_item = NewCommunityPhotoListCollection {
+            community_id:  community_id,
+            photo_list_id: self.id,
         };
-        diesel::insert_into(schema::community_post_list_collections::table)
+        diesel::insert_into(schema::community_photo_list_collections::table)
             .values(&new_item)
-            .get_result::<CommunityPostListCollection>(&_connection)
+            .get_result::<CommunityPhotoListCollection>(&_connection)
             .expect("Error.");
 
-        let new_pos = NewCommunityPostListPosition {
+        let new_pos = NewCommunityPhotoListPosition {
             community_id: community_id,
             list_id:      self.id,
-            position:     PostList::get_community_post_lists_new_position(community_id),
+            position:     PhotoList::get_community_photo_lists_new_position(community_id),
             types:        1,
         };
-        diesel::insert_into(schema::community_post_list_positions::table)
+        diesel::insert_into(schema::community_photo_list_positions::table)
             .values(&new_pos)
-            .get_result::<CommunityPostListPosition>(&_connection)
+            .get_result::<CommunityPhotoListPosition>(&_connection)
             .expect("Error.");
     }
     pub fn remove_in_community_collections(&self, community_id: i32) -> () {
-        use crate::schema::community_post_list_collections::dsl::community_post_list_collections;
-        use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
+        use crate::schema::community_photo_list_collections::dsl::community_photo_list_collections;
+        use crate::schema::community_photo_list_positions::dsl::community_photo_list_positions;
 
         if self.get_communities_ids().iter().any(|&i| i==community_id) {
             return;
         }
         let _connection = establish_connection();
-        diesel::delete(community_post_list_collections
-            .filter(schema::community_post_list_collections::community_id.eq(community_id))
-            .filter(schema::community_post_list_collections::post_list_id.eq(self.id))
+        diesel::delete(community_photo_list_collections
+            .filter(schema::community_photo_list_collections::community_id.eq(community_id))
+            .filter(schema::community_photo_list_collections::photo_list_id.eq(self.id))
             )
           .execute(&_connection)
           .expect("E");
-        diesel::delete(community_post_list_positions
-            .filter(schema::community_post_list_positions::community_id.eq(community_id))
-            .filter(schema::community_post_list_positions::list_id.eq(self.id))
+        diesel::delete(community_photo_list_positions
+            .filter(schema::community_photo_list_positions::community_id.eq(community_id))
+            .filter(schema::community_photo_list_positions::list_id.eq(self.id))
          )
          .execute(&_connection)
          .expect("E");
     }
 
     pub fn add_in_user_collections(&self, user_id: i32) -> () {
-        use crate::models::NewUserPostListPosition;
+        use crate::models::NewUserPhotoListPosition;
 
         if !self.get_users_ids().iter().any(|&i| i==user_id) && self.user_id == user_id {
             return;
         }
         let _connection = establish_connection();
-        let new_item = NewUserPostListCollection {
-            user_id: user_id,
-            post_list_id: self.id,
+        let new_item = NewUserPhotoListCollection {
+            user_id:       user_id,
+            photo_list_id: self.id,
         };
-        diesel::insert_into(schema::user_post_list_collections::table)
+        diesel::insert_into(schema::user_photo_list_collections::table)
             .values(&new_item)
-            .get_result::<UserPostListCollection>(&_connection)
+            .get_result::<UserPhotoListCollection>(&_connection)
             .expect("Error.");
 
-        let new_pos = NewUserPostListPosition {
+        let new_pos = NewUserPhotoListPosition {
             user_id:  user_id,
             list_id:  self.id,
-            position: PostList::get_user_post_lists_new_position(user_id),
+            position: PhotoList::get_user_photo_lists_new_position(user_id),
             types:    1,
         };
-        diesel::insert_into(schema::user_post_list_positions::table)
+        diesel::insert_into(schema::user_photo_list_positions::table)
             .values(&new_pos)
-            .get_result::<UserPostListPosition>(&_connection)
+            .get_result::<UserPhotoListPosition>(&_connection)
             .expect("Error.");
     }
     pub fn remove_in_user_collections(&self, user_id: i32) -> () {
-        use crate::schema::user_post_list_collections::dsl::user_post_list_collections;
-        use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
+        use crate::schema::user_photo_list_collections::dsl::user_photo_list_collections;
+        use crate::schema::user_photo_list_positions::dsl::user_photo_list_positions;
 
         if self.get_users_ids().iter().any(|&i| i==user_id) {
             return;
         }
         let _connection = establish_connection();
-        diesel::delete(user_post_list_collections
-            .filter(schema::user_post_list_collections::user_id.eq(user_id))
-            .filter(schema::user_post_list_collections::post_list_id.eq(self.id))
+        diesel::delete(user_photo_list_collections
+            .filter(schema::user_photo_list_collections::user_id.eq(user_id))
+            .filter(schema::user_photo_list_collections::photo_list_id.eq(self.id))
             )
           .execute(&_connection)
           .expect("E");
-        diesel::delete(user_post_list_positions
-            .filter(schema::user_post_list_positions::user_id.eq(user_id))
-            .filter(schema::user_post_list_positions::list_id.eq(self.id))
+        diesel::delete(user_photo_list_positions
+            .filter(schema::user_photo_list_positions::user_id.eq(user_id))
+            .filter(schema::user_photo_list_positions::list_id.eq(self.id))
          )
          .execute(&_connection)
          .expect("E");
     }
 
     pub fn copy_item(pk: i32, user_or_communities: Vec<String>) -> () {
-        use crate::schema::post_lists::dsl::post_lists;
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        let lists = post_lists
-            .filter(schema::post_lists::id.eq(pk))
-            .filter(schema::post_lists::types.lt(10))
-            .load::<PostList>(&_connection)
+        let lists = photo_lists
+            .filter(schema::photo_lists::id.eq(pk))
+            .filter(schema::photo_lists::types.lt(10))
+            .load::<PhotoList>(&_connection)
             .expect("E.");
         if lists.len() > 0 {
             let list = lists.into_iter().nth(0).unwrap();
@@ -2013,104 +2012,104 @@ impl PostList {
             }
         }
     }
-    pub fn get_posts_ids(&self) -> Vec<i32> {
-        use crate::schema::posts::dsl::posts;
+    pub fn get_photos_ids(&self) -> Vec<i32> {
+        use crate::schema::photos::dsl::photos;
 
         let _connection = establish_connection();
-        let fix_list_ids = posts
-            .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.lt(10))
-            .select(schema::posts::id)
+        let fix_list_ids = photos
+            .filter(schema::photos::photo_list_id.eq(self.id))
+            .filter(schema::photos::types.lt(10))
+            .select(schema::photos::id)
             .load::<i32>(&_connection)
             .expect("E.");
         return fix_list_ids;
     }
-    pub fn get_user_lists(user_pk: i32) -> Vec<PostList> {
-        use crate::schema::user_post_list_collections::dsl::user_post_list_collections;
-        use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn get_user_lists(user_pk: i32) -> Vec<PhotoList> {
+        use crate::schema::user_photo_list_collections::dsl::user_photo_list_collections;
+        use crate::schema::user_photo_list_positions::dsl::user_photo_list_positions;
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        let position_lists = user_post_list_positions
-            .filter(schema::user_post_list_positions::user_id.eq(user_pk))
-            .filter(schema::user_post_list_positions::types.eq(1))
-            .select(schema::user_post_list_positions::list_id)
+        let position_lists = user_photo_list_positions
+            .filter(schema::user_photo_list_positions::user_id.eq(user_pk))
+            .filter(schema::user_photo_list_positions::types.eq(1))
+            .select(schema::user_photo_list_positions::list_id)
             .load::<i32>(&_connection)
             .expect("E.");
         if position_lists.len() > 0 {
-            return post_lists
-                .filter(schema::post_lists::id.eq_any(position_lists))
-                .filter(schema::post_lists::types.lt(10))
-                .load::<PostList>(&_connection)
+            return photo_lists
+                .filter(schema::photo_lists::id.eq_any(position_lists))
+                .filter(schema::photo_lists::types.lt(10))
+                .load::<PhotoList>(&_connection)
                 .expect("E.");
         }
 
         let mut stack = Vec::new();
-        let user_lists = post_lists
-            .filter(schema::post_lists::user_id.eq(user_pk))
-            .filter(schema::post_lists::types.lt(10))
-            .select(schema::post_lists::id)
+        let user_lists = photo_lists
+            .filter(schema::photo_lists::user_id.eq(user_pk))
+            .filter(schema::photo_lists::types.lt(10))
+            .select(schema::photo_lists::id)
             .load::<i32>(&_connection)
             .expect("E.");
         for _item in user_lists.iter() {
             stack.push(_item);
         };
-        let user_collections = user_post_list_collections
-            .filter(schema::user_post_list_collections::user_id.eq(user_pk))
-            .select(schema::user_post_list_collections::post_list_id)
+        let user_collections = user_photo_list_collections
+            .filter(schema::user_photo_list_collections::user_id.eq(user_pk))
+            .select(schema::user_photo_list_collections::photo_list_id)
             .load::<i32>(&_connection)
             .expect("E.");
         for _item in user_collections.iter() {
             stack.push(_item);
         };
-        return post_lists
-            .filter(schema::post_lists::id.eq_any(stack))
-            .filter(schema::post_lists::types.lt(10))
-            .load::<PostList>(&_connection)
+        return photo_lists
+            .filter(schema::photo_lists::id.eq_any(stack))
+            .filter(schema::photo_lists::types.lt(10))
+            .load::<PhotoList>(&_connection)
             .expect("E.");
     }
-    pub fn get_community_lists(community_pk: i32) -> Vec<PostList> {
-        use crate::schema::community_post_list_collections::dsl::community_post_list_collections;
-        use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn get_community_lists(community_pk: i32) -> Vec<PhotoList> {
+        use crate::schema::community_photo_list_collections::dsl::community_photo_list_collections;
+        use crate::schema::community_photo_list_positions::dsl::community_photo_list_positions;
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        let position_lists = community_post_list_positions
-            .filter(schema::community_post_list_positions::community_id.eq(community_pk))
-            .filter(schema::community_post_list_positions::types.eq(1))
-            .select(schema::community_post_list_positions::list_id)
+        let position_lists = community_photo_list_positions
+            .filter(schema::community_photo_list_positions::community_id.eq(community_pk))
+            .filter(schema::community_photo_list_positions::types.eq(1))
+            .select(schema::community_photo_list_positions::list_id)
             .load::<i32>(&_connection)
             .expect("E.");
         if position_lists.len() > 0 {
-            return post_lists
-                .filter(schema::post_lists::id.eq_any(position_lists))
-                .filter(schema::post_lists::types.lt(10))
-                .load::<PostList>(&_connection)
+            return photo_lists
+                .filter(schema::photo_lists::id.eq_any(position_lists))
+                .filter(schema::photo_lists::types.lt(10))
+                .load::<PhotoList>(&_connection)
                 .expect("E.");
         }
 
         let mut stack = Vec::new();
-        let community_lists = post_lists
-            .filter(schema::post_lists::community_id.eq(community_pk))
-            .filter(schema::post_lists::types.lt(10))
-            .select(schema::post_lists::id)
+        let community_lists = photo_lists
+            .filter(schema::photo_lists::community_id.eq(community_pk))
+            .filter(schema::photo_lists::types.lt(10))
+            .select(schema::photo_lists::id)
             .load::<i32>(&_connection)
             .expect("E.");
         for _item in community_lists.iter() {
             stack.push(_item);
         };
-        let community_collections = community_post_list_collections
-            .filter(schema::community_post_list_collections::community_id.eq(community_pk))
-            .select(schema::community_post_list_collections::post_list_id)
+        let community_collections = community_photo_list_collections
+            .filter(schema::community_photo_list_collections::community_id.eq(community_pk))
+            .select(schema::community_photo_list_collections::photo_list_id)
             .load::<i32>(&_connection)
             .expect("E.");
         for _item in community_collections.iter() {
             stack.push(_item);
         };
-        return post_lists
-            .filter(schema::post_lists::id.eq_any(stack))
-            .filter(schema::post_lists::types.lt(10))
-            .load::<PostList>(&_connection)
+        return photo_lists
+            .filter(schema::photo_lists::id.eq_any(stack))
+            .filter(schema::photo_lists::types.lt(10))
+            .load::<PhotoList>(&_connection)
             .expect("E.");
 
     }
@@ -2128,8 +2127,8 @@ impl PostList {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::types.eq(close_case))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         //hide_wall_notify_items(20, self.id);
@@ -2148,8 +2147,8 @@ impl PostList {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::types.eq(close_case))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         //show_wall_notify_items(20, self.id);
@@ -2160,33 +2159,33 @@ impl PostList {
 
         let _connection = establish_connection();
         if self.community_id.is_some() {
-            use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
+            use crate::schema::community_photo_list_positions::dsl::community_photo_list_positions;
 
-            let list_positions = community_post_list_positions
-                .filter(schema::community_post_list_positions::community_id.eq(self.community_id.unwrap()))
-                .filter(schema::community_post_list_positions::list_id.eq(self.id))
-                .load::<CommunityPostListPosition>(&_connection)
+            let list_positions = community_photo_list_positions
+                .filter(schema::community_photo_list_positions::community_id.eq(self.community_id.unwrap()))
+                .filter(schema::community_photo_list_positions::list_id.eq(self.id))
+                .load::<CommunityPhotoListPosition>(&_connection)
                 .expect("E.");
             if list_positions.len() > 0 {
                 let list_position = list_positions.into_iter().nth(0).unwrap();
                 diesel::update(&list_position)
-                  .set(schema::community_post_list_positions::types.eq(2))
-                  .get_result::<CommunityPostListPosition>(&_connection)
+                  .set(schema::community_photo_list_positions::types.eq(2))
+                  .get_result::<CommunityPhotoListPosition>(&_connection)
                   .expect("Error.");
             }
         } else {
-            use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
+            use crate::schema::user_photo_list_positions::dsl::user_photo_list_positions;
 
-            let list_positions = user_post_list_positions
-                .filter(schema::user_post_list_positions::user_id.eq(self.user_id))
-                .filter(schema::user_post_list_positions::list_id.eq(self.id))
-                .load::<UserPostListPosition>(&_connection)
+            let list_positions = user_photo_list_positions
+                .filter(schema::user_photo_list_positions::user_id.eq(self.user_id))
+                .filter(schema::user_photo_list_positions::list_id.eq(self.id))
+                .load::<UserPhotoListPosition>(&_connection)
                 .expect("E.");
             if list_positions.len() > 0 {
                 let list_position = list_positions.into_iter().nth(0).unwrap();
                 diesel::update(&list_position)
-                  .set(schema::user_post_list_positions::types.eq(2))
-                  .get_result::<UserPostListPosition>(&_connection)
+                  .set(schema::user_photo_list_positions::types.eq(2))
+                  .get_result::<UserPhotoListPosition>(&_connection)
                   .expect("Error.");
             }
         }
@@ -2200,8 +2199,8 @@ impl PostList {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::types.eq(close_case))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         //hide_wall_notify_items(20, self.id);
@@ -2211,33 +2210,33 @@ impl PostList {
 
         let _connection = establish_connection();
         if self.community_id.is_some() {
-            use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
+            use crate::schema::community_photo_list_positions::dsl::community_photo_list_positions;
 
-            let list_positions = community_post_list_positions
-                .filter(schema::community_post_list_positions::community_id.eq(self.community_id.unwrap()))
-                .filter(schema::community_post_list_positions::list_id.eq(self.id))
-                .load::<CommunityPostListPosition>(&_connection)
+            let list_positions = community_photo_list_positions
+                .filter(schema::community_photo_list_positions::community_id.eq(self.community_id.unwrap()))
+                .filter(schema::community_photo_list_positions::list_id.eq(self.id))
+                .load::<CommunityPhotoListPosition>(&_connection)
                 .expect("E.");
             if list_positions.len() > 0 {
                 let list_position = list_positions.into_iter().nth(0).unwrap();
                 diesel::update(&list_position)
-                  .set(schema::community_post_list_positions::types.eq(1))
-                  .get_result::<CommunityPostListPosition>(&_connection)
+                  .set(schema::community_photo_list_positions::types.eq(1))
+                  .get_result::<CommunityPhotoListPosition>(&_connection)
                   .expect("Error.");
             }
         } else {
-            use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
+            use crate::schema::user_photo_list_positions::dsl::user_photo_list_positions;
 
-            let list_positions = user_post_list_positions
-                .filter(schema::user_post_list_positions::user_id.eq(self.user_id))
-                .filter(schema::user_post_list_positions::list_id.eq(self.id))
-                .load::<UserPostListPosition>(&_connection)
+            let list_positions = user_photo_list_positions
+                .filter(schema::user_photo_list_positions::user_id.eq(self.user_id))
+                .filter(schema::user_photo_list_positions::list_id.eq(self.id))
+                .load::<UserPhotoListPosition>(&_connection)
                 .expect("E.");
             if list_positions.len() > 0 {
                 let list_position = list_positions.into_iter().nth(0).unwrap();
                 diesel::update(&list_position)
-                  .set(schema::user_post_list_positions::types.eq(1))
-                  .get_result::<UserPostListPosition>(&_connection)
+                  .set(schema::user_photo_list_positions::types.eq(1))
+                  .get_result::<UserPhotoListPosition>(&_connection)
                   .expect("Error.");
             }
         }
@@ -2251,8 +2250,8 @@ impl PostList {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::types.eq(close_case))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         //show_wall_notify_items(20, self.id);
@@ -2272,8 +2271,8 @@ impl PostList {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::types.eq(close_case))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         //hide_wall_notify_items(20, self.id);
@@ -2292,14 +2291,14 @@ impl PostList {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::types.eq(close_case))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         //show_wall_notify_items(20, self.id);
     }
 
-    pub fn create_post (
+    pub fn create_photo (
         &self,
         content:      Option<String>,
         user_id:      i32,
@@ -2308,13 +2307,13 @@ impl PostList {
         comments_on:  bool,
         is_signature: bool,
         parent_id:    Option<i32>
-    ) -> Post {
-        use crate::models::NewPost;
+    ) -> Photo {
+        use crate::models::NewPhoto;
 
         let _connection = establish_connection();
         diesel::update(self)
-          .set(schema::post_lists::count.eq(self.count + 1))
-          .get_result::<PostList>(&_connection)
+          .set(schema::photo_lists::count.eq(self.count + 1))
+          .get_result::<PhotoList>(&_connection)
           .expect("Error.");
 
         let _types: i16;
@@ -2332,27 +2331,26 @@ impl PostList {
         //    use crate::utils::get_formatted_text;
         //    _content = Some(get_formatted_text(&content.unwrap()));
         //}
-        let new_post_form = NewPost {
-          content:      content,
-          community_id: self.community_id,
-          user_id:      user_id,
-          post_list_id: self.id,
-          types:        _types,
-          attach:       attach.clone(),
-          comments_on:  comments_on,
-          created:      chrono::Local::now().naive_utc(),
-          comment:      0,
-          view:         0,
-          repost:       0,
-          copy:         0,
-          position:     (self.count).try_into().unwrap(),
-          is_signature: is_signature,
-          parent_id:    parent_id,
-          reactions:    0,
+        let new_photo_form = NewPhoto {
+          community_id:  self.community_id,
+          user_id:       user_id,
+          photo_list_id: self.id,
+          types:         _types,
+          preview:       preview.clone(),
+          file:          file.clone(),
+          description:   None,
+          comments_on:   comments_on,
+          created:       chrono::Local::now().naive_utc(),
+          comment:       0,
+          view:          0,
+          repost:        0,
+          copy:          0,
+          position:      (self.count).try_into().unwrap(),
+          reactions:     0,
         };
-        let new_post = diesel::insert_into(schema::posts::table)
-            .values(&new_post_form)
-            .get_result::<Post>(&_connection)
+        let new_photo = diesel::insert_into(schema::photos::table)
+            .values(&new_photo_form)
+            .get_result::<Photo>(&_connection)
             .expect("Error.");
 
         if attach.is_some() {
@@ -2367,6 +2365,6 @@ impl PostList {
                 }
             }
         }
-        return new_post;
+        return new_photo;
     }
 }

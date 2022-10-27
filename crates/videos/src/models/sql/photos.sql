@@ -19,7 +19,7 @@ CREATE TABLE users (
     copy_el        SMALLINT NOT NULL,          -- кто может копировать / репостить
 
     lists          INT NOT NULL,               -- кол-во списков записей
-    posts          INT NOT NULL,               -- кол-во записей
+    photos         INT NOT NULL,               -- кол-во записей
     comments       INT NOT NULL,               -- кол-во комментов к записям
 
     UNIQUE(link)
@@ -44,7 +44,7 @@ CREATE TABLE communitys (
     copy_el        SMALLINT NOT NULL,     -- кто может копировать / репостить
 
     lists          INT NOT NULL,          -- кол-во списков записей
-    posts          INT NOT NULL,          -- кол-во записей
+    photos         INT NOT NULL,          -- кол-во записей
     comments       INT NOT NULL,          -- кол-во комментов к записям
 
     UNIQUE(link)
@@ -52,7 +52,7 @@ CREATE TABLE communitys (
 CREATE INDEX communitys_user_id_idx ON communitys (user_id);
 
 
--- списки записей -------
+-- списки фотографий -------
 -- ниже цифра выбора приватности тех или иных действий пользователей
 -- 1 Все пользователи
 -- 2 Все друзья и все подписчики
@@ -75,7 +75,7 @@ CREATE INDEX communitys_user_id_idx ON communitys (user_id);
 -- 19 Некоторые подписчики
 -- 20 Владелец сообщества
 
-CREATE TABLE post_lists (
+CREATE TABLE photos_lists (
     id             SERIAL PRIMARY KEY,    -- id списка записей
     name           VARCHAR(100) NOT NULL, -- название
 
@@ -97,64 +97,63 @@ CREATE TABLE post_lists (
     copy_el        SMALLINT NOT NULL,     -- кто может копировать / репостить
     reactions      VARCHAR(100),          -- разрешенные реакции
 
-    CONSTRAINT fk_post_lists_user
+    CONSTRAINT fk_photo_lists_user
         FOREIGN KEY(user_id)
             REFERENCES users(id),
 
-    CONSTRAINT fk_post_lists_community
+    CONSTRAINT fk_photo_lists_community
         FOREIGN KEY(community_id)
             REFERENCES communitys(id)
 );
-CREATE INDEX post_lists_user_id_idx ON post_lists (user_id);
-CREATE INDEX post_lists_community_id_idx ON post_lists (community_id);
+CREATE INDEX photo_lists_user_id_idx ON photo_lists (user_id);
+CREATE INDEX photo_lists_community_id_idx ON photo_lists (community_id);
 
 
 -- записи -------
-CREATE TABLE posts (
-    id           SERIAL PRIMARY KEY,            -- id записи
-    content      VARCHAR(5000),                 -- содержание
-    community_id INT,                           -- id сообщества (которое выше)
-    user_id      INT NOT NULL,                  -- id пользователя (которое выше)
-    post_list_id INT NOT NULL,                  -- id спискм записей
-    types        SMALLINT NOT NULL,             -- тип (активен, удален, закрыт...)
-    attach       VARCHAR(100),                  -- прикрепленные объекты
-    comments_on  BOOLEAN NOT NULL DEFAULT true, -- комменты разрешены
-    created      TIMESTAMP NOT NULL,            -- время создания
-    comment      INT NOT NULL,                  -- кол-во комментов
-    view         INT NOT NULL,                  -- кол-во просмотров
-    repost       INT NOT NULL,                  -- кол-во репостов
-    copy         INT NOT NULL,                  -- кол-во копий
-    position     SMALLINT NOT NULL,             -- позиция
-    is_signature BOOLEAN NOT NULL DEFAULT false,-- разрешить подпись
-    parent_id    INT,                           -- id родителя
-    reactions    INT NOT NULL,
+CREATE TABLE photos (
+    id            SERIAL PRIMARY KEY,            -- id записи
+    community_id  INT,                            -- id сообщества (которое выше)
+    user_id       INT NOT NULL,                  -- id пользователя (которое выше)
+    photo_list_id INT NOT NULL,                  -- id спискм записей
+    types         SMALLINT NOT NULL,             -- тип (активен, удален, закрыт...)
+    preview       VARCHAR(500) NOT NULL,
+    file          VARCHAR(500) NOT NULL,
+    description   VARCHAR(500),
+    comments_on   BOOLEAN NOT NULL DEFAULT true, -- комменты разрешены
+    created       TIMESTAMP NOT NULL,            -- время создания
+    comment       INT NOT NULL,                  -- кол-во комментов
+    view          INT NOT NULL,                  -- кол-во просмотров
+    repost        INT NOT NULL,                  -- кол-во репостов
+    copy          INT NOT NULL,                  -- кол-во копий
+    position      SMALLINT NOT NULL,             -- позиция
+    reactions     INT NOT NULL,
 
-    CONSTRAINT fk_posts_user
+    CONSTRAINT fk_photos_user
         FOREIGN KEY(user_id)
             REFERENCES users(id),
 
-    CONSTRAINT fk_posts_community
+    CONSTRAINT fk_photos_community
         FOREIGN KEY(community_id)
             REFERENCES communitys(id),
 
-    CONSTRAINT fk_posts_parent
+    CONSTRAINT fk_photos_parent
         FOREIGN KEY(parent_id)
-            REFERENCES posts(id),
+            REFERENCES photos(id),
 
-    CONSTRAINT fk_posts_list
-        FOREIGN KEY(post_list_id)
-            REFERENCES post_lists(id)
+    CONSTRAINT fk_photos_list
+        FOREIGN KEY(photo_list_id)
+            REFERENCES photo_lists(id)
 );
-CREATE INDEX posts_community_id_idx ON posts (community_id);
-CREATE INDEX posts_user_id_idx ON posts (user_id);
-CREATE INDEX posts_list_id_idx ON posts (post_list_id);
-CREATE INDEX posts_parent_id_idx ON posts (parent_id);
+CREATE INDEX photos_community_id_idx ON photos (community_id);
+CREATE INDEX photos_user_id_idx ON photos (user_id);
+CREATE INDEX photos_list_id_idx ON photos (photo_list_id);
+CREATE INDEX photos_parent_id_idx ON photos (parent_id);
 
 
 -- комментарии к записям -------
-CREATE TABLE post_comments (
+CREATE TABLE photo_comments (
     id           SERIAL PRIMARY KEY, -- id коммента
-    post_id      INT NOT NULL,       -- id записи
+    photo_id     INT NOT NULL,       -- id записи
     user_id      INT NOT NULL,       -- id комментатора
     community_id INT,
     sticker_id   INT,                -- id стикера
@@ -167,43 +166,43 @@ CREATE TABLE post_comments (
     reactions    INT NOT NULL,       -- кол-во реакций
     replies      INT NOT NULL,       -- кол-во ответов
 
-    CONSTRAINT fk_post_comments_user
+    CONSTRAINT fk_photo_comments_user
         FOREIGN KEY(user_id)
             REFERENCES users(id),
 
-    CONSTRAINT fk_post_comments_community
+    CONSTRAINT fk_photo_comments_community
         FOREIGN KEY(community_id)
             REFERENCES communitys(id),
 
-    CONSTRAINT fk_post_comment
-        FOREIGN KEY(post_id)
-            REFERENCES posts(id),
+    CONSTRAINT fk_photo_comment
+        FOREIGN KEY(photo_id)
+            REFERENCES photos(id),
 
-    CONSTRAINT fk_post_parent_comment
+    CONSTRAINT fk_photo_parent_comment
         FOREIGN KEY(parent_id)
-          REFERENCES post_comments(id)
+          REFERENCES photo_comments(id)
 );
-CREATE INDEX post_comments_post_id_idx ON post_comments (post_id);
-CREATE INDEX post_comments_user_id_idx ON post_comments (user_id);
-CREATE INDEX post_comments_sticker_id_idx ON post_comments (sticker_id);
-CREATE INDEX post_comments_parent_id_idx ON post_comments (parent_id);
+CREATE INDEX photo_comments_photo_id_idx ON photo_comments (photo_id);
+CREATE INDEX photo_comments_user_id_idx ON photo_comments (user_id);
+CREATE INDEX photo_comments_sticker_id_idx ON photo_comments (sticker_id);
+CREATE INDEX photo_comments_parent_id_idx ON photo_comments (parent_id);
 
 
 -- Сохранение списка у пользователя в коллекции -------
-CREATE TABLE user_post_list_collections (
-    id           SERIAL PRIMARY KEY, -- id записи
-    user_id      INT NOT NULL,       -- id пользователя
-    post_list_id INT NOT NULL        -- id списка записей
+CREATE TABLE user_photo_list_collections (
+    id            SERIAL PRIMARY KEY, -- id записи
+    user_id       INT NOT NULL,       -- id пользователя
+    photo_list_id INT NOT NULL        -- id списка записей
 );
-CREATE UNIQUE INDEX user_post_list_collections_unq ON user_post_list_collections (user_id, post_list_id);
+CREATE UNIQUE INDEX user_photo_list_collections_unq ON user_photo_list_collections (user_id, photo_list_id);
 
 -- Сохранение списка у сообщества в коллекции -------
-CREATE TABLE community_post_list_collections (
-    id           SERIAL PRIMARY KEY, -- id записи
-    community_id INT NOT NULL,       -- id сообщества
-    post_list_id INT NOT NULL        -- id списка записей
+CREATE TABLE community_photo_list_collections (
+    id            SERIAL PRIMARY KEY, -- id записи
+    community_id  INT NOT NULL,       -- id сообщества
+    photo_list_id INT NOT NULL        -- id списка записей
 );
-CREATE UNIQUE INDEX community_post_list_collections_unq ON community_post_list_collections (community_id, post_list_id);
+CREATE UNIQUE INDEX community_photo_list_collections_unq ON community_photo_list_collections (community_id, photo_list_id);
 
 
 -- включения и исключения для пользователей касательно конкретного списка записей -------
@@ -222,13 +221,13 @@ CREATE UNIQUE INDEX community_post_list_collections_unq ON community_post_list_c
 -- 21 в черном списке пользователя
 -- 22 в черном списке сообщества
 
-CREATE TABLE post_list_perms (
-    id              SERIAL PRIMARY KEY, -- id записи
-    user_id         INT NOT NULL,       -- id пользователя
-    post_list_id    INT NOT NULL,       -- id списка записей
-    types           SMALLINT NOT NULL       -- статус доступа
+CREATE TABLE photo_list_perms (
+    id            SERIAL PRIMARY KEY, -- id записи
+    user_id       INT NOT NULL,       -- id пользователя
+    photo_list_id INT NOT NULL,       -- id списка записей
+    types         SMALLINT NOT NULL       -- статус доступа
 );
-CREATE UNIQUE INDEX post_list_perms_unq ON post_list_perms (user_id, post_list_id);
+CREATE UNIQUE INDEX photo_list_perms_unq ON photo_list_perms (user_id, photo_list_id);
 
 -------
 -- все реакции сервиса записей -------
@@ -242,7 +241,7 @@ CREATE TABLE reactions (
 );
 
 -- Уведомления записей пользователя -------
-CREATE TABLE user_post_notifications (
+CREATE TABLE user_photo_notifications (
     id              SERIAL PRIMARY KEY,            -- id записи
     user_id         INT NOT NULL,                  -- id пользователя
     comment         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых комментах
@@ -253,10 +252,10 @@ CREATE TABLE user_post_notifications (
     reactions       BOOLEAN NOT NULL DEFAULT true  -- получать ли уведомления о новых реакциях
 );
 
-CREATE UNIQUE INDEX user_post_notifications_unq ON user_post_notifications (user_id, id);
+CREATE UNIQUE INDEX user_photo_notifications_unq ON user_photo_notifications (user_id, id);
 
 -- Уведомления записей сообщества -------
-CREATE TABLE community_post_notifications (
+CREATE TABLE community_photo_notifications (
   id              SERIAL PRIMARY KEY,            -- id записи
   community_id    INT NOT NULL,                  -- id сообщества
   comment         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых комментах
@@ -266,10 +265,10 @@ CREATE TABLE community_post_notifications (
   repost          BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых репостах
   reactions       BOOLEAN NOT NULL DEFAULT true  -- получать ли уведомления о новых реакциях
 );
-CREATE UNIQUE INDEX community_post_notifications_unq ON community_post_notifications (id, community_id);
+CREATE UNIQUE INDEX community_photo_notifications_unq ON community_photo_notifications (id, community_id);
 
 -- Порядок следования списков записей -------
-CREATE TABLE user_post_list_positions (
+CREATE TABLE user_photo_list_positions (
     id       SERIAL PRIMARY KEY,
     user_id  INT NOT NULL,      -- Пользователь
     list_id  INT NOT NULL,      -- Список записей
@@ -278,22 +277,22 @@ CREATE TABLE user_post_list_positions (
 );
 
 -- Порядок следования списков записей -------
-CREATE TABLE community_post_list_positions (
+CREATE TABLE community_photo_list_positions (
     id           SERIAL PRIMARY KEY,
     community_id INT NOT NULL,      -- Сообщество
     list_id      INT NOT NULL,      -- Список записей
     position     SMALLINT NOT NULL, -- Порядок отображения
     types        SMALLINT NOT NULL  -- 1 - открыт, 0 - недоступен (например, удален)
 );
-CREATE UNIQUE INDEX community_post_list_positions_unq ON community_post_list_positions (id, community_id);
+CREATE UNIQUE INDEX community_photo_list_positions_unq ON community_photo_list_positions (id, community_id);
 
 
 -- счетчики реакций записи -------
 -- каждой реакции поста выделена запись,
 -- которая считает кол-во реакций.
-CREATE TABLE post_counter_reactions (
+CREATE TABLE photo_counter_reactions (
     id          SERIAL PRIMARY KEY, -- id записи
-    post_id     INT NOT NULL,       -- id поста
+    photo_id    INT NOT NULL,       -- id поста
     reaction_id INT NOT NULL,       -- id реакции
     count       INT NOT NULL        -- кол-во отреагировавших
 );
@@ -301,52 +300,34 @@ CREATE TABLE post_counter_reactions (
 -- счетчики реакций коммента к записи -------
 -- каждой реакции коммента выделена запись,
 -- которая считает кол-во реакций.
-CREATE TABLE post_comment_counter_reactions (
-    id              SERIAL PRIMARY KEY, -- id записи
-    post_comment_id INT NOT NULL,       -- id коммента
-    reaction_id     INT NOT NULL,       -- id реакции
-    count           INT NOT NULL        -- кол-во отреагировавших
+CREATE TABLE photo_comment_counter_reactions (
+    id               SERIAL PRIMARY KEY, -- id записи
+    photo_comment_id INT NOT NULL,       -- id коммента
+    reaction_id      INT NOT NULL,       -- id реакции
+    count            INT NOT NULL        -- кол-во отреагировавших
 );
 
 -- реакции записи -------
 -- тут те, кто реагирует на запись, со ссылкой на пользователей
 -- этого сервиса.
-CREATE TABLE post_reactions (
+CREATE TABLE photo_reactions (
   id          SERIAL PRIMARY KEY,
   user_id     INT NOT NULL,
-  post_id     INT NOT NULL,
+  photo_id    INT NOT NULL,
   reaction_id INT NOT NULL
 );
-CREATE UNIQUE INDEX post_reactions_unq ON post_reactions (user_id, post_id);
+CREATE UNIQUE INDEX photo_reactions_unq ON photo_reactions (user_id, photo_id);
 
 -- реакции комментов к записи -------
 -- тут те, кто реагирует на комменты, со ссылкой на пользователей
 -- этого сервиса.
-CREATE TABLE post_comment_reactions (
-  id              SERIAL PRIMARY KEY,
-  user_id         INT NOT NULL,
-  post_comment_id INT NOT NULL,
-  reaction_id     INT NOT NULL
+CREATE TABLE photo_comment_reactions (
+  id               SERIAL PRIMARY KEY,
+  user_id          INT NOT NULL,
+  photo_comment_id INT NOT NULL,
+  reaction_id      INT NOT NULL
 );
-CREATE UNIQUE INDEX post_comment_reactions_unq ON post_comment_reactions (user_id, post_comment_id);
-
-
--- ссылки на записи или сообщения, репостнувшие список записей -------
--- нужно для показа сообществ или пользователей, которые репостнули
-CREATE TABLE item_reposts (
-  id         SERIAL PRIMARY KEY,
-  item_id    INT NOT NULL,
-  item_types SMALLINT NOT NULL,
-  post_id    INT,
-  message_id INT,
-
-  CONSTRAINT fk_item_reposts_post
-      FOREIGN KEY(post_id)
-          REFERENCES posts(id)
-);
-CREATE INDEX item_reposts_item_id_idx ON item_reposts (item_id);
-CREATE INDEX item_reposts_post_id_idx ON item_reposts (post_id);
-CREATE INDEX item_reposts_message_id_idx ON item_reposts (message_id);
+CREATE UNIQUE INDEX photo_comment_reactions_unq ON photo_comment_reactions (user_id, photo_comment_id);
 
 ------------------
 ------------------

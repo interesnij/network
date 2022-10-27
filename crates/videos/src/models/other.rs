@@ -8,16 +8,15 @@ use diesel::{
     NullableExpressionMethods,
 };
 use crate::schema::{
-    user_post_list_collections,
-    user_post_list_positions,
-    community_post_list_collections,
-    community_post_list_positions,
-    post_list_perms,
-    item_reposts,
-    post_counter_reactions,
-    post_comment_counter_reactions,
-    post_reactions,
-    post_comment_reactions,
+    user_photo_list_collections,
+    user_photo_list_positions,
+    community_photo_list_collections,
+    community_photo_list_positions,
+    photo_list_perms,
+    photo_counter_reactions,
+    photo_comment_counter_reactions,
+    photo_reactions,
+    photo_comment_reactions,
     list_user_communities_keys,
     notify_user_communities,
     news_user_communities,
@@ -29,12 +28,12 @@ use crate::utils::{
     establish_connection,
 };
 //use actix_web::web::Json;
-use crate::models::PostComment;
+use crate::models::PhotoComment;
 
 
-/////// UserPostListPosition //////
+/////// UserPhotoListPosition //////
 #[derive(Queryable, Serialize, Identifiable)]
-pub struct UserPostListPosition {
+pub struct UserPhotoListPosition {
     pub id:       i32,
     pub user_id:  i32,
     pub list_id:  i32,
@@ -42,16 +41,16 @@ pub struct UserPostListPosition {
     pub types:    i16, // 1 - открыт, 0 - недоступен (например, удален)
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="user_post_list_positions"]
-pub struct NewUserPostListPosition {
+#[table_name="user_photo_list_positions"]
+pub struct NewUserPhotoListPosition {
     pub user_id:  i32,
     pub list_id:  i32,
     pub position: i16,
     pub types:    i16,
 }
-/////// CommunityPostListPosition //////
+/////// CommunityPhotoListPosition //////
 #[derive(Debug, Queryable, Serialize, Identifiable)]
-pub struct CommunityPostListPosition {
+pub struct CommunityPhotoListPosition {
     pub id:           i32,
     pub community_id: i32,
     pub list_id:      i32,
@@ -59,43 +58,43 @@ pub struct CommunityPostListPosition {
     pub types:        i16, // 1 - open, 2 - close
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="community_post_list_positions"]
-pub struct NewCommunityPostListPosition {
+#[table_name="community_photo_list_positions"]
+pub struct NewCommunityPhotoListPosition {
     pub community_id:  i32,
     pub list_id:       i32,
     pub position:      i16,
     pub types:         i16,
 }
 
-/////// UserPostListCollection //////
+/////// UserPhotoListCollection //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct UserPostListCollection {
-    pub id:           i32,
-    pub user_id:      i32,
-    pub post_list_id: i32,
+pub struct UserPhotoListCollection {
+    pub id:            i32,
+    pub user_id:       i32,
+    pub photo_list_id: i32,
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="user_post_list_collections"]
-pub struct NewUserPostListCollection {
-    pub user_id:      i32,
-    pub post_list_id: i32,
+#[table_name="user_photo_list_collections"]
+pub struct NewUserPhotoListCollection {
+    pub user_id:       i32,
+    pub photo_list_id: i32,
 }
 
-/////// CommunityPostListCollection //////
+/////// CommunityPhotoListCollection //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct CommunityPostListCollection {
-    pub id:           i32,
-    pub community_id: i32,
-    pub post_list_id: i32,
+pub struct CommunityPhotoListCollection {
+    pub id:            i32,
+    pub community_id:  i32,
+    pub photo_list_id: i32,
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="community_post_list_collections"]
-pub struct NewCommunityPostListCollection {
-    pub community_id: i32,
-    pub post_list_id: i32,
+#[table_name="community_photo_list_collections"]
+pub struct NewCommunityPhotoListCollection {
+    pub community_id:  i32,
+    pub photo_list_id: i32,
 }
 
-/////// PostListPerm //////
+/////// PhotoListPerm //////
 // 1 может видеть записи
 // 2 может видеть комменты
 // 3 может создавать записи
@@ -109,81 +108,63 @@ pub struct NewCommunityPostListCollection {
 // 21 в черном списке пользователя
 // 22 в черном списке сообщества
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct PostListPerm {
+pub struct PhotoListPerm {
+    pub id:            i32,
+    pub user_id:       i32,
+    pub photo_list_id: i32,
+    pub types:         i16,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="photo_list_perms"]
+pub struct NewPhotoListPerm {
+    pub user_id:       i32,
+    pub photo_list_id: i32,
+    pub types:         i16,
+}
+
+
+/////// PhotoReaction//////
+#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
+pub struct PhotoReaction {
+    pub id:          i32,
+    pub user_id:     i32,
+    pub photo_id:     i32,
+    pub reaction_id: i32,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="photo_reactions"]
+pub struct NewPhotoReaction {
+    pub user_id:     i32,
+    pub photo_id:     i32,
+    pub reaction_id: i32,
+}
+/////// PhotoCommentVote //////
+#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
+pub struct PhotoCommentReaction {
+    pub id:               i32,
+    pub user_id:          i32,
+    pub photo_comment_id: i32,
+    pub reaction_id:      i32,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="photo_comment_reactions"]
+pub struct NewPhotoCommentReaction {
+    pub user_id:          i32,
+    pub photo_comment_id: i32,
+    pub reaction_id:      i32,
+}
+
+/////// PhotoCounterReaction //////
+#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
+pub struct PhotoCounterReaction {
     pub id:           i32,
-    pub user_id:      i32,
-    pub post_list_id: i32,
-    pub types:        i16,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="post_list_perms"]
-pub struct NewPostListPerm {
-    pub user_id:      i32,
-    pub post_list_id: i32,
-    pub types:        i16,
+    pub photo_id:     i32,
+    pub reaction_id:  i32,
+    pub count:        i32,
 }
 
-
-/////// PostReaction//////
-#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct PostReaction {
-    pub id:          i32,
-    pub user_id:     i32,
-    pub post_id:     i32,
-    pub reaction_id: i32,
-}
-
-#[derive(Deserialize, Insertable)]
-#[table_name="post_reactions"]
-pub struct NewPostReaction {
-    pub user_id:     i32,
-    pub post_id:     i32,
-    pub reaction_id: i32,
-}
-/////// PostCommentVote //////
-#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct PostCommentReaction {
-    pub id:              i32,
-    pub user_id:         i32,
-    pub post_comment_id: i32,
-    pub reaction_id:     i32,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="post_comment_reactions"]
-pub struct NewPostCommentReaction {
-    pub user_id:         i32,
-    pub post_comment_id: i32,
-    pub reaction_id:     i32,
-}
-
-/////// ItemRepost //////
-#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct ItemRepost {
-    pub id:         i32,
-    pub item_id:    i32,
-    pub item_types: i16,
-    pub post_id:    Option<i32>,
-    pub message_id: Option<i32>,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="item_reposts"]
-pub struct NewItemRepost {
-    pub item_id:    i32,
-    pub item_types: i16,
-    pub post_id:    Option<i32>,
-    pub message_id: Option<i32>,
-}
-
-/////// PostCounterReaction //////
-#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct PostCounterReaction {
-    pub id:          i32,
-    pub post_id:     i32,
-    pub reaction_id: i32,
-    pub count:       i32,
-}
-
-impl PostCounterReaction {
+impl PhotoCounterReaction {
     pub fn count_reactions_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
 
@@ -196,54 +177,54 @@ impl PostCounterReaction {
     }
     pub fn update_count (
         &self,
-        post_id: i32,
-        user_id: i32,
-        plus:    bool,
+        photo_id: i32,
+        user_id:  i32,
+        plus:     bool,
     ) -> () {
         use crate::schema::{
-            post_counter_reactions::dsl::post_counter_reactions,
-            post_reactions::dsl::post_reactions,
+            photo_counter_reactions::dsl::photo_counter_reactions,
+            photo_reactions::dsl::photo_reactions,
         };
 
         let _connection = establish_connection();
         if plus {
             diesel::update(self)
-                .set(schema::post_counter_reactions::count.eq(self.count + 1))
-                .get_result::<PostCounterReaction>(&_connection)
+                .set(schema::photo_counter_reactions::count.eq(self.count + 1))
+                .get_result::<PhotoCounterReaction>(&_connection)
                 .expect("Error.");
 
-            let prev_reactions = post_reactions
-                .filter(schema::post_reactions::post_id.eq(post_id))
-                .filter(schema::post_reactions::user_id.eq(user_id))
-                .load::<PostReaction>(&_connection)
+            let prev_reactions = photo_reactions
+                .filter(schema::photo_reactions::photo_id.eq(photo_id))
+                .filter(schema::photo_reactions::user_id.eq(user_id))
+                .load::<PhotoReaction>(&_connection)
                 .expect("E");
             if prev_reactions.len() > 0 {
                 for react in prev_reactions.iter() {
-                    let prev_react_count = post_counter_reactions
-                        .filter(schema::post_counter_reactions::post_id.eq(post_id))
-                        .filter(schema::post_counter_reactions::reaction_id.eq(react.reaction_id))
+                    let prev_react_count = photo_counter_reactions
+                        .filter(schema::photo_counter_reactions::photo_id.eq(photo_id))
+                        .filter(schema::photo_counter_reactions::reaction_id.eq(react.reaction_id))
                         .limit(1)
-                        .load::<PostCounterReaction>(&_connection)
+                        .load::<PhotoCounterReaction>(&_connection)
                         .expect("E")
                         .into_iter()
                         .nth(0)
                         .unwrap();
                     diesel::update(&prev_react_count)
-                        .set(schema::post_counter_reactions::count.eq(prev_react_count.count - 1))
+                        .set(schema::photo_counter_reactions::count.eq(prev_react_count.count - 1))
                         .execute(&_connection)
                         .expect("Error.");
                 }
             }
-            diesel::delete(post_reactions
-                .filter(schema::post_reactions::post_id.eq(post_id))
-                .filter(schema::post_reactions::user_id.eq(user_id))
+            diesel::delete(photo_reactions
+                .filter(schema::photo_reactions::photo_id.eq(photo_id))
+                .filter(schema::photo_reactions::user_id.eq(user_id))
             )
             .execute(&_connection)
             .expect("E");
         }
         else {
             diesel::update(self)
-                .set(schema::post_counter_reactions::count.eq(self.count - 1))
+                .set(schema::photo_counter_reactions::count.eq(self.count - 1))
                 .execute(&_connection)
                 .expect("Error.");
         }
@@ -251,24 +232,24 @@ impl PostCounterReaction {
 }
 
 #[derive(Deserialize, Insertable)]
-#[table_name="post_counter_reactions"]
-pub struct NewPostCounterReaction {
-    pub post_id:     i32,
-    pub reaction_id: i32,
-    pub count:       i32,
+#[table_name="photo_counter_reactions"]
+pub struct NewPhotoCounterReaction {
+    pub photo_id:     i32,
+    pub reaction_id:  i32,
+    pub count:        i32,
 }
 
 
-/////// PostCommentCounterReaction //////
+/////// PhotoCommentCounterReaction //////
 #[derive(Debug, Queryable, Serialize, Identifiable, Associations)]
-#[belongs_to(PostComment)]
-pub struct PostCommentCounterReaction {
-    pub id:              i32,
-    pub post_comment_id: i32,
-    pub reaction_id:     i32,
-    pub count:           i32,
+#[belongs_to(PhotoComment)]
+pub struct PhotoCommentCounterReaction {
+    pub id:               i32,
+    pub photo_comment_id: i32,
+    pub reaction_id:      i32,
+    pub count:            i32,
 }
-impl PostCommentCounterReaction {
+impl PhotoCommentCounterReaction {
     pub fn count_reactions_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
 
@@ -281,54 +262,54 @@ impl PostCommentCounterReaction {
     }
     pub fn update_count (
         &self,
-        post_comment_id: i32,
-        user_id:         i32,
-        plus:            bool,
+        photo_comment_id: i32,
+        user_id:          i32,
+        plus:             bool,
     ) -> () {
         use crate::schema::{
-            post_comment_counter_reactions::dsl::post_comment_counter_reactions,
-            post_comment_reactions::dsl::post_comment_reactions,
+            photo_comment_counter_reactions::dsl::photo_comment_counter_reactions,
+            photo_comment_reactions::dsl::photo_comment_reactions,
         };
 
         let _connection = establish_connection();
         if plus {
             diesel::update(self)
-                .set(schema::post_comment_counter_reactions::count.eq(self.count + 1))
-                .get_result::<PostCommentCounterReaction>(&_connection)
+                .set(schema::photo_comment_counter_reactions::count.eq(self.count + 1))
+                .get_result::<PhotoCommentCounterReaction>(&_connection)
                 .expect("Error.");
 
-            let prev_reactions = post_comment_reactions
-                .filter(schema::post_comment_reactions::post_comment_id.eq(post_comment_id))
-                .filter(schema::post_comment_reactions::user_id.eq(user_id))
-                .load::<PostCommentReaction>(&_connection)
+            let prev_reactions = photo_comment_reactions
+                .filter(schema::photo_comment_reactions::photo_comment_id.eq(photo_comment_id))
+                .filter(schema::photo_comment_reactions::user_id.eq(user_id))
+                .load::<PhotoCommentReaction>(&_connection)
                 .expect("E");
             if prev_reactions.len() > 0 {
                 for react in prev_reactions.iter() {
-                    let prev_react_count = post_comment_counter_reactions
-                        .filter(schema::post_comment_counter_reactions::post_comment_id.eq(post_comment_id))
-                        .filter(schema::post_comment_counter_reactions::reaction_id.eq(react.reaction_id))
+                    let prev_react_count = photo_comment_counter_reactions
+                        .filter(schema::photo_comment_counter_reactions::photo_comment_id.eq(photo_comment_id))
+                        .filter(schema::photo_comment_counter_reactions::reaction_id.eq(react.reaction_id))
                         .limit(1)
-                        .load::<PostCommentCounterReaction>(&_connection)
+                        .load::<PhotoCommentCounterReaction>(&_connection)
                         .expect("E")
                         .into_iter()
                         .nth(0)
                         .unwrap();
                     diesel::update(&prev_react_count)
-                        .set(schema::post_comment_counter_reactions::count.eq(prev_react_count.count - 1))
+                        .set(schema::photo_comment_counter_reactions::count.eq(prev_react_count.count - 1))
                         .execute(&_connection)
                         .expect("Error.");
                 }
             }
-            diesel::delete( post_comment_reactions
-                    .filter(schema::post_comment_reactions::post_comment_id.eq(post_comment_id))
-                    .filter(schema::post_comment_reactions::user_id.eq(user_id))
+            diesel::delete( photo_comment_reactions
+                    .filter(schema::photo_comment_reactions::photo_comment_id.eq(photo_comment_id))
+                    .filter(schema::photo_comment_reactions::user_id.eq(user_id))
                 )
                 .execute(&_connection)
                 .expect("E");
         }
         else {
             diesel::update(self)
-                .set(schema::post_comment_counter_reactions::count.eq(self.count - 1))
+                .set(schema::photo_comment_counter_reactions::count.eq(self.count - 1))
                 .execute(&_connection)
                 .expect("Error.");
         }
@@ -336,11 +317,11 @@ impl PostCommentCounterReaction {
 }
 
 #[derive(Deserialize, Insertable)]
-#[table_name="post_comment_counter_reactions"]
-pub struct NewPostCommentCounterReaction {
-    pub post_comment_id: i32,
-    pub reaction_id:     i32,
-    pub count:           i32,
+#[table_name="photo_comment_counter_reactions"]
+pub struct NewPhotoCommentCounterReaction {
+    pub photo_comment_id: i32,
+    pub reaction_id:      i32,
+    pub count:            i32,
 }
 
 

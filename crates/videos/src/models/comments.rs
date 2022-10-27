@@ -22,13 +22,14 @@ use crate::utils::{
 };
 use actix_web::web::Json;
 use crate::models::{
-    Post, User, Community, PostList,
-    PostCommentCounterReaction,
+    Video, User, Community,
+    VideoList,
+    VideoCommentCounterReaction,
 };
-use crate::schema::post_comments;
+use crate::schema::video_comments;
 
 
-/////// PostComment //////
+/////// VideoComment //////
 
 // 1 Опубликованный
 // 2 Изменённый
@@ -38,9 +39,9 @@ use crate::schema::post_comments;
 // 22 Изменённый Закрытый
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct PostComment {
+pub struct VideoComment {
     pub id:           i32,
-    pub post_id:      i32,
+    pub video_id:     i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
     pub sticker_id:   Option<i32>,
@@ -54,9 +55,9 @@ pub struct PostComment {
     pub replies:      i32,
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="post_comments"]
-pub struct NewPostComment {
-    pub post_id:      i32,
+#[table_name="video_comments"]
+pub struct NewVideoComment {
+    pub video_id:     i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
     pub sticker_id:   Option<i32>,
@@ -71,30 +72,30 @@ pub struct NewPostComment {
 }
 
 #[derive(Queryable, Serialize, Deserialize, AsChangeset, Debug)]
-#[table_name="post_comments"]
-pub struct EditPostComment {
+#[table_name="video_comments"]
+pub struct EditVideoComment {
     pub content: Option<String>,
     pub attach:  Option<String>,
 }
 
-impl PostComment {
+impl VideoComment {
     pub fn get_6_user_of_reaction (
         &self,
         reaction_id: &i32,
         user_reaction: Option<i32>,
     ) -> ReactionBlockJson {
         use crate::schema::{
-            post_comment_reactions::dsl::post_comment_reactions,
+            video_comment_reactions::dsl::video_comment_reactions,
             users::dsl::users,
         };
-        use crate::utils::CardReactionPostJson;
+        use crate::utils::CardReactionVideoJson;
 
         let _connection = establish_connection();
-        let user_ids = post_comment_reactions
-            .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-            .filter(schema::post_comment_reactions::reaction_id.eq(reaction_id))
+        let user_ids = video_comment_reactions
+            .filter(schema::video_comment_reactions::video_comment_id.eq(self.id))
+            .filter(schema::video_comment_reactions::reaction_id.eq(reaction_id))
             .limit(6)
-            .select(schema::post_comment_reactions::user_id)
+            .select(schema::video_comment_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -113,7 +114,7 @@ impl PostComment {
         let mut user_json = Vec::new();
         for _item in _users.iter() {
             user_json.push (
-                CardReactionPostJson {
+                CardReactionVideoJson {
                     owner_name:        _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
                     owner_link:        _item.link.clone(),
                     owner_image:       _item.image.clone(),
@@ -135,18 +136,18 @@ impl PostComment {
         offset:        i64,
     ) -> ReactionBlockJson {
         use crate::schema::{
-            post_comment_reactions::dsl::post_comment_reactions,
+            photo_comment_reactions::dsl::photo_comment_reactions,
             users::dsl::users,
         };
-        use crate::utils::CardReactionPostJson;
+        use crate::utils::CardReactionPhotoJson;
 
         let _connection = establish_connection();
-        let user_ids = post_comment_reactions
-            .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-            .filter(schema::post_comment_reactions::reaction_id.eq(reaction_id))
+        let user_ids = photo_comment_reactions
+            .filter(schema::photo_comment_reactions::photo_comment_id.eq(self.id))
+            .filter(schema::photo_comment_reactions::reaction_id.eq(reaction_id))
             .limit(limit)
             .offset(offset)
-            .select(schema::post_comment_reactions::user_id)
+            .select(schema::photo_comment_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -165,7 +166,7 @@ impl PostComment {
         let mut user_json = Vec::new();
         for _item in _users.iter() {
             user_json.push (
-                CardReactionPostJson {
+                CardReactionPhotoJson {
                     owner_name:       _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
                     owner_link:       _item.link.clone(),
                     owner_image:      _item.image.clone(),
@@ -269,16 +270,16 @@ impl PostComment {
             next_page: next_page_number,
         };
     }
-    pub fn get_replies(&self, limit: i64, offset: i64) -> Vec<PostComment> {
-        use crate::schema::post_comments::dsl::post_comments;
+    pub fn get_replies(&self, limit: i64, offset: i64) -> Vec<PhotoComment> {
+        use crate::schema::photo_comments::dsl::photo_comments;
 
         let _connection = establish_connection();
-        return post_comments
-            .filter(schema::post_comments::parent_id.eq(self.id))
-            .filter(schema::post_comments::types.eq_any(vec![1, 2]))
+        return photo_comments
+            .filter(schema::photo_comments::parent_id.eq(self.id))
+            .filter(schema::photo_comments::types.eq_any(vec![1, 2]))
             .limit(limit)
             .offset(offset)
-            .load::<PostComment>(&_connection)
+            .load::<PhotoComment>(&_connection)
             .expect("E.");
     }
     pub fn is_deleted(&self) -> bool {
@@ -291,37 +292,37 @@ impl PostComment {
     pub fn get_str_id(&self) -> String {
         return self.id.to_string();
     }
-    pub fn is_post_comment(&self) -> bool {
+    pub fn is_photo_comment(&self) -> bool {
         return true;
     }
     pub fn get_code(&self) -> String {
         return "cpo".to_string() + &self.get_str_id();
     }
 
-    pub fn get_item(&self) -> Post {
-        use crate::schema::posts::dsl::posts;
+    pub fn get_item(&self) -> Photo {
+        use crate::schema::photos::dsl::photos;
 
         let _connection = establish_connection();
-        return posts
-            .filter(schema::posts::id.eq(self.post_id))
-            .filter(schema::posts::types.eq_any(vec![1,1]))
-            .load::<Post>(&_connection)
+        return photos
+            .filter(schema::photos::id.eq(self.photo_id))
+            .filter(schema::photos::types.eq_any(vec![1,1]))
+            .load::<Photo>(&_connection)
             .expect("E")
             .into_iter()
             .nth(0)
             .unwrap();
     }
-    pub fn get_list(&self) -> PostList {
+    pub fn get_list(&self) -> PhotoList {
         return self.get_item().get_list();
     }
-    pub fn get_parent(&self) -> PostComment {
-        use crate::schema::post_comments::dsl::post_comments;
+    pub fn get_parent(&self) -> PhotoComment {
+        use crate::schema::photo_comments::dsl::photo_comments;
 
         let _connection = establish_connection();
-        return post_comments
-            .filter(schema::post_comments::id.eq(self.parent_id.unwrap()))
-            .filter(schema::post_comments::types.eq_any(vec![1, 2]))
-            .load::<PostComment>(&_connection)
+        return photo_comments
+            .filter(schema::photo_comments::id.eq(self.parent_id.unwrap()))
+            .filter(schema::photo_comments::types.eq_any(vec![1, 2]))
+            .load::<PhotoComment>(&_connection)
             .expect("E")
             .into_iter()
             .nth(0)
@@ -433,13 +434,13 @@ impl PostComment {
         };
         let item = self.get_item();
         diesel::update(&item)
-            .set(schema::posts::comment.eq(item.comment - 1))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(item.comment - 1))
+            .get_result::<Photo>(&_connection)
             .expect("E");
 
         diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
+            .set(schema::photo_comments::types.eq(close_case))
+            .get_result::<PhotoComment>(&_connection)
             .expect("E");
 
         //hide_wall_notify_items(self.get_manager_type(), self.id);
@@ -455,13 +456,13 @@ impl PostComment {
         };
         let item = self.get_item();
         diesel::update(&item)
-            .set(schema::posts::comment.eq(item.comment + 1))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(item.comment + 1))
+            .get_result::<Photo>(&_connection)
             .expect("E");
 
         diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
+            .set(schema::photo_comments::types.eq(close_case))
+            .get_result::<PhotoComment>(&_connection)
             .expect("E");
 
         //show_wall_notify_items(self.get_manager_type(), self.id);
@@ -478,13 +479,13 @@ impl PostComment {
         };
         let item = self.get_item();
         diesel::update(&item)
-            .set(schema::posts::comment.eq(item.comment - 1))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(item.comment - 1))
+            .get_result::<Photo>(&_connection)
             .expect("E");
 
         diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
+            .set(schema::photo_comments::types.eq(close_case))
+            .get_result::<PhotoComment>(&_connection)
             .expect("E");
 
         //hide_wall_notify_items(self.get_manager_type(), self.id);
@@ -500,13 +501,13 @@ impl PostComment {
         };
         let item = self.get_item();
         diesel::update(&item)
-            .set(schema::posts::comment.eq(item.comment + 1))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(item.comment + 1))
+            .get_result::<Photo>(&_connection)
             .expect("E");
 
         diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
+            .set(schema::photo_comments::types.eq(close_case))
+            .get_result::<PhotoComment>(&_connection)
             .expect("E");
 
         //show_wall_notify_items(self.get_manager_type(), self.id);
@@ -545,27 +546,27 @@ impl PostComment {
         }
     }
 
-    pub fn get_count_model_for_reaction(&self, reaction_id: i32) -> PostCommentCounterReaction {
-        use crate::schema::post_comment_counter_reactions::dsl::post_comment_counter_reactions;
-        use crate::models::NewPostCommentCounterReaction;
+    pub fn get_count_model_for_reaction(&self, reaction_id: i32) -> PhotoCommentCounterReaction {
+        use crate::schema::photo_comment_counter_reactions::dsl::photo_comment_counter_reactions;
+        use crate::models::NewPhotoCommentCounterReaction;
 
         let _connection = establish_connection();
-        let _react_model = post_comment_counter_reactions
-            .filter(schema::post_comment_counter_reactions::post_comment_id.eq(self.id))
-            .load::<PostCommentCounterReaction>(&_connection)
+        let _react_model = photo_comment_counter_reactions
+            .filter(schema::photo_comment_counter_reactions::photo_comment_id.eq(self.id))
+            .load::<PhotoCommentCounterReaction>(&_connection)
             .expect("E.");
         if _react_model.len() > 0 {
             return _react_model.into_iter().nth(0).unwrap();
         }
         else {
-            let new_react_model = NewPostCommentCounterReaction {
-                post_comment_id: self.id,
-                reaction_id:  reaction_id,
-                count:  0,
+            let new_react_model = NewPhotoCommentCounterReaction {
+                photo_comment_id: self.id,
+                reaction_id:      reaction_id,
+                count:            0,
             };
-            let _react_model = diesel::insert_into(schema::post_comment_counter_reactions::table)
+            let _react_model = diesel::insert_into(schema::photo_comment_counter_reactions::table)
                 .values(&new_react_model)
-                .get_result::<PostCommentCounterReaction>(&_connection)
+                .get_result::<PhotoCommentCounterReaction>(&_connection)
                 .expect("Error.");
 
             return _react_model;
@@ -577,8 +578,8 @@ impl PostComment {
         user_id: i32,
         reaction_id: i32,
     ) -> Json<JsonItemReactions> {
-        use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
-        use crate::models::{PostCommentReaction, NewPostCommentReaction};
+        use crate::schema::photo_comment_reactions::dsl::photo_comment_reactions;
+        use crate::models::{PhotoCommentReaction, NewPhotoCommentReaction};
 
         let _connection = establish_connection();
         let list = self.get_list();
@@ -586,10 +587,10 @@ impl PostComment {
         let react_model = self.get_count_model_for_reaction(reaction_id);
 
         if reactions_of_list.iter().any(|&i| i==reaction_id) && list.is_user_see_el(user_id) && list.is_user_see_comment(user_id) {
-            let votes = post_comment_reactions
-                .filter(schema::post_comment_reactions::user_id.eq(user_id))
-                .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-                .load::<PostCommentReaction>(&_connection)
+            let votes = photo_comment_reactions
+                .filter(schema::photo_comment_reactions::user_id.eq(user_id))
+                .filter(schema::photo_comment_reactions::photo_comment_id.eq(self.id))
+                .load::<PhotoCommentReaction>(&_connection)
                 .expect("E.");
 
             // если пользователь уже реагировал на товар
@@ -598,9 +599,9 @@ impl PostComment {
 
                 // если пользователь уже реагировал этой реакцией на этот товар
                 if vote.reaction_id == reaction_id {
-                    diesel::delete(post_comment_reactions
-                        .filter(schema::post_comment_reactions::user_id.eq(user_id))
-                        .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
+                    diesel::delete(photo_comment_reactions
+                        .filter(schema::photo_comment_reactions::user_id.eq(user_id))
+                        .filter(schema::photo_comment_reactions::photo_comment_id.eq(self.id))
                         )
                         .execute(&_connection)
                         .expect("E");
@@ -610,8 +611,8 @@ impl PostComment {
                 // если пользователь уже реагировал другой реакцией на этот товар
                 else {
                     diesel::update(&vote)
-                        .set(schema::post_comment_reactions::reaction_id.eq(reaction_id))
-                        .get_result::<PostCommentReaction>(&_connection)
+                        .set(schema::photo_comment_reactions::reaction_id.eq(reaction_id))
+                        .get_result::<PhotoCommentReaction>(&_connection)
                         .expect("Error.");
 
                     react_model.update_count(self.id, user_id, false);
@@ -620,14 +621,14 @@ impl PostComment {
 
             // если пользователь не реагировал на этот товар
             else {
-                let new_vote = NewPostCommentReaction {
-                    user_id:         user_id,
-                    post_comment_id: self.id,
-                    reaction_id:     reaction_id,
+                let new_vote = NewPhotoCommentReaction {
+                    user_id:          user_id,
+                    photo_comment_id: self.id,
+                    reaction_id:      reaction_id,
                 };
-                diesel::insert_into(schema::post_comment_reactions::table)
+                diesel::insert_into(schema::photo_comment_reactions::table)
                     .values(&new_vote)
-                    .get_result::<PostCommentReaction>(&_connection)
+                    .get_result::<PhotoCommentReaction>(&_connection)
                     .expect("Error.");
 
                 react_model.update_count(self.id, user_id, true);
@@ -668,12 +669,12 @@ impl PostComment {
     }
 
     pub fn reactions_ids(&self) -> Vec<i32> {
-        use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
+        use crate::schema::photo_comment_reactions::dsl::photo_comment_reactions;
 
         let _connection = establish_connection();
-        let votes = post_comment_reactions
-            .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-            .select(schema::post_comment_reactions::user_id)
+        let votes = photo_comment_reactions
+            .filter(schema::photo_comment_reactions::photo_comment_id.eq(self.id))
+            .select(schema::photo_comment_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
         return votes;
@@ -684,13 +685,13 @@ impl PostComment {
     }
 
     pub fn get_user_reaction(&self, user_id: i32) -> i32 {
-        use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
+        use crate::schema::photo_comment_reactions::dsl::photo_comment_reactions;
         // "/static/images/reactions/" + get_user_reaction + ".jpg"
         let _connection = establish_connection();
-        let vote = post_comment_reactions
-            .filter(schema::post_comment_reactions::user_id.eq(user_id))
-            .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-            .select(schema::post_comment_reactions::reaction_id)
+        let vote = photo_comment_reactions
+            .filter(schema::photo_comment_reactions::user_id.eq(user_id))
+            .filter(schema::photo_comment_reactions::photo_comment_id.eq(self.id))
+            .select(schema::photo_comment_reactions::reaction_id)
             .load::<i32>(&_connection)
             .expect("E.")
             .into_iter()
@@ -702,15 +703,15 @@ impl PostComment {
     pub fn plus_reactions(&self, count: i32, _user_id: i32) -> () {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::post_comments::reactions.eq(self.reactions + count))
-            .get_result::<PostComment>(&_connection)
+            .set(schema::photo_comments::reactions.eq(self.reactions + count))
+            .get_result::<PhotoComment>(&_connection)
             .expect("Error.");
     }
     pub fn minus_reactions(&self, count: i32) -> () {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::post_comments::reactions.eq(self.reactions - count))
-            .get_result::<PostComment>(&_connection)
+            .set(schema::photo_comments::reactions.eq(self.reactions - count))
+            .get_result::<PhotoComment>(&_connection)
             .expect("Error.");
     }
     pub fn get_small_content(&self) -> String {

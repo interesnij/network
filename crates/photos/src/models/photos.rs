@@ -12,11 +12,10 @@ use crate::utils::{
     establish_connection,
     JsonPosition,
     JsonItemReactions,
-    CardParentPostJson,
-    RepostsPostJson,
-    CardPostJson,
+    CardParentPhotoJson,
+    CardPhotoJson,
     ReactionBlockJson,
-    PostDetailJson,
+    PhotoDetailJson,
     CardUserJson,
     CardOwnerJson,
     CommentsSmallJson,
@@ -24,12 +23,12 @@ use crate::utils::{
 };
 use actix_web::web::Json;
 use crate::models::{
-    PostComment, NewPostComment, PostList,
-    PostCounterReaction, User, Community,
+    PhotoComment, NewPhotoComment, PhotoList,
+    PhotoCounterReaction, User, Community,
 };
-use crate::schema::posts;
+use crate::schema::photos;
 
-/////// Post //////
+/////// Photo //////
 
 //////////// тип
 // 1 Опубликовано
@@ -58,133 +57,56 @@ use crate::schema::posts;
 
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct Post {
-    pub id:           i32,
-    pub content:      Option<String>,
-    pub community_id: Option<i32>,
-    pub user_id:      i32,
-    pub post_list_id: i32,
-    pub types:        i16,
-    pub attach:       Option<String>,
-    pub comments_on:  bool,
-    pub created:      chrono::NaiveDateTime,
-    pub comment:      i32,
-    pub view:         i32,
-    pub repost:       i32,
-    pub copy:         i32,
-    pub position:     i16,
-    pub is_signature: bool,
-    pub parent_id:    Option<i32>,
-    pub reactions:    i32,
+pub struct Photo {
+    pub id:            i32,
+    pub community_id:  Option<i32>,
+    pub user_id:       i32,
+    pub photo_list_id: i32,
+    pub types:         i16,
+    pub preview:       String,
+    pub file:          String,
+    pub description:   Option<String>,
+    pub comments_on:   bool,
+    pub created:       chrono::NaiveDateTime,
+    pub comment:       i32,
+    pub view:          i32,
+    pub repost:        i32,
+    pub copy:          i32,
+    pub position:      i16,
+    pub reactions:     i32,
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="posts"]
-pub struct NewPost {
-    pub content:      Option<String>,
-    pub community_id: Option<i32>,
-    pub user_id:      i32,
-    pub post_list_id: i32,
-    pub types:        i16,
-    pub attach:       Option<String>,
-    pub comments_on:  bool,
-    pub created:      chrono::NaiveDateTime,
-    pub comment:      i32,
-    pub view:         i32,
-    pub repost:       i32,
-    pub copy:         i32,
-    pub position:     i16,
-    pub is_signature: bool,
-    pub parent_id:    Option<i32>,
-    pub reactions:    i32,
+#[table_name="photos"]
+pub struct NewPhoto {
+    pub community_id:  Option<i32>,
+    pub user_id:       i32,
+    pub photo_list_id: i32,
+    pub types:         i16,
+    pub preview:       String,
+    pub file:          String,
+    pub description:   Option<String>,
+    pub comments_on:   bool,
+    pub created:       chrono::NaiveDateTime,
+    pub comment:       i32,
+    pub view:          i32,
+    pub repost:        i32,
+    pub copy:          i32,
+    pub position:      i16,
+    pub reactions:     i32,
 }
 #[derive(Queryable, Serialize, Deserialize, AsChangeset, Debug)]
-#[table_name="posts"]
-pub struct EditPost {
-    pub content:      Option<String>,
-    pub attach:       Option<String>,
+#[table_name="photos"]
+pub struct EditPhoto {
+    pub description:  Option<String>,
     pub comments_on:  bool,
-    pub is_signature: bool,
 }
 #[derive(Serialize, Deserialize, AsChangeset, Debug)]
-#[table_name="posts"]
-pub struct EditPostPosition {
+#[table_name="photos"]
+pub struct EditPhotoPosition {
     pub position: i16,
 }
 
-impl Post {
-    pub fn item_message_reposts_count (
-        item_id: i32,
-        types: i16
-    ) -> usize {
-        // получаем кол-во репостов элемента заданного типа
-        // Тип объекта types задается единый для всех аналогичных задач .
-        use crate::schema::item_reposts::dsl::item_reposts;
-
-        let _connection = establish_connection();
-        return item_reposts
-            .filter(schema::item_reposts::item_id.eq(item_id))
-            .filter(schema::item_reposts::item_types.eq(types))
-            .filter(schema::item_reposts::message_id.is_not_null())
-            .select(schema::item_reposts::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len();
-    }
-
-    pub fn get_item_reposts (
-        item_id: i32,
-        types: i16,
-        limit: i64,
-        offset: i64
-    ) -> Vec<Post> {
-        use crate::schema::{
-            item_reposts::dsl::item_reposts,
-            posts::dsl::posts,
-        };
-
-        let _connection = establish_connection();
-        let item_reposts_ids = item_reposts
-            .filter(schema::item_reposts::item_id.eq(item_id))
-            .filter(schema::item_reposts::item_types.eq(types))
-            .order(schema::item_reposts::id.desc())
-            .limit(limit)
-            .offset(offset)
-            .select(schema::item_reposts::post_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-        return posts
-            .filter(schema::posts::id.eq_any(item_reposts_ids))
-            .filter(schema::posts::types.lt(10))
-            .load::<Post>(&_connection)
-            .expect("E");
-    }
-
-    pub fn get_item_reposts_with_limit (
-        item_id: i32,
-        types: i16,
-        limit: i64,
-    ) -> Vec<Post> {
-        use crate::schema::{
-            item_reposts::dsl::item_reposts,
-            posts::dsl::posts,
-        };
-
-        let _connection = establish_connection();
-        let item_reposts_ids = item_reposts
-            .filter(schema::item_reposts::item_id.eq(item_id))
-            .filter(schema::item_reposts::item_types.eq(types))
-            .order(schema::item_reposts::id.desc())
-            .limit(limit)
-            .select(schema::item_reposts::post_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-        return posts
-            .filter(schema::posts::id.eq_any(item_reposts_ids))
-            .filter(schema::posts::types.lt(10))
-            .load::<Post>(&_connection)
-            .expect("E");
-    }
-
+impl Photo {
     pub fn get_creator(&self) -> User {
         use crate::schema::users::dsl::users;
 
@@ -264,17 +186,17 @@ impl Post {
         user_id: i32,
         reactions_list: Vec<i32>,
     ) -> Vec<CardCommentJson> {
-        use crate::schema::post_comments::dsl::post_comments;
+        use crate::schema::photo_comments::dsl::photo_comments;
 
         let _connection = establish_connection();
         let mut json = Vec::new();
-        let items = post_comments
-            .filter(schema::post_comments::post_id.eq(self.id))
-            .filter(schema::post_comments::types.lt(10))
-            .filter(schema::post_comments::parent_id.is_null())
+        let items = photo_comments
+            .filter(schema::photo_comments::photo_id.eq(self.id))
+            .filter(schema::photo_comments::types.lt(10))
+            .filter(schema::photo_comments::parent_id.is_null())
             .limit(limit)
             .offset(offset)
-            .load::<PostComment>(&_connection)
+            .load::<PhotoComment>(&_connection)
             .expect("E.");
 
         for c in items.iter() {
@@ -294,7 +216,7 @@ impl Post {
         }
         return json;
     }
-    pub fn get_comments_post_json (
+    pub fn get_comments_photo_json (
         &self,
         user_id: i32,
         reactions_list: Vec<i32>,
@@ -333,153 +255,6 @@ impl Post {
         };
     }
 
-    pub fn get_parent_post_json (&self) -> Option<CardParentPostJson> {
-        // получаем родительский пост
-        let parent: Option<CardParentPostJson>;
-        if self.parent_id.is_some() {
-            let _parent = self.get_parent();
-            let creator = _parent.get_owner_meta();
-            parent = Some(CardParentPostJson {
-                id:          _parent.id,
-                content:     _parent.content.clone(),
-                owner_name:  creator.name.clone(),
-                owner_link:  creator.link.clone(),
-                owner_image: creator.image.clone(),
-                created:     _parent.created.format("%d-%m-%Y в %H:%M").to_string(),
-                items:       None,
-            })
-        }
-        else {
-            parent = None;
-        }
-        return parent;
-    }
-    pub fn get_item_reposts_with_limit_json (
-        item_id: i32,
-        types: i16,
-        limit: i64,
-    ) -> Option<RepostsPostJson> {
-        // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in Post::get_item_reposts_with_limit(item_id, types, limit).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
-
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(item_id, types),
-                copy_count:      self.count_copy(),
-                creators:        reposts_json,
-            });
-        }
-        else {
-            reposts_window = None;
-        }
-        return reposts_window;
-    }
-    pub fn get_reposts_with_limit_json (
-        &self,
-        limit: i64,
-    ) -> Option<RepostsPostJson> {
-        // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in self.get_reposts_with_limit(limit).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
-
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: Post::item_message_reposts_count(item_id, types),
-                copy_count:      self.count_copy(),
-                creators:        reposts_json,
-            });
-        }
-        else {
-            reposts_window = None;
-        }
-        return reposts_window;
-    }
-
-    pub fn get_item_reposts_json (
-        item_id: i32,
-        types: i16,
-        limit: i64,
-        offset: i64
-    ) -> Option<RepostsPostJson> {
-        // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in Post::get_item_reposts(item_id, types, limit, offset).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
-
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: self.message_reposts_count(),
-                copy_count:      self.count_copy(),
-                creators:        reposts_json,
-            });
-        }
-        else {
-            reposts_window = None;
-        }
-        return reposts_window;
-    }
-    pub fn get_reposts_json (
-        &self,
-        limit: i64,
-        offset: i64
-    ) -> Option<RepostsPostJson> {
-        // получаем репосты записи, если есть
-        let reposts_window: Option<RepostsPostJson>;
-        if self.repost > 0 {
-            let mut reposts_json = Vec::new();
-            for r in self.get_reposts(limit, offset).iter() {
-                let creator = r.get_owner_meta();
-                reposts_json.push (
-                    CardOwnerJson {
-                        name:  creator.name.clone(),
-                        link:  creator.link.clone(),
-                        image: creator.image.clone(),
-                    }
-                );
-            }
-
-            reposts_window = Some(RepostsPostJson {
-                message_reposts: self.message_reposts_count(),
-                copy_count:      self.count_copy(),
-                creators:        reposts_json,
-            });
-        }
-        else {
-            reposts_window = None;
-        }
-        return reposts_window;
-    }
-
     pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
@@ -505,80 +280,51 @@ impl Post {
         return reactions_blocks;
     }
 
-    pub fn get_detail_post_json (
-        &self,
-        user_id: i32,
-        reposts_limit: Option<i64>,
-    ) -> PostDetailJson {
+    pub fn get_detail_photo_json (&self, user_id: i32, page: i32, limit: i32) -> PhotoDetailJson {
         let list = self.get_list();
         let creator = self.get_owner_meta();
         let reactions_list = list.get_reactions_list();
-
-        let limit: i64;
-        if reposts_limit.is_some() {
-            limit = reposts_limit.unwrap();
-        }
-        else {
-            limit = 6;
-        }
-
         let mut prev: Option<i32> = None;
         let mut next: Option<i32> = None;
-        let _posts = list.get_items();
-        for (i, item) in _posts.iter().enumerate().rev() {
+        let _photos = list.get_items();
+        for (i, item) in _photos.iter().enumerate().rev() {
             if item.position == self.position {
-                if (i + 1) != _posts.len() {
-                    prev = Some(_posts[i + 1].id);
+                if (i + 1) != _photos.len() {
+                    prev = Some(_photos[i + 1].id);
                 };
                 if i != 0 {
-                    next = Some(_posts[i - 1].id);
+                    next = Some(_photos[i - 1].id);
                 };
                 break;
             }
         };
-        return PostDetailJson {
-                content:              self.content.clone(),
+        return PhotoDetailJson {
                 owner_name:           creator.name.clone(),
                 owner_link:           creator.link.clone(),
                 owner_image:          creator.image.clone(),
+                preview:              self.preview,
+                file:                 self.file,
+                description:          self.description,
                 comments_on:          self.comments_on,
                 created:              self.created.format("%d-%m-%Y в %H:%M").to_string(),
                 comment:              self.comment,
                 view:                 self.view,
                 repost:               self.repost,
-                is_signature:         self.is_signature,
                 reactions:            self.reactions,
                 types:                self.get_code(),
-                parent:               self.get_parent_post_json(),
-                reposts:              self.get_reposts_with_limit_json(limit),
                 reactions_list:       self.get_reactions_json(user_id, reactions_list.clone()),
                 prev:                 prev,
                 next:                 next,
                 is_user_see_comments: list.is_user_see_comment(user_id),
                 is_user_create_el:    list.is_user_create_el(user_id),
-                comments:             self.get_comments_post_json(user_id, reactions_list.clone(), page, limit.into()),
-                attachment:           None,
+                comments:             self.get_comments_photo_json(user_id, reactions_list.clone(), page, limit.into()),
             };
     }
-    pub fn get_post_json (&self, user_id: i32, reactions_list: Vec<i32>,) -> CardPostJson {
-        let creator = self.get_owner_meta();
-        return CardPostJson {
-                id:              self.id,
-                content:         self.content.clone(),
-                owner_name:      creator.name.clone(),
-                owner_link:      creator.link.clone(),
-                owner_image:     creator.image.clone(),
-                comments_on:     self.comments_on,
-                created:         self.created.format("%d-%m-%Y в %H:%M").to_string(),
-                comment:         self.comment,
-                view:            self.view,
-                repost:          self.repost,
-                is_signature:    self.is_signature,
-                reactions:       self.reactions,
-                types:           self.get_code(),
-                parent:          self.get_parent_post_json(),
-                reactions_list:  self.get_reactions_json(user_id, reactions_list.clone()),
-                attachment:      None,
+    pub fn get_photo_json (&self) -> CardPhotoJson {
+        return CardPhotoJson {
+                id:      self.id,
+                preview: self.preview,
+                file:    self.file,
             };
     }
 
@@ -588,17 +334,17 @@ impl Post {
         user_reaction: Option<i32>,
     ) -> ReactionBlockJson {
         use crate::schema::{
-            post_reactions::dsl::post_reactions,
+            photo_reactions::dsl::photo_reactions,
             users::dsl::users,
         };
-        use crate::utils::CardReactionPostJson;
+        use crate::utils::CardReactionPhotoJson;
 
         let _connection = establish_connection();
-        let user_ids = post_reactions
-            .filter(schema::post_reactions::post_id.eq(self.id))
-            .filter(schema::post_reactions::reaction_id.eq(reaction_id))
+        let user_ids = photo_reactions
+            .filter(schema::photo_reactions::photo_id.eq(self.id))
+            .filter(schema::photo_reactions::reaction_id.eq(reaction_id))
             .limit(6)
-            .select(schema::post_reactions::user_id)
+            .select(schema::photo_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -617,7 +363,7 @@ impl Post {
         let mut user_json = Vec::new();
         for _item in _users.iter() {
             user_json.push (
-                CardReactionPostJson {
+                CardReactionPhotoJson {
                     owner_name:        _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
                     owner_link:        _item.link.clone(),
                     owner_image:       _item.image.clone(),
@@ -639,18 +385,18 @@ impl Post {
         offset:        i64,
     ) -> ReactionBlockJson {
         use crate::schema::{
-            post_reactions::dsl::post_reactions,
+            photo_reactions::dsl::photo_reactions,
             users::dsl::users,
         };
-        use crate::utils::CardReactionPostJson;
+        use crate::utils::CardReactionPhotoJson;
 
         let _connection = establish_connection();
-        let user_ids = post_reactions
-            .filter(schema::post_reactions::post_id.eq(self.id))
-            .filter(schema::post_reactions::reaction_id.eq(reaction_id))
+        let user_ids = photo_reactions
+            .filter(schema::photo_reactions::photo_id.eq(self.id))
+            .filter(schema::photo_reactions::reaction_id.eq(reaction_id))
             .limit(limit)
             .offset(offset)
-            .select(schema::post_reactions::user_id)
+            .select(schema::photo_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -669,7 +415,7 @@ impl Post {
         let mut user_json = Vec::new();
         for _item in _users.iter() {
             user_json.push (
-                CardReactionPostJson {
+                CardReactionPhotoJson {
                     owner_name:       _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
                     owner_link:       _item.link.clone(),
                     owner_image:      _item.image.clone(),
@@ -693,27 +439,27 @@ impl Post {
             return self.reactions.to_string();
         }
     }
-    pub fn get_count_model_for_reaction(&self, reaction_id: i32) -> PostCounterReaction {
-        use crate::schema::post_counter_reactions::dsl::post_counter_reactions;
-        use crate::models::NewPostCounterReaction;
+    pub fn get_count_model_for_reaction(&self, reaction_id: i32) -> PhotoCounterReaction {
+        use crate::schema::photo_counter_reactions::dsl::photo_counter_reactions;
+        use crate::models::NewPhotoCounterReaction;
 
         let _connection = establish_connection();
-        let _react_model = post_counter_reactions
-            .filter(schema::post_counter_reactions::post_id.eq(self.id))
-            .load::<PostCounterReaction>(&_connection)
+        let _react_model = photo_counter_reactions
+            .filter(schema::photo_counter_reactions::photo_id.eq(self.id))
+            .load::<PhotoCounterReaction>(&_connection)
             .expect("E.");
         if _react_model.len() > 0 {
             return _react_model.into_iter().nth(0).unwrap();
         }
         else {
-            let new_react_model = NewPostCounterReaction {
-                post_id:     self.id,
+            let new_react_model = NewPhotoCounterReaction {
+                photo_id:    self.id,
                 reaction_id: reaction_id,
                 count:       0,
             };
-            let _react_model = diesel::insert_into(schema::post_counter_reactions::table)
+            let _react_model = diesel::insert_into(schema::photo_counter_reactions::table)
                 .values(&new_react_model)
-                .get_result::<PostCounterReaction>(&_connection)
+                .get_result::<PhotoCounterReaction>(&_connection)
                 .expect("Error.");
 
             return _react_model;
@@ -724,8 +470,8 @@ impl Post {
         user_id: i32,
         reaction_id: i32,
     ) -> Json<JsonItemReactions> {
-        use crate::schema::post_reactions::dsl::post_reactions;
-        use crate::models::{PostReaction, NewPostReaction};
+        use crate::schema::photo_reactions::dsl::photo_reactions;
+        use crate::models::{PhotoReaction, NewPhotoReaction};
 
         let _connection = establish_connection();
         let list = self.get_list();
@@ -733,10 +479,10 @@ impl Post {
         let react_model = self.get_count_model_for_reaction(reaction_id);
 
         if reactions_of_list.iter().any(|&i| i==reaction_id) && list.is_user_see_el(user_id) && list.is_user_see_comment(user_id) {
-            let votes = post_reactions
-                .filter(schema::post_reactions::user_id.eq(user_id))
-                .filter(schema::post_reactions::post_id.eq(self.id))
-                .load::<PostReaction>(&_connection)
+            let votes = photo_reactions
+                .filter(schema::photo_reactions::user_id.eq(user_id))
+                .filter(schema::photo_reactions::photo_id.eq(self.id))
+                .load::<PhotoReaction>(&_connection)
                 .expect("E.");
 
             // если пользователь уже реагировал на товар
@@ -745,9 +491,9 @@ impl Post {
 
                 // если пользователь уже реагировал этой реакцией на этот товар
                 if vote.reaction_id == reaction_id {
-                    diesel::delete(post_reactions
-                        .filter(schema::post_reactions::user_id.eq(user_id))
-                        .filter(schema::post_reactions::post_id.eq(self.id))
+                    diesel::delete(photo_reactions
+                        .filter(schema::photo_reactions::user_id.eq(user_id))
+                        .filter(schema::photo_reactions::photo_id.eq(self.id))
                         )
                         .execute(&_connection)
                         .expect("E");
@@ -757,8 +503,8 @@ impl Post {
                 // если пользователь уже реагировал другой реакцией на этот товар
                 else {
                     diesel::update(&vote)
-                        .set(schema::post_reactions::reaction_id.eq(reaction_id))
-                        .get_result::<PostReaction>(&_connection)
+                        .set(schema::photo_reactions::reaction_id.eq(reaction_id))
+                        .get_result::<PhotoReaction>(&_connection)
                         .expect("Error.");
 
                     react_model.update_count(self.id, user_id, false);
@@ -767,14 +513,14 @@ impl Post {
 
             // если пользователь не реагировал на этот товар
             else {
-                let new_vote = NewPostReaction {
+                let new_vote = NewPhotoReaction {
                     user_id:     user_id,
-                    post_id:     self.id,
+                    photo_id:    self.id,
                     reaction_id: reaction_id,
                 };
-                diesel::insert_into(schema::post_reactions::table)
+                diesel::insert_into(schema::photo_reactions::table)
                     .values(&new_vote)
-                    .get_result::<PostReaction>(&_connection)
+                    .get_result::<PhotoReaction>(&_connection)
                     .expect("Error.");
 
                 react_model.update_count(self.id, user_id, true);
@@ -811,12 +557,12 @@ impl Post {
         return self.reactions > 0;
     }
     pub fn reactions_ids(&self) -> Vec<i32> {
-        use crate::schema::post_reactions::dsl::post_reactions;
+        use crate::schema::photo_reactions::dsl::photo_reactions;
 
         let _connection = establish_connection();
-        let votes = post_reactions
-            .filter(schema::post_reactions::post_id.eq(self.id))
-            .select(schema::post_reactions::user_id)
+        let votes = photo_reactions
+            .filter(schema::photo_reactions::photo_id.eq(self.id))
+            .select(schema::photo_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
         return votes;
@@ -825,13 +571,13 @@ impl Post {
         return self.reactions_ids().iter().any(|&i| i==user_id);
     }
     pub fn get_user_reaction(&self, user_id: i32) -> i32 {
-        use crate::schema::post_reactions::dsl::post_reactions;
+        use crate::schema::photo_reactions::dsl::photo_reactions;
         // "/static/images/reactions/" + get_user_reaction + ".jpg"
         let _connection = establish_connection();
-        let vote = post_reactions
-            .filter(schema::post_reactions::user_id.eq(user_id))
-            .filter(schema::post_reactions::post_id.eq(self.id))
-            .select(schema::post_reactions::reaction_id)
+        let vote = photo_reactions
+            .filter(schema::photo_reactions::user_id.eq(user_id))
+            .filter(schema::photo_reactions::photo_id.eq(self.id))
+            .select(schema::photo_reactions::reaction_id)
             .load::<i32>(&_connection)
             .expect("E.")
             .into_iter()
@@ -843,45 +589,24 @@ impl Post {
     pub fn get_str_id(&self) -> String {
         return self.id.to_string();
     }
-    pub fn is_post(&self) -> bool {
+    pub fn is_photo(&self) -> bool {
         return true;
     }
     pub fn get_code(&self) -> String {
         return "pos".to_string() + &self.get_str_id();
     }
     pub fn get_folder(&self) -> String {
-        return "posts".to_string();
+        return "photos".to_string();
     }
 
-    pub fn message_reposts_count(&self) -> String {
-        use crate::schema::post_reposts::dsl::post_reposts;
+    pub fn get_list(&self) -> PhotoList {
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-
-        let count = post_reposts
-            .filter(schema::post_reposts::post_id.eq(self.id))
-            .load::<PostRepost>(&_connection)
-            .expect("E.")
-            .len();
-
-        if count == 0 {
-            return "".to_string();
-        }
-        else {
-            return ", из них в сообщениях - ".to_string() + &count.to_string();
-        }
-    }
-
-
-
-    pub fn get_list(&self) -> PostList {
-        use crate::schema::post_lists::dsl::post_lists;
-
-        let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::id.eq(self.post_list_id))
-            .filter(schema::post_lists::types.lt(10))
-            .load::<PostList>(&_connection)
+        return photo_lists
+            .filter(schema::photo_lists::id.eq(self.photo_list_id))
+            .filter(schema::photo_lists::types.lt(10))
+            .load::<PhotoList>(&_connection)
             .expect("E")
             .into_iter()
             .nth(0)
@@ -891,47 +616,15 @@ impl Post {
     pub fn get_playlist_image(&self) -> String {
         return "/static/images/news_small3.jpg".to_string();
     }
-
-    pub fn create_parent_post (
-        community_id: Option<i32>,
-        user_id:      i32,
-        attach:       Option<String>,
-    ) -> Post {
-        let _connection = establish_connection();
-
-        let new_post_form = NewPost {
-            content:      None,
-            community_id: community_id,
-            user_id:      user_id,
-            post_list_id: 0,
-            types:        8,
-            attach:       attach,
-            comments_on:  false,
-            created:      chrono::Local::now().naive_utc(),
-            comment:      0,
-            view:         0,
-            repost:       0,
-            copy:         0,
-            position:     0,
-            is_signature: false,
-            parent_id:    None,
-            reactions:    0,
-        };
-        let new_post = diesel::insert_into(schema::posts::table)
-            .values(&new_post_form)
-            .get_result::<Post>(&_connection)
-            .expect("Error.");
-        return new_post;
-    }
     pub fn copy_item(pk: i32, lists: Vec<i32>) -> bool {
-        use crate::schema::posts::dsl::posts;
-        use crate::schema::post_lists::dsl::post_lists;
+        use crate::schema::photos::dsl::photos;
+        use crate::schema::photo_lists::dsl::photo_lists;
 
         let _connection = establish_connection();
-        let item = posts
-            .filter(schema::posts::id.eq(pk))
-            .filter(schema::posts::types.eq_any(vec![1, 2]))
-            .load::<Post>(&_connection)
+        let item = photos
+            .filter(schema::photos::id.eq(pk))
+            .filter(schema::photos::types.eq_any(vec![1, 2]))
+            .load::<Photo>(&_connection)
             .expect("E")
             .into_iter()
             .nth(0)
@@ -939,82 +632,51 @@ impl Post {
         let mut count = 0;
         for list_id in lists.iter() {
             count += 1;
-            let list = post_lists
-                .filter(schema::post_lists::id.eq(list_id))
-                .filter(schema::post_lists::types.lt(10))
-                .load::<PostList>(&_connection)
+            let list = photo_lists
+                .filter(schema::photo_lists::id.eq(list_id))
+                .filter(schema::photo_lists::types.lt(10))
+                .load::<PhotoList>(&_connection)
                 .expect("E")
                 .into_iter()
                 .nth(0)
                 .unwrap();
 
-            list.create_post (
-                item.content.clone(),
-                list.user_id,
-                None,
-                item.attach.clone(),
-                item.comments_on.clone(),
-                item.is_signature.clone(),
-                item.parent_id.clone(),
+            list.create_photo (
+                item.community_id,
+                item.user_id,
+                item.preview.clone(),
+                item.file.clone(),
             );
         }
         diesel::update(&item)
-          .set(schema::posts::copy.eq(item.copy + count))
-          .get_result::<Post>(&_connection)
+          .set(schema::photos::copy.eq(item.copy + count))
+          .get_result::<Photo>(&_connection)
           .expect("Error.");
 
         if item.community_id.is_some() {
             let community = item.get_community();
-            community.plus_posts(count);
+            community.plus_photos(count);
         }
         else {
             let creator = item.get_creator();
-            creator.plus_posts(count);
+            creator.plus_photos(count);
          }
         return true;
-    }
-
-    pub fn edit_post (
-        &self,
-        content:      Option<String>,
-        attach:       Option<String>,
-        comments_on:  bool,
-        is_signature: bool
-    ) -> &Post {
-        let _connection = establish_connection();
-
-        //let mut _content: Option<String> = None;
-        //if content.is_some() {
-        //    use crate::utils::get_formatted_text;
-        //    _content = Some(get_formatted_text(&content.unwrap()));
-        //}
-
-        let edit_post = EditPost {
-            content:      content,
-            attach:       attach,
-            comments_on:  comments_on,
-            is_signature: is_signature,
-        };
-        diesel::update(self)
-            .set(edit_post)
-            .get_result::<Post>(&_connection)
-            .expect("Error.");
-        return self;
     }
 
     pub fn plus_comments(&self, count: i32) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::posts::comment.eq(self.comment + count))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(self.comment + count))
+            .get_result::<Photo>(&_connection)
             .expect("Error.");
         return true;
     }
     pub fn plus_reactions(&self, count: i32, _user_id: i32) -> () {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::posts::reactions.eq(self.reactions + count))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::reactions.eq(self.reactions + count))
+            .get_result::<Photo>(&_connection)
             .expect("Error.");
 
         //if self.community_id.is_some() {
@@ -1069,8 +731,8 @@ impl Post {
 
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::posts::reactions.eq(self.reactions - count))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::reactions.eq(self.reactions - count))
+            .get_result::<Photo>(&_connection)
             .expect("Error.");
 
         //let _q_standalone = "%".to_owned() + &"отреагировал на запись".to_string() + &"%".to_string();
@@ -1095,8 +757,8 @@ impl Post {
     pub fn minus_comments(&self, count: i32) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::posts::comment.eq(self.comment - count))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(self.comment - count))
+            .get_result::<Photo>(&_connection)
             .expect("Error.");
         return true;
     }
@@ -1109,12 +771,6 @@ impl Post {
     }
     pub fn is_closed(&self) -> bool {
         return self.types > 20 || self.types < 30;
-    }
-    pub fn is_fixed(&self) -> bool {
-        return self.types == 2;
-    }
-    pub fn is_repost(&self) -> bool {
-        return self.types == 8;
     }
 
     pub fn delete_item(&self) -> () {
@@ -1133,22 +789,22 @@ impl Post {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::types.eq(close_case))
+            .get_result::<Photo>(&_connection)
             .expect("E");
         let list = self.get_list();
         diesel::update(&list)
-            .set(schema::post_lists::count.eq(list.count - 1))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::count.eq(list.count - 1))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
             let community = self.get_community();
-            community.plus_posts(1);
+            community.minus_photos(1);
         }
         else {
             let creator = self.get_creator();
-            creator.plus_posts(1);
+            creator.minus_photos(1);
         }
 
         //hide_wall_notify_items(51, self.id);
@@ -1169,22 +825,22 @@ impl Post {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::types.eq(close_case))
+            .get_result::<Photo>(&_connection)
             .expect("E");
         let list = self.get_list();
         diesel::update(&list)
-            .set(schema::post_lists::count.eq(list.count + 1))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::count.eq(list.count + 1))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
             let community = self.get_community();
-            community.plus_posts(1);
+            community.plus_photos(1);
         }
         else {
             let creator = self.get_creator();
-            creator.plus_posts(1);
+            creator.plus_photos(1);
         }
 
         //show_wall_notify_items(51, self.id);
@@ -1206,22 +862,22 @@ impl Post {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::types.eq(close_case))
+            .get_result::<Photo>(&_connection)
             .expect("E");
         let list = self.get_list();
         diesel::update(&list)
-            .set(schema::post_lists::count.eq(list.count - 1))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::count.eq(list.count - 1))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
             let community = self.get_community();
-            community.plus_posts(1);
+            community.plus_photos(1);
         }
         else {
             let creator = self.get_creator();
-            creator.plus_posts(1);
+            creator.plus_photos(1);
         }
 
         //hide_wall_notify_items(51, self.id);
@@ -1242,45 +898,25 @@ impl Post {
             _ => self.types,
         };
         diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::types.eq(close_case))
+            .get_result::<Photo>(&_connection)
             .expect("E");
         let list = self.get_list();
         diesel::update(&list)
-            .set(schema::post_lists::count.eq(list.count + 1))
-            .get_result::<PostList>(&_connection)
+            .set(schema::photo_lists::count.eq(list.count + 1))
+            .get_result::<PhotoList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
             let community = self.get_community();
-            community.plus_posts(1);
+            community.plus_photos(1);
         }
         else {
             let creator = self.get_creator();
-            creator.plus_posts(1);
+            creator.plus_photos(1);
         }
 
         //show_wall_notify_items(51, self.id);
-    }
-    pub fn get_format_text(&self) -> String {
-        if self.content.is_some() {
-            let unwrap = self.content.as_ref().unwrap();
-            let split_unwrap: Vec<&str> = unwrap.split(" ").collect();
-            if split_unwrap.len() <= 20 {
-                return self.content.as_ref().unwrap().to_string();
-            }
-            else {
-                let mut string = String::new();
-                for (i, word) in split_unwrap.iter().enumerate() {
-                    if i == 20 {
-                        string.push_str("<br><a class='pointer show_post_text'>Показать полностью...</a><br><span style='display:none'>");
-                    }
-                    string.push_str(word);
-                    string.push_str(" ");
-                }
-                return string;
-            }
-        } else { return "".to_string(); }
     }
 
     pub fn count_comments(&self) -> String {
@@ -1300,14 +936,6 @@ impl Post {
             return self.repost.to_string();
         }
     }
-    pub fn count_copy(&self) -> String {
-        if self.copy == 0 {
-            return "".to_string();
-        }
-        else {
-            return ", копировали - ".to_string() + &self.copy.to_string();
-        }
-    }
 
     pub fn reposts_count_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
@@ -1324,71 +952,24 @@ impl Post {
         return self.repost > 0;
     }
 
-    pub fn fixed_post(&self) -> () {
-        let _connection = establish_connection();
-        diesel::update(self)
-            .set(schema::posts::types.eq(2))
-            .get_result::<Post>(&_connection)
-            .expect("E");
-    }
-    pub fn unfixed_post(&self) -> bool {
-        let _connection = establish_connection();
-        diesel::update(self)
-            .set(schema::posts::types.eq(1))
-            .get_result::<Post>(&_connection)
-            .expect("E");
-        return true;
-    }
-    pub fn get_count_attach(&self) -> String {
-        if self.attach.is_some() {
-            let self_attach = self.attach.as_deref().unwrap().split(",").collect::<Vec<_>>();
-            return "files_".to_string() + &self_attach.len().to_string();
-        }
-        return "files_0".to_string();
-    }
-
-    pub fn get_reposts(&self, limit: i64, offset: i64) -> Vec<Post> {
-        use crate::schema::posts::dsl::posts;
-
-        let _connection = establish_connection();
-        return posts
-            .filter(schema::posts::parent_id.eq(self.id))
-            .filter(schema::posts::types.eq_any(vec![1, 2]))
-            .limit(limit)
-            .offset(offset)
-            .load::<Post>(&_connection)
-            .expect("E");
-    }
-    pub fn get_reposts_with_limit(&self, limit: i64) -> Vec<Post> {
-        use crate::schema::posts::dsl::posts;
-
-        let _connection = establish_connection();
-        return posts
-            .filter(schema::posts::parent_id.eq(self.id))
-            .filter(schema::posts::types.eq_any(vec![1, 2]))
-            .limit(limit)
-            .load::<Post>(&_connection)
-            .expect("E");
-    }
-
     pub fn change_position(query: Json<Vec<JsonPosition>>) -> () {
-        use crate::schema::posts::dsl::posts;
+        use crate::schema::photos::dsl::photos;
 
         let _connection = establish_connection();
         for i in query.iter() {
-            let item = posts
-                .filter(schema::posts::id.eq(i.key))
-                .filter(schema::posts::types.eq(1))
+            let item = photos
+                .filter(schema::photos::id.eq(i.key))
+                .filter(schema::photos::types.eq(1))
                 .limit(1)
-                .load::<Post>(&_connection)
+                .load::<Photo>(&_connection)
                 .expect("E")
                 .into_iter()
                 .nth(0)
                 .unwrap();
 
             diesel::update(&item)
-                .set(schema::posts::position.eq(i.value))
-                .get_result::<Post>(&_connection)
+                .set(schema::photos::position.eq(i.value))
+                .get_result::<Photo>(&_connection)
                 .expect("Error.");
         }
     }
@@ -1401,11 +982,11 @@ impl Post {
         parent_id:    Option<i32>,
         content:      Option<String>,
         sticker_id:   Option<i32>
-    ) -> PostComment {
+    ) -> PhotoComment {
         let _connection = establish_connection();
         diesel::update(self)
-            .set(schema::posts::comment.eq(self.comment + 1))
-            .get_result::<Post>(&_connection)
+            .set(schema::photos::comment.eq(self.comment + 1))
+            .get_result::<Photo>(&_connection)
             .expect("Error.");
 
         //let mut _content: Option<String> = None;
@@ -1414,8 +995,8 @@ impl Post {
         //    _content = Some(get_formatted_text(&content.unwrap()));
         //}
 
-        let new_comment_form = NewPostComment {
-            post_id:      self.id,
+        let new_comment_form = NewPhotoComment {
+            photo_id:     self.id,
             user_id:      user_id,
             community_id: community_id,
             sticker_id:   sticker_id,
@@ -1428,24 +1009,11 @@ impl Post {
             reactions:    0,
             replies:      0,
         };
-        let new_comment = diesel::insert_into(schema::post_comments::table)
+        let new_comment = diesel::insert_into(schema::photo_comments::table)
             .values(&new_comment_form)
-            .get_result::<PostComment>(&_connection)
+            .get_result::<PhotoComment>(&_connection)
             .expect("Error.");
 
         return new_comment;
-    }
-    pub fn get_parent(&self) -> Post {
-        use crate::schema::posts::dsl::posts;
-
-        let _connection = establish_connection();
-        return posts
-            .filter(schema::posts::id.eq(self.parent_id.unwrap()))
-            .filter(schema::posts::types.lt(10))
-            .load::<Post>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
     }
 }
