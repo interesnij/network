@@ -18,7 +18,6 @@ use crate::utils::{
     PhotoDetailJson,
     CardUserJson,
     CardOwnerJson,
-    CommentsSmallJson,
     CardCommentJson,
 };
 use actix_web::web::Json;
@@ -216,44 +215,6 @@ impl Photo {
         }
         return json;
     }
-    pub fn get_comments_photo_json (
-        &self,
-        user_id: i32,
-        reactions_list: Vec<i32>,
-        page: i32,
-        limit: i32
-    ) -> CommentsSmallJson {
-        let mut next_page_number = 0;
-        let have_next: i32;
-        let comments: Vec<CardCommentJson>;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            comments = self.get_comments (
-                limit.into(),
-                ((page - 1) * limit).into(),
-                user_id,
-                reactions_list,
-            );
-        }
-        else {
-            have_next = limit + 1;
-            comments = self.get_comments (
-                limit.into(),
-                0,
-                user_id,
-                reactions_list,
-            );
-        }
-        if self.get_comments(1, have_next.into(), user_id, Vec::new()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return CommentsSmallJson {
-            comments:  comments,
-            next_page: next_page_number,
-        };
-    }
 
     pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
@@ -317,7 +278,7 @@ impl Photo {
                 next:                 next,
                 is_user_see_comments: list.is_user_see_comment(user_id),
                 is_user_create_el:    list.is_user_create_el(user_id),
-                comments:             self.get_comments_photo_json(user_id, reactions_list.clone(), page, limit.into()),
+                comments:             self.get_comments(limit, 0, user_id, reactions_list.clone()),
             };
     }
     pub fn get_photo_json (&self) -> CardPhotoJson {

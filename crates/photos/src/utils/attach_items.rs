@@ -1,16 +1,16 @@
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct AttachList {
-    pub attachments: Option<Attachments>,
+pub struct AttachListJson {
+    pub attachments: Option<AttachmentsJson>,
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Attachments {
+pub struct AttachmentsJson {
     pub items:    Option<ItemsAttach>,
     pub lists:    Option<ListsAttach>,
     pub comments: Option<CommentsAttach>,
-    pub planners: Option<PlannersAttach>,
+    //pub planners: Option<PlannersAttach>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -147,7 +147,7 @@ pub struct ListsAttach {
     pub wiki_lists:     Option<Vec<WikiListAttach>>,
     pub articles_lists: Option<Vec<ArticleListAttach>>,
     pub folder_lists:   Option<Vec<ForumListAttach>>,
-    pub stickers_lists: Option<Vec<StickerListAttach>>,
+    pub stickers_lists: Option<Vec<StickersListAttach>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -297,11 +297,11 @@ pub struct CommentAttach {
     pub created:      chrono::NaiveDateTime,
 }
 
-#[derive(Serialize, Deserialize)]
-pub struct PlannersAttach {
-    pub workspaces:       Option<Vec<WorkspaceAttach>>,
-    pub boards:           Option<Vec<BoardAttach>>,
-    pub columns:          Option<Vec<ColumnAttach>>,
-    pub planner_cards:    Option<Vec<PlannerCardAttach>>,
-    pub planner_comments: Option<Vec<PlannerCommentAttach>>,
-}
+//#[derive(Serialize, Deserialize)]
+//pub struct PlannersAttach {
+//    pub workspaces:       Option<Vec<WorkspaceAttach>>,
+//    pub boards:           Option<Vec<BoardAttach>>,
+//    pub columns:          Option<Vec<ColumnAttach>>,
+//    pub planner_cards:    Option<Vec<PlannerCardAttach>>,
+//    pub planner_comments: Option<Vec<PlannerCommentAttach>>,
+//}

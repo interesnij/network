@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::Attachments;
+use crate::utils::AttachmentsJson;
 
 
 #[derive(Deserialize)]
@@ -85,7 +85,7 @@ pub struct PhotoListDetailJson {
     pub types:             i16,             // здесь просто тип, остальное на месте пририсуем, а такой тип нужен так и так
     pub count:             i32,
     pub reactions_list:    Vec<i32>,
-    pub photos:            Vec<CardPhotoJson>,
+    pub photos:             Vec<CardPhotoJson>,
     pub lists:             Vec<CardPhotoListJson>,
     pub next_page:         i32,
     pub is_user_create_el: bool,
@@ -102,7 +102,6 @@ pub struct PhotoListPageJson {
     pub next_page:        i32,               // а есть ли следующая порция списков?
 }
 
-
 //////////// Сериализаторы записей
 #[derive(Serialize)]
 // это объект записи
@@ -117,7 +116,6 @@ pub struct CardPhotoJson {
     pub preview: String,
     pub file:    String,
 }
-
 
 #[derive(Serialize)]
 // это запись
@@ -168,12 +166,6 @@ pub struct CommentsJson {
     pub comments:       Vec<CardCommentJson>,
     pub next_page:      i32,
 }
-#[derive(Serialize)]
-// это объекты комментов для встраивания
-pub struct CommentsSmallJson {
-    pub comments:       Vec<CardCommentJson>,
-    pub next_page:      i32,
-}
 
 #[derive(Serialize)]
 // это объекты ответов
@@ -201,7 +193,7 @@ pub struct CardCommentJson {
     pub types:          String, // например cpo1
     pub replies:        i32,    // кол-во ответов
     pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
-    pub attachments:    Option<Attachments>,
+    pub attachments:    Option<AttachmentsJson>,
 }
 #[derive(Serialize, Queryable)]
 // это ответ на коммент
@@ -214,7 +206,7 @@ pub struct CardReplyJson {
     pub reactions:      i32,
     pub types:          String, // например cpo1 - ответ
     pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
-    pub attachments:    Option<Attachments>,
+    pub attachments:    Option<AttachmentsJson>,
 }
 
 #[derive(Serialize, Queryable)]
