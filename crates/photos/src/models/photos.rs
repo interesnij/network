@@ -12,7 +12,6 @@ use crate::utils::{
     establish_connection,
     JsonPosition,
     JsonItemReactions,
-    CardParentPhotoJson,
     CardPhotoJson,
     ReactionBlockJson,
     PhotoDetailJson,

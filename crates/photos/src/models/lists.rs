@@ -24,7 +24,7 @@ use crate::models::{
     Photo, User, Community,
     UserPhotoListCollection, NewUserPhotoListCollection,
     UserPhotoListPosition, CommunityPhotoListPosition,
-    CommunityPohotoListCollection, NewCommunityPhotoListCollection,
+    CommunityPhotoListCollection, NewCommunityPhotoListCollection,
     PhotoListPerm, NewPhotoListPerm,
 };
 
@@ -2343,7 +2343,7 @@ impl PhotoList {
             .get_result::<Photo>(&_connection)
             .expect("Error.");
 
-        if attach.is_some() {
+        //if attach.is_some() {
             //use crate::models::NewAttachItem;
             //use crate::schema::attach_items::dsl::attach_items;
 
@@ -2354,7 +2354,7 @@ impl PhotoList {
             //        let code = &item[..3];
             //    }
             //}
-        }
+        //}
         return new_photo;
     }
 }
