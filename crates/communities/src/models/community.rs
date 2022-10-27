@@ -44,7 +44,7 @@ pub struct CommunityCategory {
 }
 
 impl CommunityCategory {
-    pub fn get_categories_json() -> Result<Vec<CommunityCategoryJson>, Error> {
+    pub fn get_categories_json() -> Option<Vec<CommunityCategoryJson>> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
