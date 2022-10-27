@@ -19,7 +19,6 @@ use crate::utils::{
     PostDetailJson,
     CardUserJson,
     CardOwnerJson,
-    CommentsSmallJson,
     CardCommentJson,
     AttachmentsJson,
 };
@@ -336,7 +335,7 @@ impl Post {
             );
         }
 
-        reposts_window = RepostsPostJson {
+        let reposts_window = RepostsPostJson {
             message_reposts: Post::item_message_reposts_count(item_id, types),
             creators:        reposts_json,
         };
