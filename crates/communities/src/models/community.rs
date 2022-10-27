@@ -137,16 +137,14 @@ impl CommunitySubcategory {
                 schema::community_categorys::avatar,
             ))
         .load::<CommunityCategoryJson>(&_connection)?;
-        match cats {
-            Ok(res) => {
-                //log::info!("Successfully create medicine {}", medicine.name.clone());
-                Some(Json(res))
-            },
-            Err(err) => {
-                //log::error!("Failed create medicine: {}", err.to_string());
-                None
-            }
-        }
+        //match cats {
+        //    Ok(res) => {
+        //        Some(Json(res))
+        //    },
+        //    Err(err) => {
+        //        None
+        //    }
+        //}
     }
     pub fn edit_subcategory(&self, name: String, category_id: i32,
         avatar: Option<String>, position: i16) -> Option<&CommunitySubcategory> {
