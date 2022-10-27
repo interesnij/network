@@ -241,7 +241,7 @@ impl Photo {
         return reactions_blocks;
     }
 
-    pub fn get_detail_photo_json (&self, user_id: i32, page: i32, limit: i32) -> PhotoDetailJson {
+    pub fn get_detail_photo_json (&self, user_id: i32, limit: i64) -> PhotoDetailJson {
         let list = self.get_list();
         let creator = self.get_owner_meta();
         let reactions_list = list.get_reactions_list();

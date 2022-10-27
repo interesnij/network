@@ -138,7 +138,7 @@ pub struct PhotoDetailJson {
     pub next:                 Option<i32>,
     pub is_user_see_comments: bool,
     pub is_user_create_el:    bool,
-    pub comments:             CommentsSmallJson,
+    pub comments:             Vec<CardCommentJson>,
 }
 
 #[derive(Serialize, Queryable)]
