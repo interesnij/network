@@ -59,7 +59,7 @@ impl CommunityCategory {
         return Ok(cats);
     }
     pub fn create_category(name: String, avatar: Option<String>,
-        position: i16) -> Option<CommunityCategory> {
+        position: i16) -> Result<CommunityCategory>, diesel::result::Error> {
 
         let _connection = establish_connection();
         let new_form = NewCommunityCategory {
@@ -70,7 +70,7 @@ impl CommunityCategory {
         let new_cat = diesel::insert_into(schema::community_categorys::table)
             .values(&new_form)
             .get_result::<CommunityCategory>(&_connection)?;
-        return new_cat;
+        return Ok(new_cat);
     }
     pub fn create_subcategory(&self, name: String, avatar: Option<String>,
         position: i16) -> Option<CommunitySubcategory> {
