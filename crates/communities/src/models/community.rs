@@ -44,7 +44,7 @@ pub struct CommunityCategory {
 }
 
 impl CommunityCategory {
-    pub fn get_categories_json() -> Json<Vec<CommunityCategoryJson>> {
+    pub fn get_categories_json() -> Option<Json<Vec<CommunityCategoryJson>>> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -60,7 +60,7 @@ impl CommunityCategory {
         return Json(cats);
     }
     pub fn create_category(name: String, avatar: Option<String>,
-        position: i16) -> CommunityCategory {
+        position: i16) -> Option<CommunityCategory> {
 
         let _connection = establish_connection();
         let new_form = NewCommunityCategory {
@@ -75,7 +75,7 @@ impl CommunityCategory {
         return new_cat;
     }
     pub fn create_subcategory(&self, name: String, avatar: Option<String>,
-        position: i16) -> CommunitySubcategory {
+        position: i16) -> Option<CommunitySubcategory> {
 
         let _connection = establish_connection();
         let new_form = NewCommunitySubcategory {
@@ -91,7 +91,7 @@ impl CommunityCategory {
         return new_cat;
     }
     pub fn edit_category(&self, name: String, avatar: Option<String>,
-        position: i16) -> &CommunityCategory {
+        position: i16) -> Option<&CommunityCategory> {
         let _connection = establish_connection();
         let new_form = NewCommunityCategory {
             name:     name,
@@ -125,7 +125,7 @@ pub struct CommunitySubcategory {
 }
 
 impl CommunitySubcategory {
-    pub fn get_categories_json() -> Json<Vec<CommunityCategoryJson>> {
+    pub fn get_categories_json() -> Json<Option<Vec<CommunityCategoryJson>>>> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -141,7 +141,7 @@ impl CommunitySubcategory {
         return Json(cats);
     }
     pub fn edit_subcategory(&self, name: String, category_id: i32,
-        avatar: Option<String>, position: i16) -> &CommunitySubcategory {
+        avatar: Option<String>, position: i16) -> Option<&CommunitySubcategory> {
         let _connection = establish_connection();
         let new_form = NewCommunitySubcategory {
             name:        name,
@@ -268,38 +268,7 @@ impl Community {
             .expect("E")
             .len();
     }
-    pub fn get_ss_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return self.s_avatar.as_deref().unwrap().to_string();
-        }
-        else {
-            return "/static/images/no_img/list.jpg".to_string();
-        }
-    }
-    pub fn get_s_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return "<img style='border-radius:30px;width:30px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
-        }
-        else {
-            return "<svg class='svg_default_30 svg_default' fill='currentColor' viewBox='0 0 24 24'><rect fill='none' /><g><path d='M4,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2C2,12.1,2.9,13,4,13z M5.13,14.1C4.76,14.04,4.39,14,4,14 c-0.99,0-1.93,0.21-2.78,0.58C0.48,14.9,0,15.62,0,16.43V18l4.5,0v-1.61C4.5,15.56,4.73,14.78,5.13,14.1z M20,13c1.1,0,2-0.9,2-2 c0-1.1-0.9-2-2-2s-2,0.9-2,2C18,12.1,18.9,13,20,13z M24,16.43c0-0.81-0.48-1.53-1.22-1.85C21.93,14.21,20.99,14,20,14 c-0.39,0-0.76,0.04-1.13,0.1c0.4,0.68,0.63,1.46,0.63,2.29V18l4.5,0V16.43z M16.24,13.65c-1.17-0.52-2.61-0.9-4.24-0.9 c-1.63,0-3.07,0.39-4.24,0.9C6.68,14.13,6,15.21,6,16.39V18h12v-1.61C18,15.21,17.32,14.13,16.24,13.65z M8.07,16 c0.09-0.23,0.13-0.39,0.91-0.69c0.97-0.38,1.99-0.56,3.02-0.56s2.05,0.18,3.02,0.56c0.77,0.3,0.81,0.46,0.91,0.69H8.07z M12,8 c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,8,12,8 M12,6c-1.66,0-3,1.34-3,3c0,1.66,1.34,3,3,3s3-1.34,3-3 C15,7.34,13.66,6,12,6L12,6z'/></g></svg>".to_string();
-        }
-    }
-    pub fn get_40_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return "<img style='border-radius:40px;width:40px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
-        }
-        else {
-            return "<svg class='svg_default_40 svg_default' fill='currentColor' viewBox='0 0 24 24'><rect fill='none' /><g><path d='M4,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2C2,12.1,2.9,13,4,13z M5.13,14.1C4.76,14.04,4.39,14,4,14 c-0.99,0-1.93,0.21-2.78,0.58C0.48,14.9,0,15.62,0,16.43V18l4.5,0v-1.61C4.5,15.56,4.73,14.78,5.13,14.1z M20,13c1.1,0,2-0.9,2-2 c0-1.1-0.9-2-2-2s-2,0.9-2,2C18,12.1,18.9,13,20,13z M24,16.43c0-0.81-0.48-1.53-1.22-1.85C21.93,14.21,20.99,14,20,14 c-0.39,0-0.76,0.04-1.13,0.1c0.4,0.68,0.63,1.46,0.63,2.29V18l4.5,0V16.43z M16.24,13.65c-1.17-0.52-2.61-0.9-4.24-0.9 c-1.63,0-3.07,0.39-4.24,0.9C6.68,14.13,6,15.21,6,16.39V18h12v-1.61C18,15.21,17.32,14.13,16.24,13.65z M8.07,16 c0.09-0.23,0.13-0.39,0.91-0.69c0.97-0.38,1.99-0.56,3.02-0.56s2.05,0.18,3.02,0.56c0.77,0.3,0.81,0.46,0.91,0.69H8.07z M12,8 c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,8,12,8 M12,6c-1.66,0-3,1.34-3,3c0,1.66,1.34,3,3,3s3-1.34,3-3 C15,7.34,13.66,6,12,6L12,6z'/></g></svg>".to_string();
-        }
-    }
-    pub fn get_50_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return "<img style='border-radius:50px;width:50px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
-        }
-        else {
-            return "<svg class='svg_default_50 svg_default' fill='currentColor' viewBox='0 0 24 24'><rect fill='none' /><g><path d='M4,13c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2C2,12.1,2.9,13,4,13z M5.13,14.1C4.76,14.04,4.39,14,4,14 c-0.99,0-1.93,0.21-2.78,0.58C0.48,14.9,0,15.62,0,16.43V18l4.5,0v-1.61C4.5,15.56,4.73,14.78,5.13,14.1z M20,13c1.1,0,2-0.9,2-2 c0-1.1-0.9-2-2-2s-2,0.9-2,2C18,12.1,18.9,13,20,13z M24,16.43c0-0.81-0.48-1.53-1.22-1.85C21.93,14.21,20.99,14,20,14 c-0.39,0-0.76,0.04-1.13,0.1c0.4,0.68,0.63,1.46,0.63,2.29V18l4.5,0V16.43z M16.24,13.65c-1.17-0.52-2.61-0.9-4.24-0.9 c-1.63,0-3.07,0.39-4.24,0.9C6.68,14.13,6,15.21,6,16.39V18h12v-1.61C18,15.21,17.32,14.13,16.24,13.65z M8.07,16 c0.09-0.23,0.13-0.39,0.91-0.69c0.97-0.38,1.99-0.56,3.02-0.56s2.05,0.18,3.02,0.56c0.77,0.3,0.81,0.46,0.91,0.69H8.07z M12,8 c0.55,0,1,0.45,1,1s-0.45,1-1,1s-1-0.45-1-1S11.45,8,12,8 M12,6c-1.66,0-3,1.34-3,3c0,1.66,1.34,3,3,3s3-1.34,3-3 C15,7.34,13.66,6,12,6L12,6z'/></g></svg>".to_string();
-        }
-    }
+
     pub fn is_community(&self) -> bool {
         return true;
     }
