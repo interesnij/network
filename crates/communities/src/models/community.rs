@@ -286,7 +286,28 @@ impl Community {
         return Ok(info);
     }
 
-    
+    pub fn create_info_model(&self) -> Result<CommunityInfo, Error> {
+        use crate::schema::community_infos::dsl::community_infos;
+
+        let _connection = establish_connection();
+
+        let _new_community_info = NewCommunityInfo {
+            community_id: self.id,
+            avatar_id:    None,
+            b_avatar:     None,
+            status:       None,
+            level:        100,
+            cover:        None,
+            created:      chrono::Local::now().naive_utc(),
+            description:  None,
+            members:      0,
+        };
+        let _community_info = diesel::insert_into(schema::community_infos::table)
+            .values(&_community_info)
+            .get_result::<CommunityInfo>(&_connection)?;
+
+        return Ok(_community_info);
+    }
 
     pub fn plus_members(&self, count: i32) -> () {
         let _connection = establish_connection();
