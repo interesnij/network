@@ -396,7 +396,7 @@ impl Community {
             return true;
         }
         else {
-            return 0;
+            return false;
         }
     }
 
@@ -522,7 +522,7 @@ impl Community {
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection)?;
+            .first(&_connection);
         if member.is_ok() {
             diesel::update(&member)
                 .set(schema::communities_memberships::level.eq(5))
