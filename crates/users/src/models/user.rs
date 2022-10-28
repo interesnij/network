@@ -108,6 +108,7 @@ impl User {
         let city: Option<String>;
         let status: Option<String>;
         let image: Option<String>;
+        let _b: String;
 
         let info = self.get_info_model();
         match info {
@@ -116,21 +117,18 @@ impl User {
               city = _ok.language;
               status = _ok.language;
               image = _ok.language;
+              if _ok.birthday.is_some() {
+                  _b = _ok.birthday.unwrap().format("%d-%m-%Y").to_string();
+              }
           },
           Err(_error) => {
               language = "".to_string();
               city = "".to_string();
               status = "".to_string();
               image = "".to_string();
+              _b = "".to_string();
           },
         };
-        let _b: String;
-        if info.birthday.is_some() {
-            _b = info.birthday.unwrap().format("%d-%m-%Y").to_string();
-        }
-        else {
-            _b = "".to_string();
-        }
         let user_json = UserDetailJson {
              id:            self.id,
              first_name:    self.first_name.clone(),
@@ -603,7 +601,7 @@ impl User {
         let ok = follows
             .filter(schema::follows::user_id.eq(self.id))
             .select(schema::follows::id)
-            .first(&_connection)?;
+            .first(&_connection);
         if ok.is_ok() {
             return true;
         }
@@ -800,7 +798,7 @@ impl User {
                         .expect("Error.");
                 }
             },
-            Err(_error) => 0,
+            Err(_error) => (),
         };
     }
     pub fn minus_friends(&self, count: i32) -> () {
@@ -815,7 +813,7 @@ impl User {
                         .expect("Error.");
                 }
             },
-            Err(_error) => 0,
+            Err(_error) => (),
         };
     }
 
