@@ -111,20 +111,28 @@ impl User {
     }
     pub fn plus_communities(&self, count: i32) -> bool {
         let _connection = establish_connection();
-        diesel::update(self)
+        let _u = diesel::update(self)
             .set(schema::users::communities.eq(self.communities + count))
-            .get_result::<User>(&_connection)
-            .expect("Error.");
-        return true;
+            .execute(&_connection)?;
+        if _u.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn minus_communities(&self, count: i32) -> bool {
         if self.communities > 0 {
             let _connection = establish_connection();
-            diesel::update(self)
+            let _u = diesel::update(self)
                 .set(schema::users::communities.eq(self.communities - count))
-                .get_result::<User>(&_connection)
-                .expect("Error.");
-            return true;
+                .execute(&_connection)?;
+            if _u.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
         return false;
     }
@@ -140,14 +148,9 @@ impl User {
             .load::<i32>(&_connection)
             .expect("E")
             .len() > 0 {
-                return users
+                return Ok(users
                     .filter(schema::users::user_id.eq(user.user_id))
-                    .limit(1)
-                    .load::<User>(&_connection)
-                    .expect("E")
-                    .into_iter()
-                    .nth(0)
-                    .unwrap();
+                    .first(&_connection)?);
         }
         let new_form = NewUser {
             user_id:       user.user_id,
@@ -163,11 +166,15 @@ impl User {
         };
         let new_user = diesel::insert_into(schema::users::table)
             .values(&new_form)
-            .get_result::<User>(&_connection)
-            .expect("Error.");
-        let new_user_id = user.user_id;
+            .get_result::<User>(&_connection)?;
+        let new_user_id: i32;
 
-        if user.friends.is_some() {
+        match new_user {
+             Ok(_ok) => new_user_id = _ok.id,
+             Err(_error) => new_user_id = 0,
+        };
+
+        if new_user_id > 0 && user.friends.is_some() {
             use crate::schema::friends::dsl::friends;
 
             for user_id in user.friends.unwrap() {
@@ -190,7 +197,7 @@ impl User {
                 }
             }
         }
-        if user.follows.is_some() {
+        if new_user_id > 0 && user.follows.is_some() {
             use crate::schema::follows::dsl::follows;
 
             for user_id in user.follows.unwrap() {
@@ -213,7 +220,7 @@ impl User {
                 }
             }
         }
-        return new_user;
+        return Ok(new_user);
     }
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()

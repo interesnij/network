@@ -1782,7 +1782,7 @@ impl CommunitiesMembership {
         user_id: i32,
         community: &Community,
         level: i16
-    ) -> CommunitiesMembership {
+    ) -> bool {
         let _connection = establish_connection();
 
         let new_member_form = NewCommunitiesMembership {
@@ -1794,11 +1794,15 @@ impl CommunitiesMembership {
         };
         let new_member = diesel::insert_into(schema::communities_memberships::table)
             .values(&new_member_form)
-            .get_result::<CommunitiesMembership>(&_connection)
-            .expect("E.");
+            .get_result::<CommunitiesMembership>(&_connection)?;
 
-        community.plus_members(1);
-        return new_member;
+        if new_member.is_ok() {
+            community.plus_members(1);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 
