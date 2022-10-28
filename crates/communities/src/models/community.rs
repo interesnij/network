@@ -364,27 +364,35 @@ impl Community {
         return self.types < 10;
     }
 
-    pub fn create_banned_user(&self, user_id: i32) -> () {
+    pub fn create_banned_user(&self, user_id: i32) -> bool {
         let _connection = establish_connection();
         let new_banned_user = NewCommunityBannedUser {
             community_id: self.id,
             user_id:      user_id,
         };
-        diesel::insert_into(schema::community_banned_users::table)
+        let banned_user = diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
-            .execute(&_connection)
-            .expect("Error.");
+            .execute(&_connection)?;
+        return match banned_user {
+             Ok(_ok) => true,
+             Err(_error) => false,
+        };
     }
-    pub fn delete_banned_user(&self, user_id: i32) -> () {
+    pub fn delete_banned_user(&self, user_id: i32) -> bool {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
-        diesel::delete(community_banned_users
+        let banned_user = diesel::delete (
+            community_banned_users
                 .filter(schema::community_banned_users::community_id.eq(self.id))
                 .filter(schema::community_banned_users::user_id.eq(user_id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection)?;
+
+        return match banned_user {
+             Ok(_ok) => true,
+             Err(_error) => false,
+        };
     }
 
     // придется усложнить работу создания сообщества, в частности
