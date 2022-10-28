@@ -312,10 +312,10 @@ impl Community {
         let profile = self.get_info_model();
         match profile {
           Ok(_ok) => diesel::update(&_ok)
-              .set(schema::community_infos::members.eq(profile.members + count))
+              .set(schema::community_infos::members.eq(_ok.members + count))
               .execute(&_connection)
               .expect("Error."),
-          Err(_error) => (),
+          Err(_error) => 0,
         };
     }
     pub fn minus_members(&self, count: i32) -> () {
@@ -323,10 +323,10 @@ impl Community {
         let profile = self.get_info_model();
         match profile {
           Ok(_ok) => diesel::update(&_ok)
-              .set(schema::community_infos::members.eq(profile.members - count))
+              .set(schema::community_infos::members.eq(_ok.members - count))
               .execute(&_connection)
               .expect("Error."),
-          Err(_error) => (),
+          Err(_error) => 0,
         };
     }
     pub fn is_deleted(&self) -> bool {
