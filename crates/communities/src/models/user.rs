@@ -484,12 +484,13 @@ impl User {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        return user_visible_perms
+        let res = user_visible_perms
             .filter(schema::user_visible_perms::target_id.eq(user_id))
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .first(&_connection)?;
 
+        return res.is_ok();
         //if res.is_ok() {
         //    return true;
         //}
