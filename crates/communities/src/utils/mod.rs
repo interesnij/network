@@ -49,14 +49,14 @@ pub fn get_count_for_ru_alt(count: i32, word1: String, word2: String, word3: Str
 
 pub fn get_community(id: i32) -> Result<Community, Error> {
     use crate::schema::communitys::dsl::communitys;
-    let _connection = establish_connection();
+    let connection = establish_connection();
     return Ok(communitys
         .filter(schema::communitys::id.eq(id))
         .first(&connection)?);
 }
 pub fn get_community_with_link(link: String) -> Result<Community, Error> {
     use crate::schema::communitys::dsl::communitys;
-    let _connection = establish_connection();
+    let connection = establish_connection();
     return Ok(communitys
         .filter(schema::communitys::link.eq("/".to_owned() + &link + &"/".to_string()))
         .first(&connection)?);
