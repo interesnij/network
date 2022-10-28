@@ -536,9 +536,9 @@ impl User {
     pub fn is_anon_user_see_community(&self) -> bool {
         return self.see_community == 1;
     }
-    pub fn follow_user(&self, user_id: i32) -> () {
+    pub fn follow_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
-            return;
+            return false;
         }
 
         let _connection = establish_connection();
@@ -546,14 +546,19 @@ impl User {
             user_id:   self.user_id,
             target_id: user_id,
         };
-        diesel::insert_into(schema::follows::table)
+        new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .execute(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
+        if new_follow.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unfollow_user(&self, user_id: i32) -> () {
+    pub fn unfollow_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || !self.is_following_user_with_id(user_id) {
-            return;
+            return false;
         }
         use crate::schema::follows::dsl::follows;
 
@@ -564,13 +569,19 @@ impl User {
             .load::<Follow>(&_connection)
             .expect("E");
         if _follows.len() > 0 {
-            diesel::delete (
+            let del = diesel::delete (
                     follows
                         .filter(schema::follows::target_id.eq(user_id))
                         .filter(schema::follows::user_id.eq(self.user_id))
                 )
-                .execute(&_connection)
-                .expect("E");
+                .execute(&_connection);
+
+            if del.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
     }
 
