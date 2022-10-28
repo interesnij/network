@@ -523,14 +523,17 @@ impl Community {
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .first(&_connection);
-        if member.is_ok() {
-            diesel::update(&Ok(member))
-                .set(schema::communities_memberships::level.eq(5))
-                .get_result::<CommunitiesMembership>(&_connection)
-                .expect("Error.");
-            return true;
-        }
-        return false;
+
+        match member {
+             Ok(_ok) => {
+                 diesel::update(&_ok)
+                 .set(schema::communities_memberships::level.eq(5))
+                 .execute(&_connection)
+                 .expect("Error.");
+                 return true;
+             },
+             Err(_error) => false,
+        };
     }
     pub fn create_editor(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
