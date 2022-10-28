@@ -113,7 +113,7 @@ impl User {
         let _connection = establish_connection();
         let _u = diesel::update(self)
             .set(schema::users::communities.eq(self.communities + count))
-            .execute(&_connection)?;
+            .execute(&_connection);
         if _u.is_ok() {
             return true;
         }
@@ -126,7 +126,7 @@ impl User {
             let _connection = establish_connection();
             let _u = diesel::update(self)
                 .set(schema::users::communities.eq(self.communities - count))
-                .execute(&_connection)?;
+                .execute(&_connection);
             if _u.is_ok() {
                 return true;
             }
@@ -166,7 +166,7 @@ impl User {
         };
         let new_user = diesel::insert_into(schema::users::table)
             .values(&new_form)
-            .get_result::<User>(&_connection)?;
+            .get_result::<User>(&_connection);
 
         let new_user_id = match new_user {
              Ok(_ok) => _ok.id,
