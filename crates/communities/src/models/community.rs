@@ -89,7 +89,7 @@ impl CommunityCategory {
         return Ok(new_cat);
     }
     pub fn edit_category(&self, name: String, avatar: Option<String>,
-        position: i16) -> Result<&CommunityCategory, Error> {
+        position: i16) -> Result<CommunityCategory, Error> {
         let _connection = establish_connection();
         let new_form = NewCommunityCategory {
             name:     name,
@@ -99,7 +99,7 @@ impl CommunityCategory {
         let updated = diesel::update(self)
             .set(new_form)
             .get_result::<CommunityCategory>(&_connection)?;
-        return Ok(&updated);
+        return Ok(updated);
     }
 }
 
