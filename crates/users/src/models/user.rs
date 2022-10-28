@@ -295,9 +295,9 @@ impl User {
                  country_ru: _ok.country_ru,
              }),
               Err(_error) => Ok(LocationJson {
-                  city_ru:    "".to_string(),
-                  region_ru:  "".to_string(),
-                  country_ru: "".to_string(),
+                  city_ru:    None,
+                  region_ru:  None,
+                  country_ru: None,
               }),
         };
     }
