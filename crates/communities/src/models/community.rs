@@ -283,6 +283,15 @@ impl Community {
         let info = community_infos
             .filter(schema::community_infos::community_id.eq(self.id))
             .first(&_connection)?;
+        return Ok(_res);
+    }
+    pub fn create_info_model(&self) -> Result<CommunityInfo, Error> {
+        use crate::schema::community_infos::dsl::community_infos;
+
+        let _connection = establish_connection();
+        let info = community_infos
+            .filter(schema::community_infos::community_id.eq(self.id))
+            .first(&_connection)?;
 
         let _res = match info {
             Ok(_ok) => _ok,
