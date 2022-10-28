@@ -92,7 +92,7 @@ impl ResponseError for Error {
                 HttpResponse::Forbidden().json(error)
             }
             _ => {
-                error!("Internal server error: {:?}", self);
+                //error!("Internal server error: {:?}", self);
                 let error: ErrorResponse = "Internal Server Error".into();
                 HttpResponse::InternalServerError().json(error)
             }
@@ -148,7 +148,7 @@ impl From<DBError> for Error {
 
 impl From<BlockingError> for Error {
     fn from(error: BlockingError) -> Error {
-        error!("Thread blocking error {:?}", error);
+        //error!("Thread blocking error {:?}", error);
         Error::BlockingError("Thread blocking error".into())
     }
 }

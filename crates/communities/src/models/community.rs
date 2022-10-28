@@ -99,7 +99,7 @@ impl CommunityCategory {
         let updated = diesel::update(self)
             .set(new_form)
             .get_result::<CommunityCategory>(&_connection)?;
-        return Ok(updated);
+        return Ok(&updated);
     }
 }
 
