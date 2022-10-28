@@ -1359,7 +1359,7 @@ impl Community {
     }
 
     pub fn get_private_model_json(&self) -> Json<CommunityPrivateJson> {
-        let private = self.get_private_model();
+        let private = Ok(self.get_private_model());
         let json = CommunityPrivateJson {
             see_member:   private.see_member,
             see_info:     private.see_info,
@@ -1371,7 +1371,7 @@ impl Community {
     }
 
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
-        let private = self.get_private_model();
+        let private = Ok(self.get_private_model());
         return match private.see_info {
             1 => true,
             2 => self.get_members_ids().iter().any(|&i| i==user_id),
