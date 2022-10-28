@@ -546,7 +546,7 @@ impl User {
             user_id:   self.user_id,
             target_id: user_id,
         };
-        new_follow = diesel::insert_into(schema::follows::table)
+        let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
             .execute(&_connection);
         if new_follow.is_ok() {
