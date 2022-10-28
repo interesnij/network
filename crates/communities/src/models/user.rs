@@ -384,7 +384,7 @@ impl User {
         return true;
     }
 
-    pub fn delete_item(&self) -> () {
+    pub fn delete_item(&self) -> bool {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -395,14 +395,20 @@ impl User {
             7 => 17,
             _ => self.types,
         };
-        diesel::update(self)
+        let o = diesel::update(self)
             .set(schema::users::types.eq(_case))
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection)?;
+
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
 
         //hide_wall_notify_items(1, self.id);
     }
-    pub fn restore_item(&self) -> () {
+    pub fn restore_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -413,10 +419,16 @@ impl User {
             17 => 7,
             _ => self.types,
         };
-        diesel::update(self)
+        let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection)?;
+
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
         //show_wall_notify_items(1, self.id);
     }
     pub fn get_verb_gender(&self, str: &str) -> String {
@@ -472,67 +484,79 @@ impl User {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        return user_visible_perms
+        let res = user_visible_perms
             .filter(schema::user_visible_perms::target_id.eq(user_id))
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .limit(1)
-            .select(schema::user_visible_perms::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first(&_connection);
+
+        if res.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        return user_visible_perms
+        let res = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(user_id))
             .filter(schema::user_visible_perms::target_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .limit(1)
-            .select(schema::user_visible_perms::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first(&_connection);
+        if res.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn is_connected_with_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
-        return friends
+        let res = friends
             .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self.user_id))
-            .limit(1)
-            .select(schema::friends::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first(&_connection);
+        if res.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn is_following_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        return follows
+        let res = follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
-            .limit(1)
-            .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.").len() > 0;
+            .first(&_connection);
+        if res.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        return follows
+        let res = follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
-            .limit(1)
-            .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first(&_connection);
+        if res.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     pub fn is_anon_user_see_community(&self) -> bool {
@@ -547,7 +571,7 @@ impl User {
         let _new_follow = NewFollow {
             user_id:   self.user_id,
             target_id: user_id,
-        };
+        }; 
         diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
             .execute(&_connection)
