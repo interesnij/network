@@ -1326,8 +1326,6 @@ impl Community {
         }
     }
     pub fn create_private_model(&self) -> Result<CommunityPrivate, Error> {
-        use crate::schema::community_privates::dsl::community_privates;
-
         let _connection = establish_connection();
 
         let _new_community_private = NewCommunityPrivate {

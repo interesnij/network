@@ -104,7 +104,26 @@ pub struct GetSessionFields {
 
 impl User {
     pub fn get_user_detail_json(&self) -> Json<UserDetailJson> {
+        let language: String;
+        let city: Option<String>;
+        let status: Option<String>;
+        let image: Option<String>;
+
         let info = self.get_info_model();
+        match info {
+          Ok(_ok) => {
+              language = _ok.language;
+              city = _ok.language;
+              status = _ok.language;
+              image = _ok.language;
+          },
+          Err(_error) => {
+              language = "".to_string();
+              city = "".to_string();
+              status = "".to_string();
+              image = "".to_string();
+          },
+        };
         let _b: String;
         if info.birthday.is_some() {
             _b = info.birthday.unwrap().format("%d-%m-%Y").to_string();
@@ -118,11 +137,11 @@ impl User {
              last_name:     self.last_name.clone(),
              types:         self.types,
              is_man:        self.is_man.clone(),
-             language:      info.language,
+             language:      language,
              link:          self.get_slug(), // community.get_link()
-             city:          info.city,
-             status:        info.status,
-             image:         info.b_avatar,
+             city:          city,
+             status:        status,
+             image:         b_avatar,
              birthday:      _b,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
          };
@@ -525,59 +544,72 @@ impl User {
             return "desctop/users/button/".to_owned() + &suffix + &"default_user.stpl".to_string();
         }
     }
-    pub fn get_info_model(&self) -> UserInfo {
+    pub fn get_info_model(&self) -> Result<UserInfo, Error> {
+        let profile = self.find_info_model();
+        if profile.is_ok() {
+            return profile;
+        }
+        else {
+            return self.create_info_model();
+        }
+    }
+    pub fn find_info_model(&self) -> Result<UserInfo, Error> {
         use crate::schema::user_infos::dsl::user_infos;
 
         let _connection = establish_connection();
-        let infos = user_infos
-            .filter(schema::user_infos::id.eq(self.id))
-            .load::<UserInfo>(&_connection)
-            .expect("E.");
+        let info = user_infos
+            .filter(schema::user_infos::user_id.eq(self.id))
+            .first(&_connection)?;
+        return Ok(info);
+    }
+    pub fn create_info_model(&self) -> Result<UserInfo, Error> {
+        use crate::schema::user_infos::dsl::user_infos;
 
-        if infos.len() > 0 {
-            return infos.into_iter().nth(0).unwrap();
-        }
-        else {
-            use crate::models::NewUserInfo;
+        let _connection = establish_connection();
+        use crate::models::NewUserInfo;
 
-            let _user_info = NewUserInfo {
-                user_id:   self.id,
-                avatar_id: None,
-                language:  "Ru".to_string(),
-                email:     None,
-                birthday:  None,
-                b_avatar:  None,
-                status:    None,
-                city:      None,
-                level:     100,
-                cover:     None,
-                created:   chrono::Local::now().naive_utc(),
-                friends:   0,
-                follows:   0,
-            };
-            let new_info = diesel::insert_into(schema::user_infos::table)
-                .values(&_user_info)
-                .get_result::<UserInfo>(&_connection)
-                .expect("E.");
-
-            return new_info;
-        }
+        let _user_info = NewUserInfo {
+            user_id:   self.id,
+            avatar_id: None,
+            language:  "Ru".to_string(),
+            email:     None,
+            birthday:  None,
+            b_avatar:  None,
+            status:    None,
+            city:      None,
+            level:     100,
+            cover:     None,
+            created:   chrono::Local::now().naive_utc(),
+            friends:   0,
+            follows:   0,
+        };
+        let new_info = diesel::insert_into(schema::user_infos::table)
+            .values(&_user_info)
+            .get_result::<UserInfo>(&_connection)?;
+        return Ok(new_info_;
     }
 
     pub fn is_have_followers(&self) -> bool {
-        return self.get_info_model().follows > 0
+        let profile = self.get_info_model();
+        return match profile {
+          Ok(_ok) => _ok.follows > 0,
+          Err(_error) => false,
+        };
     }
     pub fn is_have_followings(&self) -> bool {
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        return follows
+        let ok = follows
             .filter(schema::follows::user_id.eq(self.id))
-            .limit(1)
             .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first(&_connection)?;
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn is_have_blacklist(&self) -> bool {
         use crate::schema::user_blocks::dsl::user_blocks;
@@ -592,7 +624,11 @@ impl User {
             .len() > 0;
     }
     pub fn is_have_friends(&self) -> bool {
-        return self.get_info_model().friends > 0;
+        let profile = self.get_info_model();
+        return match profile {
+          Ok(_ok) => _ok.friends > 0,
+          Err(_error) => false,
+        };
     }
 
     pub fn count_no_view_followers(&self) -> usize {
@@ -619,7 +655,11 @@ impl User {
             .len();
     }
     pub fn count_followers(&self) -> i32 {
-        return self.get_info_model().follows;
+        let profile = self.get_info_model();
+        return match profile {
+          Ok(_ok) => _ok.friends,
+          Err(_error) => 0,
+        };
     }
     pub fn count_followers_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
@@ -709,7 +749,11 @@ impl User {
     }
 
     pub fn count_friends(&self) -> i32 {
-        return self.get_info_model().friends;
+        let profile = self.get_info_model();
+        return match profile {
+          Ok(_ok) => _ok.friends,
+          Err(_error) => 0,
+        };
     }
     pub fn count_friends_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
@@ -722,28 +766,40 @@ impl User {
         );
     }
 
-    pub fn plus_follows(&self, count: i32) -> bool {
+    pub fn plus_follows(&self, count: i32) -> () {
         let profile = self.get_info_model();
         let _connection = establish_connection();
-        diesel::update(&profile)
-            .set(schema::user_infos::follows.eq(profile.follows + count))
-            .get_result::<UserInfo>(&_connection)
-            .expect("Error.");
-        return true;
+
+        match profile {
+          Ok(_ok) => diesel::update(&_ok)
+              .set(schema::user_infos::follows.eq(_ok.follows + count))
+              .execute(&_connection)
+              .expect("Error."),
+          Err(_error) => 0,
+        };
     }
     pub fn plus_friends(&self, count: i32) -> bool {
         let profile = self.get_info_model();
         let _connection = establish_connection();
-        diesel::update(&profile)
-            .set(schema::user_infos::friends.eq(profile.friends + count))
-            .get_result::<UserInfo>(&_connection)
-            .expect("Error.");
-        return true;
+        match profile {
+          Ok(_ok) => diesel::update(&_ok)
+              .set(schema::user_infos::friends.eq(_ok.friends + count))
+              .execute(&_connection)
+              .expect("Error."),
+          Err(_error) => 0,
+        };
     }
     pub fn minus_follows(&self, count: i32) -> bool {
         let profile = self.get_info_model();
         if profile.follows > 0 {
             let _connection = establish_connection();
+            match profile {
+              Ok(_ok) => diesel::update(&_ok)
+                  .set(schema::user_infos::follows.eq(_ok.follows - count))
+                  .execute(&_connection)
+                  .expect("Error."),
+              Err(_error) => 0,
+            };
             diesel::update(&profile)
                 .set(schema::user_infos::follows.eq(profile.follows - count))
                 .get_result::<UserInfo>(&_connection)
@@ -755,12 +811,14 @@ impl User {
         let profile = self.get_info_model();
         if profile.friends > 0 {
             let _connection = establish_connection();
-            diesel::update(&profile)
-                .set(schema::user_infos::friends.eq(profile.friends - count))
-                .get_result::<UserInfo>(&_connection)
-                .expect("Error.");
+            match profile {
+              Ok(_ok) => diesel::update(&_ok)
+                  .set(schema::user_infos::friends.eq(_ok.friends - count))
+                  .execute(&_connection)
+                  .expect("Error."),
+              Err(_error) => 0,
+            };
         }
-        return true;
     }
 
     pub fn get_friends_ids(&self) -> Vec<i32> {
