@@ -524,7 +524,7 @@ impl Community {
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .first(&_connection);
         if member.is_ok() {
-            diesel::update(&member)
+            diesel::update(&Ok(member))
                 .set(schema::communities_memberships::level.eq(5))
                 .get_result::<CommunitiesMembership>(&_connection)
                 .expect("Error.");
