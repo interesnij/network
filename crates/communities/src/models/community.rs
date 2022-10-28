@@ -1450,23 +1450,38 @@ impl Community {
 
     pub fn is_anon_user_see_info(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_info == 1;
+        return match private {
+            Ok(_ok) => _ok.see_info == 1
+            Err(_) => false,
+        }
     }
     pub fn is_anon_user_see_member(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_member == 1;
+        return match private {
+            Ok(_ok) => _ok.see_member == 1
+            Err(_) => false,
+        }
     }
     pub fn is_anon_user_see_settings(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_settings == 1;
+        return match private {
+            Ok(_ok) => _ok.see_settings == 1
+            Err(_) => false,
+        }
     }
     pub fn is_anon_user_see_log(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_log == 1;
+        return match private {
+            Ok(_ok) => _ok.see_log == 1
+            Err(_) => false,
+        }
     }
     pub fn is_anon_user_see_stat(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_stat == 1;
+        return match private {
+            Ok(_ok) => _ok.see_stat == 1
+            Err(_) => false,
+        }
     }
 
     pub fn get_community_all_see(&self, user_id: i32) -> Vec<bool> {
@@ -1474,81 +1489,93 @@ impl Community {
             return vec![true, true, true, true, true];
         }
         let private = self.get_private_model();
-
         let mut bool_stack = Vec::new();
 
-        let bool_see_info = match private.see_info {
-            1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-            5 => self.user_id == user_id,
-            6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+        return match private {
+          Ok(_ok) => {
+             let bool_see_info = match _ok.see_info {
+                  1 => true,
+                  2 => self.get_members_ids().iter().any(|&i| i==user_id),
+                  3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+                  4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                  5 => self.user_id == user_id,
+                  6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                  7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                  _ => false
+             };
+             let bool_see_member = match _ok.see_member {
+                  1 => true,
+                  2 => self.get_members_ids().iter().any(|&i| i==user_id),
+                  3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+                  4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                  5 => self.user_id == user_id,
+                  6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                  7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                  _ => false
+             };
+             let bool_see_settings = match _ok.see_settings {
+                 1 => true,
+                 2 => self.get_members_ids().iter().any(|&i| i==user_id),
+                 3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+                 4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                 5 => self.user_id == user_id,
+                 6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                 7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                 _ => false
+            };
+            let bool_see_log = match _ok.see_log {
+                1 => true,
+                2 => self.get_members_ids().iter().any(|&i| i==user_id),
+                3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+                4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                5 => self.user_id == user_id,
+                6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                 _ => false
+            };
+            let bool_see_log = match _ok.see_log {
+                1 => true,
+                2 => self.get_members_ids().iter().any(|&i| i==user_id),
+                3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+                4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                5 => self.user_id == user_id,
+                6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                _ => false
+            };
+            let bool_see_stat = match _ok.see_stat {
+                1 => true,
+                2 => self.get_members_ids().iter().any(|&i| i==user_id),
+                3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+                4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                5 => self.user_id == user_id,
+                6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                _ => false
+            };
+            bool_stack.push(bool_see_info);
+            bool_stack.push(bool_see_member);
+            bool_stack.push(bool_see_settings);
+            bool_stack.push(bool_see_log);
+            bool_stack.push(bool_see_stat);
+          },
+          Err(_) => vec![false, false, false, false, false],
         };
-        bool_stack.push(bool_see_info);
-
-        let bool_see_member = match private.see_member {
-            1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-            5 => self.user_id == user_id,
-            6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
-        };
-        bool_stack.push(bool_see_member);
-
-        let bool_see_settings = match private.see_settings {
-            1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-            5 => self.user_id == user_id,
-            6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
-        };
-        bool_stack.push(bool_see_settings);
-
-        let bool_see_log = match private.see_log {
-            1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-            5 => self.user_id == user_id,
-            6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
-        };
-        bool_stack.push(bool_see_log);
-
-        let bool_see_stat = match private.see_stat {
-            1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-            5 => self.user_id == user_id,
-            6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
-        };
-        bool_stack.push(bool_see_stat);
-
-        return bool_stack;
     }
     pub fn get_anon_community_all_see(&self) -> Vec<bool> {
         let private = self.get_private_model();
 
         let mut bool_stack = Vec::new();
-
-        bool_stack.push(private.see_info == 1);
-        bool_stack.push(private.see_member == 1);
-        bool_stack.push(private.see_stat == 1);
-
-        return bool_stack;
+        return match private {
+            Ok(_ok) => {
+                bool_stack.push(_ok.see_info == 1);
+                bool_stack.push(_ok.see_member == 1);
+                bool_stack.push(_ok.see_settings == 1);
+                bool_stack.push(_ok.bool_see_log == 1);
+                bool_stack.push(_ok.see_stat == 1);
+            }
+            Err(_) => vec![false, false, false, false, false],
+        }
     }
 
     pub fn get_follows_json(&self, page: i32, limit: i32) -> Json<UsersJson> {
