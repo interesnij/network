@@ -364,7 +364,7 @@ impl Community {
         return self.types < 10;
     }
 
-    pub fn create_banned_user(&self, user_id: i32) -> i16 {
+    pub fn create_banned_user(&self, user_id: i32) -> bool {
         let _connection = establish_connection();
         let new_banned_user = NewCommunityBannedUser {
             community_id: self.id,
@@ -375,13 +375,13 @@ impl Community {
             .execute(&_connection);
 
         if banned_user.is_ok() {
-            return 1;
+            return true;
         }
         else {
-            return 0;
+            return false;
         }
     }
-    pub fn delete_banned_user(&self, user_id: i32) -> i16 {
+    pub fn delete_banned_user(&self, user_id: i32) -> bool {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
@@ -393,7 +393,7 @@ impl Community {
             .execute(&_connection);
 
         if banned_user.is_ok() {
-            return 1;
+            return true;
         }
         else {
             return 0;
@@ -403,7 +403,7 @@ impl Community {
     // придется усложнить работу создания сообщества, в частности
     // создание подписчика:
     // 1. Сначала создаётся сообщество
-    // 2. Из формы название и ссылка нового сообщества присылается
+    // 2. Из формы ссылка нового сообщества присылается
     // обратно для создания объекта стены и уведомлений, ведь
     // создатель должен получать их как админ
     pub fn create_community (
@@ -411,7 +411,7 @@ impl Community {
         category_id: i32,
         user_id: i32,
         types: i16
-    ) -> String {
+    ) -> NewCommunityJson {
         let _connection = establish_connection();
         let count = Community::count_communities() + 1;
         let link = "/public".to_string() + &count.to_string() + &"/".to_string();
@@ -477,7 +477,11 @@ impl Community {
             &new_community,
             5,
         );
-        return new_community.link;
+        return NewCommunityJson {
+            name:  new_community.name.clone(),
+            types: new_community.types,
+            link:  new_community.link.clone(),
+        };
     }
 
     pub fn count_members(&self) -> i32 {
@@ -518,14 +522,15 @@ impl Community {
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .load::<CommunitiesMembership>(&_connection)
-            .expect("E");
-
-        diesel::update(&member[0])
-            .set(schema::communities_memberships::level.eq(5))
-            .get_result::<CommunitiesMembership>(&_connection)
-            .expect("Error.");
-        return true;
+            .first(&_connection)?;
+        if member.is_ok() {
+            diesel::update(&member)
+                .set(schema::communities_memberships::level.eq(5))
+                .get_result::<CommunitiesMembership>(&_connection)
+                .expect("Error.");
+            return true;
+        }
+        return false;
     }
     pub fn create_editor(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;

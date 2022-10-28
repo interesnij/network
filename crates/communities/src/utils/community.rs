@@ -47,6 +47,12 @@ pub struct CommunityDetailJson {
     pub cover:       Option<String>,
     pub user_id:     i32,
 }
+#[derive(Serialize)]
+pub struct NewCommunityJson {
+    pub name:  String,
+    pub types: i16,
+    pub link:  String,
+}
 
 ////////
 #[derive(Serialize)]

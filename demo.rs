@@ -33,3 +33,76 @@ pub fn get_stat_list(user_id: i32, page: i32, limit: i32) -> Result<(Vec<CookieS
       let _tuple = (object_list, next_page_number);
       Ok(_tuple)
   }
+
+
+  pub fn get_info_model(&self) -> Result<CommunityInfo, Error> {
+      let profile = self.find_info_model();
+      if profile.is_ok() {
+          return profile;
+      }
+      else {
+          return self.create_info_model();
+      }
+  }
+  pub fn find_info_model(&self) -> Result<CommunityInfo, Error> {
+      use crate::schema::community_infos::dsl::community_infos;
+
+      let _connection = establish_connection();
+      let info = community_infos
+          .filter(schema::community_infos::community_id.eq(self.id))
+          .first(&_connection)?;
+      return Ok(info);
+  }
+  pub fn create_info_model(&self) -> Result<CommunityInfo, Error> {
+      use crate::schema::community_infos::dsl::community_infos;
+
+      let _connection = establish_connection();
+
+      let _new_community_info = NewCommunityInfo {
+          community_id: self.id,
+          avatar_id:    None,
+          b_avatar:     None,
+          status:       None,
+          level:        100,
+          cover:        None,
+          created:      chrono::Local::now().naive_utc(),
+          description:  None,
+          members:      0,
+      };
+      let _community_info = diesel::insert_into(schema::community_infos::table)
+          .values(&_new_community_info)
+          .get_result::<CommunityInfo>(&_connection)?;
+
+      return Ok(_community_info);
+  }
+
+  pub fn plus_members(&self, count: i32) -> () {
+      let _connection = establish_connection();
+      let profile = self.get_info_model();
+      match profile {
+        Ok(_ok) => diesel::update(&_ok)
+            .set(schema::community_infos::members.eq(_ok.members + count))
+            .execute(&_connection)
+            .expect("Error."),
+        Err(_error) => 0,
+      };
+ }
+
+ pub fn delete_banned_user(&self, user_id: i32) -> bool {
+     use crate::schema::community_banned_users::dsl::community_banned_users;
+
+     let _connection = establish_connection();
+     let banned_user = diesel::delete (
+         community_banned_users
+             .filter(schema::community_banned_users::community_id.eq(self.id))
+             .filter(schema::community_banned_users::user_id.eq(user_id))
+         )
+         .execute(&_connection);
+
+     if banned_user.is_ok() {
+         return true;
+     }
+     else {
+         return 0;
+     }
+ }
