@@ -116,7 +116,7 @@ impl User {
               language = _ok.language;
               city = _ok.city;
               status = _ok.status;
-              image = _ok.image;
+              image = _ok.b_avatar;
               if _ok.birthday.is_some() {
                   _b = _ok.birthday.unwrap().format("%d-%m-%Y").to_string();
               }
@@ -139,7 +139,7 @@ impl User {
              link:          self.get_slug(), // community.get_link()
              city:          city,
              status:        status,
-             image:         b_avatar,
+             image:         image,
              birthday:      _b,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
          };
