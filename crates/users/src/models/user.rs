@@ -118,7 +118,7 @@ impl User {
               status = _ok.language;
               image = _ok.language;
               if _ok.birthday.is_some() {
-                  _b = Some(_ok.birthday.unwrap().format("%d-%m-%Y").to_string());
+                  _b = _ok.birthday.unwrap().format("%d-%m-%Y").to_string();
               }
           },
           Err(_error) => {
@@ -126,7 +126,7 @@ impl User {
               city = None;
               status = None;
               image = None;
-              _b = None;
+              _b = "".to_string();
           },
         };
         let user_json = UserDetailJson {
