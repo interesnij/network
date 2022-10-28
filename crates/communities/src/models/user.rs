@@ -219,7 +219,7 @@ impl User {
                 }
             }
         }
-        return new_user;
+        return Ok(new_user);
     }
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()
