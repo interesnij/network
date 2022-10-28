@@ -1358,16 +1358,18 @@ impl Community {
         return Ok(private);
     }
 
-    pub fn get_private_model_json(&self) -> Json<CommunityPrivateJson> {
-        let private = Ok(self.get_private_model());
-        let json = CommunityPrivateJson {
-            see_member:   private.see_member,
-            see_info:     private.see_info,
-            see_settings: private.see_settings,
-            see_log:      private.see_log,
-            see_stat:     private.see_stat,
+    pub fn get_private_model_json(&self) -> Result<CommunityPrivateJson, Error> {
+        let private = self.get_private_model();
+        return match private {
+          Ok(_ok) => CommunityPrivateJson {
+              see_member:   private.see_member,
+              see_info:     private.see_info,
+              see_settings: private.see_settings,
+              see_log:      private.see_log,
+              see_stat:     private.see_stat,
+          },
+          Err(_error) => _error,
         };
-        return Json(json);
     }
 
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
