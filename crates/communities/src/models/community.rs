@@ -276,16 +276,16 @@ impl Community {
         return "@".to_string() + &self.link.replace("/", "").to_string();
     }
 
-    pub fn get_or_create_info_model(&self) -> Result<CommunityInfo, Error> {
-        let profile = self.get_info_model();
+    pub fn get_info_model(&self) -> Result<CommunityInfo, Error> {
+        let profile = self.find_info_model();
         if profile.is_ok() {
             return profile;
         }
         else {
-            return self.get_info_model();
+            return self.create_info_model();
         }
     }
-    pub fn get_info_model(&self) -> Result<CommunityInfo, Error> {
+    pub fn find_info_model(&self) -> Result<CommunityInfo, Error> {
         use crate::schema::community_infos::dsl::community_infos;
 
         let _connection = establish_connection();
