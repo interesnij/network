@@ -526,7 +526,7 @@ impl Community {
 
         return match member {
              Ok(_ok) => {
-                 diesel::update(&_ok)
+                 diesel::update(_ok)
                  .set(schema::communities_memberships::level.eq(5))
                  .execute(&_connection)
                  .expect("Error.");
