@@ -3,7 +3,7 @@ mod community;
 use diesel::prelude::*;
 use crate::schema;
 use crate::models::Community;
-
+use crate::errors::Error;
 pub use self::{
     community::*,
 };
@@ -52,12 +52,12 @@ pub fn get_community(id: i32) -> Result<Community, Error> {
     let _connection = establish_connection();
     return Ok(communitys
         .filter(schema::communitys::id.eq(id))
-        .first(&connection));
+        .first(&connection)?);
 }
 pub fn get_community_with_link(link: String) -> Result<Community, Error> {
     use crate::schema::communitys::dsl::communitys;
     let _connection = establish_connection();
     return Ok(communitys
         .filter(schema::communitys::link.eq("/".to_owned() + &link + &"/".to_string()))
-        .first(&connection));
+        .first(&connection)?);
 }
