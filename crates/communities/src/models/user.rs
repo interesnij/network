@@ -653,9 +653,9 @@ impl User {
             return false;
         }
     }
-    pub fn block_user(&self, user_id: i32) -> () {
+    pub fn block_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || self.is_user_in_block(user_id) {
-            return;
+            return false;
         }
         let _connection = establish_connection();
 
@@ -680,7 +680,7 @@ impl User {
         }
         else if self.is_following_user_with_id(user_id) {
             use crate::schema::follows::dsl::follows;
-            diesel::delete(
+            diesel::delete (
                 follows
                     .filter(schema::follows::user_id.eq(self.user_id))
                     .filter(schema::follows::target_id.eq(user_id))
@@ -698,20 +698,28 @@ impl User {
             .values(&_user_block)
             .get_result::<UserVisiblePerm>(&_connection)
             .expect("Error.");
+        return true;
     }
-    pub fn unblock_user(&self, user_id: i32) -> () {
+    pub fn unblock_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || !self.is_user_in_block(user_id) {
-            return;
+            return false;
         }
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        diesel::delete (
+        let del = diesel::delete (
             user_visible_perms
                 .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                .filter(schema::user_visible_perms::target_id.eq(user_id)))
-                .execute(&_connection)
-                .expect("E");
+                .filter(schema::user_visible_perms::target_id.eq(user_id))
+            )
+            .execute(&_connection);
+
+        if del.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn get_gender_a(&self) -> String {
         if self.is_man {

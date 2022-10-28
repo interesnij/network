@@ -22,11 +22,9 @@ use diesel::{
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
-use actix_web::web::Json;
 use crate::utils::{
     //CommunitySubcategoryJson,
     CommunityCategoryJson,
-    UsersJson,
     CardUserJson,
     //CommunityInfoJson,
     //CommunityDetailJson,
@@ -296,8 +294,6 @@ impl Community {
         return Ok(info);
     }
     pub fn create_info_model(&self) -> Result<CommunityInfo, Error> {
-        use crate::schema::community_infos::dsl::community_infos;
-
         let _connection = establish_connection();
 
         let _new_community_info = NewCommunityInfo {
@@ -1533,16 +1529,7 @@ impl Community {
                 7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
                  _ => false
             };
-            let bool_see_log = match _ok.see_log {
-                1 => true,
-                2 => self.get_members_ids().iter().any(|&i| i==user_id),
-                3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-                4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-                5 => self.user_id == user_id,
-                6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                _ => false
-            };
+
             let bool_see_stat = match _ok.see_stat {
                 1 => true,
                 2 => self.get_members_ids().iter().any(|&i| i==user_id),
@@ -1575,7 +1562,7 @@ impl Community {
                 bool_stack.push(_ok.see_log == 1);
                 bool_stack.push(_ok.see_stat == 1);
                 return bool_stack;
-            }
+            },
             Err(_) => return vec![false, false, false, false, false],
         }
     }
