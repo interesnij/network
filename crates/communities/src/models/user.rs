@@ -527,11 +527,10 @@ impl User {
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        let res = follows
+        return follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
-            .first(&_connection);
-        return res.is_ok();
+            .first(&_connection).is_ok();
     }
 
     pub fn is_anon_user_see_community(&self) -> bool {
