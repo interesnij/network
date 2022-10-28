@@ -289,12 +289,12 @@ impl User {
             .first::<UserLocation>(&_connection);
 
         return match location {
-             Ok(_ok) => LocationJson {
+             Ok(_ok) => Ok(LocationJson {
                  city_ru:    _ok.city_ru,
                  region_ru:  _ok.region_ru,
                  country_ru: _ok.country_ru,
-             },
-              Err(_error) => _error,
+             }),
+              Err(_error) => Ok(_error),
         };
     }
     pub fn get_last_location(&self) -> UserLocation {
