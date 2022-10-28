@@ -1358,18 +1358,6 @@ impl Community {
         return Ok(private);
     }
 
-    pub fn get_private_model(&self) -> CommunityPrivate {
-        use crate::schema::community_privates::dsl::community_privates;
-
-        let _connection = establish_connection();
-        return community_privates
-            .filter(schema::community_privates::community_id.eq(self.id))
-            .load::<CommunityPrivate>(&_connection)
-            .expect("E.")
-            .into_iter()
-            .nth(0)
-            .unwrap();
-    }
     pub fn get_private_model_json(&self) -> Json<CommunityPrivateJson> {
         let private = self.get_private_model();
         let json = CommunityPrivateJson {
