@@ -160,47 +160,6 @@ impl User {
             .expect("E")
             .len();
     }
-    pub fn get_ss_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return self.s_avatar.as_deref().unwrap().to_string();
-        }
-        else {
-            return "/static/images/no_img/list.jpg".to_string();
-        }
-    }
-    pub fn get_s_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return "<img style='border-radius:30px;width:30px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
-        }
-        else {
-            return "<svg fill='currentColor' class='svg_default svg_default_30' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/><path d='M0 0h24v24H0z' fill='none'/></svg>".to_string();
-        }
-    }
-    pub fn get_40_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return "<img style='border-radius:40px;width:40px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
-        }
-        else {
-            return "<svg fill='currentColor' class='svg_default svg_default_40' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/><path d='M0 0h24v24H0z' fill='none'/></svg>".to_string();
-        }
-    }
-    pub fn get_50_avatar(&self) -> String {
-        if self.s_avatar.is_some() {
-            return "<img style='border-radius:50px;width:50px;' alt='image' src='".to_owned() + &self.s_avatar.as_deref().unwrap().to_string() +  &"' />".to_string();
-        }
-        else {
-            return "<svg fill='currentColor' class='svg_default svg_default_50' viewBox='0 0 24 24'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/><path d='M0 0h24v24H0z' fill='none'/></svg>".to_string();
-        }
-    }
-
-    //pub fn save_playlist(&self, types: &String) -> () {
-    //    let _connection = establish_connection();
-    //    let profile = self.get_info();
-    //    diesel::update(&profile)
-    //        .set(schema::user_profiles::saved_playlist.eq(types))
-    //        .get_result::<UserProfile>(&_connection)
-    //        .expect("E");
-    //}
 
     pub fn get_slug(&self) -> String {
         return "@".to_string() + &self.link.replace("/", "").to_string();
@@ -214,7 +173,7 @@ impl User {
     pub fn get_code(&self) -> String {
         return "use".to_string() + &self.get_str_id();
     }
-    pub fn delete_item(&self) -> () {
+    pub fn delete_item(&self) -> bool {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -225,14 +184,18 @@ impl User {
             7 => 17,
             _ => self.types,
         };
-        diesel::update(self)
+        let o = diesel::update(self)
             .set(schema::users::types.eq(_case))
-            .get_result::<User>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        //hide_wall_notify_items(1, self.id);
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn restore_item(&self) -> () {
+    pub fn restore_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -243,11 +206,16 @@ impl User {
             17 => 7,
             _ => self.types,
         };
-        diesel::update(self)
+        let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
-            .get_result::<User>(&_connection)
-            .expect("E");
-        //show_wall_notify_items(1, self.id);
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     pub fn get_plus_or_create_populate_smile(&self, smile_id: i32, image: String) {
@@ -311,25 +279,23 @@ impl User {
         }
     }
 
-    pub fn get_last_location_json(&self) -> Json<LocationJson> {
+    pub fn get_last_location_json(&self) -> Result<LocationJson, Error> {
         use crate::schema::user_locations::dsl::user_locations;
 
         let _connection = establish_connection();
         let location = user_locations
             .filter(schema::user_locations::user_id.eq(self.id))
             .order(schema::user_locations::id.desc())
-            .limit(1)
-            .load::<UserLocation>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
-        let location_json = LocationJson {
-            city_ru:    location.city_ru,
-            region_ru:  location.region_ru,
-            country_ru: location.country_ru,
+            .first::<UserLocation>(&_connection)?;
+
+        return match location {
+             Ok(_ok) => LocationJson {
+                 city_ru:    _ok.city_ru,
+                 region_ru:  _ok.region_ru,
+                 country_ru: _ok.country_ru,
+             },
+              Err(_error) => _error,
         };
-        return Json(location_json);
     }
     pub fn get_last_location(&self) -> UserLocation {
         use crate::schema::user_locations::dsl::user_locations;
