@@ -137,7 +137,7 @@ impl User {
         return false;
     }
 
-    pub fn get_or_create_user(user: NewUserJson) -> Result<User, Error> {
+    pub fn get_or_create_user(user: NewUserJson) -> Result<User, diesel::result::Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();

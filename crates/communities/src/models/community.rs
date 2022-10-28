@@ -1794,7 +1794,7 @@ impl CommunitiesMembership {
         };
         let new_member = diesel::insert_into(schema::communities_memberships::table)
             .values(&new_member_form)
-            .get_result::<CommunitiesMembership>(&_connection)?;
+            .get_result::<CommunitiesMembership>(&_connection);
 
         if new_member.is_ok() {
             community.plus_members(1);
