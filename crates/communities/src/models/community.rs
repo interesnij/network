@@ -276,17 +276,16 @@ impl Community {
         return "@".to_string() + &self.link.replace("/", "").to_string();
     }
 
-    pub fn get_info_model(&self) -> CommunityInfo {
+    pub fn get_info_model(&self) -> Result<CommunityInfo, Error> {
         use crate::schema::community_infos::dsl::community_infos;
 
         let _connection = establish_connection();
-        let infos = community_infos
+        let info = community_infos
             .filter(schema::community_infos::id.eq(self.id))
-            .load::<CommunityInfo>(&_connection)
-            .expect("E.");
+            .first(&connection)?;
 
-        if infos.len() > 0 {
-            return infos.into_iter().nth(0).unwrap();
+        if infos.is_ok() {
+            return Ok(info);
         }
         else {
             let _community_info = NewCommunityInfo {
@@ -302,28 +301,33 @@ impl Community {
             };
             let new_info = diesel::insert_into(schema::community_infos::table)
                 .values(&_community_info)
-                .get_result::<CommunityInfo>(&_connection)
-                .expect("E.");
+                .get_result::<CommunityInfo>(&_connection)?;
 
-            return new_info;
+            return Ok(new_info);
         }
     }
 
     pub fn plus_members(&self, count: i32) -> () {
-        let profile = self.get_info_model();
         let _connection = establish_connection();
-        diesel::update(&profile)
-            .set(schema::community_infos::members.eq(profile.members + count))
-            .execute(&_connection)
-            .expect("Error.");
+        let profile = self.get_info_model();
+        match profile {
+          Ok(_ok) => diesel::update(&_ok)
+              .set(schema::community_infos::members.eq(profile.members + count))
+              .execute(&_connection)
+              .expect("Error."),
+          Err(_error) => (),
+        };
     }
     pub fn minus_members(&self, count: i32) -> () {
-        let profile = self.get_info_model();
         let _connection = establish_connection();
-        diesel::update(&profile)
-            .set(schema::community_infos::members.eq(profile.members - count))
-            .execute(&_connection)
-            .expect("Error.");
+        let profile = self.get_info_model();
+        match profile {
+          Ok(_ok) => diesel::update(&_ok)
+              .set(schema::community_infos::members.eq(profile.members - count))
+              .execute(&_connection)
+              .expect("Error."),
+          Err(_error) => (),
+        };
     }
     pub fn is_deleted(&self) -> bool {
         return self.types > 20 || self.types < 40;
@@ -454,7 +458,11 @@ impl Community {
     }
 
     pub fn count_members(&self) -> i32 {
-        return self.get_info_model().members;
+        let profile = self.get_info_model();
+        return match profile {
+          Ok(_ok) => _ok.members,
+          Err(_error) => 0,
+        };
     }
     pub fn count_members_ru(&self) -> String {
         use crate::utils::get_count_for_ru;
