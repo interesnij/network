@@ -522,7 +522,7 @@ impl Community {
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection);
+            .first(&_connection)?;
 
         return match member {
              Ok(_ok) => {
