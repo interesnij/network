@@ -1558,8 +1558,9 @@ impl Community {
             bool_stack.push(bool_see_settings);
             bool_stack.push(bool_see_log);
             bool_stack.push(bool_see_stat);
+            return bool_stack;
           },
-          Err(_) => vec![false, false, false, false, false],
+          Err(_) => return vec![false, false, false, false, false],
         };
     }
     pub fn get_anon_community_all_see(&self) -> Vec<bool> {
@@ -1573,8 +1574,9 @@ impl Community {
                 bool_stack.push(_ok.see_settings == 1);
                 bool_stack.push(_ok.bool_see_log == 1);
                 bool_stack.push(_ok.see_stat == 1);
+                return bool_stack;
             }
-            Err(_) => vec![false, false, false, false, false],
+            Err(_) => return vec![false, false, false, false, false],
         }
     }
 
