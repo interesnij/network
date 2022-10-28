@@ -1383,7 +1383,7 @@ impl Community {
               5 => self.user_id == user_id,
               6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
               7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-              _ => false),
+              _ => false}),
           Err(_) => false,
         };
     }
