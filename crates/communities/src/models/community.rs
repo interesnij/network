@@ -280,7 +280,7 @@ impl Community {
         use crate::schema::community_infos::dsl::community_infos;
 
         let _connection = establish_connection();
-        let info = community_infos
+        let info: Result<CommunityInfo, Error> = community_infos
             .filter(schema::community_infos::id.eq(self.id))
             .first(&_connection)?;
 
