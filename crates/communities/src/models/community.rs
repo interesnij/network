@@ -303,7 +303,7 @@ impl Community {
             members:      0,
         };
         let _community_info = diesel::insert_into(schema::community_infos::table)
-            .values(&_community_info)
+            .values(&_new_community_info)
             .get_result::<CommunityInfo>(&_connection)?;
 
         return Ok(_community_info);
