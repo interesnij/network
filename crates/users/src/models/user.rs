@@ -108,7 +108,7 @@ impl User {
         let city: Option<String>;
         let status: Option<String>;
         let image: Option<String>;
-        let _b: String;
+        let _b: String = "".to_string();
 
         let info = self.get_info_model();
         match info {
@@ -126,7 +126,6 @@ impl User {
               city = None;
               status = None;
               image = None;
-              _b = "".to_string();
           },
         };
         let user_json = UserDetailJson {
