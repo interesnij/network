@@ -286,7 +286,7 @@ impl User {
         let location = user_locations
             .filter(schema::user_locations::user_id.eq(self.id))
             .order(schema::user_locations::id.desc())
-            .first::<UserLocation>(&_connection)?;
+            .first::<UserLocation>(&_connection);
 
         return match location {
              Ok(_ok) => LocationJson {
