@@ -294,7 +294,11 @@ impl User {
                  region_ru:  _ok.region_ru,
                  country_ru: _ok.country_ru,
              }),
-              Err(_error) => Ok(_error),
+              Err(_error) => Ok(LocationJson {
+                  city_ru:    "".to_string(),
+                  region_ru:  "".to_string(),
+                  country_ru: "".to_string(),
+              }),
         };
     }
     pub fn get_last_location(&self) -> UserLocation {
