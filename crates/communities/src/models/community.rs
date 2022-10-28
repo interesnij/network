@@ -364,7 +364,7 @@ impl Community {
         return self.types < 10;
     }
 
-    pub fn create_banned_user(&self, user_id: i32) -> bool {
+    pub fn create_banned_user(&self, user_id: i32) -> i16 {
         let _connection = establish_connection();
         let new_banned_user = NewCommunityBannedUser {
             community_id: self.id,
@@ -373,12 +373,15 @@ impl Community {
         let banned_user = diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
             .execute(&_connection)?;
-        return match banned_user {
-             Ok(_ok) => true,
-             Err(_error) => false,
-        };
+
+        if banned_user.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
-    pub fn delete_banned_user(&self, user_id: i32) -> bool {
+    pub fn delete_banned_user(&self, user_id: i32) -> i16 {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
@@ -389,10 +392,12 @@ impl Community {
             )
             .execute(&_connection)?;
 
-        return match banned_user {
-             Ok(_ok) => true,
-             Err(_error) => false,
-        };
+        if banned_user.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 
     // придется усложнить работу создания сообщества, в частности
