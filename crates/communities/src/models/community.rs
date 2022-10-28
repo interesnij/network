@@ -1334,7 +1334,7 @@ impl Community {
 
         let _connection = establish_connection();
 
-        let _new_community_private = CommunityPrivate {
+        let _new_community_private = NewCommunityPrivate {
             community_id: self.id,
             see_member:   1,
             see_info:     1,
