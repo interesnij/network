@@ -168,7 +168,7 @@ impl User {
             .values(&new_form)
             .get_result::<User>(&_connection);
 
-        let new_user_id = match new_user {
+        let new_user_id = match &new_user {
              Ok(_ok) => _ok.id,
              Err(_error) => 0,
         };
@@ -219,7 +219,7 @@ impl User {
                 }
             }
         }
-        return Ok(new_user);
+        return new_user;
     }
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()

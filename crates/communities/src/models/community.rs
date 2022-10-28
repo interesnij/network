@@ -1561,7 +1561,7 @@ impl Community {
             return bool_stack;
           },
           Err(_) => return vec![false, false, false, false, false],
-        };
+        }
     }
     pub fn get_anon_community_all_see(&self) -> Vec<bool> {
         let private = self.get_private_model();
