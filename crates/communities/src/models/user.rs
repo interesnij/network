@@ -530,7 +530,7 @@ impl User {
         let is_ok = follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
-            .first(&_connection).is_ok();
+            .first::<Follow>(&_connection).is_ok();
         return is_ok;
     }
 
