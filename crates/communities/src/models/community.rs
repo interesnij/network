@@ -280,9 +280,9 @@ impl Community {
         use crate::schema::community_infos::dsl::community_infos;
 
         let _connection = establish_connection();
-        let info = Ok(community_infos
-            .filter(schema::community_infos::id.eq(self.id))
-            .first(&_connection)?);
+        let info = community_infos
+            .filter(schema::community_infos::community_id.eq(self.id))
+            .first(&_connection)?;
 
         let _res = match info {
             Ok(_ok) => _ok,
@@ -304,7 +304,7 @@ impl Community {
                 },
             };
 
-        return Ok(_res);
+        return _res;
     }
 
     pub fn plus_members(&self, count: i32) -> () {
