@@ -118,15 +118,15 @@ impl User {
               status = _ok.language;
               image = _ok.language;
               if _ok.birthday.is_some() {
-                  _b = _ok.birthday.unwrap().format("%d-%m-%Y").to_string();
+                  _b = Some(_ok.birthday.unwrap().format("%d-%m-%Y").to_string());
               }
           },
           Err(_error) => {
               language = "".to_string();
-              city = "".to_string();
-              status = "".to_string();
-              image = "".to_string();
-              _b = "".to_string();
+              city = None;
+              status = None;
+              image = None;
+              _b = None;
           },
         };
         let user_json = UserDetailJson {
@@ -601,7 +601,7 @@ impl User {
         let ok = follows
             .filter(schema::follows::user_id.eq(self.id))
             .select(schema::follows::id)
-            .first(&_connection);
+            .first::<i32>(&_connection);
         if ok.is_ok() {
             return true;
         }
@@ -613,13 +613,16 @@ impl User {
         use crate::schema::user_blocks::dsl::user_blocks;
 
         let _connection = establish_connection();
-        return user_blocks
+        let ok = user_blocks
             .filter(schema::user_blocks::user_id.eq(self.id))
-            .limit(1)
             .select(schema::user_blocks::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection);
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn is_have_friends(&self) -> bool {
         let profile = self.get_info_model();
