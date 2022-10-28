@@ -1561,10 +1561,10 @@ impl Community {
                 bool_stack.push(_ok.see_settings == 1);
                 bool_stack.push(_ok.see_log == 1);
                 bool_stack.push(_ok.see_stat == 1);
-                return bool_stack;
+                bool_stack
             },
-            Err(_) => return vec![false, false, false, false, false],
-        };
+            Err(_) => vec![false, false, false, false, false],
+        }
     }
 
     pub fn get_follows_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
