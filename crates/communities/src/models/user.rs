@@ -484,18 +484,18 @@ impl User {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        let res = user_visible_perms
+        return user_visible_perms
             .filter(schema::user_visible_perms::target_id.eq(user_id))
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .first(&_connection)?;
 
-        if res.is_ok() {
-            return true;
-        }
-        else {
-            return false;
-        }
+        //if res.is_ok() {
+        //    return true;
+        //}
+        //else {
+        //    return false;
+        //}
     }
     pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
