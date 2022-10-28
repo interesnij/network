@@ -114,9 +114,9 @@ impl User {
         match info {
           Ok(_ok) => {
               language = _ok.language;
-              city = _ok.language;
-              status = _ok.language;
-              image = _ok.language;
+              city = _ok.city;
+              status = _ok.status;
+              image = _ok.image;
               if _ok.birthday.is_some() {
                   _b = _ok.birthday.unwrap().format("%d-%m-%Y").to_string();
               }
@@ -584,7 +584,7 @@ impl User {
         let new_info = diesel::insert_into(schema::user_infos::table)
             .values(&_user_info)
             .get_result::<UserInfo>(&_connection)?;
-        return Ok(new_info_;
+        return Ok(new_info);
     }
 
     pub fn is_have_followers(&self) -> bool {
@@ -792,6 +792,7 @@ impl User {
     }
     pub fn minus_follows(&self, count: i32) -> () {
         let profile = self.get_info_model();
+        let _connection = establish_connection();
         match profile {
             Ok(_ok) => {
                 if _ok.follows > 0 {
