@@ -1479,7 +1479,7 @@ impl Community {
     pub fn is_anon_user_see_stat(&self) -> bool {
         let private = self.get_private_model();
         return match private {
-            Ok(_ok) => _ok.see_stat == 1
+            Ok(_ok) => _ok.see_stat == 1,
             Err(_) => false,
         }
     }
