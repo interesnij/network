@@ -282,7 +282,7 @@ impl Community {
         let _connection = establish_connection();
         let info = community_infos
             .filter(schema::community_infos::id.eq(self.id))
-            .first(&_connection)?;
+            .first(&_connection);
 
         let _res = match info {
             Ok(_ok) => _ok,
