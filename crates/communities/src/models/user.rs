@@ -484,44 +484,43 @@ impl User {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        let res = user_visible_perms
+        return user_visible_perms
             .filter(schema::user_visible_perms::target_id.eq(user_id))
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .first(&_connection)?;
-
-        return res.is_ok();
+            .select(schema::user_visible_perms::id)
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        let res = user_visible_perms
+        return user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(user_id))
             .filter(schema::user_visible_perms::target_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .first(&_connection)?;
-        return res.is_ok();
+            .select(schema::user_visible_perms::id)
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_connected_with_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
-        let res = friends
+        return friends
             .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self.user_id))
-            .first(&_connection)?;
-        return res.is_ok();
+            .select(schema::friends::id)
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_following_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        let res = follows
+        return follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
-            .first(&_connection)?;
-        return res.is_ok();
+            .select(schema::follows::id)
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
