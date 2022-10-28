@@ -280,31 +280,31 @@ impl Community {
         use crate::schema::community_infos::dsl::community_infos;
 
         let _connection = establish_connection();
-        let info: Result<CommunityInfo, Error> = community_infos
+        let info = community_infos
             .filter(schema::community_infos::id.eq(self.id))
             .first(&_connection)?;
 
-        if info.is_ok() {
-            return Ok(info);
-        }
-        else {
-            let _community_info = NewCommunityInfo {
-                community_id: self.id,
-                avatar_id:    None,
-                b_avatar:     None,
-                status:       None,
-                level:        100,
-                cover:        None,
-                created:      chrono::Local::now().naive_utc(),
-                description:  None,
-                members:      0,
+        let _res = match info {
+            Ok(_ok) => _ok,
+            Err(_error) => {
+                let _community_info = NewCommunityInfo {
+                    community_id: self.id,
+                    avatar_id:    None,
+                    b_avatar:     None,
+                    status:       None,
+                    level:        100,
+                    cover:        None,
+                    created:      chrono::Local::now().naive_utc(),
+                    description:  None,
+                    members:      0,
+                };
+                diesel::insert_into(schema::community_infos::table)
+                    .values(&_community_info)
+                    .get_result::<CommunityInfo>(&_connection)?;
+                },
             };
-            let new_info = diesel::insert_into(schema::community_infos::table)
-                .values(&_community_info)
-                .get_result::<CommunityInfo>(&_connection)?;
 
-            return Ok(new_info);
-        }
+        return Ok(_res);
     }
 
     pub fn plus_members(&self, count: i32) -> () {
