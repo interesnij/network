@@ -25,6 +25,7 @@ use crate::models::{
     PostCommentCounterReaction,
 };
 use crate::schema::post_comments;
+use crate::errors::Error;
 
 
 /////// PostComment //////

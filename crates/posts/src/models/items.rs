@@ -25,7 +25,7 @@ use crate::schema::{
     item_sites,
     attach_items,
 };
-
+use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,

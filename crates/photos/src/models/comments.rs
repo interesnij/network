@@ -27,6 +27,7 @@ use crate::models::{
     PhotoCommentCounterReaction,
 };
 use crate::schema::photo_comments;
+use crate::errors::Error;
 
 
 /////// PhotoComment //////

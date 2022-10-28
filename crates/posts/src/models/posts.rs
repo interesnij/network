@@ -28,7 +28,7 @@ use crate::models::{
     PostCounterReaction, User, Community,
 };
 use crate::schema::posts;
-
+use crate::errors::Error;
 /////// Post //////
 
 //////////// тип

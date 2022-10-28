@@ -8,7 +8,7 @@ use diesel::{
     NullableExpressionMethods,
 };
 use crate::schema::post_lists;
-
+use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,

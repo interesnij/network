@@ -16,7 +16,7 @@ use crate::schema::{
     user_visible_perms,
 };
 use actix_web::web::Json;
-
+use crate::errors::Error;
 ///// Типы пользоватетеля
     // 1 стандартный тип пользователя
     // 6 пославший запрос на идентификацию

@@ -22,6 +22,7 @@ mod repositories;
 mod config;
 mod utils;
 mod schema;
+mod errors;
 
 //use handlers::{
 //    auth_handlers::auth_scope,

@@ -32,6 +32,7 @@ use crate::utils::{
     //CommunityDetailJson,
     CommunityPrivateJson,
 };
+use crate::errors::Error;
 
 
 /////// CommunityCategories //////
@@ -44,7 +45,7 @@ pub struct CommunityCategory {
 }
 
 impl CommunityCategory {
-    pub fn get_categories_json() -> Result<Vec<CommunityCategoryJson>, diesel::result::Error> {
+    pub fn get_categories_json() -> Result<Vec<CommunityCategoryJson>, Error> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -59,7 +60,7 @@ impl CommunityCategory {
         return Ok(cats);
     }
     pub fn create_category(name: String, avatar: Option<String>,
-        position: i16) -> Result<CommunityCategory>, diesel::result::Error> {
+        position: i16) -> Result<CommunityCategory, Error> {
 
         let _connection = establish_connection();
         let new_form = NewCommunityCategory {
@@ -73,7 +74,7 @@ impl CommunityCategory {
         return Ok(new_cat);
     }
     pub fn create_subcategory(&self, name: String, avatar: Option<String>,
-        position: i16) -> Option<CommunitySubcategory> {
+        position: i16) -> Result<CommunitySubcategory, Error> {
 
         let _connection = establish_connection();
         let new_form = NewCommunitySubcategory {
@@ -85,10 +86,10 @@ impl CommunityCategory {
         let new_cat = diesel::insert_into(schema::community_subcategorys::table)
             .values(&new_form)
             .get_result::<CommunitySubcategory>(&_connection)?;
-        return new_cat;
+        return Ok(new_cat);
     }
     pub fn edit_category(&self, name: String, avatar: Option<String>,
-        position: i16) -> Option<&CommunityCategory> {
+        position: i16) -> Result<&CommunityCategory, Error> {
         let _connection = establish_connection();
         let new_form = NewCommunityCategory {
             name:     name,
@@ -98,7 +99,7 @@ impl CommunityCategory {
         let updated = diesel::update(self)
             .set(new_form)
             .get_result::<CommunityCategory>(&_connection)?;
-        return updated;
+        return Ok(updated);
     }
 }
 
@@ -121,7 +122,7 @@ pub struct CommunitySubcategory {
 }
 
 impl CommunitySubcategory {
-    pub fn get_categories_json() -> Option<Vec<CommunityCategoryJson>> {
+    pub fn get_categories_json() -> Resultr<Vec<CommunityCategoryJson>, Error> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
@@ -132,20 +133,12 @@ impl CommunitySubcategory {
                 schema::community_categorys::name,
                 schema::community_categorys::avatar,
             ))
-        .load::<CommunityCategoryJson>(&_connection)?;
+            .load::<CommunityCategoryJson>(&_connection)?;
 
-        return cats;
-        //match cats {
-        //    Ok(res) => {
-        //        Some(Json(res))
-        //    },
-        //    Err(err) => {
-        //        None
-        //    }
-        //}
+        return Ok(cats);
     }
     pub fn edit_subcategory(&self, name: String, category_id: i32,
-        avatar: Option<String>, position: i16) -> Option<&CommunitySubcategory> {
+        avatar: Option<String>, position: i16) -> Result<&CommunitySubcategory, Error> {
         let _connection = establish_connection();
         let new_form = NewCommunitySubcategory {
             name:        name,
@@ -155,9 +148,8 @@ impl CommunitySubcategory {
         };
         diesel::update(self)
             .set(new_form)
-            .get_result::<CommunitySubcategory>(&_connection)
-            .expect("Error.");
-        return self;
+            .get_result::<CommunitySubcategory>(&_connection)?;
+        return Ok(self);
     }
 }
 

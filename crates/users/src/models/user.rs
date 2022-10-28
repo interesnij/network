@@ -27,6 +27,7 @@ use crate::utils::{
 };
 use crate::schema::users;
 use actix_web::web::Json;
+use crate::errors::Error;
 
 ///// Типы пользоватетеля
     // 1 стандартный тип пользователя

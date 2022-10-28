@@ -7,6 +7,7 @@ use crate::schema::{
 use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};
 //use crate::utils::establish_connection;
+use crate::errors::Error;
 
 /////// PhoneCode //////
 #[derive(Debug, Queryable, Serialize, Identifiable)]

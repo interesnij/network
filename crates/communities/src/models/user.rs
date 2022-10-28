@@ -14,6 +14,7 @@ use crate::schema::{
     follows,
     user_visible_perms,
 };
+use crate::errors::Error;
 //use actix_web::web::Json;
 
 ///// Типы пользоватетеля
