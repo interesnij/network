@@ -583,6 +583,9 @@ impl User {
                 return false;
             }
         }
+        else {
+            return false;
+        }
     }
 
     pub fn frend_user(&self, user_id: i32) -> () {
