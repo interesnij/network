@@ -397,7 +397,7 @@ impl User {
         };
         let o = diesel::update(self)
             .set(schema::users::types.eq(_case))
-            .execute(&_connection)?;
+            .execute(&_connection);
 
         if o.is_ok() {
             return true;
@@ -421,7 +421,7 @@ impl User {
         };
         let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
-            .execute(&_connection)?;
+            .execute(&_connection);
 
         if o.is_ok() {
             return true;
