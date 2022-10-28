@@ -372,7 +372,7 @@ impl Community {
         };
         let banned_user = diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
-            .execute(&_connection)?;
+            .execute(&_connection);
 
         if banned_user.is_ok() {
             return 1;
@@ -390,7 +390,7 @@ impl Community {
                 .filter(schema::community_banned_users::community_id.eq(self.id))
                 .filter(schema::community_banned_users::user_id.eq(user_id))
             )
-            .execute(&_connection)?;
+            .execute(&_connection);
 
         if banned_user.is_ok() {
             return 1;
