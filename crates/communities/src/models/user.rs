@@ -491,12 +491,6 @@ impl User {
             .first(&_connection)?;
 
         return res.is_ok();
-        //if res.is_ok() {
-        //    return true;
-        //}
-        //else {
-        //    return false;
-        //}
     }
     pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
@@ -507,12 +501,7 @@ impl User {
             .filter(schema::user_visible_perms::target_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .first(&_connection)?;
-        if res.is_ok() {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return res.is_ok();
     }
     pub fn is_connected_with_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::friends::dsl::friends;
@@ -522,12 +511,7 @@ impl User {
             .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self.user_id))
             .first(&_connection)?;
-        if res.is_ok() {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return res.is_ok();
     }
     pub fn is_following_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
@@ -537,12 +521,7 @@ impl User {
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
             .first(&_connection)?;
-        if res.is_ok() {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return res.is_ok();
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
@@ -552,12 +531,7 @@ impl User {
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
             .first(&_connection)?;
-        if res.is_ok() {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return res.is_ok();
     }
 
     pub fn is_anon_user_see_community(&self) -> bool {
