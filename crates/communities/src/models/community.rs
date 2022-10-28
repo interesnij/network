@@ -1368,7 +1368,7 @@ impl Community {
               see_log:      _ok.see_log,
               see_stat:     _ok.see_stat,
           }),
-          Err(_error) => _error,
+          Err(_error) => Err(_error),
         };
     }
 
