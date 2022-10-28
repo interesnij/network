@@ -122,7 +122,7 @@ pub struct CommunitySubcategory {
 }
 
 impl CommunitySubcategory {
-    pub fn get_categories_json() -> Resultr<Vec<CommunityCategoryJson>, Error> {
+    pub fn get_categories_json() -> Result<Vec<CommunityCategoryJson>, Error> {
         use crate::schema::community_categorys::dsl::community_categorys;
 
         let _connection = establish_connection();
