@@ -1451,28 +1451,28 @@ impl Community {
     pub fn is_anon_user_see_info(&self) -> bool {
         let private = self.get_private_model();
         return match private {
-            Ok(_ok) => _ok.see_info == 1
+            Ok(_ok) => _ok.see_info == 1,
             Err(_) => false,
         }
     }
     pub fn is_anon_user_see_member(&self) -> bool {
         let private = self.get_private_model();
         return match private {
-            Ok(_ok) => _ok.see_member == 1
+            Ok(_ok) => _ok.see_member == 1,
             Err(_) => false,
         }
     }
     pub fn is_anon_user_see_settings(&self) -> bool {
         let private = self.get_private_model();
         return match private {
-            Ok(_ok) => _ok.see_settings == 1
+            Ok(_ok) => _ok.see_settings == 1,
             Err(_) => false,
         }
     }
     pub fn is_anon_user_see_log(&self) -> bool {
         let private = self.get_private_model();
         return match private {
-            Ok(_ok) => _ok.see_log == 1
+            Ok(_ok) => _ok.see_log == 1,
             Err(_) => false,
         }
     }
@@ -1572,7 +1572,7 @@ impl Community {
                 bool_stack.push(_ok.see_info == 1);
                 bool_stack.push(_ok.see_member == 1);
                 bool_stack.push(_ok.see_settings == 1);
-                bool_stack.push(_ok.bool_see_log == 1);
+                bool_stack.push(_ok.see_log == 1);
                 bool_stack.push(_ok.see_stat == 1);
                 return bool_stack;
             }
