@@ -488,7 +488,7 @@ impl User {
             .filter(schema::user_visible_perms::target_id.eq(user_id))
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .first(&_connection);
+            .first(&_connection)?;
 
         if res.is_ok() {
             return true;
@@ -505,7 +505,7 @@ impl User {
             .filter(schema::user_visible_perms::user_id.eq(user_id))
             .filter(schema::user_visible_perms::target_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .first(&_connection);
+            .first(&_connection)?;
         if res.is_ok() {
             return true;
         }
@@ -520,7 +520,7 @@ impl User {
         let res = friends
             .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self.user_id))
-            .first(&_connection);
+            .first(&_connection)?;
         if res.is_ok() {
             return true;
         }
@@ -535,7 +535,7 @@ impl User {
         let res = follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
-            .first(&_connection);
+            .first(&_connection)?;
         if res.is_ok() {
             return true;
         }
@@ -550,7 +550,7 @@ impl User {
         let res = follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
-            .first(&_connection);
+            .first(&_connection)?;
         if res.is_ok() {
             return true;
         }
@@ -571,7 +571,7 @@ impl User {
         let _new_follow = NewFollow {
             user_id:   self.user_id,
             target_id: user_id,
-        }; 
+        };
         diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
             .execute(&_connection)
