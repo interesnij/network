@@ -778,7 +778,7 @@ impl User {
           Err(_error) => 0,
         };
     }
-    pub fn plus_friends(&self, count: i32) -> bool {
+    pub fn plus_friends(&self, count: i32) -> () {
         let profile = self.get_info_model();
         let _connection = establish_connection();
         match profile {
@@ -789,36 +789,34 @@ impl User {
           Err(_error) => 0,
         };
     }
-    pub fn minus_follows(&self, count: i32) -> bool {
+    pub fn minus_follows(&self, count: i32) -> () {
         let profile = self.get_info_model();
-        if profile.follows > 0 {
-            let _connection = establish_connection();
-            match profile {
-              Ok(_ok) => diesel::update(&_ok)
-                  .set(schema::user_infos::follows.eq(_ok.follows - count))
-                  .execute(&_connection)
-                  .expect("Error."),
-              Err(_error) => 0,
-            };
-            diesel::update(&profile)
-                .set(schema::user_infos::follows.eq(profile.follows - count))
-                .get_result::<UserInfo>(&_connection)
-                .expect("Error.");
-        }
-        return true;
+        match profile {
+            Ok(_ok) => {
+                if _ok.follows > 0 {
+                    diesel::update(&_ok)
+                        .set(schema::user_infos::follows.eq(_ok.follows - count))
+                        .execute(&_connection)
+                        .expect("Error.");
+                }
+            },
+            Err(_error) => 0,
+        };
     }
-    pub fn minus_friends(&self, count: i32) -> bool {
+    pub fn minus_friends(&self, count: i32) -> () {
         let profile = self.get_info_model();
-        if profile.friends > 0 {
-            let _connection = establish_connection();
-            match profile {
-              Ok(_ok) => diesel::update(&_ok)
-                  .set(schema::user_infos::friends.eq(_ok.friends - count))
-                  .execute(&_connection)
-                  .expect("Error."),
-              Err(_error) => 0,
-            };
-        }
+        let _connection = establish_connection();
+        match profile {
+            Ok(_ok) => {
+                if _ok.friends > 0 {
+                    diesel::update(&_ok)
+                        .set(schema::user_infos::friends.eq(_ok.friends - count))
+                        .execute(&_connection)
+                        .expect("Error.");
+                }
+            },
+            Err(_error) => 0,
+        };
     }
 
     pub fn get_friends_ids(&self) -> Vec<i32> {
