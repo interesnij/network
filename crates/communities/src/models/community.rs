@@ -276,6 +276,22 @@ impl Community {
         return "@".to_string() + &self.link.replace("/", "").to_string();
     }
 
+    pub fn get_or_create_info_model(&self) -> Result<CommunityInfo, Error> {
+        let profile = self.get_info_model();
+        if profile.is_ok() {
+            return Ok(profile);
+        }
+        else {
+            return Ok(self.get_info_model());
+        }
+        match profile {
+          Ok(_ok) => diesel::update(&_ok)
+              .set(schema::community_infos::members.eq(_ok.members - count))
+              .execute(&_connection)
+              .expect("Error."),
+          Err(_error) => 0,
+        };
+    }
     pub fn get_info_model(&self) -> Result<CommunityInfo, Error> {
         use crate::schema::community_infos::dsl::community_infos;
 
@@ -285,7 +301,6 @@ impl Community {
             .first(&_connection)?;
         return Ok(info);
     }
-
     pub fn create_info_model(&self) -> Result<CommunityInfo, Error> {
         use crate::schema::community_infos::dsl::community_infos;
 
