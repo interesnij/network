@@ -1564,7 +1564,7 @@ impl Community {
                 return bool_stack;
             },
             Err(_) => return vec![false, false, false, false, false],
-        }
+        };
     }
 
     pub fn get_follows_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
