@@ -1362,11 +1362,11 @@ impl Community {
         let private = self.get_private_model();
         return match private {
           Ok(_ok) => CommunityPrivateJson {
-              see_member:   private.see_member,
-              see_info:     private.see_info,
-              see_settings: private.see_settings,
-              see_log:      private.see_log,
-              see_stat:     private.see_stat,
+              see_member:   _ok.see_member,
+              see_info:     _ok.see_info,
+              see_settings: _ok.see_settings,
+              see_log:      _ok.see_log,
+              see_stat:     _ok.see_stat,
           },
           Err(_error) => _error,
         };
