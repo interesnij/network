@@ -588,13 +588,13 @@ impl User {
         }
     }
 
-    pub fn frend_user(&self, user_id: i32) -> () {
+    pub fn frend_user(&self, user_id: i32) -> bool {
         // тут друзья создаются всего в одном экземпляре, где
         // self.user_id - это id создающего, а user_id -
         // id создаваемого. Это нужно для фильтрации приватности по
         // друзьям.
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
-            return;
+            return false;
         }
         use crate::schema::follows::dsl::follows;
 
@@ -603,45 +603,55 @@ impl User {
             user_id:   self.user_id,
             target_id: user_id,
         };
-        diesel::insert_into(schema::friends::table)
+        let new_friend = diesel::insert_into(schema::friends::table)
             .values(&_new_friend)
-            .get_result::<Friend>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
 
-        diesel::delete (
+        let del = diesel::delete (
             follows
                 .filter(schema::follows::user_id.eq(user_id))
                 .or_filter(schema::follows::target_id.eq(self.user_id))
                 .filter(schema::follows::target_id.eq(user_id))
                 .or_filter(schema::follows::user_id.eq(self.user_id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
+
+        if del.is_ok() && new_friend.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unfrend_user(&self, user_id: i32) -> () {
+    pub fn unfrend_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
-            return;
+            return false;
         }
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
 
-        diesel::delete (
+        let del = diesel::delete (
             friends
                 .filter(schema::friends::user_id.eq(self.user_id))
                 .filter(schema::friends::target_id.eq(user_id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         let _new_follow = NewFollow {
             user_id:   user_id,
             target_id: self.user_id,
         };
-        diesel::insert_into(schema::follows::table)
+        let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
+
+        if del.is_ok() && new_follow.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn block_user(&self, user_id: i32) -> () {
         if self.user_id == user_id || self.is_user_in_block(user_id) {
