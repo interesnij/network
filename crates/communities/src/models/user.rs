@@ -167,11 +167,10 @@ impl User {
         let new_user = diesel::insert_into(schema::users::table)
             .values(&new_form)
             .get_result::<User>(&_connection)?;
-        let new_user_id: i32;
 
-        match new_user {
-             Ok(_ok) => new_user_id = _ok.id,
-             Err(_error) => new_user_id = 0,
+        let new_user_id = match new_user {
+             Ok(_ok) => _ok.id,
+             Err(_error) => 0,
         };
 
         if new_user_id > 0 && user.friends.is_some() {
