@@ -267,7 +267,7 @@ impl PostList {
     }
 
     pub fn get_json_post_list (
-        user_id: i32,
+        user_id: Option<i32>,
         list_id: i32,
         limit: i64,
         offset: i64,
@@ -280,7 +280,7 @@ impl PostList {
             lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
         }
         else {
-            lists = PostList::get_user_post_lists(user_id, 10, 0);
+            lists = PostList::get_user_post_lists(list.user_id, 10, 0);
         }
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta().expect("E");
@@ -322,7 +322,7 @@ impl PostList {
             lists:             lists_json,
             is_user_create_el: list.is_user_create_el(user_id),
         };
-        return Json(data);
+        return data;
     }
 
     pub fn get_str_id(&self) -> String {

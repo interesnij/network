@@ -251,7 +251,7 @@ impl Post {
         &self,
         limit: i64,
         offset: i64,
-        user_id: i32,
+        user_id: Option<i32>,
         reactions_list: Vec<i32>,
     ) -> Vec<CardCommentJson> {
         use crate::schema::post_comments::dsl::post_comments;
@@ -409,7 +409,7 @@ impl Post {
         return reposts_window;
     }
 
-    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
         if reactions_list.len() == 0 {
@@ -419,8 +419,8 @@ impl Post {
             let mut reactions_json: Vec<ReactionBlockJson> = Vec::new();
             let mut user_reaction = 0;
 
-            if self.is_have_user_reaction(user_id) {
-                user_reaction = self.get_user_reaction(user_id).expect("E.");
+            if user_id.is_some() && self.is_have_user_reaction(user_id.unwrap()) {
+                user_reaction = self.get_user_reaction(user_id.unwrap()).expect("E.");
             }
 
             for reaction in reactions_list.iter() {
@@ -436,7 +436,7 @@ impl Post {
 
     pub fn get_detail_post_json (
         &self,
-        user_id: i32,
+        user_id: Option<i32>,
         reposts_limit: Option<i64>,
     ) -> PostDetailJson {
         let list = self.get_list().expect("E");
@@ -489,7 +489,7 @@ impl Post {
                 attachments:          None,
             };
     }
-    pub fn get_post_json (&self, user_id: i32, reactions_list: Vec<i32>,) -> CardPostJson {
+    pub fn get_post_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>,) -> CardPostJson {
         let creator = self.get_owner_meta().expect("E");
         return CardPostJson {
                 id:              self.id,

@@ -180,7 +180,7 @@ impl PostComment {
             };
     }
 
-    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
         if reactions_list.len() == 0 {
@@ -190,8 +190,8 @@ impl PostComment {
             let mut reactions_json: Vec<ReactionBlockJson> = Vec::new();
             let mut user_reaction = 0;
 
-            if self.is_have_user_reaction(user_id) {
-                user_reaction = self.get_user_reaction(user_id).expect("E.");
+            if user_id.is_some() && self.is_have_user_reaction(user_id.unwrap()) {
+                user_reaction = self.get_user_reaction(user_id.unwrap()).expect("E.");
             }
 
             for reaction in reactions_list.iter() {
@@ -205,7 +205,7 @@ impl PostComment {
         return reactions_blocks;
     }
 
-    pub fn get_comment_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardCommentJson {
+    pub fn get_comment_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> CardCommentJson {
         let creator = self.get_owner_meta().expect("E");
         let card = CardCommentJson {
             content:        self.content.clone(),
@@ -221,7 +221,7 @@ impl PostComment {
         };
         return card;
     }
-    pub fn get_reply_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardReplyJson {
+    pub fn get_reply_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> CardReplyJson {
         let creator = self.get_owner_meta().expect("E");
         let card = CardReplyJson {
             content:        self.content.clone(),
@@ -368,8 +368,6 @@ impl PostComment {
         );
     }
     pub fn close_item(&self) -> bool {
-        //use crate::models::hide_wall_notify_items;
-
         let _connection = establish_connection();
         let close_case = match self.types {
             1 => 21,
