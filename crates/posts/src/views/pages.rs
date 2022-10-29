@@ -18,7 +18,7 @@ use crate::utils::{
 };
 use crate::models::{User, PostList, Post, PostComment, Community};
 use crate::diesel::RunQueryDsl;
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
