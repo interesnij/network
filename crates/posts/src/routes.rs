@@ -1,8 +1,8 @@
 use actix_web::web;
 
 use crate::views::{
-    //pages_urls,
-    progs_urls,
+    //pages,
+    progs,
 };
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
