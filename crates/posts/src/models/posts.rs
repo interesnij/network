@@ -739,19 +739,22 @@ impl Post {
     pub fn is_have_reactions(&self) -> bool {
         return self.reactions > 0;
     }
-    pub fn reactions_ids(&self) -> Vec<i32> {
+    pub fn reactions_ids(&self) -> Result<Vec<i32>, Error> {
         use crate::schema::post_reactions::dsl::post_reactions;
 
         let _connection = establish_connection();
         let votes = post_reactions
             .filter(schema::post_reactions::post_id.eq(self.id))
             .select(schema::post_reactions::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return votes;
+            .load::<i32>(&_connection);
+        return Ok(votes);
     }
     pub fn is_have_user_reaction(&self, user_id: i32) -> bool {
-        return self.reactions_ids().iter().any(|&i| i==user_id);
+        return self
+            .reactions_ids()
+            .expect("E.")
+            .iter()
+            .any(|&i| i==user_id);
     }
     pub fn get_user_reaction(&self, user_id: i32) -> i32 {
         use crate::schema::post_reactions::dsl::post_reactions;

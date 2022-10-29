@@ -236,50 +236,17 @@ impl PostComment {
         };
         return card;
     }
-    pub fn get_replies_json (
-        &self,
-        user_id: i32,
-        reactions_list: Vec<i32>,
-        page: i32, limit: i32
-    ) -> RepliesSmallJson {
-        let mut comments_json = Vec::new();
-        let mut next_page_number = 0;
-        let have_next: i32;
 
-        if page > 1 {
-            have_next = page * limit + 1;
-            for c in self.get_replies(limit.into(), have_next.into()).iter() {
-                let r_list = reactions_list.clone();
-                comments_json.push(c.get_reply_json(user_id, r_list));
-            }
-        }
-        else {
-            have_next = limit + 1;
-            for c in self.get_replies(limit.into(), 0).iter() {
-                let r_list = reactions_list.clone();
-                comments_json.push(c.get_reply_json(user_id, r_list));
-            }
-        }
-        if self.get_replies(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return RepliesSmallJson {
-            replies:   comments_json,
-            next_page: next_page_number,
-        };
-    }
-    pub fn get_replies(&self, limit: i64, offset: i64) -> Vec<PostComment> {
+    pub fn get_replies(&self, limit: i64, offset: i64) -> Result<Vec<PostComment>,Error>  {
         use crate::schema::post_comments::dsl::post_comments;
 
         let _connection = establish_connection();
-        return post_comments
+        return Ok(post_comments
             .filter(schema::post_comments::parent_id.eq(self.id))
             .filter(schema::post_comments::types.eq_any(vec![1, 2]))
             .limit(limit)
             .offset(offset)
-            .load::<PostComment>(&_connection)
-            .expect("E.");
+            .load::<PostComment>(&_connection)?);
     }
     pub fn is_deleted(&self) -> bool {
         return self.types == 11 && self.types == 12;
@@ -400,7 +367,7 @@ impl PostComment {
             " ответов".to_string(),
         );
     }
-    pub fn close_item(&self) -> () {
+    pub fn close_item(&self) -> bool {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -410,19 +377,22 @@ impl PostComment {
             _ => 21,
         };
         let item = self.get_item().expect("E");
-        diesel::update(&item)
+        let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment - 1))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        diesel::update(self)
+        let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        //hide_wall_notify_items(self.get_manager_type(), self.id);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unclose_item(&self) -> () {
+    pub fn unclose_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -432,20 +402,23 @@ impl PostComment {
             _ => 1,
         };
         let item = self.get_item().expect("E");
-        diesel::update(&item)
+        let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment + 1))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        diesel::update(self)
+        let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        //show_wall_notify_items(self.get_manager_type(), self.id);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    pub fn delete_item(&self) -> () {
+    pub fn delete_item(&self) -> bool {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -455,19 +428,21 @@ impl PostComment {
             _ => 11,
         };
         let item = self.get_item().expect("E");
-        diesel::update(&item)
+        let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment - 1))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        diesel::update(self)
+        let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
-            .expect("E");
-
-        //hide_wall_notify_items(self.get_manager_type(), self.id);
+            .execute(&_connection);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn restore_item(&self) -> () {
+    pub fn restore_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -477,17 +452,19 @@ impl PostComment {
             _ => 1,
         };
         let item = self.get_item().expect("E");
-        diesel::update(&item)
+        let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment + 1))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .get_result::<Post>(&_connection);
 
-        diesel::update(self)
+        let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection)
-            .expect("E");
-
-        //show_wall_notify_items(self.get_manager_type(), self.id);
+            .get_result::<PostComment>(&_connection);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn get_count_attach(&self) -> String {
         if self.attach.is_some() {
@@ -645,20 +622,23 @@ impl PostComment {
         return self.reactions > 0;
     }
 
-    pub fn reactions_ids(&self) -> Vec<i32> {
+    pub fn reactions_ids(&self) -> Result<Vec<i32>, Error> {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
 
         let _connection = establish_connection();
         let votes = post_comment_reactions
             .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
             .select(schema::post_comment_reactions::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return votes;
+            .load::<i32>(&_connection);
+        return Ok(votes);
     }
 
     pub fn is_have_user_reaction(&self, user_id: i32) -> bool {
-        return self.reactions_ids().iter().any(|&i| i==user_id);
+        return self
+            .reactions_ids()
+            .expect("E.")
+            .iter()
+            .any(|&i| i==user_id);
     }
 
     pub fn get_user_reaction(&self, user_id: i32) -> i32 {
@@ -669,11 +649,8 @@ impl PostComment {
             .filter(schema::post_comment_reactions::user_id.eq(user_id))
             .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
             .select(schema::post_comment_reactions::reaction_id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<i32>(&_connection)
+            .expect("E.");
         return vote;
     }
 
