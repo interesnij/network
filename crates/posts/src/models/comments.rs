@@ -206,7 +206,7 @@ impl PostComment {
     }
 
     pub fn get_comment_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardCommentJson {
-        let creator = self.get_owner_meta();
+        let creator = self.get_owner_meta().expect("E");
         let card = CardCommentJson {
             content:        self.content.clone(),
             owner_name:     creator.name,
@@ -222,7 +222,7 @@ impl PostComment {
         return card;
     }
     pub fn get_reply_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardReplyJson {
-        let creator = self.get_owner_meta();
+        let creator = self.get_owner_meta().expect("E");
         let card = CardReplyJson {
             content:        self.content.clone(),
             owner_name:     creator.name.clone(),
@@ -338,7 +338,7 @@ impl PostComment {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
-    pub fn get_owner_meta(&self) -> CardOwnerJson {
+    pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::communitys::dsl::communitys;
@@ -351,12 +351,8 @@ impl PostComment {
                     schema::communitys::link,
                     schema::communitys::s_avatar.nullable(),
                 ))
-                .load::<CardOwnerJson>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
-            return _community;
+                .first::<CardOwnerJson>(&_connection)?;
+            return Ok(_community);
         }
         else {
             use crate::schema::users::dsl::users;
@@ -371,17 +367,14 @@ impl PostComment {
                     schema::users::link,
                     schema::users::s_avatar.nullable(),
                 ))
-                .load::<CardUserJson>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
+                .first::<CardUserJson>(&_connection)
+                .expect("E");
 
-            return CardOwnerJson {
+            return Ok(CardOwnerJson {
                 name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
-            }
+            })
         }
     }
 

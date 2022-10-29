@@ -154,7 +154,7 @@ impl PostList {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
-    pub fn get_owner_meta(&self) -> CardOwnerJson {
+    pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::communitys::dsl::communitys;
@@ -167,12 +167,8 @@ impl PostList {
                     schema::communitys::link,
                     schema::communitys::s_avatar.nullable(),
                 ))
-                .load::<CardOwnerJson>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
-            return _community;
+                .first::<CardOwnerJson>(&_connection)?;
+            return Ok(_community);
         }
         else {
             use crate::schema::users::dsl::users;
@@ -187,17 +183,14 @@ impl PostList {
                     schema::users::link,
                     schema::users::s_avatar.nullable(),
                 ))
-                .load::<CardUserJson>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
+                .first::<CardUserJson>(&_connection)
+                .expect("E");
 
-            return CardOwnerJson {
+            return Ok(CardOwnerJson {
                 name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
-            }
+            })
         }
     }
 
@@ -210,10 +203,10 @@ impl PostList {
         let lists = PostList::get_user_post_lists(user_id, 10, 0);
 
         let mut lists_json = Vec::new();
-        let list_owner = list.get_owner_meta();
+        let list_owner = list.get_owner_meta().expect("E");
 
         for i in lists.iter() {
-            let owner = i.get_owner_meta();
+            let owner = i.get_owner_meta().expect("E");
             lists_json.push (
                 CardPostListJson {
                     name:        i.name.clone(),
@@ -245,9 +238,9 @@ impl PostList {
         let lists = PostList::get_community_post_lists(community_id, 10, 0);
 
         let mut lists_json = Vec::new();
-        let list_owner = list.get_owner_meta();
+        let list_owner = list.get_owner_meta().expect("E");
         for i in lists.iter() {
-            let owner = i.get_owner_meta();
+            let owner = i.get_owner_meta().expect("E");
             lists_json.push (
                 CardPostListJson {
                     name:        i.name.clone(),
@@ -290,10 +283,10 @@ impl PostList {
             lists = PostList::get_user_post_lists(user_id, 10, 0);
         }
         let mut lists_json = Vec::new();
-        let list_owner = list.get_owner_meta();
+        let list_owner = list.get_owner_meta().expect("E");
 
         for i in lists.iter() {
-            let owner = i.get_owner_meta();
+            let owner = i.get_owner_meta().expect("E");
             lists_json.push (
                 CardPostListJson {
                     name:        i.name.clone(),

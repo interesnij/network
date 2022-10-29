@@ -208,7 +208,7 @@ impl Post {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
-    pub fn get_owner_meta(&self) -> CardOwnerJson {
+    pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::communitys::dsl::communitys;
@@ -221,12 +221,8 @@ impl Post {
                     schema::communitys::link,
                     schema::communitys::s_avatar.nullable(),
                 ))
-                .load::<CardOwnerJson>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
-            return _community;
+                .first::<CardOwnerJson>(&_connection)?;
+            return Ok(_community);
         }
         else {
             use crate::schema::users::dsl::users;
@@ -241,17 +237,14 @@ impl Post {
                     schema::users::link,
                     schema::users::s_avatar.nullable(),
                 ))
-                .load::<CardUserJson>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
+                .first::<CardUserJson>(&_connection)
+                .expect("E");
 
-            return CardOwnerJson {
+            return Ok(CardOwnerJson {
                 name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
                 link:  _user.link,
                 image: _user.image,
-            }
+            })
         }
     }
     pub fn get_comments (
@@ -275,7 +268,7 @@ impl Post {
             .expect("E.");
 
         for c in items.iter() {
-            let creator = c.get_owner_meta();
+            let creator = c.get_owner_meta().expect("E");
             json.push (CardCommentJson {
                 content:        c.content.clone(),
                 owner_name:     creator.name.clone(),
@@ -297,7 +290,7 @@ impl Post {
         let parent: Option<CardParentPostJson>;
         if self.parent_id.is_some() {
             let _parent = self.get_parent().expect("E");
-            let creator = _parent.get_owner_meta();
+            let creator = _parent.get_owner_meta().expect("E");
             parent = Some(CardParentPostJson {
                 id:          _parent.id,
                 content:     _parent.content.clone(),
@@ -322,7 +315,7 @@ impl Post {
 
         let mut reposts_json = Vec::new();
         for r in Post::get_item_reposts_with_limit(item_id, types, limit).iter() {
-            let creator = r.get_owner_meta();
+            let creator = r.get_owner_meta().expect("E");
             reposts_json.push (
                 CardOwnerJson {
                     name:  creator.name.clone(),
@@ -346,7 +339,7 @@ impl Post {
 
         let mut reposts_json = Vec::new();
         for r in self.get_reposts_with_limit(limit).iter() {
-            let creator = r.get_owner_meta();
+            let creator = r.get_owner_meta().expect("E");
             reposts_json.push (
                 CardOwnerJson {
                     name:  creator.name.clone(),
@@ -372,7 +365,7 @@ impl Post {
         // получаем репосты записи, если есть
         let mut reposts_json = Vec::new();
         for r in Post::get_item_reposts(item_id, types, limit, offset).iter() {
-            let creator = r.get_owner_meta();
+            let creator = r.get_owner_meta().expect("E");
             reposts_json.push (
                 CardOwnerJson {
                     name:  creator.name.clone(),
@@ -399,7 +392,7 @@ impl Post {
 
         let mut reposts_json = Vec::new();
         for r in self.get_reposts(limit, offset).iter() {
-            let creator = r.get_owner_meta();
+            let creator = r.get_owner_meta().expect("E");
             reposts_json.push (
                 CardOwnerJson {
                     name:  creator.name.clone(),
@@ -447,7 +440,7 @@ impl Post {
         reposts_limit: Option<i64>,
     ) -> PostDetailJson {
         let list = self.get_list().expect("E");
-        let creator = self.get_owner_meta();
+        let creator = self.get_owner_meta().expect("E");
         let reactions_list = list.get_reactions_list();
 
         let limit: i64;
@@ -497,7 +490,7 @@ impl Post {
             };
     }
     pub fn get_post_json (&self, user_id: i32, reactions_list: Vec<i32>,) -> CardPostJson {
-        let creator = self.get_owner_meta();
+        let creator = self.get_owner_meta().expect("E");
         return CardPostJson {
                 id:              self.id,
                 content:         self.content.clone(),
