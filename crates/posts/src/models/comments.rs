@@ -82,7 +82,7 @@ impl PostComment {
         &self,
         reaction_id: &i32,
         user_reaction: Option<i32>,
-    ) -> ReactionBlockJson {
+    ) -> Option<ReactionBlockJson> {
         use crate::schema::{
             post_comment_reactions::dsl::post_comment_reactions,
             users::dsl::users,
@@ -95,11 +95,13 @@ impl PostComment {
             .filter(schema::post_comment_reactions::reaction_id.eq(reaction_id))
             .limit(6)
             .select(schema::post_comment_reactions::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
+            .load::<i32>(&_connection);
 
+        if user_ids.is_err() {
+            return None;
+        }
         let _users = users
-            .filter(schema::users::id.eq_any(user_ids))
+            .filter(schema::users::id.eq_any(Ok(user_ids)))
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -107,11 +109,13 @@ impl PostComment {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
+            .load::<CardUserJson>(&_connection);
 
+        if _users.is_err() {
+            return None;
+        }
         let mut user_json = Vec::new();
-        for _item in _users.iter() {
+        for _item in Ok(_users).iter() {
             user_json.push (
                 CardReactionPostJson {
                     owner_name:        _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
@@ -121,11 +125,12 @@ impl PostComment {
                 }
             );
         }
-        return ReactionBlockJson {
-                count:    self.get_count_model_for_reaction(*reaction_id).count,
-                reaction: *reaction_id,
-                users:    user_json,
-            };
+
+        return Some(ReactionBlockJson {
+            count:    self.get_count_model_for_reaction(*reaction_id).count,
+            reaction: *reaction_id,
+            users:    user_json,
+        });
     }
     pub fn get_users_of_reaction (
         &self,

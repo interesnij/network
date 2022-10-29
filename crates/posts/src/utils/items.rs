@@ -236,7 +236,7 @@ pub struct CardCommentJson {
     pub reactions:      i32,
     pub types:          String, // например cpo1
     pub replies:        i32,    // кол-во ответов
-    pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
+    pub reactions_list: Option<Vec<Option<ReactionBlockJson>>>, // блок реакции (6 объектов)
     pub attachments:    Option<AttachmentsJson>,
 }
 #[derive(Serialize, Queryable)]
@@ -249,7 +249,7 @@ pub struct CardReplyJson {
     pub created:        String,
     pub reactions:      i32,
     pub types:          String, // например cpo1 - ответ
-    pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
+    pub reactions_list: Option<Vec<Option<ReactionBlockJson>>>, // блок реакции (6 объектов)
     pub attachments:    Option<AttachmentsJson>,
 }
 
