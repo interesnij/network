@@ -118,7 +118,7 @@ pub fn get_user_permission(user: &User, request_user: &User)
             return (false, "Ваша страница удалена.".to_string())
         }
         else if request_user.is_suspended() {
-            return (false, "Ваша страница будет разморожена ".to_string() + &request_user.get_longest_penalties();
+            return (false, "Ваша страница будет разморожена ".to_string() + &request_user.get_longest_penalties());
         }
         else { return (false, "Закрыто".to_string())}
     }
