@@ -139,7 +139,7 @@ pub fn get_user_permission(user: &User, request_user: &User)
     else if user.is_user_in_block(request_user.id) {
         return (false, user.get_full_name() + &": заблокировал Вас".to_string())
     }
-    else if !user.is_user_can_see_all(request_user.id) {
+    else if !user.is_user_see_all(request_user.id) {
         return (false, user.get_full_name() + &": профиль закрыт, информация недоступна".to_string())
     }
     else {
@@ -161,7 +161,7 @@ pub fn get_anon_user_permission(user: &User)
         }
         else { return (false, "Закрыто".to_string());}
     }
-    else if !user.is_anon_user_can_see_all(request_user.id) {
+    else if !user.is_anon_user_see_all() {
         return (false, user.get_full_name() + &": профиль закрыт, информация недоступна".to_string())
     }
     else {

@@ -51,6 +51,7 @@ pub struct User {
     pub s_avatar:       Option<String>,
     pub last_activity:  chrono::NaiveDateTime,
 
+    pub see_all:        i16,
     pub see_el:         i16,
     pub see_comment:    i16,
     pub create_el:      i16,
@@ -74,6 +75,7 @@ pub struct NewUser {
     pub s_avatar:       Option<String>,
     pub last_activity:  chrono::NaiveDateTime,
 
+    pub see_all:        i16,
     pub see_el:         i16,
     pub see_comment:    i16,
     pub create_el:      i16,
@@ -91,6 +93,7 @@ pub struct NewUserJson {
     pub first_name: String,
     pub last_name:  String,
     pub types:      i16,
+    pub see_all:    i16,
     pub is_man:     bool,
     pub link:       String,
     pub s_avatar:   Option<String>,
@@ -124,15 +127,11 @@ impl User {
             .select(schema::users::id)
             .load::<i32>(&_connection)
             .expect("E")
-            .len() == 0 {
+            .len() > 0 {
                 return users
                     .filter(schema::users::user_id.eq(user.user_id))
-                    .limit(1)
-                    .load::<User>(&_connection)
-                    .expect("E")
-                    .into_iter()
-                    .nth(0)
-                    .unwrap();
+                    .first::<User>(&_connection)
+                    .expect("E");
         }
         let new_form = NewUser {
             user_id:        user.user_id,
@@ -143,6 +142,7 @@ impl User {
             link:           user.link,
             s_avatar:       user.s_avatar,
             last_activity:  chrono::Local::now().naive_utc(),
+            see_all:        user.see_all,
             see_el:         1,
             see_comment:    1,
             create_el:      12,
@@ -222,6 +222,59 @@ impl User {
     }
     pub fn get_code(&self) -> String {
         return "use".to_string() + &self.get_str_id();
+    }
+
+    pub fn get_see_all_exclude_friends_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(10))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_see_all_include_friends_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(0))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_see_all_exclude_follows_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(10))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_see_all_include_follows_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(0))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
     }
 
     pub fn get_see_el_exclude_friends_ids(&self) -> Vec<i32> {
@@ -489,6 +542,25 @@ impl User {
         return items;
     }
 
+    pub fn is_user_see_all(&self, user_id: i32) -> bool {
+        if self.user_id == user_id {
+            return true;
+        }
+        return match self.see_all {
+            1 => true,
+            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+            8 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+            9 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+            10 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            11 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            _ => false,
+        };
+    }
     pub fn is_user_see_el(&self, user_id: i32) -> bool {
         if self.user_id == user_id {
             return true;
@@ -585,6 +657,9 @@ impl User {
         };
     }
 
+    pub fn is_anon_user_see_all(&self) -> bool {
+        return self.see_all == 1;
+    }
     pub fn is_anon_user_see_el(&self) -> bool {
         return self.see_el == 1;
     }
@@ -1470,11 +1545,14 @@ pub struct NewFollow {
 
 // UserVisiblePerm
 // types
+// 0 может видеть профиль открытым
 // 1 может видеть записи
 // 2 может видеть комменты к записям
 // 3 может создавать записи
 // 4 может создавать комменты к записям
 // 5 может копировать списки / записи
+
+// 10 не может видеть профиль открытым
 // 11 не может видеть записи
 // 12 не может видеть комменты к записям
 // 13 не может создавать записи
