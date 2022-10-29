@@ -1370,6 +1370,6 @@ impl Post {
         return Ok(posts
             .filter(schema::posts::id.eq(self.parent_id.unwrap()))
             .filter(schema::posts::types.lt(10))
-            .load::<Post>(&_connection)?);
+            .first::<Post>(&_connection)?);
     }
 }
