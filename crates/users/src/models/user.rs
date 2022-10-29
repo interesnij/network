@@ -959,6 +959,8 @@ impl User {
         let _connection = establish_connection();
         let users_list = users
             .filter(schema::users::types.lt(10))
+            .limit(limit)
+            .offset(offset)
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1551,7 +1553,7 @@ impl User {
 
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
-        let previous_user_list_delete = match types {
+        match types {
             1 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.id))
@@ -1707,7 +1709,7 @@ impl User {
         if self.id == user.id || !self.is_followers_user_with_id(user.id) {
             return true;
         }
-        use crate::models::{NewFriend, Friend};
+        use crate::models::NewFriend;
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
@@ -1750,7 +1752,7 @@ impl User {
         if self.id == user.id || !self.is_connected_with_user_with_id(user.id) {
             return false;
         }
-        use crate::models::{NewFollow, Follow};
+        use crate::models::NewFollow;
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
@@ -1776,7 +1778,7 @@ impl User {
         };
         let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection);
+            .execute(&_connection);
 
         if del_1.is_ok() && del_2.is_ok() && new_follow.is_ok() {
             user.minus_friends(1);
@@ -1847,7 +1849,7 @@ impl User {
         };
         diesel::insert_into(schema::user_blocks::table)
             .values(&_user_block)
-            .get_result::<UserBlock>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         //self.delete_new_subscriber(user.id);
         //self.delete_notification_subscriber(user.id);
