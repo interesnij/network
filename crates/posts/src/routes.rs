@@ -7,7 +7,7 @@ use crate::views::{
 
 pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg
-    //.configure(pages_urls)
-    .configure(progs_urls)
+    //.configure(pages)
+    .configure(progs)
     ;
 }
