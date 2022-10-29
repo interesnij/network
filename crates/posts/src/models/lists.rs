@@ -2052,7 +2052,7 @@ impl PostList {
             .expect("E.");
 
     }
-    pub fn close_item(&self) -> () {
+    pub fn close_item(&self) -> bool {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -2065,14 +2065,17 @@ impl PostList {
             5 => 25,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
-
-        //hide_wall_notify_items(20, self.id);
+            .execute(&_connection);
+        if o_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unclose_item(&self) -> () {
+    pub fn unclose_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -2085,17 +2088,19 @@ impl PostList {
             25 => 5,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        //show_wall_notify_items(20, self.id);
+        if o_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    pub fn delete_item(&self) -> () {
-        //use crate::models::hide_wall_notify_items;
-
+    pub fn delete_item(&self) -> bool {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
@@ -2137,16 +2142,17 @@ impl PostList {
             5 => 15,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
-
-        //hide_wall_notify_items(20, self.id);
+            .execute(&_connection);
+        if o_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn restore_item(&self) -> () {
-        //use crate::models::show_wall_notify_items;
-
+    pub fn restore_item(&self) -> bool {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
@@ -2188,17 +2194,18 @@ impl PostList {
             15 => 5,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
-
-        //show_wall_notify_items(20, self.id);
+            .execute(&_connection);
+        if o_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    pub fn suspend_item(&self) -> () {
-        //use crate::models::hide_wall_notify_items;
-
+    pub fn suspend_item(&self) -> bool {
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
@@ -2209,16 +2216,17 @@ impl PostList {
             5 => 35,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
-
-        //hide_wall_notify_items(20, self.id);
+            .execute(&_connection);
+        if o_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unsuspend_item(&self) -> () {
-        //use crate::models::show_wall_notify_items;
-
+    pub fn unsuspend_item(&self) -> bool {
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
@@ -2229,12 +2237,15 @@ impl PostList {
             35 => 5,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
-
-        //show_wall_notify_items(20, self.id);
+            .execute(&_connection);
+        if o_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     pub fn create_post (

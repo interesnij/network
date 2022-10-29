@@ -420,7 +420,7 @@ impl Post {
             let mut user_reaction = 0;
 
             if self.is_have_user_reaction(user_id) {
-                user_reaction = self.get_user_reaction(user_id);
+                user_reaction = self.get_user_reaction(user_id).expect("E.");
             }
 
             for reaction in reactions_list.iter() {
@@ -756,20 +756,15 @@ impl Post {
             .iter()
             .any(|&i| i==user_id);
     }
-    pub fn get_user_reaction(&self, user_id: i32) -> i32 {
+    pub fn get_user_reaction(&self, user_id: i32) -> Result<i32, Error> {
         use crate::schema::post_reactions::dsl::post_reactions;
-        // "/static/images/reactions/" + get_user_reaction + ".jpg"
         let _connection = establish_connection();
         let vote = post_reactions
             .filter(schema::post_reactions::user_id.eq(user_id))
             .filter(schema::post_reactions::post_id.eq(self.id))
             .select(schema::post_reactions::reaction_id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .into_iter()
-            .nth(0)
-            .unwrap();
-        return vote;
+            .first::<i32>(&_connection)?;
+        return Ok(vote);
     }
 
     pub fn get_str_id(&self) -> String {
@@ -1041,9 +1036,7 @@ impl Post {
         return self.types == 8;
     }
 
-    pub fn delete_item(&self) -> () {
-        //use crate::models::hide_wall_notify_items;
-
+    pub fn delete_item(&self) -> bool {
         let _connection = establish_connection();
         let close_case = match self.types {
             1 => 11,
@@ -1056,15 +1049,13 @@ impl Post {
             8 => 18,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
         let list = self.get_list().expect("E");
-        diesel::update(&list)
+        let o_2 = diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count - 1))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
@@ -1075,11 +1066,14 @@ impl Post {
             creator.plus_posts(1);
         }
 
-        //hide_wall_notify_items(51, self.id);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn restore_item(&self) -> () {
-        //use crate::models::show_wall_notify_items;
-
+    pub fn restore_item(&self) -> bool {
         let _connection = establish_connection();
         let close_case = match self.types {
             11 => 1,
@@ -1092,15 +1086,13 @@ impl Post {
             18 => 8,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
         let list = self.get_list().expect("E");
-        diesel::update(&list)
+        let o_2 = diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count + 1))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
@@ -1111,12 +1103,15 @@ impl Post {
             creator.plus_posts(1);
         }
 
-        //show_wall_notify_items(51, self.id);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    pub fn close_item(&self) -> () {
-        //use crate::models::hide_wall_notify_items;
-
+    pub fn close_item(&self) -> bool {
         let _connection = establish_connection();
         let close_case = match self.types {
             1 => 21,
@@ -1129,15 +1124,13 @@ impl Post {
             8 => 28,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
         let list = self.get_list().expect("E");
-        diesel::update(&list)
+        let o_2 = diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count - 1))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
@@ -1148,9 +1141,14 @@ impl Post {
             creator.plus_posts(1);
         }
 
-        //hide_wall_notify_items(51, self.id);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unclose_item(&self) -> () {
+    pub fn unclose_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -1165,15 +1163,13 @@ impl Post {
             28 => 8,
             _ => self.types,
         };
-        diesel::update(self)
+        let o_1 = diesel::update(self)
             .set(schema::posts::types.eq(close_case))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+            .execute(&_connection);
         let list = self.get_list().expect("E");
-        diesel::update(&list)
+        let o_2 = diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count + 1))
-            .get_result::<PostList>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
@@ -1184,7 +1180,12 @@ impl Post {
             creator.plus_posts(1);
         }
 
-        //show_wall_notify_items(51, self.id);
+        if o_1.is_ok() && o_2.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn get_format_text(&self) -> String {
         if self.content.is_some() {

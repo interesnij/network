@@ -191,7 +191,7 @@ impl PostComment {
             let mut user_reaction = 0;
 
             if self.is_have_user_reaction(user_id) {
-                user_reaction = self.get_user_reaction(user_id);
+                user_reaction = self.get_user_reaction(user_id).expect("E.");
             }
 
             for reaction in reactions_list.iter() {
@@ -641,17 +641,15 @@ impl PostComment {
             .any(|&i| i==user_id);
     }
 
-    pub fn get_user_reaction(&self, user_id: i32) -> i32 {
+    pub fn get_user_reaction(&self, user_id: i32) -> Result<i32, Error> {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
-        // "/static/images/reactions/" + get_user_reaction + ".jpg"
         let _connection = establish_connection();
         let vote = post_comment_reactions
             .filter(schema::post_comment_reactions::user_id.eq(user_id))
             .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
             .select(schema::post_comment_reactions::reaction_id)
-            .first::<i32>(&_connection)
-            .expect("E.");
-        return vote;
+            .first::<i32>(&_connection)?;
+        return Ok(vote);
     }
 
     pub fn plus_reactions(&self, count: i32, _user_id: i32) -> () {
