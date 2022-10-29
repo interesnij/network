@@ -1464,7 +1464,7 @@ impl User {
         let private = self.get_private_model();
         return match private {
           Ok(_ok) => {
-              let bool_see_all = match private.see_all {
+              let bool_see_all = match _ok.see_all {
                   1 => true,
                   2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
                   3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
@@ -1483,7 +1483,7 @@ impl User {
               }
               let mut bool_stack = Vec::new();
               bool_stack.push(true);
-              let bool_see_info = match private.see_info {
+              let bool_see_info = match _ok.see_info {
                   1 => true,
                   2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
                   3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
@@ -1499,7 +1499,7 @@ impl User {
               };
               bool_stack.push(bool_see_info);
 
-              let bool_see_friend = match private.see_friend {
+              let bool_see_friend = match _ok.see_friend {
                   1 => true,
                   2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
                   3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
