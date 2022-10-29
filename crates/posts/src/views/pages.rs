@@ -17,8 +17,6 @@ use crate::utils::{
     get_anon_community_permission,
     establish_connection,
 };
-use actix_session::Session;
-use sailfish::TemplateOnce;
 use crate::models::{User, PostList, Post, PostComment, Community};
 use crate::diesel::RunQueryDsl;
 

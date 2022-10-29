@@ -21,6 +21,8 @@ use crate::models::{
     PostList,
     Post,
     PostComment,
+    User,
+    Community,
 };
 
 
@@ -73,38 +75,42 @@ pub fn get_count_for_ru_alt(count: i32, word1: String, word2: String, word3: Str
     }
 }
 
-pub fn get_post_list(pk: i32) -> PostList {
+pub fn get_post_list(pk: i32) -> Result<PostList, Error> {
     use crate::schema::post_lists::dsl::post_lists;
     let _connection = establish_connection();
-    return post_lists
+    return Ok(post_lists
         .filter(schema::post_lists::id.eq(pk))
-        .load::<PostList>(&_connection)
-        .expect("E.")
-        .into_iter()
-        .nth(0)
-        .unwrap();
+        .first::<PostList>(&_connection));
 }
 
-pub fn get_post(pk: i32) -> Post {
+pub fn get_post(pk: i32) -> Result<Post, Error> {
     use crate::schema::posts::dsl::posts;
     let _connection = establish_connection();
-    return posts
+    return Ok(posts
         .filter(schema::posts::id.eq(pk))
-        .load::<Post>(&_connection)
-        .expect("E.")
-        .into_iter()
-        .nth(0)
-        .unwrap();
+        .first::<Post>(&_connection));
 }
 
-pub fn get_post_comment(pk: i32) -> PostComment {
+pub fn get_post_comment(pk: i32) -> Result<PostComment, Error> {
     use crate::schema::post_comments::dsl::post_comments;
     let _connection = establish_connection();
     return post_comments
         .filter(schema::post_comments::id.eq(pk))
-        .load::<PostComment>(&_connection)
-        .expect("E.")
-        .into_iter()
-        .nth(0)
-        .unwrap();
+        .first::<PostComment>(&_connection);
+}
+
+pub fn get_user(pk: i32) -> Result<User, Error> {
+    use crate::schema::users::dsl::users;
+    let _connection = establish_connection();
+    return Ok(users
+        .filter(schema::users::id.eq(pk))
+        .first::<User>(&_connection));
+}
+
+pub fn get_community(pk: i32) -> Result<Community, Error> {
+    use crate::schema::communitys::dsl::communitys;
+    let _connection = establish_connection();
+    return Ok(users
+        .filter(schema::communitys::id.eq(pk))
+        .first::<Community>(&_connection));
 }
