@@ -87,7 +87,6 @@ pub struct PostListDetailJson {
     pub reactions_list:    Vec<i32>,
     pub posts:             Vec<CardPostJson>,
     pub lists:             Vec<CardPostListJson>,
-    pub next_page:         i32,
     pub is_user_create_el: bool,
 }
 
@@ -99,7 +98,6 @@ pub struct PostListPageJson {
     pub owner_image:      Option<String>,    // фото владельца
     pub image:            Option<String>,    // аватар списка
     pub lists:            Vec<CardPostListJson>, // списки записей для карточек
-    pub next_page:        i32,               // а есть ли следующая порция списков?
 }
 
 #[derive(Serialize)]

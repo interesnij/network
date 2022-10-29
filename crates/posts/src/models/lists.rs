@@ -246,7 +246,7 @@ impl PostList {
             image:            list.image,
             lists:            lists_json,
         };
-        return data;
+        return Some(data);
     }
     pub fn get_json_community_post_page(community_id: i32) -> PostListPageJson {
         use crate::utils::CardPostListJson;
@@ -338,7 +338,6 @@ impl PostList {
             reactions_list:    reactions_list,
             posts:             posts_json,
             lists:             lists_json,
-            next_page:         next_page_number,
             is_user_create_el: list.is_user_create_el(user_id),
         };
         return Json(data);
