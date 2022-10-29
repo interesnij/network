@@ -296,10 +296,10 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone())
+            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) )
         }
 
-        let data = CardPostListJson {
+        let data = PostListDetailJson {
             id:                list.id,
             name:              list.name.clone(),
             owner_name:        owner.get_full_name(),
@@ -344,10 +344,10 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None, reactions_list.clone())
+            posts_json.push ( i.get_post_json(None, reactions_list.clone()) );
         }
 
-        let data = CardPostListJson {
+        let data = PostListDetailJson {
             id:                list.id,
             name:              list.name.clone(),
             owner_name:        owner.get_full_name(),
@@ -359,7 +359,7 @@ impl PostList {
             reactions_list:    reactions_list,
             posts:             posts_json,
             lists:             lists_json,
-            is_user_create_el: list.is_anon_user_create_el(),
+            is_user_create_el: false,
         };
         return Json(data);
     }
@@ -394,10 +394,10 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone())
+            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) );
         }
 
-        let data = CardPostListJson {
+        let data = PostListDetailJson {
             id:                list.id,
             name:              list.name.clone(),
             owner_name:        community.name.clone(),
@@ -442,10 +442,10 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None), reactions_list.clone())
+            posts_json.push ( i.get_post_json(None), reactions_list.clone() );
         }
 
-        let data = CardPostListJson {
+        let data = PostListDetailJson {
             id:                list.id,
             name:              list.name.clone(),
             owner_name:        community.name.clone(),
