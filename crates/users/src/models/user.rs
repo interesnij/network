@@ -772,35 +772,6 @@ impl User {
 
         return _friends;
     }
-    pub fn get_friend_and_friend_of_friend_ids(&self) -> Vec<i32> {
-        use crate::schema::friends::dsl::friends;
-
-        let _connection = establish_connection();
-        let mut stack: Vec<i32> = Vec::new();
-
-        let user_friends = friends
-            .filter(schema::friends::user_id.eq(self.id))
-            .select(schema::friends::target_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-
-        for _item in user_friends.iter() {
-            stack.push(*_item);
-        };
-        for friend in self.get_friends(500, 0).iter() {
-            let user_friend_friends = friends
-                .filter(schema::friends::user_id.eq(friend.id))
-                .select(schema::friends::target_id)
-                .load::<i32>(&_connection)
-                .expect("E.");
-            for f in user_friend_friends.iter() {
-                if stack.iter().any(|&i| &i!=f) {
-                    stack.push(*f);
-                }
-            }
-        }
-        return stack;
-    }
 
     pub fn get_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
@@ -878,7 +849,11 @@ impl User {
         return Ok(_users);
     }
     pub fn get_online_friends_count(&self) -> usize {
-        return self.get_online_friends(500, 0).len();
+        let count = self.get_online_friends(500, 0);
+        return match count {
+          Ok(_ok) => _ok.len(),
+          Err(_) => 0,
+        };
     }
     pub fn get_6_online_friends(&self) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
