@@ -381,7 +381,7 @@ impl PostList {
                     name:        i.name.clone(),
                     owner_name:  owner.name.clone(),
                     owner_link:  owner.link.clone(),
-                    owner_image: owner.s_avatar.clone(),
+                    owner_image: owner.image.clone(),
                     image:       i.image.clone(),
                     types:       i.get_code(),
                     count:       i.count,
