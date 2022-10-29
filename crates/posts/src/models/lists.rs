@@ -212,26 +212,13 @@ impl PostList {
         }
     }
 
-    pub fn get_json_user_post_page(user_id: i32, page: i32, limit: i32) -> Json<PostListPageJson> {
+    pub fn get_json_user_post_page(user_id: i32) -> Option<PostListPageJson> {
         use crate::utils::CardPostListJson;
 
-        let mut next_page_number = 0;
         let selected_post_list_pk = PostList::get_user_selected_post_list_pk(user_id);
-        let list = get_post_list(selected_post_list_pk);
-        let lists: Vec<PostList>;
-        let have_next: i32;
+        let list = Ok(get_post_list(selected_post_list_pk));
 
-        if page > 1 {
-            have_next = page * limit + 1;
-            lists = PostList::get_user_post_lists(user_id, limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            lists = PostList::get_user_post_lists(user_id, limit.into(), 0);
-        }
-        if PostList::get_user_post_lists(user_id, 1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
+        lists = PostList::get_user_post_lists(user_id, 10, 0);
 
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta();
@@ -258,30 +245,15 @@ impl PostList {
             owner_image:      list_owner.image.clone(),
             image:            list.image,
             lists:            lists_json,
-            next_page:        next_page_number,
         };
-        return Json(data);
+        return data;
     }
-    pub fn get_json_community_post_page(community_id: i32, page: i32, limit: i32) -> Json<PostListPageJson> {
+    pub fn get_json_community_post_page(community_id: i32) -> PostListPageJson {
         use crate::utils::CardPostListJson;
 
-        let mut next_page_number = 0;
         let selected_post_list_pk = PostList::get_community_selected_post_list_pk(community_id);
-        let list = get_post_list(selected_post_list_pk);
-        let lists: Vec<PostList>;
-
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            lists = PostList::get_community_post_lists(community_id, limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            lists = PostList::get_community_post_lists(community_id, limit.into(), 0);
-        }
-        if PostList::get_community_post_lists(community_id, 1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
+        let list = Some(get_post_list(selected_post_list_pk));
+        let lists = PostList::get_community_post_lists(community_id, 10, 0);
 
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta();
@@ -308,16 +280,13 @@ impl PostList {
             owner_image:      list_owner.image.clone(),
             image:            list.image,
             lists:            lists_json,
-            next_page:        next_page_number,
         };
-        return Json(data);
+        return data;
     }
 
     pub fn get_json_post_list (
         user_id: i32,
         list_id: i32,
-        page: i32,
-        limit: i32
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
