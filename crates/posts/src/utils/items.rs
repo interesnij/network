@@ -74,6 +74,7 @@ pub struct CardPostListJson {
 }
 
 // это объект списка записей (подгружается по нажатию на список)
+#[derive(Serialize)]
 pub struct PostListDetailJson {
     // see_list не упоминаем, в случае неполных прав вернем статус 403
     pub id:                i32,
@@ -91,6 +92,7 @@ pub struct PostListDetailJson {
 }
 
 // это объект страницы записей (подгружается по нажатию на список)
+#[derive(Serialize)]
 pub struct PostListPageJson {
     pub selected_list_id: i32,               // id подгружаемого списка
     pub owner_name:       String,            // чья страница
