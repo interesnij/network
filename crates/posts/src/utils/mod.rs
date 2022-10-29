@@ -125,7 +125,7 @@ pub fn get_user_permission(user: &User, request_user: &User)
 
     else if user.types > 10 {
         if user.is_closed() {
-            return (false, user.get_full_name() + &": cтраница заблокирована".to_string()))
+            return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
         }
         else if user.is_deleted() {
             return (false, user.get_full_name() + &": cтраница удалена".to_string())
@@ -151,7 +151,7 @@ pub fn get_anon_user_permission(user: &User)
     -> (bool, String) {
     if user.types > 10 {
         if user.is_closed() {
-            return (false, user.get_full_name() + &": cтраница заблокирована".to_string()))
+            return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
         }
         else if user.is_deleted() {
             return (false, user.get_full_name() + &": cтраница удалена".to_string())
