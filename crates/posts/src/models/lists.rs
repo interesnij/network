@@ -271,7 +271,7 @@ impl PostList {
         list_id: i32,
         limit: i64,
         offset: i64,
-    ) -> Json<PostListDetailJson> {
+    ) -> PostListDetailJson {
         use crate::utils::CardPostListJson;
 
         let list = get_post_list(list_id).expect("E.");
@@ -307,22 +307,40 @@ impl PostList {
         for i in posts.iter() {
             posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
         }
-
-        let data = PostListDetailJson {
-            id:                list.id,
-            name:              list.name.clone(),
-            owner_name:        list_owner.name.clone(),
-            owner_link:        list_owner.link.clone(),
-            owner_image:       list_owner.image.clone(),
-            image:             list.image.clone(),
-            types:             list.types,
-            count:             list.count,
-            reactions_list:    reactions_list,
-            posts:             posts_json,
-            lists:             lists_json,
-            is_user_create_el: list.is_user_create_el(user_id),
-        };
-        return data;
+        if user_id.is_some() {
+            let id = user_id.unwrap();
+            let data = PostListDetailJson {
+                id:                list.id,
+                name:              list.name.clone(),
+                owner_name:        list_owner.name.clone(),
+                owner_link:        list_owner.link.clone(),
+                owner_image:       list_owner.image.clone(),
+                image:             list.image.clone(),
+                types:             list.types,
+                count:             list.count,
+                reactions_list:    reactions_list,
+                posts:             posts_json,
+                lists:             lists_json,
+                is_user_create_el: list.is_user_create_el(id),
+            };
+            return data;
+        } else {
+            let data = PostListDetailJson {
+                id:                list.id,
+                name:              list.name.clone(),
+                owner_name:        list_owner.name.clone(),
+                owner_link:        list_owner.link.clone(),
+                owner_image:       list_owner.image.clone(),
+                image:             list.image.clone(),
+                types:             list.types,
+                count:             list.count,
+                reactions_list:    reactions_list,
+                posts:             posts_json,
+                lists:             lists_json,
+                is_user_create_el: false,
+            };
+            return data;
+        }
     }
 
     pub fn get_str_id(&self) -> String {
