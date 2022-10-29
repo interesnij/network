@@ -180,7 +180,7 @@ impl PostComment {
             };
     }
 
-    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Vec<ReactionBlockJson> {
+    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
         if reactions_list.len() == 0 {

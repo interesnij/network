@@ -24,6 +24,8 @@ use crate::models::{
     User,
     Community,
 };
+use crate::errors::Error;
+
 
 pub fn establish_connection() -> PgConnection {
     use dotenv::dotenv;
@@ -99,7 +101,7 @@ pub fn get_user(pk: i32) -> Result<User, Error> {
 pub fn get_community(pk: i32) -> Result<Community, Error> {
     use crate::schema::communitys::dsl::communitys;
     let _connection = establish_connection();
-    return users
+    return communitys
         .filter(schema::communitys::id.eq(pk))
         .first::<Community>(&_connection);
 }
