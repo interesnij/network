@@ -78,7 +78,7 @@ pub struct EditPostComment {
 }
 
 impl PostComment {
-    pub fn get_6_users_of_reaction (
+    pub fn get_6_user_of_reaction (
         &self,
         reaction_id:   &i32,
         user_reaction: Option<i32>,
