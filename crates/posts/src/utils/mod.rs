@@ -187,18 +187,18 @@ pub fn get_community_permission(community: &Community, request_user: &User)
 
     else if community.types > 10 {
         if community.is_closed() {
-            return (false, community.name + &": сообщество заблокировано за нарушение правил сайта".to_string())
+            return (false, community.name.clone() + &": сообщество заблокировано за нарушение правил сайта".to_string())
         }
         else if community.is_deleted() {
-            return (false, community.name + &": сообщество удалено".to_string())
+            return (false, community.name.clone() + &": сообщество удалено".to_string())
         }
         else if community.is_suspended() {
-            return (false, community.name + &": сообщество будет разморожено ".to_string() + &community.get_longest_penalties())
+            return (false, community.name.clone() + &": сообщество будет разморожено ".to_string() + &community.get_longest_penalties())
         }
         else { return (false, "Закрыто".to_string())}
     }
     else if request_user.is_banned_from_community(community.id) {
-        return (false, community.name + &": сообщество добавило Вас в чёрный список".to_string())
+        return (false, community.name.clone() + &": сообщество добавило Вас в чёрный список".to_string())
     }
     else {
         return (true, "Открыто".to_string())
@@ -210,18 +210,18 @@ pub fn get_anon_community_permission(community: &Community)
 
     if community.types > 10 {
         if community.is_closed() {
-            return (false, community.name + &": сообщество заблокировано за нарушение правил сайта".to_string())
+            return (false, community.name.clone() + &": сообщество заблокировано за нарушение правил сайта".to_string())
         }
         else if community.is_deleted() {
-            return (false, community.name + &": сообщество удалено".to_string())
+            return (false, community.name.clone() + &": сообщество удалено".to_string())
         }
         else if community.is_suspended() {
-            return (false, community.name + &": сообщество будет разморожено ".to_string() + &community.get_longest_penalties())
+            return (false, community.name.clone() + &": сообщество будет разморожено ".to_string() + &community.get_longest_penalties())
         }
         else { return (false, "Закрыто".to_string())}
     }
     else if community.types == 2 && community.types == 3 {
-        return (false, community.name + &": ошибка доступа.".to_string())
+        return (false, community.name.clone() + &": ошибка доступа.".to_string())
     }
     else {
         return (true, "Открыто".to_string())
