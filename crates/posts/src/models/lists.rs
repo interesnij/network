@@ -296,7 +296,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) )
+            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone())
         }
 
         let data = CardPostListJson {
@@ -344,7 +344,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None, reactions_list.clone()) )
+            posts_json.push ( i.get_post_json(None, reactions_list.clone())
         }
 
         let data = CardPostListJson {
@@ -394,7 +394,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) )
+            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone())
         }
 
         let data = CardPostListJson {
@@ -442,7 +442,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None), reactions_list.clone()) )
+            posts_json.push ( i.get_post_json(None), reactions_list.clone())
         }
 
         let data = CardPostListJson {
@@ -460,83 +460,6 @@ impl PostList {
             is_user_create_el: false,
         };
         return Json(data);
-    }
-
-    pub fn get_json_post_list (
-        user_id: Option<i32>,
-        list_id: i32,
-        limit: i64,
-        offset: i64,
-    ) -> PostListDetailJson {
-        use crate::utils::CardPostListJson;
-
-        let list = get_post_list(list_id).expect("E.");
-        let lists: Vec<PostList>;
-        if list.community_id.is_some() {
-            lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
-        }
-        else {
-            lists = PostList::get_user_post_lists(list.user_id, 10, 0);
-        }
-        let mut lists_json = Vec::new();
-        let list_owner = list.get_owner_meta().expect("E");
-
-        for i in lists.iter() {
-            let owner = i.get_owner_meta().expect("E");
-            lists_json.push (
-                CardPostListJson {
-                    name:        i.name.clone(),
-                    owner_name:  owner.name.clone(),
-                    owner_link:  owner.link.clone(),
-                    owner_image: owner.image.clone(),
-                    image:       i.image.clone(),
-                    types:       i.get_code(),
-                    count:       i.count,
-                }
-            );
-        }
-
-        let posts = list.get_paginate_items(limit, offset);
-        let reactions_list = list.get_reactions_list();
-
-        let mut posts_json = Vec::new();
-        for i in posts.iter() {
-            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
-        }
-        if user_id.is_some() {
-            let id = user_id.unwrap();
-            let data = PostListDetailJson {
-                id:                list.id,
-                name:              list.name.clone(),
-                owner_name:        list_owner.name.clone(),
-                owner_link:        list_owner.link.clone(),
-                owner_image:       list_owner.image.clone(),
-                image:             list.image.clone(),
-                types:             list.types,
-                count:             list.count,
-                reactions_list:    reactions_list,
-                posts:             posts_json,
-                lists:             lists_json,
-                is_user_create_el: list.is_user_create_el(id),
-            };
-            return data;
-        } else {
-            let data = PostListDetailJson {
-                id:                list.id,
-                name:              list.name.clone(),
-                owner_name:        list_owner.name.clone(),
-                owner_link:        list_owner.link.clone(),
-                owner_image:       list_owner.image.clone(),
-                image:             list.image.clone(),
-                types:             list.types,
-                count:             list.count,
-                reactions_list:    reactions_list,
-                posts:             posts_json,
-                lists:             lists_json,
-                is_user_create_el: false,
-            };
-            return data;
-        }
     }
 
     pub fn get_str_id(&self) -> String {
