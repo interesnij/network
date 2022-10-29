@@ -465,7 +465,33 @@ impl Post {
                 break;
             }
         };
-        return PostDetailJson {
+        if user_id.is_some() {
+            let id = user_id.unwrap();
+            return PostDetailJson {
+                    content:              self.content.clone(),
+                    owner_name:           creator.name.clone(),
+                    owner_link:           creator.link.clone(),
+                    owner_image:          creator.image.clone(),
+                    comments_on:          self.comments_on,
+                    created:              self.created.format("%d-%m-%Y в %H:%M").to_string(),
+                    comment:              self.comment,
+                    view:                 self.view,
+                    repost:               self.repost,
+                    is_signature:         self.is_signature,
+                    reactions:            self.reactions,
+                    types:                self.get_code(),
+                    parent:               self.get_parent_post_json(),
+                    reposts:              self.get_reposts_with_limit_json(limit),
+                    reactions_list:       self.get_reactions_json(user_id, reactions_list.clone()),
+                    prev:                 prev,
+                    next:                 next,
+                    is_user_see_comments: list.is_user_see_comment(id),
+                    is_user_create_el:    list.is_user_create_el(id),
+                    comments:             self.get_comments(limit, 0, user_id, reactions_list.clone()),
+                    attachments:          None,
+                };
+        } else {
+            return PostDetailJson {
                 content:              self.content.clone(),
                 owner_name:           creator.name.clone(),
                 owner_link:           creator.link.clone(),
@@ -483,11 +509,12 @@ impl Post {
                 reactions_list:       self.get_reactions_json(user_id, reactions_list.clone()),
                 prev:                 prev,
                 next:                 next,
-                is_user_see_comments: list.is_user_see_comment(user_id),
-                is_user_create_el:    list.is_user_create_el(user_id),
+                is_user_see_comments: list.is_anon_user_see_comment(),
+                is_user_create_el:    false,
                 comments:             self.get_comments(limit, 0, user_id, reactions_list.clone()),
                 attachments:          None,
             };
+        }
     }
     pub fn get_post_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>,) -> CardPostJson {
         let creator = self.get_owner_meta().expect("E");
