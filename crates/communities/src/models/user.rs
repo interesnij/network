@@ -86,6 +86,20 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_longest_penalties(&self) -> String {
+        return "".to_string();
+    }
+    pub fn is_banned_from_community(&self, community_id: i32) -> bool {
+        use crate::schema::community_banned_users::dsl::community_banned_users;
+
+        let _connection = establish_connection();
+
+        return community_banned_users
+            .filter(schema::community_banned_users::community_id.eq(community_id))
+            .filter(schema::community_banned_users::user_id.eq(self.id))
+            .select(schema::community_banned_users::id)
+            .load::<i32>(&_connection).is_ok();
+    }
     pub fn count_communities(&self) -> i32 {
         return self.communities;
     }

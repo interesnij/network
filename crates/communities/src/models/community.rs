@@ -247,6 +247,9 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn get_longest_penalties(&self) -> String {
+        return "".to_string();
+    }
     pub fn get_str_id(&self) -> String {
         return self.id.to_string();
     }

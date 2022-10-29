@@ -349,6 +349,9 @@ impl Community {
     pub fn get_code(&self) -> String {
         return "com".to_string() + &self.get_str_id();
     }
+    pub fn get_longest_penalties(&self) -> String {
+        return "".to_string();
+    }
 
     pub fn get_slug(&self) -> String {
         return "@".to_string() + &self.link.replace("/", "").to_string();

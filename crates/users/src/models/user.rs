@@ -147,6 +147,9 @@ impl User {
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()
     }
+    pub fn get_longest_penalties(&self) -> String {
+        return "".to_string();
+    }
     pub fn get_str_id(&self) -> String {
         return self.id.to_string();
     }
