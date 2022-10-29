@@ -216,9 +216,9 @@ impl PostList {
         use crate::utils::CardPostListJson;
 
         let selected_post_list_pk = PostList::get_user_selected_post_list_pk(user_id);
-        let list = Ok(get_post_list(selected_post_list_pk));
+        let list = get_post_list(selected_post_list_pk).expect("E.");
 
-        lists = PostList::get_user_post_lists(user_id, 10, 0);
+        let lists = PostList::get_user_post_lists(user_id, 10, 0);
 
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta();
@@ -252,7 +252,7 @@ impl PostList {
         use crate::utils::CardPostListJson;
 
         let selected_post_list_pk = PostList::get_community_selected_post_list_pk(community_id);
-        let list = Some(get_post_list(selected_post_list_pk));
+        let list = get_post_list(selected_post_list_pk).expect("E.");
         let lists = PostList::get_community_post_lists(community_id, 10, 0);
 
         let mut lists_json = Vec::new();
@@ -287,17 +287,18 @@ impl PostList {
     pub fn get_json_post_list (
         user_id: i32,
         list_id: i32,
+        limit: i64,
+        offset: i64,
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
-        let mut next_page_number = 0;
-        let list = get_post_list(list_id);
+        let list = get_post_list(list_id).expect("E.");
         let lists: Vec<PostList>;
         if list.community_id.is_some() {
-            lists = PostList::get_community_post_lists(list.community_id.unwrap(), 20, 0);
+            lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
         }
         else {
-            lists = PostList::get_user_post_lists(user_id, 20, 0);
+            lists = PostList::get_user_post_lists(user_id, 10, 0);
         }
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta();
@@ -317,21 +318,8 @@ impl PostList {
             );
         }
 
-        let posts: Vec<Post>;
-        let have_next: i32;
+        let posts = list.get_paginate_items(limit, offset);
         let reactions_list = list.get_reactions_list();
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            posts = list.get_paginate_items(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            posts = list.get_paginate_items(limit.into(), 0);
-        }
-        if list.get_paginate_items(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
