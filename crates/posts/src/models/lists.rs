@@ -381,7 +381,7 @@ impl PostList {
                     name:        i.name.clone(),
                     owner_name:  owner.name.clone(),
                     owner_link:  owner.link.clone(),
-                    owner_image: owner.image.clone(),
+                    owner_image: owner.s_avatar.clone(),
                     image:       i.image.clone(),
                     types:       i.get_code(),
                     count:       i.count,
@@ -402,7 +402,7 @@ impl PostList {
             name:              list.name.clone(),
             owner_name:        community.name.clone(),
             owner_link:        community.link.clone(),
-            owner_image:       community.image.clone(),
+            owner_image:       community.s_avatar.clone(),
             image:             list.image.clone(),
             types:             list.types,
             count:             list.count,
@@ -429,7 +429,7 @@ impl PostList {
                     name:        i.name.clone(),
                     owner_name:  owner.name.clone(),
                     owner_link:  owner.link.clone(),
-                    owner_image: owner.image.clone(),
+                    owner_image: owner.s_avatar.clone(),
                     image:       i.image.clone(),
                     types:       i.get_code(),
                     count:       i.count,
@@ -442,7 +442,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None), reactions_list.clone() );
+            posts_json.push ( i.get_post_json(None, reactions_list.clone()) );
         }
 
         let data = PostListDetailJson {
@@ -450,7 +450,7 @@ impl PostList {
             name:              list.name.clone(),
             owner_name:        community.name.clone(),
             owner_link:        community.link.clone(),
-            owner_image:       community.image.clone(),
+            owner_image:       community.s_avatar.clone(),
             image:             list.image.clone(),
             types:             list.types,
             count:             list.count,
