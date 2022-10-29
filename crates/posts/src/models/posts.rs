@@ -193,31 +193,20 @@ impl Post {
             .expect("E");
     }
 
-    pub fn get_creator(&self) -> User {
+    pub fn get_creator(&self) -> Result<User, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        return users
-            .filter(schema::users::id.eq(self.user_id))
-            .filter(schema::users::types.lt(10))
-            .load::<User>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+        return Ok(users
+            .filter(schema::users::user_id.eq(self.user_id))
+            .first::<User>(&_connection)?);
     }
-    pub fn get_community(&self) -> Community {
+    pub fn get_community(&self) -> Result<Community, Error> {
         use crate::schema::communitys::dsl::communitys;
-
         let _connection = establish_connection();
-        return communitys
-            .filter(schema::communitys::id.eq(self.community_id.unwrap()))
-            .filter(schema::communitys::types.lt(10))
-            .load::<Community>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+        return Ok(communitys
+            .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
+            .first::<Community>(&_connection)?);
     }
     pub fn get_owner_meta(&self) -> CardOwnerJson {
         let _connection = establish_connection();
@@ -307,7 +296,7 @@ impl Post {
         // получаем родительский пост
         let parent: Option<CardParentPostJson>;
         if self.parent_id.is_some() {
-            let _parent = self.get_parent();
+            let _parent = self.get_parent().expect("E");
             let creator = _parent.get_owner_meta();
             parent = Some(CardParentPostJson {
                 id:          _parent.id,
@@ -457,7 +446,7 @@ impl Post {
         user_id: i32,
         reposts_limit: Option<i64>,
     ) -> PostDetailJson {
-        let list = self.get_list();
+        let list = self.get_list().expect("E");
         let creator = self.get_owner_meta();
         let reactions_list = list.get_reactions_list();
 
@@ -675,7 +664,7 @@ impl Post {
         use crate::models::{PostReaction, NewPostReaction};
 
         let _connection = establish_connection();
-        let list = self.get_list();
+        let list = self.get_list().expect("E");
         let reactions_of_list = list.get_reactions_list();
         let react_model = self.get_count_model_for_reaction(reaction_id);
 
@@ -817,18 +806,14 @@ impl Post {
 
 
 
-    pub fn get_list(&self) -> PostList {
+    pub fn get_list(&self) -> Result<PostList, Error> {
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
-        return post_lists
+        return Ok(post_lists
             .filter(schema::post_lists::id.eq(self.post_list_id))
             .filter(schema::post_lists::types.lt(10))
-            .load::<PostList>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<PostList>(&_connection)?);
     }
 
     pub fn get_playlist_image(&self) -> String {
@@ -907,11 +892,11 @@ impl Post {
           .expect("Error.");
 
         if item.community_id.is_some() {
-            let community = item.get_community();
+            let community = item.get_community().expect("E");
             community.plus_posts(count);
         }
         else {
-            let creator = item.get_creator();
+            let creator = item.get_creator().expect("E");
             creator.plus_posts(count);
          }
         return true;
@@ -963,7 +948,7 @@ impl Post {
         //if self.community_id.is_some() {
         //    use crate::models::{create_community_wall, create_community_notify};
 
-        //    let community = self.get_community();
+        //    let community = self.get_community().expect("E");
         //    create_community_wall (
         //        &user,
         //        &community,
@@ -1079,18 +1064,18 @@ impl Post {
             .set(schema::posts::types.eq(close_case))
             .get_result::<Post>(&_connection)
             .expect("E");
-        let list = self.get_list();
+        let list = self.get_list().expect("E");
         diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count - 1))
             .get_result::<PostList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             community.plus_posts(1);
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             creator.plus_posts(1);
         }
 
@@ -1115,18 +1100,18 @@ impl Post {
             .set(schema::posts::types.eq(close_case))
             .get_result::<Post>(&_connection)
             .expect("E");
-        let list = self.get_list();
+        let list = self.get_list().expect("E");
         diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count + 1))
             .get_result::<PostList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             community.plus_posts(1);
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             creator.plus_posts(1);
         }
 
@@ -1152,18 +1137,18 @@ impl Post {
             .set(schema::posts::types.eq(close_case))
             .get_result::<Post>(&_connection)
             .expect("E");
-        let list = self.get_list();
+        let list = self.get_list().expect("E");
         diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count - 1))
             .get_result::<PostList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             community.plus_posts(1);
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             creator.plus_posts(1);
         }
 
@@ -1188,18 +1173,18 @@ impl Post {
             .set(schema::posts::types.eq(close_case))
             .get_result::<Post>(&_connection)
             .expect("E");
-        let list = self.get_list();
+        let list = self.get_list().expect("E");
         diesel::update(&list)
             .set(schema::post_lists::count.eq(list.count + 1))
             .get_result::<PostList>(&_connection)
             .expect("E");
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             community.plus_posts(1);
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             creator.plus_posts(1);
         }
 

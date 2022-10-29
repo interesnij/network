@@ -94,7 +94,7 @@ pub fn get_user(pk: i32) -> Result<User, Error> {
     use crate::schema::users::dsl::users;
     let _connection = establish_connection();
     return Ok(users
-        .filter(schema::users::id.eq(pk))
+        .filter(schema::users::user_id.eq(pk))
         .first::<User>(&_connection)?);
 }
 
@@ -102,6 +102,6 @@ pub fn get_community(pk: i32) -> Result<Community, Error> {
     use crate::schema::communitys::dsl::communitys;
     let _connection = establish_connection();
     return Ok(communitys
-        .filter(schema::communitys::id.eq(pk))
+        .filter(schema::communitys::community_id.eq(pk))
         .first::<Community>(&_connection)?);
 }

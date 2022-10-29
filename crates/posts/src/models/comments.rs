@@ -298,60 +298,45 @@ impl PostComment {
         return "cpo".to_string() + &self.get_str_id();
     }
 
-    pub fn get_item(&self) -> Post {
+    pub fn get_item(&self) -> Result<Post, Error> {
         use crate::schema::posts::dsl::posts;
 
         let _connection = establish_connection();
-        return posts
+        return Ok(posts
             .filter(schema::posts::id.eq(self.post_id))
             .filter(schema::posts::types.eq_any(vec![1,1]))
-            .load::<Post>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<Post>(&_connection)?);
     }
     pub fn get_list(&self) -> PostList {
-        return self.get_item().get_list();
+        return self
+            .get_item()
+            .expect("E")
+            .get_list()
+            .expect("E");
     }
-    pub fn get_parent(&self) -> PostComment {
+    pub fn get_parent(&self) -> Result<PostComment, Error> {
         use crate::schema::post_comments::dsl::post_comments;
 
         let _connection = establish_connection();
-        return post_comments
+        return Ok(post_comments
             .filter(schema::post_comments::id.eq(self.parent_id.unwrap()))
             .filter(schema::post_comments::types.eq_any(vec![1, 2]))
-            .load::<PostComment>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<PostComment>(&_connection)?);
     }
-    pub fn get_creator(&self) -> User {
+    pub fn get_creator(&self) -> Result<User, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        return users
-            .filter(schema::users::id.eq(self.user_id))
-            .filter(schema::users::types.lt(10))
-            .load::<User>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+        return Ok(users
+            .filter(schema::users::user_id.eq(self.user_id))
+            .first::<User>(&_connection)?);
     }
-    pub fn get_community(&self) -> Community {
+    pub fn get_community(&self) -> Result<Community, Error> {
         use crate::schema::communitys::dsl::communitys;
-
         let _connection = establish_connection();
-        return communitys
-            .filter(schema::communitys::id.eq(self.community_id.unwrap()))
-            .filter(schema::communitys::types.lt(10))
-            .load::<Community>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+        return Ok(communitys
+            .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
+            .first::<Community>(&_connection)?);
     }
     pub fn get_owner_meta(&self) -> CardOwnerJson {
         let _connection = establish_connection();
@@ -431,7 +416,7 @@ impl PostComment {
             2 => 22,
             _ => 21,
         };
-        let item = self.get_item();
+        let item = self.get_item().expect("E");
         diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment - 1))
             .get_result::<Post>(&_connection)
@@ -453,7 +438,7 @@ impl PostComment {
             22 => 2,
             _ => 1,
         };
-        let item = self.get_item();
+        let item = self.get_item().expect("E");
         diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment + 1))
             .get_result::<Post>(&_connection)
@@ -476,7 +461,7 @@ impl PostComment {
             2 => 12,
             _ => 11,
         };
-        let item = self.get_item();
+        let item = self.get_item().expect("E");
         diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment - 1))
             .get_result::<Post>(&_connection)
@@ -498,7 +483,7 @@ impl PostComment {
             12 => 2,
             _ => 1,
         };
-        let item = self.get_item();
+        let item = self.get_item().expect("E");
         diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment + 1))
             .get_result::<Post>(&_connection)

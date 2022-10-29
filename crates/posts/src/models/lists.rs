@@ -139,31 +139,20 @@ pub struct EditPostList {
 }
 
 impl PostList {
-    pub fn get_creator(&self) -> User {
+    pub fn get_creator(&self) -> Result<User, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        return users
-            .filter(schema::users::id.eq(self.user_id))
-            .filter(schema::users::types.lt(10))
-            .load::<User>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+        return Ok(users
+            .filter(schema::users::user_id.eq(self.user_id))
+            .first::<User>(&_connection)?);
     }
-    pub fn get_community(&self) -> Community {
+    pub fn get_community(&self) -> Result<Community, Error> {
         use crate::schema::communitys::dsl::communitys;
-
         let _connection = establish_connection();
-        return communitys
-            .filter(schema::communitys::id.eq(self.community_id.unwrap()))
-            .filter(schema::communitys::types.lt(10))
-            .load::<Community>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+        return Ok(communitys
+            .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
+            .first::<Community>(&_connection)?);
     }
     pub fn get_owner_meta(&self) -> CardOwnerJson {
         let _connection = establish_connection();
@@ -1046,7 +1035,7 @@ impl PostList {
         }
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
                 15 => community.get_members_ids().iter().any(|&i| i==user_id),
@@ -1059,7 +1048,7 @@ impl PostList {
             };
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
                 2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
@@ -1085,7 +1074,7 @@ impl PostList {
         }
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
                 15 => community.get_members_ids().iter().any(|&i| i==user_id),
@@ -1098,7 +1087,7 @@ impl PostList {
             };
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
                 2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
@@ -1123,7 +1112,7 @@ impl PostList {
         }
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
                 15 => community.get_members_ids().iter().any(|&i| i==user_id),
@@ -1136,7 +1125,7 @@ impl PostList {
             };
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
                 2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
@@ -1161,7 +1150,7 @@ impl PostList {
         }
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
                 15 => community.get_members_ids().iter().any(|&i| i==user_id),
@@ -1174,7 +1163,7 @@ impl PostList {
             };
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
                 2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
@@ -1199,7 +1188,7 @@ impl PostList {
         }
 
         if self.community_id.is_some() {
-            let community = self.get_community();
+            let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
                 15 => community.get_members_ids().iter().any(|&i| i==user_id),
@@ -1212,7 +1201,7 @@ impl PostList {
             };
         }
         else {
-            let creator = self.get_creator();
+            let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
                 2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
