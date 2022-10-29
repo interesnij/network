@@ -301,20 +301,7 @@ impl User {
               }),
         };
     }
-    pub fn get_last_location(&self) -> UserLocation {
-        use crate::schema::user_locations::dsl::user_locations;
 
-        let _connection = establish_connection();
-        return user_locations
-            .filter(schema::user_locations::user_id.eq(self.id))
-            .order(schema::user_locations::id.desc())
-            .limit(1)
-            .load::<UserLocation>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
-    }
     pub fn get_verb_gender(&self, str: &str) -> String {
         if self.is_man == false {
             return "W".to_string() + &str;
@@ -324,7 +311,7 @@ impl User {
         }
     }
 
-    pub fn get_populate_smiles_json(&self) -> Json<Vec<UserPopulateSmileJson>> {
+    pub fn get_populate_smiles_json(&self) -> Vec<UserPopulateSmileJson> {
         use crate::schema::user_populate_smiles::dsl::user_populate_smiles;
 
         let _connection = establish_connection();
@@ -342,10 +329,10 @@ impl User {
                 image:    smile.1.clone(),
             });
         }
-        return Json(smiles_json);
+        return smiles_json;
     }
 
-    pub fn get_populate_stickers_json(&self) -> Json<Vec<UserPopulateStickerJson>> {
+    pub fn get_populate_stickers_json(&self) -> Vec<UserPopulateStickerJson> {
         use crate::schema::user_populate_stickers::dsl::user_populate_stickers;
 
         let _connection = establish_connection();
@@ -363,7 +350,7 @@ impl User {
                 image:    sticker.1.clone(),
             });
         }
-        return Json(stickers_json);
+        return stickers_json;
     }
 
     pub fn is_women(&self) -> bool {
@@ -415,11 +402,8 @@ impl User {
         return user_blocks
             .filter(schema::user_blocks::user_id.eq(user_id))
             .filter(schema::user_blocks::target_id.eq(self.id))
-            .limit(1)
             .select(schema::user_blocks::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_blocks::dsl::user_blocks;
@@ -428,11 +412,8 @@ impl User {
         return user_blocks
             .filter(schema::user_blocks::user_id.eq(self.id))
             .filter(schema::user_blocks::target_id.eq(user_id))
-            .limit(1)
             .select(schema::user_blocks::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_connected_with_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::friends::dsl::friends;
@@ -441,11 +422,8 @@ impl User {
         return friends
             .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self.id))
-            .limit(1)
             .select(schema::friends::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
 
     pub fn is_following_user_with_id(&self, user_id: i32) -> bool {
@@ -455,10 +433,8 @@ impl User {
         return follows
             .filter(schema::follows::user_id.eq(self.id))
             .filter(schema::follows::target_id.eq(user_id))
-            .limit(1)
             .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.").len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
@@ -467,11 +443,8 @@ impl User {
         return follows
             .filter(schema::follows::target_id.eq(self.id))
             .filter(schema::follows::user_id.eq(user_id))
-            .limit(1)
             .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn is_followers_user_view(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
@@ -481,11 +454,8 @@ impl User {
             .filter(schema::follows::target_id.eq(self.id))
             .filter(schema::follows::user_id.eq(user_id))
             .filter(schema::follows::view.eq(true))
-            .limit(1)
             .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn get_buttons_profile(&self, user_id: i32) -> String {
         let mut suffix: String = "".to_string();
@@ -627,7 +597,7 @@ impl User {
     pub fn count_followers(&self) -> i32 {
         let profile = self.get_info_model();
         return match profile {
-          Ok(_ok) => _ok.friends,
+          Ok(_ok) => _ok.follows,
           Err(_error) => 0,
         };
     }
@@ -664,31 +634,7 @@ impl User {
             .len();
     }
 
-    pub fn get_blocked_users_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_blocked_users(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_blocked_users(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_blocked_users(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Черный спсок".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
-    }
-
-    pub fn get_blocked_users(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_blocked_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             user_blocks::dsl::user_blocks,
             users::dsl::users,
@@ -713,9 +659,8 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return blocked_users;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(blocked_users);
     }
 
     pub fn count_friends(&self) -> i32 {
@@ -857,31 +802,7 @@ impl User {
         return stack;
     }
 
-    pub fn get_friends_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_friends(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_friends(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_friends(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Друзья".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
-    }
-
-    pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -905,11 +826,10 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _friends;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_friends);
     }
-    pub fn get_6_friends(&self) -> Vec<CardUserJson> {
+    pub fn get_6_friends(&self) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -923,35 +843,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _friends;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_friends);
     }
 
-    pub fn get_online_users_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_online_friends(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_online_friends(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_online_friends(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Друзья в сети".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
-    }
-    pub fn get_online_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_online_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -978,14 +874,13 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _users;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_users);
     }
     pub fn get_online_friends_count(&self) -> usize {
         return self.get_online_friends(500, 0).len();
     }
-    pub fn get_6_online_friends(&self) -> Vec<CardUserJson> {
+    pub fn get_6_online_friends(&self) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -1011,35 +906,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _users;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_users);
     }
 
-    pub fn get_followers_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_followers(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_followers(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_followers(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Подписчики".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
-    }
-    pub fn get_followers(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_followers(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             users::dsl::users,
             follows::dsl::follows,
@@ -1064,12 +935,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
+            .load::<CardUserJson>(&_connection)?;
 
-        return _users;
+        return Ok(_users);
     }
-    pub fn get_6_followers(&self) -> Vec<CardUserJson> {
+    pub fn get_6_followers(&self) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             users::dsl::users,
             follows::dsl::follows,
@@ -1093,9 +963,8 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _users;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_users);
     }
     pub fn get_all_users_count(&self) -> usize {
         use crate::schema::users::dsl::users;
@@ -1109,31 +978,7 @@ impl User {
             .len();
     }
 
-    pub fn get_users_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_users(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_users(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_users(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Пользователи".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
-    }
-
-    pub fn get_users(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1146,11 +991,10 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return users_list;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(users_list);
     }
-    pub fn get_anon_users(limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_anon_users(limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1165,33 +1009,9 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
+            .load::<CardUserJson>(&_connection)?;
 
-        return _users;
-    }
-    pub fn get_anon_users_json(page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = User::get_anon_users(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = User::get_anon_users(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if User::get_anon_users(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Пользователи".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
+        return Ok(_users);
     }
 
     pub fn get_anon_users_count() -> usize {
@@ -1206,31 +1026,7 @@ impl User {
             .len();
     }
 
-    pub fn get_followings_json(&self, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_followings(limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_followings(limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_followings(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Отправленне заявки".to_string(),
-            users: users,
-            next_page: next_page_number,
-        });
-    }
-
-    pub fn get_followings(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_followings(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::follows::dsl::follows;
         use crate::schema::users::dsl::users;
 
@@ -1253,35 +1049,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _users;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_users);
     }
 
-    pub fn get_common_friends_of_user_json(&self, user: &User, page: i32, limit: i32) -> Json<UsersListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_common_friends_of_user(&user, limit.into(), ((page - 1) * limit).into());
-        }
-        else {
-            users = self.get_common_friends_of_user(&user, limit.into(), 0);
-            have_next = limit + 1;
-        }
-        if self.get_common_friends_of_user(&user, 1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UsersListJson {
-            description: "Общие друзья".to_string(),
-            users:       users,
-            next_page:   next_page_number,
-        });
-    }
-    pub fn get_common_friends_of_user(&self, user: &User, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_common_friends_of_user(&self, user: &User, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1305,12 +1077,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
+            .load::<CardUserJson>(&_connection)?;
 
-        return _users;
+        return Ok(_users);
     }
-    pub fn get_6_common_friends_of_user(&self, user: &User) -> Vec<CardUserJson> {
+    pub fn get_6_common_friends_of_user(&self, user: &User) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1333,9 +1104,8 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _users;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_users);
     }
 
     pub fn count_common_friends_of_user(&self, user: &User) -> usize {
@@ -1573,45 +1343,81 @@ impl User {
         return get_users_from_ids(self.get_see_friend_include_follows_ids());
     }
 
-    pub fn get_private_model(&self) -> UserPrivate {
+    pub fn get_private_model(&self) -> Result<UserPrivate, Error> {
+        let private = self.find_private_model();
+        if private.is_ok() {
+            return private;
+        }
+        else {
+            return self.create_private_model();
+        }
+    }
+    pub fn create_private_model(&self) -> Result<UserPrivate, Error> {
+        let _connection = establish_connection();
+
+        let _new_private = NewUserPrivate {
+            user_id:    self.id,
+            see_all:    1,
+            see_info:   1,
+            see_friend: 1,
+        };
+        let _private = diesel::insert_into(schema::user_privates::table)
+            .values(&_new_private)
+            .get_result::<UserPrivate>(&_connection)?;
+
+        return Ok(_private);
+    }
+    pub fn find_private_model(&self) -> Result<UserPrivate, Error> {
         use crate::schema::user_privates::dsl::user_privates;
 
         let _connection = establish_connection();
-        return user_privates
+        let private = user_privates
             .filter(schema::user_privates::user_id.eq(self.id))
-            .load::<UserPrivate>(&_connection)
-            .expect("E.")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first(&_connection)?;
+        return Ok(private);
     }
-    pub fn get_private_model_json(&self) -> Json<UserPrivateJson> {
+
+    pub fn get_private_model_json(&self) -> Result<UserPrivateJson, Error> {
         let private = self.get_private_model();
         let json = UserPrivateJson {
             see_all:    private.see_all,
             see_info:   private.see_info,
             see_friend: private.see_friend,
         };
-        return Json(json);
+        return json;
+    }
+    pub fn get_private_model_json(&self) -> Result<CommunityPrivateJson, Error> {
+        let private = self.get_private_model();
+        return match private {
+          Ok(_ok) => Ok(UserPrivateJson {
+              see_all:    _ok.see_all,
+              see_info:   _ok.see_info,
+              see_friend: _ok.see_friend,
+          }),
+          Err(_error) => Err(_error),
+        };
     }
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
         if self.id == user_id {
             return true;
         }
         let private = self.get_private_model();
-        return match private.see_info {
-            1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            _ => false,
+        return match private {
+          Ok(_ok) => match _ok.see_info {
+              1 => true,
+              2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+              3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+              4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+              5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+              6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+              7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+              8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+              9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+              10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              _ => false,
+          },
+          Err(_) => false,
         };
     }
     pub fn is_user_see_all(&self, user_id: i32) -> bool {
@@ -1619,19 +1425,22 @@ impl User {
             return true;
         }
         let private = self.get_private_model();
-        return match private.see_all {
-            1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            _ => false,
+        return match private {
+          Ok(_ok) => match _ok.see_all {
+              1 => true,
+              2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+              3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+              4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+              5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+              6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+              7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+              8 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+              9 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+              10 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              11 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              _ => false,
+          },
+          Err(_) => false,
         };
     }
     pub fn is_user_see_friend(&self, user_id: i32) -> bool {
@@ -1639,19 +1448,22 @@ impl User {
             return true;
         }
         let private = self.get_private_model();
-        return match private.see_friend {
-            1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            _ => false,
+        return match private {
+          Ok(_ok) => match _ok.see_friend {
+              1 => true,
+              2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+              3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+              4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+              5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+              6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+              7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+              8 => !self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+              9 => self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+              10 => !self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              11 => self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              _ => false,
+          },
+          Err(_) => false,
         };
     }
 
@@ -1660,89 +1472,99 @@ impl User {
             return vec![true, true, true];
         }
         let private = self.get_private_model();
+        return match private {
+          Ok(_ok) => {
+              let bool_see_all = match private.see_all {
+                  1 => true,
+                  2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                  3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+                  4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+                  5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+                  6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+                  7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+                  8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+                  9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+                  10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  _ => false,
+              };
+              if bool_see_all == false {
+                  return vec![false, false, false];
+              }
+              let mut bool_stack = Vec::new();
+              bool_stack.push(true);
+              let bool_see_info = match private.see_info {
+                  1 => true,
+                  2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                  3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+                  4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+                  5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+                  6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+                  7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+                  8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+                  9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+                  10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  _ => false,
+              };
+              bool_stack.push(bool_see_info);
 
-        let bool_see_all = match private.see_all {
-            1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            _ => false,
+              let bool_see_friend = match private.see_friend {
+                  1 => true,
+                  2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
+                  3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+                  4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
+                  5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+                  6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
+                  7 => self.get_friends_ids().iter().any(|&i| i==user_id),
+                  8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+                  9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
+                  10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  _ => false,
+              };
+              bool_stack.push(bool_see_friend);
+              return bool_stack;
+
+          },
+          Err(_) => false,
         };
-        if bool_see_all == false {
-            return vec![false, false, false];
-        }
-
-        let mut bool_stack = Vec::new();
-        bool_stack.push(true);
-
-        let bool_see_info = match private.see_info {
-            1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            _ => false,
-        };
-        bool_stack.push(bool_see_info);
-
-        let bool_see_friend = match private.see_friend {
-            1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            _ => false,
-        };
-        bool_stack.push(bool_see_friend);
-
-        return bool_stack;
     }
     pub fn is_anon_user_see_all(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_all == 1;
+        return match private {
+            Ok(_ok) => _ok.see_all == 1,
+            Err(_) => false,
+        }
     }
     pub fn is_anon_user_see_friend(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_friend == 1;
+        return match private {
+            Ok(_ok) => _ok.see_friend == 1,
+            Err(_) => false,
+        }
     }
     pub fn is_anon_user_see_info(&self) -> bool {
         let private = self.get_private_model();
-        return private.see_info == 1;
+        return match private {
+            Ok(_ok) => _ok.see_info == 1,
+            Err(_) => false,
+        }
     }
 
     pub fn get_anon_profile_all_see(&self) -> Vec<bool> {
         let private = self.get_private_model();
 
-        let bool_see_all = private.see_all == 1;
-        if bool_see_all == false {
-            return vec![false, false, false];
-        }
-
         let mut bool_stack = Vec::new();
-        bool_stack.push(bool_see_all);
-
-        bool_stack.push(private.see_info == 1);
-        bool_stack.push(private.see_friend == 1);
-        return bool_stack;
+        return match private {
+            Ok(_ok) => {
+                bool_stack.push(_ok.see_all == 1);
+                bool_stack.push(_ok.see_info == 1);
+                bool_stack.push(_ok.see_friend == 1);
+                bool_stack
+            },
+            Err(_) => vec![false, false, false],
+        }
     }
     pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {
         use crate::models::{UserVisiblePerm, NewUserVisiblePerm};
@@ -1828,9 +1650,9 @@ impl User {
         }
     }
 
-    pub fn follow_user(&self, user: User) -> () {
+    pub fn follow_user(&self, user: User) -> bool {
         if self.id == user.id || self.is_self_user_in_block(user.id) || self.is_followers_user_with_id(user.id) || self.is_following_user_with_id(user.id) {
-            return;
+            return true;
         }
         use crate::models::{Follow, NewFollow};
 
@@ -1841,19 +1663,24 @@ impl User {
             view:      false,
             visited:   0,
         };
-        diesel::insert_into(schema::follows::table)
+        let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection)
-            .expect("Error.");
-        user.plus_follows(1);
-        //if user.is_user_see_all(self.id) {
-        //    self.add_new_user_subscriber(&user);
-        //    self.get_or_create_featured_objects(user);
-        //}
+            .get_result::<Follow>(&_connection);
+        if new_follow.is_ok() {
+            user.plus_follows(1);
+            //if user.is_user_see_all(self.id) {
+            //    self.add_new_user_subscriber(&user);
+            //    self.get_or_create_featured_objects(user);
+            //}
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn follow_view_user(&self, user: User) -> () {
+    pub fn follow_view_user(&self, user: User) -> bool {
         if self.id == user.id || !self.is_followers_user_with_id(user.id) {
-            return;
+            return false;
         }
         use crate::schema::follows::dsl::follows;
         use crate::models::Follow;
@@ -1863,17 +1690,23 @@ impl User {
         let _follow = follows
             .filter(schema::follows::user_id.eq(self.id))
             .filter(schema::follows::target_id.eq(user.id))
-            .load::<Follow>(&_connection)
+            .first::<Follow>(&_connection)
             .expect("E");
-        diesel::update(&_follow[0])
+        let u = diesel::update(&_follow])
             .set(schema::follows::view.eq(true))
-            .get_result::<Follow>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
+
+        if u.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    pub fn unfollow_user(&self, user: User) -> () {
+    pub fn unfollow_user(&self, user: User) -> bool {
         if self.id == user.id || !self.is_following_user_with_id(user.id) {
-            return;
+            return false;
         }
         use crate::schema::follows::dsl::follows;
         use crate::models::Follow;
@@ -1882,24 +1715,29 @@ impl User {
         let _follow = follows
             .filter(schema::follows::user_id.eq(self.id))
             .filter(schema::follows::target_id.eq(user.id))
-            .load::<Follow>(&_connection)
-            .expect("E");
-        if _follow.len() > 0 {
-            diesel::delete(
+            .first::<Follow>(&_connection);
+        if _follow.is_ok() {
+            let del = diesel::delete(
                     follows
                         .filter(schema::follows::target_id.eq(user.id))
                         .filter(schema::follows::user_id.eq(self.id))
                 )
-                .execute(&_connection)
-                .expect("E");
+                .execute(&_connection);
             //self.delete_new_subscriber(user.id);
             user.minus_follows(1);
+            if del.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
+        return false;
     }
 
-    pub fn frend_user(&self, user: User) -> () {
+    pub fn frend_user(&self, user: User) -> bool {
         if self.id == user.id || !self.is_followers_user_with_id(user.id) {
-            return;
+            return true;
         }
         use crate::models::{NewFriend, Friend};
         use crate::schema::follows::dsl::follows;
@@ -1910,59 +1748,57 @@ impl User {
             target_id: user.id,
             visited:   0,
         };
-        diesel::insert_into(schema::friends::table)
+        let f_1 = diesel::insert_into(schema::friends::table)
             .values(&_new_friend)
-            .get_result::<Friend>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
 
         let _new_friend_2 = NewFriend {
             user_id:   user.id,
             target_id: self.id,
             visited:   0,
         };
-        diesel::insert_into(schema::friends::table)
+        let f_2 = diesel::insert_into(schema::friends::table)
             .values(&_new_friend_2)
-            .get_result::<Friend>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
 
-        diesel::delete(
+        let del = diesel::delete (
             follows
                 .filter(schema::follows::user_id.eq(user.id))
                 .filter(schema::follows::target_id.eq(self.id)))
-                .execute(&_connection)
-                .expect("E");
-
-        user.plus_friends(1);
-        self.plus_friends(1);
-        self.minus_follows(1);
-        //if !user.is_user_see_all(self.id) {
-        //    self.add_new_user_subscriber(&user);
-        //    self.get_or_create_featured_objects(user);
-        //}
+                .execute(&_connection);
+        if del.is_ok() && f_1.is_ok() && f_2.is_ok() {
+            user.plus_friends(1);
+            self.plus_friends(1);
+            self.minus_follows(1);
+            //if !user.is_user_see_all(self.id) {
+            //    self.add_new_user_subscriber(&user);
+            //    self.get_or_create_featured_objects(user);
+            //}
+            return true;
+        }
+        return false;
     }
-    pub fn unfrend_user(&self, user: User) -> () {
+    pub fn unfrend_user(&self, user: User) -> bool {
         if self.id == user.id || !self.is_connected_with_user_with_id(user.id) {
-            return;
+            return false;
         }
         use crate::models::{NewFollow, Follow};
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
 
-        diesel::delete(
+        let del = diesel::delete(
             friends
                 .filter(schema::friends::user_id.eq(self.id))
                 .filter(schema::friends::target_id.eq(user.id))
             )
-            .execute(&_connection)
-            .expect("E");
-        diesel::delete(
+            .execute(&_connection);
+        let del_2 = diesel::delete(
             friends
                 .filter(schema::friends::target_id.eq(self.id))
                 .filter(schema::friends::user_id.eq(user.id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         let _new_follow = NewFollow {
             user_id:   user.id,
@@ -1970,22 +1806,27 @@ impl User {
             view:      true,
             visited:   0,
         };
-        diesel::insert_into(schema::follows::table)
+        let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection)
-            .expect("Error.");
+            .get_result::<Follow>(&_connection);
 
-        user.minus_friends(1);
-        self.minus_friends(1);
-        self.plus_follows(1);
-        //if !user.is_user_see_all(self.id) {
-        //    self.delete_new_subscriber(user.id);
-        //}
+        if del_1.is_ok() && del_2.is_ok() && new_follow.is_ok() {
+            user.minus_friends(1);
+            self.minus_friends(1);
+            self.plus_follows(1);
+            //if !user.is_user_see_all(self.id) {
+            //    self.delete_new_subscriber(user.id);
+            //}
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
-    pub fn block_user(&self, user: User) -> () {
+    pub fn block_user(&self, user: User) -> bool {
         if self.id == user.id || self.is_user_in_block(user.id) {
-            return;
+            return false;
         }
         //use crate::schema::user_blocks::dsl::user_blocks;
         use crate::models::NewUserBlock;
@@ -2042,20 +1883,26 @@ impl User {
             .expect("Error.");
         //self.delete_new_subscriber(user.id);
         //self.delete_notification_subscriber(user.id);
+        return true;
     }
-    pub fn unblock_user(&self, user: User) -> () {
+    pub fn unblock_user(&self, user: User) -> bool {
         if self.id == user.id || !self.is_user_in_block(user.id) {
-            return;
+            return false;
         }
         use crate::schema::user_blocks::dsl::user_blocks;
 
         let _connection = establish_connection();
-        diesel::delete(
+        let del = diesel::delete(
             user_blocks
                 .filter(schema::user_blocks::user_id.eq(self.id))
-                .filter(schema::user_blocks::target_id.eq(user.id)))
-                .execute(&_connection)
-                .expect("E");
+                .filter(schema::user_blocks::target_id.eq(user.id))
+            );
+        if del.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn plus_friend_visited(&self, user_id: i32) -> () {
         use crate::schema::friends::dsl::friends;

@@ -101,7 +101,7 @@ pub fn get_stat_list(user_id: i32, page: i32, limit: i32) -> Result<(Vec<CookieS
 
      if banned_user.is_ok() {
          return true;
-     } 
+     }
      else {
          return false;
      }
