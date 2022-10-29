@@ -1692,7 +1692,7 @@ impl User {
             .filter(schema::follows::target_id.eq(user.id))
             .first::<Follow>(&_connection)
             .expect("E");
-        let u = diesel::update(&_follow])
+        let u = diesel::update(&_follow)
             .set(schema::follows::view.eq(true))
             .execute(&_connection);
 
