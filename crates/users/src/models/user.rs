@@ -1328,8 +1328,9 @@ impl User {
         }
     }
     pub fn create_private_model(&self) -> Result<UserPrivate, Error> {
-        let _connection = establish_connection();
+        use crate::models::NewUserPrivate;
 
+        let _connection = establish_connection();
         let _new_private = NewUserPrivate {
             user_id:    self.id,
             see_all:    1,
@@ -1754,7 +1755,7 @@ impl User {
 
         let _connection = establish_connection();
 
-        let del = diesel::delete(
+        let del_1 = diesel::delete(
             friends
                 .filter(schema::friends::user_id.eq(self.id))
                 .filter(schema::friends::target_id.eq(user.id))
