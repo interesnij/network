@@ -1363,17 +1363,13 @@ impl Post {
 
         return new_comment;
     }
-    pub fn get_parent(&self) -> Post {
+    pub fn get_parent(&self) -> Result<Post, Error> {
         use crate::schema::posts::dsl::posts;
 
         let _connection = establish_connection();
-        return posts
+        return Ok(posts
             .filter(schema::posts::id.eq(self.parent_id.unwrap()))
             .filter(schema::posts::types.lt(10))
-            .load::<Post>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .load::<Post>(&_connection)?);
     }
 }
