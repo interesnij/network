@@ -630,7 +630,7 @@ impl PostComment {
             .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
             .select(schema::post_comment_reactions::user_id)
             .load::<i32>(&_connection);
-        return Ok(votes);
+        return votes;
     }
 
     pub fn is_have_user_reaction(&self, user_id: i32) -> bool {
