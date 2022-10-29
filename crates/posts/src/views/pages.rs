@@ -149,7 +149,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
             }
             else {
                 let owner = list.get_creator().expect("E.");
-                let _tuple = get_user_permission(&owner, &_request_user);
+                let _tuple = get_anon_user_permission(&owner);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
                         info: _tuple.1.to_string(),
