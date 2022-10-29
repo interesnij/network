@@ -1379,12 +1379,14 @@ impl User {
 
     pub fn get_private_model_json(&self) -> Result<UserPrivateJson, Error> {
         let private = self.get_private_model();
-        let json = UserPrivateJson {
-            see_all:    private.see_all,
-            see_info:   private.see_info,
-            see_friend: private.see_friend,
+        return match private {
+          Ok(_ok) => Ok(UserPrivateJson {
+              see_all:    _ok.see_all,
+              see_info:   _ok.see_info,
+              see_friend: _ok.see_friend,
+          }),
+          Err(_error) => Err(_error),
         };
-        return json;
     }
 
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
@@ -1517,7 +1519,7 @@ impl User {
               return bool_stack;
 
           },
-          Err(_) => false,
+          Err(_) => return vec![false, false, false],
         };
     }
     pub fn is_anon_user_see_all(&self) -> bool {
@@ -1886,7 +1888,8 @@ impl User {
             user_blocks
                 .filter(schema::user_blocks::user_id.eq(self.id))
                 .filter(schema::user_blocks::target_id.eq(user.id))
-            );
+            )
+            .execute(&_connection);
         if del.is_ok() {
             return true;
         }
