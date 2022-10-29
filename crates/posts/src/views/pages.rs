@@ -49,7 +49,7 @@ pub struct LoadListParams {
     pub list_id: i32,
     pub user_id: Option<i32>,
     pub limit:   Option<i64>,
-    pub owwset:  Option<i64>,
+    pub offset:  Option<i64>,
 }
 #[derive(Debug, Serialize)]
 pub struct ErrorParams {
@@ -61,7 +61,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     if params_some.is_ok() {
         let _limit: i64;
         let _offset: i64;
-        let _list = get_post_list(list_id).expect("E.");
+        let list = get_post_list(list_id).expect("E.");
 
         let params = params_some.unwrap();
         if params.limit.is_some() {
@@ -80,8 +80,8 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
             let user_id = params.user_id.unwrap();
             let _request_user = get_user(user_id).expect("E.");
 
-            if _list.community_id.is_some() {
-                let community = _list.get_community().expect("E.");
+            if list.community_id.is_some() {
+                let community = list.get_community().expect("E.");
                 let _tuple = get_community_permission(&community, &_request_user);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
@@ -103,7 +103,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 }
             }
             else {
-                let owner = _list.get_creator().expect("E.");
+                let owner = list.get_creator().expect("E.");
                 let _tuple = get_user_permission(&owner, &_request_user);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
@@ -126,8 +126,8 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
             }
         }
         else {
-            if _list.community_id.is_some() {
-                let community = _list.get_community().expect("E.");
+            if list.community_id.is_some() {
+                let community = list.get_community().expect("E.");
                 let _tuple = get_anon_community_permission(&community);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
@@ -148,7 +148,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 }
             }
             else {
-                let owner = _list.get_creator().expect("E.");
+                let owner = list.get_creator().expect("E.");
                 let _tuple = get_user_permission(&owner, &_request_user);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
