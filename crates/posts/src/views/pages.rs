@@ -22,15 +22,15 @@ use crate::diesel::RunQueryDsl;
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
-    config.route("/add_user_list/", web::get().to(add_user_list_page));
-    config.route("/edit_user_list/{id}/", web::get().to(edit_user_list_page));
-    config.route("/add_community_list/{id}", web::get().to(add_community_list_page));
-    config.route("/edit_community_list/{id}/", web::get().to(edit_community_list_page));
-    config.route("/edit_post/{id}/", web::get().to(edit_post_page));
+    //config.route("/add_user_list/", web::get().to(add_user_list_page));
+    //config.route("/edit_user_list/{id}/", web::get().to(edit_user_list_page));
+    //config.route("/add_community_list/{id}", web::get().to(add_community_list_page));
+    //config.route("/edit_community_list/{id}/", web::get().to(edit_community_list_page));
+    //config.route("/edit_post/{id}/", web::get().to(edit_post_page));
 
-    config.route("/load_list/{list_id}/", web::get().to(load_list_page));
-    config.route("/load_post/{id}/", web::get().to(load_post_page));
-    config.route("/load_comments/{id}/", web::get().to(load_comments_page));
+    config.route("/load_list/", web::get().to(load_list_page));
+    //config.route("/load_post/{id}/", web::get().to(load_post_page));
+    //config.route("/load_comments/{id}/", web::get().to(load_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -47,15 +47,134 @@ pub async fn index_page() -> impl Responder {
 pub struct LoadListParams {
     pub list_id: i32,
     pub user_id: Option<i32>,
+    pub limit:   Option<i64>,
+    pub owwset:  Option<i64>,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct ErrorParams {
-    pub str: String,
+    pub info: String,
 }
 
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
-    let data = get_post_list(*list_id);
+    let params_some = web::Query::<LoadListParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let _limit: i64;
+        let _offset: i64;
+        let _list = get_post_list(list_id).expect("E.");
 
+        let params = params_some.unwrap();
+        if params.limit.is_some() {
+            _limit = params.limit.unwrap();
+        }
+        else {
+            _limit = 20;
+        }
+        if params.offset.is_some() {
+            _offset = params.offset.unwrap();
+        }
+        else {
+            _offset = 0;
+        }
+        if params.user_id.is_some() {
+            let user_id = params.user_id.unwrap();
+            let _request_user = get_user(user_id).expect("E.");
+
+            if _list.community_id.is_some() {
+                let community = _list.get_community().expect("E.");
+                let _tuple = get_community_permission(&community, &_request_user);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        info: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
+                    let body = PostList::get_json_community_post_list(
+                        community,
+                        user_id,
+                        list,
+                        lists,
+                        _limit,
+                        _offset
+                    );
+                    HttpResponse::Ok().body(body)
+                }
+            }
+            else {
+                let owner = _list.get_creator().expect("E.");
+                let _tuple = get_user_permission(&owner, &_request_user);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        info: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
+                    let body = PostList::get_json_user_post_list (
+                        owner,
+                        user_id,
+                        list,
+                        lists,
+                        _limit,
+                        _offset
+                    );
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+        else {
+            if _list.community_id.is_some() {
+                let community = _list.get_community().expect("E.");
+                let _tuple = get_anon_community_permission(&community);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        info: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
+                    let body = PostList::get_json_anon_community_post_list(
+                        community,
+                        list,
+                        lists,
+                        _limit,
+                        _offset
+                    );
+                    HttpResponse::Ok().body(body)
+                }
+            }
+            else {
+                let owner = _list.get_creator().expect("E.");
+                let _tuple = get_user_permission(&owner, &_request_user);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        info: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
+                    let body = PostList::get_json_anon_user_post_list (
+                        owner,
+                        list,
+                        lists,
+                        _limit,
+                        _offset
+                    );
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            info: "Минимальный запрос: list_id".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
 }
 
 pub async fn add_user_list_page(session: Session) -> actix_web::Result<HttpResponse> {

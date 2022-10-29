@@ -1,8 +1,8 @@
-//pub mod pages;
+pub mod pages;
 pub mod progs;
 
 
 pub use self::{
-    //pages::*,
+    pages::*,
     progs::*,
 };

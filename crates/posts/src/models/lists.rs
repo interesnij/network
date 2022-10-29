@@ -266,6 +266,202 @@ impl PostList {
         return data;
     }
 
+    pub fn get_json_user_post_list (
+        owner:   User,
+        user_id: i32,
+        list:    PostList,
+        lists:   Vec<PostList>,
+        limit:   i64,
+        offset:  i64,
+    ) -> Json<PostListDetailJson> {
+        use crate::utils::CardPostListJson;
+
+        for i in lists.iter() {
+            let owner = i.get_owner_meta().expect("E");
+            lists_json.push (
+                CardPostListJson {
+                    name:        i.name.clone(),
+                    owner_name:  owner.name.clone(),
+                    owner_link:  owner.link.clone(),
+                    owner_image: owner.image.clone(),
+                    image:       i.image.clone(),
+                    types:       i.get_code(),
+                    count:       i.count,
+                }
+            );
+        }
+
+        let posts = list.get_paginate_items(limit, offset);
+        let reactions_list = list.get_reactions_list();
+
+        let mut posts_json = Vec::new();
+        for i in posts.iter() {
+            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) )
+        }
+
+        let data = CardPostListJson {
+            id:                list.id,
+            name:              list.name.clone(),
+            owner_name:        owner.get_full_name(),
+            owner_link:        owner.link.clone(),
+            owner_image:       owner.image.clone(),
+            image:             list.image.clone(),
+            types:             list.types,
+            count:             list.count,
+            reactions_list:    reactions_list,
+            posts:             posts_json,
+            lists:             lists_json,
+            is_user_create_el: list.is_user_create_el(user_id),
+        };
+        return Json(data);
+    }
+    pub fn get_json_anon_user_post_list (
+        owner:   User,
+        list:    PostList,
+        lists:   Vec<PostList>,
+        limit:   i64,
+        offset:  i64,
+    ) -> Json<PostListDetailJson> {
+        use crate::utils::CardPostListJson;
+
+        for i in lists.iter() {
+            let owner = i.get_owner_meta().expect("E");
+            lists_json.push (
+                CardPostListJson {
+                    name:        i.name.clone(),
+                    owner_name:  owner.name.clone(),
+                    owner_link:  owner.link.clone(),
+                    owner_image: owner.image.clone(),
+                    image:       i.image.clone(),
+                    types:       i.get_code(),
+                    count:       i.count,
+                }
+            );
+        }
+
+        let posts = list.get_paginate_items(limit, offset);
+        let reactions_list = list.get_reactions_list();
+
+        let mut posts_json = Vec::new();
+        for i in posts.iter() {
+            posts_json.push ( i.get_post_json(None, reactions_list.clone()) )
+        }
+
+        let data = CardPostListJson {
+            id:                list.id,
+            name:              list.name.clone(),
+            owner_name:        owner.get_full_name(),
+            owner_link:        owner.link.clone(),
+            owner_image:       owner.image.clone(),
+            image:             list.image.clone(),
+            types:             list.types,
+            count:             list.count,
+            reactions_list:    reactions_list,
+            posts:             posts_json,
+            lists:             lists_json,
+            is_user_create_el: list.is_anon_user_create_el(),
+        };
+        return Json(data);
+    }
+
+    pub fn get_json_community_post_list (
+        community: Community,
+        user_id:   i32,
+        list:      PostList,
+        lists:     Vec<PostList>,
+        limit:     i64,
+        offset:    i64,
+    ) -> Json<PostListDetailJson> {
+        use crate::utils::CardPostListJson;
+
+        for i in lists.iter() {
+            let owner = i.get_owner_meta().expect("E");
+            lists_json.push (
+                CardPostListJson {
+                    name:        i.name.clone(),
+                    owner_name:  owner.name.clone(),
+                    owner_link:  owner.link.clone(),
+                    owner_image: owner.image.clone(),
+                    image:       i.image.clone(),
+                    types:       i.get_code(),
+                    count:       i.count,
+                }
+            );
+        }
+
+        let posts = list.get_paginate_items(limit, offset);
+        let reactions_list = list.get_reactions_list();
+
+        let mut posts_json = Vec::new();
+        for i in posts.iter() {
+            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) )
+        }
+
+        let data = CardPostListJson {
+            id:                list.id,
+            name:              list.name.clone(),
+            owner_name:        community.name.clone(),
+            owner_link:        community.link.clone(),
+            owner_image:       community.image.clone(),
+            image:             list.image.clone(),
+            types:             list.types,
+            count:             list.count,
+            reactions_list:    reactions_list,
+            posts:             posts_json,
+            lists:             lists_json,
+            is_user_create_el: list.is_user_create_el(user_id),
+        };
+        return Json(data);
+    }
+    pub fn get_json_anon_community_post_list (
+        community: Community,
+        list:      PostList,
+        lists:     Vec<PostList>,
+        limit:     i64,
+        offset:    i64,
+    ) -> Json<PostListDetailJson> {
+        use crate::utils::CardPostListJson;
+
+        for i in lists.iter() {
+            let owner = i.get_owner_meta().expect("E");
+            lists_json.push (
+                CardPostListJson {
+                    name:        i.name.clone(),
+                    owner_name:  owner.name.clone(),
+                    owner_link:  owner.link.clone(),
+                    owner_image: owner.image.clone(),
+                    image:       i.image.clone(),
+                    types:       i.get_code(),
+                    count:       i.count,
+                }
+            );
+        }
+
+        let posts = list.get_paginate_items(limit, offset);
+        let reactions_list = list.get_reactions_list();
+
+        let mut posts_json = Vec::new();
+        for i in posts.iter() {
+            posts_json.push ( i.get_post_json(None), reactions_list.clone()) )
+        }
+
+        let data = CardPostListJson {
+            id:                list.id,
+            name:              list.name.clone(),
+            owner_name:        community.name.clone(),
+            owner_link:        community.link.clone(),
+            owner_image:       community.image.clone(),
+            image:             list.image.clone(),
+            types:             list.types,
+            count:             list.count,
+            reactions_list:    reactions_list,
+            posts:             posts_json,
+            lists:             lists_json,
+            is_user_create_el: false,
+        };
+        return Json(data);
+    }
+
     pub fn get_json_post_list (
         user_id: Option<i32>,
         list_id: i32,
