@@ -276,6 +276,7 @@ impl PostList {
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
+        let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
             lists_json.push (
@@ -324,6 +325,7 @@ impl PostList {
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
+        let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
             lists_json.push (
@@ -374,6 +376,7 @@ impl PostList {
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
+        let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
             lists_json.push (
@@ -422,6 +425,7 @@ impl PostList {
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
+        let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
             lists_json.push (
