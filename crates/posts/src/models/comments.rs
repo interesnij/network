@@ -78,11 +78,11 @@ pub struct EditPostComment {
 }
 
 impl PostComment {
-    pub fn get_6_user_of_reaction (
+    pub fn get_6_users_of_reaction (
         &self,
-        reaction_id: &i32,
+        reaction_id:   &i32,
         user_reaction: Option<i32>,
-    ) -> Option<ReactionBlockJson> {
+    ) -> ReactionBlockJson {
         use crate::schema::{
             post_comment_reactions::dsl::post_comment_reactions,
             users::dsl::users,
@@ -95,13 +95,11 @@ impl PostComment {
             .filter(schema::post_comment_reactions::reaction_id.eq(reaction_id))
             .limit(6)
             .select(schema::post_comment_reactions::user_id)
-            .load::<i32>(&_connection);
+            .load::<i32>(&_connection)
+            .expect("E");
 
-        if user_ids.is_err() {
-            return None;
-        }
         let _users = users
-            .filter(schema::users::id.eq_any(Ok(user_ids)))
+            .filter(schema::users::id.eq_any(user_ids))
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -109,28 +107,25 @@ impl PostComment {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection);
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
 
-        if _users.is_err() {
-            return None;
-        }
         let mut user_json = Vec::new();
-        for _item in Ok(_users).iter() {
+        for _item in _users.iter() {
             user_json.push (
                 CardReactionPostJson {
-                    owner_name:        _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
-                    owner_link:        _item.link.clone(),
-                    owner_image:       _item.image.clone(),
+                    owner_name:       _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
+                    owner_link:       _item.link.clone(),
+                    owner_image:      _item.image.clone(),
                     is_user_reaction: &user_reaction.unwrap() == reaction_id,
                 }
             );
         }
-
-        return Some(ReactionBlockJson {
-            count:    self.get_count_model_for_reaction(*reaction_id).count,
-            reaction: *reaction_id,
-            users:    user_json,
-        });
+        return ReactionBlockJson {
+                count:    self.get_count_model_for_reaction(*reaction_id).count,
+                reaction: *reaction_id,
+                users:    user_json,
+            };
     }
     pub fn get_users_of_reaction (
         &self,
@@ -185,7 +180,7 @@ impl PostComment {
             };
     }
 
-    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Vec<ReactionBlockJson> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
         if reactions_list.len() == 0 {

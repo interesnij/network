@@ -25,17 +25,6 @@ use crate::models::{
     Community,
 };
 
-
-#[derive(Serialize, Deserialize)]
-pub struct HandlersError {
-    pub msg: String,
-}
-
-impl HandlersError {
-    pub fn new_str(msg: String)-> String {
-        serde_json::to_string(&HandlersError{ msg: msg.to_owned()}).unwrap()
-    }
-}
 pub fn establish_connection() -> PgConnection {
     use dotenv::dotenv;
 
