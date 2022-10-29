@@ -59,11 +59,11 @@ pub struct ErrorParams {
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<LoadListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
+        let params = params_some.unwrap();
         let _limit: i64;
         let _offset: i64;
         let list = get_post_list(params.list_id).expect("E.");
 
-        let params = params_some.unwrap();
         if params.limit.is_some() {
             _limit = params.limit.unwrap();
         }
