@@ -98,7 +98,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                         lists,
                         _limit,
                         _offset
-                    ));
+                    )).unwrap();
                     HttpResponse::Ok().body(body)
                 }
             }
@@ -120,7 +120,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                         lists,
                         _limit,
                         _offset
-                    ));
+                    )).unwrap();
                     HttpResponse::Ok().body(body)
                 }
             }
@@ -143,7 +143,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                         lists,
                         _limit,
                         _offset
-                    ));
+                    )).unwrap();
                     HttpResponse::Ok().body(body)
                 }
             }
@@ -164,7 +164,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                         lists,
                         _limit,
                         _offset
-                    ));
+                    )).unwrap();
                     HttpResponse::Ok().body(body)
                 }
             }
