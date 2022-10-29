@@ -1386,17 +1386,7 @@ impl User {
         };
         return json;
     }
-    pub fn get_private_model_json(&self) -> Result<CommunityPrivateJson, Error> {
-        let private = self.get_private_model();
-        return match private {
-          Ok(_ok) => Ok(UserPrivateJson {
-              see_all:    _ok.see_all,
-              see_info:   _ok.see_info,
-              see_friend: _ok.see_friend,
-          }),
-          Err(_error) => Err(_error),
-        };
-    }
+
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
         if self.id == user_id {
             return true;
