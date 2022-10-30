@@ -6,6 +6,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
     NullableExpressionMethods,
+    ReactionsJson,
 };
 use crate::schema::post_lists;
 use crate::errors::Error;
@@ -153,7 +154,7 @@ impl PostList {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
-    pub fn get_add_list_json(&self) -> Result<ReactionsJson, Error> {
+    pub fn get_add_list_json() -> Result<ReactionsJson, Error> {
         use crate::schema::reactions::dsl::reactions;
         use crate::utils::ReactionJson;
 

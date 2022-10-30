@@ -6,7 +6,7 @@ use crate::utils::AttachmentsJson;
 pub struct ReactionsJson {
     pub reactions: Vec<ReactionJson>,
 }
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Queryable)]
 pub struct ReactionJson {
     pub image: String,
     pub name:  String,

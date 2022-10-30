@@ -24,7 +24,7 @@ use serde::{Serialize, Deserialize};
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
     config.route("/add_user_list/", web::get().to(add_user_list_page));
-    config.route("/edit_user_list/", web::get().to(edit_user_list_page));
+    //config.route("/edit_user_list/", web::get().to(edit_user_list_page));
     //config.route("/add_community_list/{id}", web::get().to(add_community_list_page));
     //config.route("/edit_community_list/{id}/", web::get().to(edit_community_list_page));
     //config.route("/edit_post/{id}/", web::get().to(edit_post_page));
