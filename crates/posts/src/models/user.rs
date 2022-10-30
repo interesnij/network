@@ -114,9 +114,7 @@ impl User {
             .filter(schema::users::user_id.eq(user.user_id))
             .limit(1)
             .select(schema::users::id)
-            .load::<i32>(&_connection)
-            .expect("E")
-            .len() > 0 {
+            .first::<i32>(&_connection).is_ok() {
                 return users
                     .filter(schema::users::user_id.eq(user.user_id))
                     .first::<User>(&_connection)
@@ -155,18 +153,15 @@ impl User {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
                     .filter(schema::friends::target_id.eq(user_id))
-                    .limit(1)
                     .select(schema::friends::id)
-                    .load::<i32>(&_connection)
-                    .expect("E")
-                    .len() == 0 {
+                    .first::<i32>(&_connection).is_ok() {
                         let new_form = NewFriend {
                             user_id:   new_user_id,
                             target_id: user_id,
                         };
                         diesel::insert_into(schema::friends::table)
                             .values(&new_form)
-                            .get_result::<Friend>(&_connection)
+                            .execute(&_connection)
                             .expect("Error.");
                 }
             }
@@ -178,18 +173,14 @@ impl User {
                 if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
-                    .limit(1)
-                    .select(schema::follows::id)
-                    .load::<i32>(&_connection)
-                    .expect("E")
-                    .len() == 0 {
+                    .first::<i32>(&_connection).is_ok() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
                             target_id: user_id,
                         };
                         diesel::insert_into(schema::follows::table)
                             .values(&new_form)
-                            .get_result::<Follow>(&_connection)
+                            .execute(&_connection)
                             .expect("Error.");
                 }
             }
@@ -786,13 +777,13 @@ impl User {
             };
             diesel::insert_into(schema::user_visible_perms::table)
                 .values(&_new_perm)
-                .get_result::<UserVisiblePerm>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
         }
         return true;
     }
 
-    pub fn delete_item(&self) -> () {
+    pub fn delete_item(&self) -> bool {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -803,14 +794,18 @@ impl User {
             7 => 17,
             _ => self.types,
         };
-        diesel::update(self)
+        let o = diesel::update(self)
             .set(schema::users::types.eq(_case))
-            .get_result::<User>(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
-        //hide_wall_notify_items(1, self.id);
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn restore_item(&self) -> () {
+    pub fn restore_item(&self) -> bool {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -821,11 +816,15 @@ impl User {
             17 => 7,
             _ => self.types,
         };
-        diesel::update(self)
+        let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
-            .get_result::<User>(&_connection)
-            .expect("E");
-        //show_wall_notify_items(1, self.id);
+            .execute(&_connection);
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn add_new_community_subscriber (&self, community_id: i32) -> () {
         use crate::models::{NewsUserCommunitie, NewNewsUserCommunitie};
@@ -836,19 +835,18 @@ impl User {
             .filter(schema::news_user_communities::owner.eq(self.id))
             .filter(schema::news_user_communities::community_id.eq(community_id))
             .select(schema::news_user_communities::id)
-            .load::<i32>(&_connection)
-            .expect("E").len() == 0 {
+            .first::<i32>(&_connection).is_ok() {
                 let _new = NewNewsUserCommunitie {
-                    owner: self.id,
-                    list_id: None,
-                    user_id: None,
+                    owner:        self.id,
+                    list_id:      None,
+                    user_id:      None,
                     community_id: Some(community_id),
-                    mute: false,
-                    sleep: None,
+                    mute:         false,
+                    sleep:        None,
                 };
             diesel::insert_into(schema::news_user_communities::table)
                 .values(&_new)
-                .get_result::<NewsUserCommunitie>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
         }
     }
@@ -862,8 +860,7 @@ impl User {
             .filter(schema::notify_user_communities::owner.eq(self.id))
             .filter(schema::notify_user_communities::community_id.eq(community_id))
             .select(schema::notify_user_communities::id)
-            .load::<i32>(&_connection)
-            .expect("E").len() == 0 {
+            .first::<i32>(&_connection).is_ok() {
                 let _new = NewNotifyUserCommunitie {
                     owner: self.id,
                     list_id: None,
@@ -874,7 +871,7 @@ impl User {
                 };
                 diesel::insert_into(schema::notify_user_communities::table)
                     .values(&_new)
-                    .get_result::<NotifyUserCommunitie>(&_connection)
+                    .execute(&_connection)
                     .expect("Error.");
         }
     }
@@ -887,8 +884,7 @@ impl User {
             .filter(schema::news_user_communities::owner.eq(self.id))
             .filter(schema::news_user_communities::user_id.eq(user.id))
             .select(schema::news_user_communities::id)
-            .load::<i32>(&_connection)
-            .expect("E").len() == 0 {
+            .first::<i32>(&_connection).is_ok() {
                 let _new = NewNewsUserCommunitie {
                     owner: self.id,
                     list_id: None,
@@ -899,7 +895,7 @@ impl User {
                 };
             diesel::insert_into(schema::news_user_communities::table)
                 .values(&_new)
-                .get_result::<NewsUserCommunitie>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
         }
     }
@@ -921,7 +917,7 @@ impl User {
         if _new.len() > 0 && _new[0].owner == self.id && _list.len() > 0 && _list[0].owner == self.id {
             diesel::update(news_user_communities.filter(schema::news_user_communities::id.eq(new_id)))
                 .set(schema::news_user_communities::list_id.eq(list_id))
-                .get_result::<NewsUserCommunitie>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -934,9 +930,9 @@ impl User {
         let _connection = establish_connection();
         let _new = news_user_communities
             .filter(schema::news_user_communities::id.eq(new_id))
-            .load::<NewsUserCommunitie>(&_connection)
+            .first::<NewsUserCommunitie>(&_connection)
             .expect("E");
-        if _new.len() > 0 && _new[0].owner == self.id {
+        if _new.len() > 0 && _new.owner == self.id {
             diesel::delete(
                 news_user_communities
                     .filter(schema::news_user_communities::id.eq(new_id))
@@ -947,18 +943,21 @@ impl User {
         }
         return false;
     }
-    pub fn delete_new_subscriber_from_list(&self, new_id: i32) -> () {
+    pub fn delete_new_subscriber_from_list(&self, new_id: i32) -> bool {
         use crate::models::NewsUserCommunitie;
         use crate::schema::news_user_communities::dsl::news_user_communities;
 
         let _connection = establish_connection();
-        let _new = news_user_communities.filter(schema::news_user_communities::id.eq(new_id)).load::<NewsUserCommunitie>(&_connection).expect("E");
+        let _new = news_user_communities
+            .filter(schema::news_user_communities::id.eq(new_id))
+            .first::<NewsUserCommunitie>(&_connection)
+            .expect("E");
         let null_value: Option<i32> = None;
 
-        if _new.len() > 0 && _new[0].owner == self.id {
+        if _new.len() > 0 && _new.owner == self.id {
             diesel::update(news_user_communities.filter(schema::news_user_communities::id.eq(new_id)))
                 .set(schema::news_user_communities::list_id.eq(null_value))
-                .get_result::<NewsUserCommunitie>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
             }
     }
@@ -972,8 +971,7 @@ impl User {
             .filter(schema::notify_user_communities::owner.eq(self.id))
             .filter(schema::notify_user_communities::user_id.eq(user.id))
             .select(schema::notify_user_communities::id)
-            .load::<i32>(&_connection)
-            .expect("E").len() == 0 {
+            .first::<i32>(&_connection).is_ok() {
                 let _new = NewNotifyUserCommunitie {
                     owner: self.id,
                     list_id: None,
@@ -984,7 +982,7 @@ impl User {
                 };
                 diesel::insert_into(schema::notify_user_communities::table)
                     .values(&_new)
-                    .get_result::<NotifyUserCommunitie>(&_connection)
+                    .execute(&_connection)
                     .expect("Error.");
         }
     }
@@ -994,54 +992,70 @@ impl User {
         use crate::schema::list_user_communities_keys::dsl::list_user_communities_keys;
 
         let _connection = establish_connection();
-        let _notify = notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)).load::<NotifyUserCommunitie>(&_connection).expect("E");
-        let _list = list_user_communities_keys.filter(schema::list_user_communities_keys::id.eq(list_id)).load::<ListUserCommunitiesKey>(&_connection).expect("E");
+        let _notify = notify_user_communities
+            .filter(schema::notify_user_communities::id.eq(notify_id))
+            .first::<NotifyUserCommunitie>(&_connection)
+            .expect("E");
+        let _list = list_user_communities_keys
+            .filter(schema::list_user_communities_keys::id.eq(list_id))
+            .first::<ListUserCommunitiesKey>(&_connection)
+            .expect("E");
 
-        if _notify.len() > 0 && _notify[0].owner == self.id && _list.len() > 0 && _list[0].owner == self.id {
+        if _notify.len() > 0 && _notify.owner == self.id && _list.owner == self.id {
             diesel::update(notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)))
-                .set(schema::notify_user_communities::list_id.eq(_list[0].id))
-                .get_result::<NotifyUserCommunitie>(&_connection)
+                .set(schema::notify_user_communities::list_id.eq(_list.id))
+                .execute(&_connection)
                 .expect("Error.");
         }
     }
-    pub fn delete_notification_subscriber(&self, notify_id: i32) -> () {
+    pub fn delete_notification_subscriber(&self, notify_id: i32) -> bool {
         use crate::models::NotifyUserCommunitie;
         use crate::schema::notify_user_communities::dsl::notify_user_communities;
 
         let _connection = establish_connection();
         let _notify = notify_user_communities
             .filter(schema::notify_user_communities::id.eq(notify_id))
-            .load::<NotifyUserCommunitie>(&_connection)
+            .first::<NotifyUserCommunitie>(&_connection)
             .expect("E");
-        if _notify.len() > 0 && _notify[0].owner == self.id {
-            diesel::delete(
+        if _notify.len() > 0 && _notify.owner == self.id {
+            let del = diesel::delete (
                 notify_user_communities
                     .filter(schema::notify_user_communities::id.eq(notify_id))
                 )
-                .execute(&_connection)
-                .expect("E");
+                .execute(&_connection);
+            if del.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
+        return false;
     }
-    pub fn delete_notification_subscriber_from_list(&self, notify_id: i32) -> () {
+    pub fn delete_notification_subscriber_from_list(&self, notify_id: i32) -> bool {
         use crate::models::NotifyUserCommunitie;
         use crate::schema::notify_user_communities::dsl::notify_user_communities;
 
         let _connection = establish_connection();
-        let _notify = notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)).load::<NotifyUserCommunitie>(&_connection).expect("E");
+        let _notify = notify_user_communities
+            .filter(schema::notify_user_communities::id.eq(notify_id))
+            .first::<NotifyUserCommunitie>(&_connection)
+            .expect("E");
         let null_value: Option<i32> = None;
-        if _notify.len() > 0 && _notify[0].owner == self.id {
+        if _notify.len() > 0 && _notify.owner == self.id {
             diesel::update(notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)))
                 .set(schema::notify_user_communities::list_id.eq(null_value))
-                .get_result::<NotifyUserCommunitie>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
-            }
+        }
+        return true;
     }
 
     pub fn plus_lists(&self, count: i32) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::users::lists.eq(self.lists + count))
-            .get_result::<User>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -1050,7 +1064,7 @@ impl User {
             let _connection = establish_connection();
             diesel::update(self)
                 .set(schema::users::lists.eq(self.lists - count))
-                .get_result::<User>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -1060,7 +1074,7 @@ impl User {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::users::posts.eq(self.posts + count))
-            .get_result::<User>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -1069,7 +1083,7 @@ impl User {
             let _connection = establish_connection();
             diesel::update(self)
                 .set(schema::users::posts.eq(self.posts - count))
-                .get_result::<User>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -1079,7 +1093,7 @@ impl User {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::users::comments.eq(self.comments + count))
-            .get_result::<User>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -1088,7 +1102,7 @@ impl User {
             let _connection = establish_connection();
             diesel::update(self)
                 .set(schema::users::comments.eq(self.comments - count))
-                .get_result::<User>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
             return true;
         }
@@ -1271,11 +1285,9 @@ impl User {
             .filter(schema::user_visible_perms::target_id.eq(user_id))
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .limit(1)
             .select(schema::user_visible_perms::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn is_self_user_in_block(&self, user_id: i32) -> bool {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
@@ -1285,11 +1297,9 @@ impl User {
             .filter(schema::user_visible_perms::user_id.eq(user_id))
             .filter(schema::user_visible_perms::target_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
-            .limit(1)
             .select(schema::user_visible_perms::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn is_connected_with_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::friends::dsl::friends;
@@ -1298,11 +1308,9 @@ impl User {
         return friends
             .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self.user_id))
-            .limit(1)
             .select(schema::friends::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn is_following_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
@@ -1311,10 +1319,9 @@ impl User {
         return follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
-            .limit(1)
             .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.").len() > 0;
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
@@ -1323,16 +1330,14 @@ impl User {
         return follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
-            .limit(1)
             .select(schema::follows::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection)
+            .is_ok();
     }
 
-    pub fn follow_user(&self, user_id: i32) -> () {
+    pub fn follow_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
-            return;
+            return false;
         }
 
         let _connection = establish_connection();
@@ -1340,41 +1345,50 @@ impl User {
             user_id:   self.user_id,
             target_id: user_id,
         };
-        diesel::insert_into(schema::follows::table)
+        let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
+        if new_follow.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unfollow_user(&self, user_id: i32) -> () {
+    pub fn unfollow_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || !self.is_following_user_with_id(user_id) {
-            return;
+            return false;
         }
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        let _follows = follows
+        if follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
-            .load::<Follow>(&_connection)
-            .expect("E");
-        if _follows.len() > 0 {
-            diesel::delete (
+            .first::<Follow>(&_connection).is_ok() {
+                let del = diesel::delete (
                     follows
                         .filter(schema::follows::target_id.eq(user_id))
                         .filter(schema::follows::user_id.eq(self.user_id))
                 )
-                .execute(&_connection)
-                .expect("E");
+                .execute(&_connection);
+            if del.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
         }
+        return false;
     }
 
-    pub fn frend_user(&self, user_id: i32) -> () {
+    pub fn frend_user(&self, user_id: i32) -> bool {
         // тут друзья создаются всего в одном экземпляре, где
         // self.user_id - это id создающего, а user_id -
         // id создаваемого. Это нужно для фильтрации приватности по
         // друзьям.
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
-            return;
+            return false;
         }
         use crate::schema::follows::dsl::follows;
 
@@ -1383,49 +1397,57 @@ impl User {
             user_id:   self.user_id,
             target_id: user_id,
         };
-        diesel::insert_into(schema::friends::table)
+        let new_friend = diesel::insert_into(schema::friends::table)
             .values(&_new_friend)
-            .get_result::<Friend>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
 
-        diesel::delete (
+        let del = diesel::delete (
             follows
                 .filter(schema::follows::user_id.eq(user_id))
                 .or_filter(schema::follows::target_id.eq(self.user_id))
                 .filter(schema::follows::target_id.eq(user_id))
                 .or_filter(schema::follows::user_id.eq(self.user_id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
+        if del.is_ok() && new_friend.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn unfrend_user(&self, user_id: i32) -> () {
+    pub fn unfrend_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
-            return;
+            return false;
         }
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
 
-        diesel::delete (
+        let del = diesel::delete (
             friends
                 .filter(schema::friends::user_id.eq(self.user_id))
                 .filter(schema::friends::target_id.eq(user_id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         let _new_follow = NewFollow {
             user_id:   user_id,
             target_id: self.user_id,
         };
-        diesel::insert_into(schema::follows::table)
+        let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
-            .get_result::<Follow>(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
+        if del.is_ok() && new_follow.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn block_user(&self, user_id: i32) -> () {
+    pub fn block_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || self.is_user_in_block(user_id) {
-            return;
+            return false;
         }
 
         let _connection = establish_connection();
@@ -1470,20 +1492,27 @@ impl User {
             .values(&_user_block)
             .get_result::<UserVisiblePerm>(&_connection)
             .expect("Error.");
+        return true;
     }
-    pub fn unblock_user(&self, user_id: i32) -> () {
+    pub fn unblock_user(&self, user_id: i32) -> bool {
         if self.user_id == user_id || !self.is_user_in_block(user_id) {
-            return;
+            return false;
         }
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
         let _connection = establish_connection();
-        diesel::delete (
+        let del = diesel::delete (
             user_visible_perms
                 .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                .filter(schema::user_visible_perms::target_id.eq(user_id)))
-                .execute(&_connection)
-                .expect("E");
+                .filter(schema::user_visible_perms::target_id.eq(user_id))
+            )
+            .execute(&_connection);
+        if del.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn get_gender_a(&self) -> String {
         if self.is_man {

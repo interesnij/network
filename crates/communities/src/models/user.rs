@@ -577,13 +577,11 @@ impl User {
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
-        let _follows = follows
+        if follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
-            .load::<Follow>(&_connection)
-            .expect("E");
-        if _follows.len() > 0 {
-            let del = diesel::delete (
+            .first::<Follow>(&_connection).is_ok() {
+                let del = diesel::delete (
                     follows
                         .filter(schema::follows::target_id.eq(user_id))
                         .filter(schema::follows::user_id.eq(self.user_id))

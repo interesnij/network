@@ -134,18 +134,6 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
-    pub fn is_user_banned(&self, user_id: i32) -> bool {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-
-        return community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq(user_id))
-            .filter(schema::community_visible_perms::types.eq(20))
-            .select(schema::community_visible_perms::id)
-            .first::<i32>(&_connection).is_ok();
-    }
     pub fn create_community(community: NewCommunityJson) -> Community {
         use crate::schema::communitys::dsl::communitys;
 
@@ -156,15 +144,11 @@ impl Community {
             .select(schema::communitys::id)
             .load::<i32>(&_connection)
             .expect("E")
-            .len() == 0 {
+            .len() > 0 {
                 return communitys
                     .filter(schema::communitys::community_id.eq(community.community_id))
-                    .limit(1)
-                    .load::<Community>(&_connection)
-                    .expect("E")
-                    .into_iter()
-                    .nth(0)
-                    .unwrap();
+                    .first::<Community>(&_connection)
+                    .expect("E");
         }
         let new_community_form = NewCommunity {
             community_id:   community.community_id,
@@ -197,11 +181,8 @@ impl Community {
                 if communities_memberships
                     .filter(schema::communities_memberships::user_id.eq(user_id))
                     .filter(schema::communities_memberships::community_id.eq(community_id))
-                    .limit(1)
                     .select(schema::communities_memberships::id)
-                    .load::<i32>(&_connection)
-                    .expect("E")
-                    .len() == 0 {
+                    .first::<i32>(&_connection).is_ok() {
                         let new_form = NewCommunitiesMembership {
                             user_id:      user_id,
                             community_id: community_id,
@@ -403,40 +384,51 @@ impl Community {
             .select(schema::community_visible_perms::id)
             .first::<i32>(&_connection).is_ok();
     }
-    pub fn create_banned_user(&self, user_id: i32) -> () {
+    pub fn create_banned_user(&self, user_id: i32) -> bool {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
         let _connection = establish_connection();
 
-        diesel::delete(community_visible_perms
+        let del = diesel::delete (
+            community_visible_perms
                 .filter(schema::community_visible_perms::community_id.eq(self.community_id))
                 .filter(schema::community_visible_perms::target_id.eq(user_id))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
 
         let new_banned_user = NewCommunityVisiblePerm {
             community_id: self.community_id,
             target_id:    user_id,
             types:        20,
         };
-        diesel::insert_into(schema::community_visible_perms::table)
+        let ok_1 = diesel::insert_into(schema::community_visible_perms::table)
             .values(&new_banned_user)
-            .execute(&_connection)
-            .expect("Error.");
+            .execute(&_connection);
+
+        if del.is_ok() && ok_1.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    pub fn delete_banned_user(&self, user_id: i32) -> () {
+    pub fn delete_banned_user(&self, user_id: i32) -> bool {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
         let _connection = establish_connection();
-        diesel::delete(
+        let del = diesel::delete (
             community_visible_perms
                 .filter(schema::community_visible_perms::community_id.eq(self.community_id))
                 .filter(schema::community_visible_perms::target_id.eq(user_id))
                 .filter(schema::community_visible_perms::types.eq(20))
             )
-            .execute(&_connection)
-            .expect("E");
+            .execute(&_connection);
+        if del.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn create_administrator(&self, user_id: i32) -> bool {
         // нужно создавать объект уведомлений для сообщества для нового админа
@@ -451,11 +443,15 @@ impl Community {
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
 
-        diesel::update(&member[0])
+        let ok = diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(5))
-            .execute(&_connection)
-            .expect("Error.");
-        return true;
+            .execute(&_connection);
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn create_editor(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
@@ -469,11 +465,15 @@ impl Community {
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
 
-        diesel::update(&member[0])
+        let ok = diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(3))
-            .execute(&_connection)
-            .expect("Error.");
-        return true;
+            .execute(&_connection);
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn create_moderator(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
@@ -487,11 +487,15 @@ impl Community {
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
 
-        diesel::update(&member[0])
+        let ok = diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(2))
-            .execute(&_connection)
-            .expect("Error.");
-        return true;
+            .execute(&_connection);
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn create_advertisor(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
@@ -505,11 +509,15 @@ impl Community {
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
 
-        diesel::update(&member[0])
+        let ok = diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(4))
-            .execute(&_connection)
-            .expect("Error.");
-        return true;
+            .execute(&_connection);
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
     pub fn delete_staff_member(&self, user_id: i32) -> bool {
         // нужно удалять объект уведомлений для сообщества
@@ -524,11 +532,15 @@ impl Community {
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
 
-        diesel::update(&member[0])
+        let ok = diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(1))
-            .execute(&_connection)
-            .expect("Error.");
-        return true;
+            .execute(&_connection);
+        if ok.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     pub fn get_members_ids(&self) -> Vec<i32> {
@@ -921,7 +933,7 @@ impl Community {
             };
             diesel::insert_into(schema::community_visible_perms::table)
                 .values(&_new_perm)
-                .get_result::<CommunityVisiblePerm>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
         }
         return true;
