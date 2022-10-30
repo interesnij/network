@@ -195,11 +195,17 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<AddUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let user_id = params.user_id;
-
-        let body = serde_json::to_string(&PostList::get_add_list_json().expect("E."))
-            .unwrap();
+        if params.user_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'user_id' not found!".to_string(),
+            }).unwrap();
             HttpResponse::Ok().body(body)
+        }
+        else {
+            let body = serde_json::to_string(&PostList::get_add_list_json().expect("E."))
+                .unwrap();
+                HttpResponse::Ok().body(body)
+        }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
