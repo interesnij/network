@@ -86,6 +86,17 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn is_member_of_community(&self, community_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::models::CommunitiesMembership;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(community_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
     pub fn get_longest_penalties(&self) -> String {
         return "".to_string();
     }

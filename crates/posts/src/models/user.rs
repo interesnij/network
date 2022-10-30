@@ -1340,7 +1340,7 @@ impl User {
         &self,
         friends_ids: Option<Vec<i32>>,
         communities_ids: Option<Vec<i32>>
-    ) -> bool {
+    ) -> () {
         use crate::models::{NewFeaturedUserCommunitie, FeaturedUserCommunitie};
         use crate::schema::featured_user_communities::dsl::featured_user_communities;
 
@@ -1391,7 +1391,9 @@ impl User {
                 }
             }
             return true;
+        }
     }
+    
     pub fn delete_user_featured_object (
         &self,
         user_id: i32,
@@ -1425,6 +1427,17 @@ impl User {
         else {
             return false;
         }
+    }
+    pub fn is_member_of_community(&self, community_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::models::CommunitiesMembership;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(community_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
     }
 
     pub fn follow_user (
