@@ -2,6 +2,16 @@ use serde::{Serialize, Deserialize};
 use crate::utils::AttachmentsJson;
 
 
+#[derive(Debug, Serialize)]
+pub struct ReactionsJson {
+    pub reactions: Vec<ReactionJson>,
+}
+#[derive(Debug, Serialize)]
+pub struct ReactionJson {
+    pub image: String,
+    pub name:  String,
+}
+
 #[derive(Deserialize)]
 pub struct JsonPosition {
     pub key:   i32,

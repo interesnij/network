@@ -153,6 +153,20 @@ impl PostList {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
+    pub fn get_add_list_json(&self) -> Result<ReactionsJson, Error> {
+        use crate::schema::reactions::dsl::reactions;
+        use crate::utils::ReactionJson;
+
+        let _reactions = reactions
+            .select((
+                schema::communitys::image,
+                schema::communitys::name,
+            ))
+            .load::<ReactionJson>(&_connection)?;
+        return Ok(ReactionsJson {
+            reactions: _reactions,
+        });
+    }
     pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {
         let _connection = establish_connection();
         if self.community_id.is_some() {
