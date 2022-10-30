@@ -79,17 +79,6 @@ pub struct EditPostComment {
 }
 
 impl PostComment {
-    pub fn get_reactions (
-        &self,
-        reaction_id:   &i32,
-        user_reaction: Option<i32>,
-    ) -> SmallReactionBlockJson {
-        return SmallReactionBlockJson {
-            count:    self.get_count_model_for_reaction(*reaction_id).count,
-            reaction: *reaction_id,
-        };
-    }
-
     pub fn get_6_user_of_reaction (
         &self,
         reaction_id:   &i32,
@@ -129,15 +118,15 @@ impl PostComment {
                     owner_name:       _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
                     owner_link:       _item.link.clone(),
                     owner_image:      _item.image.clone(),
-                    is_user_reaction: &user_reaction.unwrap() == reaction_id,
                 }
             );
         }
         return ReactionBlockJson {
-                count:    self.get_count_model_for_reaction(*reaction_id).count,
-                reaction: *reaction_id,
-                users:    user_json,
-            };
+            count:         self.get_count_model_for_reaction(*reaction_id).count,
+            reaction:      *reaction_id,
+            users:         user_json,
+            user_react_id: user_reaction,
+        };
     }
     pub fn get_users_of_reaction (
         &self,
@@ -181,15 +170,15 @@ impl PostComment {
                     owner_name:       _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
                     owner_link:       _item.link.clone(),
                     owner_image:      _item.image.clone(),
-                    is_user_reaction: &user_reaction.unwrap() == reaction_id,
                 }
             );
         }
         return ReactionBlockJson {
-                count:    self.get_count_model_for_reaction(*reaction_id).count,
-                reaction: *reaction_id,
-                users:    user_json,
-            };
+            count:         self.get_count_model_for_reaction(*reaction_id).count,
+            reaction:      *reaction_id,
+            users:         user_json,
+            user_react_id: user_reaction,
+        };
     }
 
     pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<SmallReactionBlockJson>> {

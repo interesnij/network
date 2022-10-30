@@ -198,16 +198,15 @@ pub struct ReactionBlockJson {
 pub struct SmallReactionBlockJson {
     pub count:         i32,
     pub reaction:      i32,
-    pub user_react_id: Option<i32>,
+    pub user_react_id: i32,
 }
 
 #[derive(Serialize, Queryable)]
 // // это карточка того, кто поставил реакцию
 pub struct CardReactionPostJson {
-    pub owner_name:       String,
-    pub owner_link:       String,
-    pub owner_image:      Option<String>,
-    pub is_user_reaction: bool,
+    pub owner_name:  String,
+    pub owner_link:  String,
+    pub owner_image: Option<String>,
 }
 ////////////////////////
 
