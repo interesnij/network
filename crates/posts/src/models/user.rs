@@ -1347,7 +1347,7 @@ impl User {
         let _connection = establish_connection();
         if friends_ids.is_some() {
             for friend_id in friends_ids.unwrap() {
-                if !self.is_connected_with_user_with_id(*friend_id) && !featured_user_communities
+                if !self.is_connected_with_user_with_id(friend_id) && !featured_user_communities
                     .filter(schema::featured_user_communities::owner.eq(self.id))
                     .filter(schema::featured_user_communities::user_id.eq(friend_id))
                     .select(schema::featured_user_communities::id)
@@ -1370,7 +1370,7 @@ impl User {
         }
         if communities_ids.is_some() {
             for community_id in communities_ids.unwrap() {
-                if !self.is_member_of_community(*community_id) && !featured_user_communities
+                if !self.is_member_of_community(community_id) && !featured_user_communities
                     .filter(schema::featured_user_communities::owner.eq(self.id))
                     .filter(schema::featured_user_communities::community_id.eq(community_id))
                     .select(schema::featured_user_communities::id)
@@ -1397,6 +1397,9 @@ impl User {
         &self,
         user_id: i32,
     )  -> bool {
+        use crate::schema::featured_user_communities::dsl::featured_user_communities;
+
+        let _connection = establish_connection();
         let del = diesel::delete (
             featured_user_communities
             .filter(schema::featured_user_communities::owner.eq(self.id))
@@ -1414,6 +1417,9 @@ impl User {
         &self,
         community_id: i32,
     )  -> bool {
+        use crate::schema::featured_user_communities::dsl::featured_user_communities;
+
+        let _connection = establish_connection();
         let del = diesel::delete (
             featured_user_communities
             .filter(schema::featured_user_communities::owner.eq(self.id))
