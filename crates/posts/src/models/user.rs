@@ -875,20 +875,20 @@ impl User {
                     .expect("Error.");
         }
     }
-    pub fn add_new_user_subscriber(&self, user: &User) -> () {
+    pub fn add_new_user_subscriber(&self, user_id: i32) -> () {
         use crate::models::NewNewsUserCommunitie;
         use crate::schema::news_user_communities::dsl::news_user_communities;
 
         let _connection = establish_connection();
         if news_user_communities
             .filter(schema::news_user_communities::owner.eq(self.id))
-            .filter(schema::news_user_communities::user_id.eq(user.id))
+            .filter(schema::news_user_communities::user_id.eq(user_id))
             .select(schema::news_user_communities::id)
             .first::<i32>(&_connection).is_ok() {
                 let _new = NewNewsUserCommunitie {
                     owner: self.id,
                     list_id: None,
-                    user_id: Some(user.id),
+                    user_id: Some(user_id),
                     community_id: None,
                     mute: false,
                     sleep: None,
@@ -1393,7 +1393,7 @@ impl User {
             return true;
         }
     }
-    
+
     pub fn delete_user_featured_object (
         &self,
         user_id: i32,
@@ -1461,7 +1461,7 @@ impl User {
             .execute(&_connection);
         if new_follow.is_ok() {
             if is_user_see_all {
-                self.add_new_subscriber(user_id);
+                self.add_new_user_subscriber(user_id);
                 self.get_or_create_featured_objects(friends_ids, communities_ids);
             }
             return true;
@@ -1541,7 +1541,7 @@ impl User {
         if del.is_ok() && new_friend.is_ok() {
             self.delete_user_featured_object(user_id);
             if !is_user_see_all {
-                self.add_new_subscriber(user_id);
+                self.add_new_user_subscriber(user_id);
                 self.get_or_create_featured_objects(friends_ids, communities_ids);
             }
             return true;
@@ -1580,7 +1580,7 @@ impl User {
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
             }
-            self.get_or_create_featured_objects(vec!(user_id), None);
+            self.get_or_create_featured_objects(Some(vec!(user_id)), None);
             return true;
         }
         else {
