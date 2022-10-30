@@ -6,7 +6,6 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
 };
 use crate::schema;
 use crate::schema::{
@@ -15,7 +14,7 @@ use crate::schema::{
     follows,
     user_visible_perms,
 };
-use actix_web::web::Json;
+
 use crate::errors::Error;
 ///// Типы пользоватетеля
     // 1 стандартный тип пользователя
@@ -828,7 +827,7 @@ impl User {
         }
     }
     pub fn add_new_community_subscriber (&self, community_id: i32) -> () {
-        use crate::models::{NewsUserCommunitie, NewNewsUserCommunitie};
+        use crate::models::NewNewsUserCommunitie;
         use crate::schema::news_user_communities::dsl::news_user_communities;
 
         let _connection = establish_connection();
@@ -853,7 +852,7 @@ impl User {
     }
 
     pub fn add_notification_community_subscriber (&self, community_id: i32) -> () {
-        use crate::models::{NotifyUserCommunitie, NewNotifyUserCommunitie};
+        use crate::models::NewNotifyUserCommunitie;
         use crate::schema::notify_user_communities::dsl::notify_user_communities;
 
         let _connection = establish_connection();
@@ -877,7 +876,7 @@ impl User {
         }
     }
     pub fn add_new_user_subscriber(&self, user: &User) -> () {
-        use crate::models::{NewsUserCommunitie, NewNewsUserCommunitie};
+        use crate::models::NewNewsUserCommunitie;
         use crate::schema::news_user_communities::dsl::news_user_communities;
 
         let _connection = establish_connection();
@@ -965,7 +964,7 @@ impl User {
     }
 
     pub fn add_notification_user_subscriber(&self, user: &User) -> () {
-        use crate::models::{NotifyUserCommunitie, NewNotifyUserCommunitie};
+        use crate::models::NewNotifyUserCommunitie;
         use crate::schema::notify_user_communities::dsl::notify_user_communities;
 
         let _connection = establish_connection();

@@ -15,7 +15,6 @@ use crate::utils::{
     get_post_list,
     PostListDetailJson,
     PostListPageJson,
-    UserListJson,
     CardUserJson,
     CardOwnerJson,
 };

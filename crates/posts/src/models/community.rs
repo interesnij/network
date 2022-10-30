@@ -6,7 +6,6 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
 };
 use crate::schema;
 use crate::schema::{
@@ -14,7 +13,6 @@ use crate::schema::{
     communities_memberships,
     community_visible_perms,
 };
-use actix_web::web::Json;
 use crate::errors::Error;
 
 /////// Community //////
