@@ -53,7 +53,7 @@ pub struct LoadListParams {
 }
 #[derive(Debug, Serialize)]
 pub struct ErrorParams {
-    pub info: String,
+    pub error: String,
 }
 
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
@@ -69,7 +69,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
-                info: "list not found!".to_string(),
+                error: "list not found!".to_string(),
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
@@ -94,7 +94,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 let _tuple = get_community_permission(&community, user_id);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
-                        info: _tuple.1.to_string(),
+                        error: _tuple.1.to_string(),
                     }).unwrap();
                     HttpResponse::Ok().body(body)
                 }
@@ -116,7 +116,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 let _tuple = get_user_permission(&owner, user_id);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
-                        info: _tuple.1.to_string(),
+                        error: _tuple.1.to_string(),
                     }).unwrap();
                     HttpResponse::Ok().body(body)
                 }
@@ -140,7 +140,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 let _tuple = get_anon_community_permission(&community);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
-                        info: _tuple.1.to_string(),
+                        error: _tuple.1.to_string(),
                     }).unwrap();
                     HttpResponse::Ok().body(body)
                 }
@@ -161,7 +161,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 let _tuple = get_anon_user_permission(&owner);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
-                        info: _tuple.1.to_string(),
+                        error: _tuple.1.to_string(),
                     }).unwrap();
                     HttpResponse::Ok().body(body)
                 }
@@ -181,7 +181,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            info: "parametr 'list_id' not found".to_string(),
+            error: "parametr 'list_id' not found".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
