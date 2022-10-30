@@ -664,28 +664,6 @@ impl PostList {
 
         return items;
     }
-    pub fn get_see_el_exclude_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_see_el_exclude(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_see_el_exclude(limit.into(), 0);
-        }
-        if self.get_see_el_exclude(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_see_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -707,28 +685,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_see_el_include_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_see_el_include(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_see_el_include(limit.into(), 0);
-        }
-        if self.get_see_el_include(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_see_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -777,27 +733,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_see_comment_exclude_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_see_comment_exclude(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_see_comment_exclude(limit.into(), 0);
-        }
-        if self.get_see_comment_exclude(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_see_comment_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -819,27 +754,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_see_comment_include_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_see_comment_include(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_see_comment_include(limit.into(), 0);
-        }
-        if self.get_see_comment_include(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_see_comment_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -888,27 +802,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_create_el_exclude_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_create_el_exclude(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_create_el_exclude(limit.into(), 0);
-        }
-        if self.get_create_el_exclude(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_create_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -930,27 +823,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_create_el_include_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_create_el_include(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_create_el_include(limit.into(), 0);
-        }
-        if self.get_create_el_include(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_create_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -999,27 +871,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_create_comment_exclude_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_create_comment_exclude(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_create_comment_exclude(limit.into(), 0);
-        }
-        if self.get_create_comment_exclude(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_create_comment_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -1041,27 +892,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_create_comment_include_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_create_comment_include(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_create_comment_include(limit.into(), 0);
-        }
-        if self.get_create_comment_include(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_create_comment_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -1110,27 +940,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_copy_el_exclude_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_copy_el_exclude(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_copy_el_exclude(limit.into(), 0);
-        }
-        if self.get_copy_el_exclude(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_copy_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -1152,27 +961,6 @@ impl PostList {
         return items;
     }
 
-    pub fn get_copy_el_include_json(&self, page: i32, limit: i32) -> Json<UserListJson> {
-        let mut next_page_number = 0;
-        let users: Vec<CardUserJson>;
-        let have_next: i32;
-        if page > 1 {
-            have_next = page * limit + 1;
-            users = self.get_copy_el_include(limit.into(), have_next.into());
-        }
-        else {
-            have_next = limit + 1;
-            users = self.get_copy_el_include(limit.into(), 0);
-        }
-        if self.get_copy_el_include(1, have_next.into()).len() > 0 {
-            next_page_number = page + 1;
-        }
-
-        return Json(UserListJson {
-            users:     users,
-            next_page: next_page_number,
-        });
-    }
     pub fn get_copy_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 

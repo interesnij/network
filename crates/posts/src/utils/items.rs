@@ -27,8 +27,7 @@ pub struct SParams {
 #[derive(Serialize)]
 // это объекты пользователей
 pub struct UserListJson {
-    pub users:     Vec<CardUserJson>,
-    pub next_page: i32,
+    pub users: Vec<CardUserJson>,
 }
 #[derive(Serialize, Queryable)]
 // это объект пользователя
@@ -188,17 +187,17 @@ pub struct RepostsPostJson {
 #[derive(Serialize, Queryable)]
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct ReactionBlockJson {
-    pub count:         i32,
-    pub reaction:      i32,
-    pub users:         Vec<CardReactionPostJson>,
-    pub user_react_id: Option<i32>,
+    pub count:         i32,                       // кол-во отреагировавших
+    pub reaction:      i32,                       // id реакции
+    pub users:         Vec<CardReactionPostJson>, // отреагировавшие
+    pub user_react_id: Option<i32>,               // id реакции текущего пользователя, на которую он реагировал
 }
 #[derive(Serialize, Queryable)]
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct SmallReactionBlockJson {
-    pub count:         i32,
-    pub reaction:      i32,
-    pub user_react_id: i32,
+    pub count:         i32, // кол-во отреагировавших
+    pub reaction:      i32, // id реакции
+    pub user_react_id: i32, // id реакции текущего пользователя, на которую он реагировал
 }
 
 #[derive(Serialize, Queryable)]
@@ -216,7 +215,6 @@ pub struct CardReactionPostJson {
 pub struct CommentsJson {
     pub reactions_list: Vec<CardReactionPostJson>,
     pub comments:       Vec<CardCommentJson>,
-    pub next_page:      i32,
 }
 
 #[derive(Serialize)]
@@ -224,13 +222,11 @@ pub struct CommentsJson {
 pub struct RepliesJson {
     pub reactions_list: Vec<CardReactionPostJson>,
     pub replies:        Vec<CardReplyJson>,
-    pub next_page:      i32,
 }
 #[derive(Serialize)]
 // это объекты ответов для встраивания
 pub struct RepliesSmallJson {
-    pub replies:        Vec<CardReplyJson>,
-    pub next_page:      i32,
+    pub replies: Vec<CardReplyJson>,
 }
 
 #[derive(Serialize, Queryable)]
