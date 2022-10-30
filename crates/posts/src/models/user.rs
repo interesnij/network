@@ -173,6 +173,7 @@ impl User {
                 if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
+                    .select(schema::follows::id)
                     .first::<i32>(&_connection).is_ok() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
@@ -932,7 +933,7 @@ impl User {
             .filter(schema::news_user_communities::id.eq(new_id))
             .first::<NewsUserCommunitie>(&_connection)
             .expect("E");
-        if _new.len() > 0 && _new.owner == self.id {
+        if _new.owner == self.id {
             diesel::delete(
                 news_user_communities
                     .filter(schema::news_user_communities::id.eq(new_id))
@@ -954,12 +955,13 @@ impl User {
             .expect("E");
         let null_value: Option<i32> = None;
 
-        if _new.len() > 0 && _new.owner == self.id {
+        if _new.owner == self.id {
             diesel::update(news_user_communities.filter(schema::news_user_communities::id.eq(new_id)))
                 .set(schema::news_user_communities::list_id.eq(null_value))
                 .execute(&_connection)
                 .expect("Error.");
-            }
+        }
+        return true;
     }
 
     pub fn add_notification_user_subscriber(&self, user: &User) -> () {
@@ -1001,7 +1003,7 @@ impl User {
             .first::<ListUserCommunitiesKey>(&_connection)
             .expect("E");
 
-        if _notify.len() > 0 && _notify.owner == self.id && _list.owner == self.id {
+        if _notify.owner == self.id && _list.owner == self.id {
             diesel::update(notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)))
                 .set(schema::notify_user_communities::list_id.eq(_list.id))
                 .execute(&_connection)
@@ -1017,7 +1019,7 @@ impl User {
             .filter(schema::notify_user_communities::id.eq(notify_id))
             .first::<NotifyUserCommunitie>(&_connection)
             .expect("E");
-        if _notify.len() > 0 && _notify.owner == self.id {
+        if _notify.owner == self.id {
             let del = diesel::delete (
                 notify_user_communities
                     .filter(schema::notify_user_communities::id.eq(notify_id))
@@ -1042,7 +1044,7 @@ impl User {
             .first::<NotifyUserCommunitie>(&_connection)
             .expect("E");
         let null_value: Option<i32> = None;
-        if _notify.len() > 0 && _notify.owner == self.id {
+        if _notify.owner == self.id {
             diesel::update(notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)))
                 .set(schema::notify_user_communities::list_id.eq(null_value))
                 .execute(&_connection)
