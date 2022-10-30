@@ -65,7 +65,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         let list: PostList;
         let list_res = get_post_list(params.list_id);
         if list_res.is_ok() {
-            list = list_res.except("E");
+            list = list_res.expect("E");
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
