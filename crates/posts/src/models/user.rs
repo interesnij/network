@@ -1632,7 +1632,7 @@ impl User {
 
         // удалим id блокируемого из таблицы включений / исключений
         diesel::delete (
-            user_visible_perms
+            schema::user_visible_perms::table
                 .filter(schema::user_visible_perms::user_id.eq(self.user_id))
                 .filter(schema::user_visible_perms::target_id.eq(user_id))
             )
@@ -1713,7 +1713,7 @@ impl User {
             return false;
         }
         let _connection = establish_connection();
-        self.delete_new_community_subscriber(community_id);
+        self.delete_new_subscriber(community_id);
         diesel::delete (
             communities_memberships
                 .filter(schema::communities_memberships::user_id.eq(self.id))
