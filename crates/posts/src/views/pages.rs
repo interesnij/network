@@ -201,6 +201,12 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
+        else if get_user(params.user_id.unwrap()).is_err() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "user not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
         else {
             let body = serde_json::to_string(&PostList::get_add_list_json().expect("E."))
                 .unwrap();
