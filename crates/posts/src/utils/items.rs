@@ -133,9 +133,9 @@ pub struct CardPostJson {
     pub repost:         i32,
     pub is_signature:   bool,
     pub reactions:      i32,
-    pub types:          String,                         // например pos1
+    pub types:          String,                          // например pos1
     pub parent:         Option<CardParentPostJson>,     // пост родитель
-    pub reactions_list: Option<Vec<ReactionBlockJson>>,
+    pub reactions_list: Option<Vec<SmallReactionBlockJson>>,
     pub attachments:    Option<AttachmentsJson>,
 }
 
@@ -158,7 +158,7 @@ pub struct PostDetailJson {
     pub types:                String,                         // например pos1
     pub parent:               Option<CardParentPostJson>,     // пост родитель
     pub reposts:              RepostsPostJson,                // кто репостил пост (6 объектов)
-    pub reactions_list:       Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
+    pub reactions_list:       Option<Vec<SmallReactionBlockJson>>, // блок реакции (6 объектов)
     pub prev:                 Option<i32>,
     pub next:                 Option<i32>,
     pub is_user_see_comments: bool,
@@ -192,6 +192,13 @@ pub struct ReactionBlockJson {
     pub reaction: i32,
     pub users:    Vec<CardReactionPostJson>,
 }
+#[derive(Serialize, Queryable)]
+// это инфо о тех, кто реагировал и общее количество у реакции
+pub struct SmallReactionBlockJson {
+    pub count:    i32,
+    pub reaction: i32,
+}
+
 #[derive(Serialize, Queryable)]
 // // это карточка того, кто поставил реакцию
 pub struct CardReactionPostJson {
@@ -236,7 +243,7 @@ pub struct CardCommentJson {
     pub reactions:      i32,
     pub types:          String, // например cpo1
     pub replies:        i32,    // кол-во ответов
-    pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
+    pub reactions_list: Option<Vec<SmallReactionBlockJson>>, // блок реакции (6 объектов)
     pub attachments:    Option<AttachmentsJson>,
 }
 #[derive(Serialize, Queryable)]
@@ -249,7 +256,7 @@ pub struct CardReplyJson {
     pub created:        String,
     pub reactions:      i32,
     pub types:          String, // например cpo1 - ответ
-    pub reactions_list: Option<Vec<ReactionBlockJson>>, // блок реакции (6 объектов)
+    pub reactions_list: Option<Vec<SmallReactionBlockJson>>, // блок реакции (6 объектов)
     pub attachments:    Option<AttachmentsJson>,
 }
 

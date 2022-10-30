@@ -16,6 +16,7 @@ use crate::utils::{
     CardCommentJson,
     CardReplyJson,
     ReactionBlockJson,
+    SmallReactionBlockJson,
     RepliesSmallJson,
     AttachmentsJson,
 };
@@ -78,6 +79,17 @@ pub struct EditPostComment {
 }
 
 impl PostComment {
+    pub fn get_reactions (
+        &self,
+        reaction_id:   &i32,
+        user_reaction: Option<i32>,
+    ) -> SmallReactionBlockJson {
+        return SmallReactionBlockJson {
+            count:    self.get_count_model_for_reaction(*reaction_id).count,
+            reaction: *reaction_id,
+        };
+    }
+
     pub fn get_6_user_of_reaction (
         &self,
         reaction_id:   &i32,

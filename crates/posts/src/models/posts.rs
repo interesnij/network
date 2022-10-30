@@ -16,6 +16,7 @@ use crate::utils::{
     RepostsPostJson,
     CardPostJson,
     ReactionBlockJson,
+    SmallReactionBlockJson,
     PostDetailJson,
     CardUserJson,
     CardOwnerJson,
@@ -112,6 +113,17 @@ pub struct EditPostPosition {
 }
 
 impl Post {
+    pub fn get_reactions (
+        &self,
+        reaction_id:   &i32,
+        user_reaction: Option<i32>,
+    ) -> SmallReactionBlockJson {
+        return SmallReactionBlockJson {
+            count:    self.get_count_model_for_reaction(*reaction_id).count,
+            reaction: *reaction_id,
+        };
+    }
+
     pub fn item_message_reposts_count (
         item_id: i32,
         types: i16
