@@ -97,6 +97,7 @@ impl User {
             .select(schema::communities_memberships::id)
             .first::<i32>(&_connection).is_ok();
     }
+
     pub fn get_longest_penalties(&self) -> String {
         return "".to_string();
     }
@@ -111,6 +112,8 @@ impl User {
             .select(schema::community_banned_users::id)
             .load::<i32>(&_connection).is_ok();
     }
+
+
     pub fn count_communities(&self) -> i32 {
         return self.communities;
     }

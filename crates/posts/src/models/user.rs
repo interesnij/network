@@ -1630,6 +1630,15 @@ impl User {
                 .expect("E");
         }
 
+        // удалим id блокируемого из таблицы включений / исключений
+        diesel::delete (
+            user_visible_perms
+                .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                .filter(schema::user_visible_perms::target_id.eq(user_id))
+            )
+            .execute(&_connection)
+            .expect("E");
+
         let _user_block = NewUserVisiblePerm {
             user_id:   self.user_id,
             target_id: user_id,
@@ -1643,6 +1652,7 @@ impl User {
         self.delete_new_subscriber(user_id);
         self.delete_user_featured_object(user_id);
         self.delete_notification_subscriber(user_id);
+
         return true;
     }
     pub fn unblock_user(&self, user_id: i32) -> bool {
@@ -1665,6 +1675,55 @@ impl User {
             return false;
         }
     }
+
+    pub fn is_user_in_ban(&self, community_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::target_id.eq(self.user_id))
+            .filter(schema::community_visible_perms::community_id.eq(community_id))
+            .filter(schema::community_visible_perms::types.eq(20))
+            .select(schema::community_visible_perms::id)
+            .first::<i32>(&_connection).is_ok();
+    }
+    pub fn join_community(&self, community_id: i32) -> bool {
+        use crate::models::{CommunitiesMembership, NewCommunitiesMembership};
+
+        if self.is_member_of_community(community_id) || self.is_user_in_ban(community_id) {
+            return false;
+        }
+        let _connection = establish_connection();
+        let new_member = NewCommunitiesMembership {
+            user_id: self.id,
+            community_id: community_id,
+            level: 1,
+        };
+        diesel::insert_into(schema::communities_memberships::table)
+            .values(&new_member)
+            .execute(&_connection)
+            .expect("Error.");
+        self.add_new_community_subscriber(community_id);
+        return true;
+    }
+    pub fn leave_community(&self, community_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        if !self.is_member_of_community(community_id) {
+            return false;
+        }
+        let _connection = establish_connection();
+        self.delete_new_community_subscriber(community_id);
+        diesel::delete (
+            communities_memberships
+                .filter(schema::communities_memberships::user_id.eq(self.id))
+                .filter(schema::communities_memberships::community_id.eq(community_id))
+            )
+            .execute(&_connection)
+            .expect("E");
+        return true;
+    }
+
     pub fn get_gender_a(&self) -> String {
         if self.is_man {
             return "".to_string();
