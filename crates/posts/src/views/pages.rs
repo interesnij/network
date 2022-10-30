@@ -91,7 +91,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 }
                 else {
                     let lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
-                    let body = serde_json::to_string(&PostList::get_json_community_post_list(
+                    let body = serde_json::to_string(&PostList::get_community_post_list(
                         community,
                         user_id,
                         list,
@@ -113,7 +113,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 }
                 else {
                     let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
-                    let body = serde_json::to_string(&PostList::get_json_user_post_list (
+                    let body = serde_json::to_string(&PostList::get_user_post_list (
                         owner,
                         user_id,
                         list,
@@ -137,7 +137,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 }
                 else {
                     let lists = PostList::get_community_post_lists(list.community_id.unwrap(), 10, 0);
-                    let body = serde_json::to_string(&PostList::get_json_anon_community_post_list(
+                    let body = serde_json::to_string(&PostList::get_anon_community_post_list(
                         community,
                         list,
                         lists,
@@ -158,7 +158,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                 }
                 else {
                     let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
-                    let body = serde_json::to_string(&PostList::get_json_anon_user_post_list (
+                    let body = serde_json::to_string(&PostList::get_anon_user_post_list (
                         owner,
                         list,
                         lists,

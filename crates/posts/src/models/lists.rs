@@ -194,7 +194,7 @@ impl PostList {
         }
     }
 
-    pub fn get_json_user_post_page(user_id: i32) -> Option<PostListPageJson> {
+    pub fn get_user_post_page(user_id: i32) -> Option<PostListPageJson> {
         use crate::utils::CardPostListJson;
 
         let selected_post_list_pk = PostList::get_user_selected_post_list_pk(user_id);
@@ -230,7 +230,7 @@ impl PostList {
         };
         return Some(data);
     }
-    pub fn get_json_community_post_page(community_id: i32) -> PostListPageJson {
+    pub fn get_community_post_page(community_id: i32) -> PostListPageJson {
         use crate::utils::CardPostListJson;
 
         let selected_post_list_pk = PostList::get_community_selected_post_list_pk(community_id);
@@ -266,7 +266,7 @@ impl PostList {
         return data;
     }
 
-    pub fn get_json_user_post_list (
+    pub fn get_user_post_list (
         owner:   User,
         user_id: i32,
         list:    PostList,
@@ -276,6 +276,14 @@ impl PostList {
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        
         let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
@@ -316,7 +324,7 @@ impl PostList {
         };
         return Json(data);
     }
-    pub fn get_json_anon_user_post_list (
+    pub fn get_anon_user_post_list (
         owner:   User,
         list:    PostList,
         lists:   Vec<PostList>,
@@ -324,6 +332,14 @@ impl PostList {
         offset:  i64,
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
 
         let mut lists_json = Vec::new();
         for i in lists.iter() {
@@ -366,7 +382,7 @@ impl PostList {
         return Json(data);
     }
 
-    pub fn get_json_community_post_list (
+    pub fn get_community_post_list (
         community: Community,
         user_id:   i32,
         list:      PostList,
@@ -375,6 +391,14 @@ impl PostList {
         offset:    i64,
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
 
         let mut lists_json = Vec::new();
         for i in lists.iter() {
@@ -416,7 +440,7 @@ impl PostList {
         };
         return Json(data);
     }
-    pub fn get_json_anon_community_post_list (
+    pub fn get_anon_community_post_list (
         community: Community,
         list:      PostList,
         lists:     Vec<PostList>,
@@ -424,6 +448,14 @@ impl PostList {
         offset:    i64,
     ) -> Json<PostListDetailJson> {
         use crate::utils::CardPostListJson;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
 
         let mut lists_json = Vec::new();
         for i in lists.iter() {
