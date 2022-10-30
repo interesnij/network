@@ -6,7 +6,6 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
     NullableExpressionMethods,
-    ReactionsJson,
 };
 use crate::schema::post_lists;
 use crate::errors::Error;
@@ -18,6 +17,7 @@ use crate::utils::{
     PostListPageJson,
     CardUserJson,
     CardOwnerJson,
+    ReactionsJson,
 };
 use actix_web::web::Json;
 use crate::models::{
