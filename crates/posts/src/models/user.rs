@@ -1356,7 +1356,7 @@ impl User {
                     let new_featured = NewFeaturedUserCommunitie {
                         owner: self.id,
                         list_id: None,
-                        user_id: Some(*friend_id),
+                        user_id: Some(friend_id),
                         community_id: None,
                         mute: false,
                         sleep: None,
@@ -1380,7 +1380,7 @@ impl User {
                         owner: self.id,
                         list_id: None,
                         user_id: None,
-                        community_id: Some(*community_id),
+                        community_id: Some(community_id),
                         mute: false,
                         sleep: None,
                     };
@@ -1390,7 +1390,6 @@ impl User {
                         .expect("Error.");
                 }
             }
-            return true;
         }
     }
 
