@@ -158,10 +158,11 @@ impl PostList {
         use crate::schema::reactions::dsl::reactions;
         use crate::utils::ReactionJson;
 
+        let _connection = establish_connection();
         let _reactions = reactions
             .select((
-                schema::communitys::image,
-                schema::communitys::name,
+                schema::reactions::image,
+                schema::reactions::name,
             ))
             .load::<ReactionJson>(&_connection)?;
         return Ok(ReactionsJson {
