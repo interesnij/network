@@ -62,7 +62,17 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let _limit: i64;
         let _offset: i64;
-        let list = get_post_list(params.list_id).expect("E.");
+        let list: PostList;
+        let list_res = get_post_list(params.list_id);
+        if list_res.is_ok() {
+            list = list_res.except("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                info: "list not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
 
         if params.limit.is_some() {
             _limit = params.limit.unwrap();
@@ -171,7 +181,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            info: "Минимальный запрос: list_id".to_string(),
+            info: "parametr 'list_id' not found".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
