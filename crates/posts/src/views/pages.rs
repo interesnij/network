@@ -71,7 +71,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
             let body = serde_json::to_string(&ErrorParams {
                 info: "list not found!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            return HttpResponse::Ok().body(body);
         }
 
         if params.limit.is_some() {
