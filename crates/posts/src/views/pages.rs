@@ -197,7 +197,7 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let user_id = params.user_id;
 
-        let body = serde_json::to_string(&PostList::get_add_list_json ())
+        let body = serde_json::to_string(&PostList::get_add_list_json ().except("E."))
             .unwrap();
             HttpResponse::Ok().body(body)
     }
