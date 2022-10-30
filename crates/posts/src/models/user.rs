@@ -105,18 +105,7 @@ impl User {
     pub fn get_longest_penalties(&self) -> String {
         return "".to_string();
     }
-    pub fn is_banned_from_community(&self, community_id: i32) -> bool {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
-        let _connection = establish_connection();
-
-        return community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(community_id))
-            .filter(schema::community_visible_perms::target_id.eq(self.id))
-            .filter(schema::community_visible_perms::types.eq(20))
-            .select(schema::community_visible_perms::id)
-            .first::<i32>(&_connection).is_ok();
-    }
     pub fn create_user(user: NewUserJson) -> User {
         use crate::schema::users::dsl::users;
 

@@ -107,23 +107,10 @@ pub fn get_community(pk: i32) -> Result<Community, Error> {
 }
 
 
-pub fn get_user_permission(user: &User, request_user: &User)
+pub fn get_user_permission(user: &User, user_id: i32)
     -> (bool, String) {
 
-    if request_user.types > 10 {
-        if request_user.is_closed() {
-            return (false, "Ваша страница заблокирована.".to_string())
-        }
-        else if request_user.is_deleted() {
-            return (false, "Ваша страница удалена.".to_string())
-        }
-        else if request_user.is_suspended() {
-            return (false, "Ваша страница будет разморожена ".to_string() + &request_user.get_longest_penalties());
-        }
-        else { return (false, "Закрыто".to_string())}
-    }
-
-    else if user.types > 10 {
+    if user.types > 10 {
         if user.is_closed() {
             return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
         }
@@ -136,10 +123,10 @@ pub fn get_user_permission(user: &User, request_user: &User)
         else { return (false, "Закрыто".to_string())}
     }
 
-    else if user.is_user_in_block(request_user.id) {
+    else if user.is_user_in_block(user_id) {
         return (false, user.get_full_name() + &": заблокировал Вас".to_string())
     }
-    else if !user.is_user_see_all(request_user.id) {
+    else if !user.is_user_see_all(user_id) {
         return (false, user.get_full_name() + &": профиль закрыт, информация недоступна".to_string())
     }
     else {
@@ -161,31 +148,18 @@ pub fn get_anon_user_permission(user: &User)
         }
         else { return (false, "Закрыто".to_string());}
     }
-    else if !user.is_anon_user_see_all() {
-        return (false, user.get_full_name() + &": профиль закрыт, информация недоступна".to_string())
+    else if !user.is_anon_user_see_all() && !user.is_anon_user_see_el() {
+        return (false, user.get_full_name() + &": Ошибка доступа".to_string())
     }
     else {
         return (true, "Открыто".to_string())
     }
 }
 
-pub fn get_community_permission(community: &Community, request_user: &User)
+pub fn get_community_permission(community: &Community, user_id: i32)
     -> (bool, String) {
 
-    if request_user.types > 10 {
-        if request_user.is_closed() {
-            return (false, "Ваша страница заблокирована.".to_string())
-        }
-        else if request_user.is_deleted() {
-            return (false, "Ваша страница удалена.".to_string())
-        }
-        else if request_user.is_suspended() {
-            return (false, "Ваша страница будет разморожена ".to_string() + &request_user.get_longest_penalties());
-        }
-        else { return (false, "Закрыто".to_string());}
-    }
-
-    else if community.types > 10 {
+    if community.types > 10 {
         if community.is_closed() {
             return (false, community.name.clone() + &": сообщество заблокировано за нарушение правил сайта".to_string())
         }
@@ -197,8 +171,11 @@ pub fn get_community_permission(community: &Community, request_user: &User)
         }
         else { return (false, "Закрыто".to_string())}
     }
-    else if request_user.is_banned_from_community(community.id) {
+    else if community.is_user_in_ban(user_id) {
         return (false, community.name.clone() + &": сообщество добавило Вас в чёрный список".to_string())
+    }
+    else if !community.is_user_see_el(user_id) {
+        return (false, community.name.clone() + &": Ошибка доступа".to_string())
     }
     else {
         return (true, "Открыто".to_string())
@@ -220,7 +197,7 @@ pub fn get_anon_community_permission(community: &Community)
         }
         else { return (false, "Закрыто".to_string())}
     }
-    else if community.types == 2 && community.types == 3 {
+    else if !community.is_anon_user_see_el() && community.types == 2 && community.types == 3 {
         return (false, community.name.clone() + &": ошибка доступа.".to_string())
     }
     else {

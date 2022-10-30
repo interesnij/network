@@ -134,6 +134,18 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
+    pub fn is_user_banned(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(20))
+            .select(schema::community_visible_perms::id)
+            .first::<i32>(&_connection).is_ok();
+    }
     pub fn create_community(community: NewCommunityJson) -> Community {
         use crate::schema::communitys::dsl::communitys;
 
@@ -388,11 +400,8 @@ impl Community {
             .filter(schema::community_visible_perms::target_id.eq(user_id))
             .filter(schema::community_visible_perms::community_id.eq(self.community_id))
             .filter(schema::community_visible_perms::types.eq(20))
-            .limit(1)
             .select(schema::community_visible_perms::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len() > 0;
+            .first::<i32>(&_connection).is_ok();
     }
     pub fn create_banned_user(&self, user_id: i32) -> () {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
@@ -444,7 +453,7 @@ impl Community {
 
         diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(5))
-            .get_result::<CommunitiesMembership>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -462,7 +471,7 @@ impl Community {
 
         diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(3))
-            .get_result::<CommunitiesMembership>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -480,7 +489,7 @@ impl Community {
 
         diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(2))
-            .get_result::<CommunitiesMembership>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -498,7 +507,7 @@ impl Community {
 
         diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(4))
-            .get_result::<CommunitiesMembership>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -517,7 +526,7 @@ impl Community {
 
         diesel::update(&member[0])
             .set(schema::communities_memberships::level.eq(1))
-            .get_result::<CommunitiesMembership>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }

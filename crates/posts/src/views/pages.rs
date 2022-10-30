@@ -78,11 +78,10 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         }
         if params.user_id.is_some() {
             let user_id = params.user_id.unwrap();
-            let _request_user = get_user(user_id).expect("E.");
 
             if list.community_id.is_some() {
                 let community = list.get_community().expect("E.");
-                let _tuple = get_community_permission(&community, &_request_user);
+                let _tuple = get_community_permission(&community, user_id);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
                         info: _tuple.1.to_string(),
@@ -104,7 +103,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
             }
             else {
                 let owner = list.get_creator().expect("E.");
-                let _tuple = get_user_permission(&owner, &_request_user);
+                let _tuple = get_user_permission(&owner, user_id);
                 if _tuple.0 == false {
                     let body = serde_json::to_string(&ErrorParams {
                         info: _tuple.1.to_string(),
