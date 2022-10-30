@@ -266,7 +266,7 @@ impl PostList {
         return data;
     }
 
-    pub fn get_user_post_list (
+    pub fn get_user_post_list_json (
         owner:   User,
         user_id: i32,
         list:    PostList,
@@ -283,7 +283,7 @@ impl PostList {
         else {
             _limit = limit;
         }
-        
+
         let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
@@ -324,7 +324,7 @@ impl PostList {
         };
         return Json(data);
     }
-    pub fn get_anon_user_post_list (
+    pub fn get_anon_user_post_list_json (
         owner:   User,
         list:    PostList,
         lists:   Vec<PostList>,
@@ -382,7 +382,7 @@ impl PostList {
         return Json(data);
     }
 
-    pub fn get_community_post_list (
+    pub fn get_community_post_list_json (
         community: Community,
         user_id:   i32,
         list:      PostList,
@@ -440,7 +440,7 @@ impl PostList {
         };
         return Json(data);
     }
-    pub fn get_anon_community_post_list (
+    pub fn get_anon_community_post_list_json (
         community: Community,
         list:      PostList,
         lists:     Vec<PostList>,
