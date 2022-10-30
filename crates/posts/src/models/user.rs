@@ -1336,7 +1336,104 @@ impl User {
             .is_ok();
     }
 
-    pub fn follow_user(&self, user_id: i32) -> bool {
+    pub fn get_or_create_featured_objects (
+        &self,
+        friends_ids: Option<Vec<i32>>,
+        communities_ids: Option<Vec<i32>>
+    ) -> bool {
+        use crate::models::{NewFeaturedUserCommunitie, FeaturedUserCommunitie};
+        use crate::schema::featured_user_communities::dsl::featured_user_communities;
+
+        let _connection = establish_connection();
+        if friends_ids.is_some() {
+            for friend_id in friends_ids.unwrap() {
+                if !self.is_connected_with_user_with_id(*friend_id) && !featured_user_communities
+                    .filter(schema::featured_user_communities::owner.eq(self.id))
+                    .filter(schema::featured_user_communities::user_id.eq(friend_id))
+                    .select(schema::featured_user_communities::id)
+                    .load::<i32>(&_connection).is_ok() {
+
+                    let new_featured = NewFeaturedUserCommunitie {
+                        owner: self.id,
+                        list_id: None,
+                        user_id: Some(*friend_id),
+                        community_id: None,
+                        mute: false,
+                        sleep: None,
+                    };
+                    diesel::insert_into(schema::featured_user_communities::table)
+                        .values(&new_featured)
+                        .execute(&_connection)
+                        .expect("Error.");
+                    }
+            }
+        }
+        if communities_ids.is_some() {
+            for community_id in communities_ids.unwrap() {
+                if !self.is_member_of_community(*community_id) && !featured_user_communities
+                    .filter(schema::featured_user_communities::owner.eq(self.id))
+                    .filter(schema::featured_user_communities::community_id.eq(community_id))
+                    .select(schema::featured_user_communities::id)
+                    .load::<i32>(&_connection).is_ok() {
+
+                    let new_featured = NewFeaturedUserCommunitie {
+                        owner: self.id,
+                        list_id: None,
+                        user_id: None,
+                        community_id: Some(*community_id),
+                        mute: false,
+                        sleep: None,
+                    };
+                    diesel::insert_into(schema::featured_user_communities::table)
+                        .values(&new_featured)
+                        .execute(&_connection)
+                        .expect("Error.");
+                }
+            }
+            return true;
+    }
+    pub fn delete_user_featured_object (
+        &self,
+        user_id: i32,
+    )  -> bool {
+        let del = diesel::delete (
+            featured_user_communities
+            .filter(schema::featured_user_communities::owner.eq(self.id))
+            .filter(schema::featured_user_communities::user_id.eq(user_id))
+        )
+        .execute(&_connection);
+        if del.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    pub fn delete_community_featured_object (
+        &self,
+        community_id: i32,
+    )  -> bool {
+        let del = diesel::delete (
+            featured_user_communities
+            .filter(schema::featured_user_communities::owner.eq(self.id))
+            .filter(schema::featured_user_communities::community_id.eq(community_id))
+        )
+        .execute(&_connection);
+        if del.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    pub fn follow_user (
+        &self,
+        user_id: i32,
+        is_user_see_all: bool,
+        friends_ids: Option<Vec<i32>>,
+        communities_ids: Option<Vec<i32>>
+    ) -> bool {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return false;
         }
@@ -1350,13 +1447,22 @@ impl User {
             .values(&_new_follow)
             .execute(&_connection);
         if new_follow.is_ok() {
+            if is_user_see_all {
+                self.add_new_subscriber(user_id);
+                self.get_or_create_featured_objects(friends_ids, communities_ids);
+            }
             return true;
         }
         else {
             return false;
         }
+
     }
-    pub fn unfollow_user(&self, user_id: i32) -> bool {
+    pub fn unfollow_user (
+        &self,
+        user_id: i32,
+        is_user_see_all: bool,
+    ) -> bool {
         if self.user_id == user_id || !self.is_following_user_with_id(user_id) {
             return false;
         }
@@ -1374,6 +1480,9 @@ impl User {
                 )
                 .execute(&_connection);
             if del.is_ok() {
+                if is_user_see_all {
+                    self.delete_new_subscriber(user_id);
+                }
                 return true;
             }
             else {
@@ -1383,7 +1492,13 @@ impl User {
         return false;
     }
 
-    pub fn frend_user(&self, user_id: i32) -> bool {
+    pub fn frend_user (
+        &self,
+        user_id: i32,
+        is_user_see_all: bool,
+        friends_ids: Option<Vec<i32>>,
+        communities_ids: Option<Vec<i32>>
+    ) -> bool {
         // тут друзья создаются всего в одном экземпляре, где
         // self.user_id - это id создающего, а user_id -
         // id создаваемого. Это нужно для фильтрации приватности по
@@ -1411,13 +1526,22 @@ impl User {
             )
             .execute(&_connection);
         if del.is_ok() && new_friend.is_ok() {
+            self.delete_user_featured_object(user_id);
+            if !is_user_see_all {
+                self.add_new_subscriber(user_id);
+                self.get_or_create_featured_objects(friends_ids, communities_ids);
+            }
             return true;
         }
         else {
             return false;
         }
     }
-    pub fn unfrend_user(&self, user_id: i32) -> bool {
+    pub fn unfrend_user (
+        &self,
+        user_id: i32,
+        is_user_see_all: bool,
+    ) -> bool {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
             return false;
         }
@@ -1440,6 +1564,10 @@ impl User {
             .values(&_new_follow)
             .execute(&_connection);
         if del.is_ok() && new_follow.is_ok() {
+            if !is_user_see_all {
+                self.delete_new_subscriber(user_id);
+            }
+            self.get_or_create_featured_objects(vec!(user_id), None);
             return true;
         }
         else {
@@ -1493,6 +1621,10 @@ impl User {
             .values(&_user_block)
             .get_result::<UserVisiblePerm>(&_connection)
             .expect("Error.");
+
+        self.delete_new_subscriber(user_id);
+        self.delete_user_featured_object(user_id);
+        self.delete_notification_subscriber(user_id);
         return true;
     }
     pub fn unblock_user(&self, user_id: i32) -> bool {
