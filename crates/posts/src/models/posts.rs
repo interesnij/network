@@ -421,14 +421,14 @@ impl Post {
         return reposts_window;
     }
 
-    pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<SmallReactionBlockJson>> {
         // получаем реакции и отреагировавших
-        let reactions_blocks: Option<Vec<ReactionBlockJson>>;
+        let reactions_blocks: Option<Vec<SmallReactionBlockJson>>;
         if reactions_list.len() == 0 {
             reactions_blocks = None;
         }
         else {
-            let mut reactions_json: Vec<ReactionBlockJson> = Vec::new();
+            let mut reactions_json: Vec<SmallReactionBlockJson> = Vec::new();
             let mut user_reaction = 0;
 
             if user_id.is_some() && self.is_have_user_reaction(user_id.unwrap()) {
@@ -438,7 +438,13 @@ impl Post {
             for reaction in reactions_list.iter() {
                 let count = self.get_count_model_for_reaction(*reaction).count;
                 if count > 0 {
-                    reactions_json.push(self.get_6_user_of_reaction(reaction, Some(user_reaction)));
+                    reactions_json.push (
+                        SmallReactionBlockJson {
+                            count:         count,         // кол-во отреагировавших
+                            reaction:      *reaction,     // id реакции
+                            user_react_id: user_reaction, // id реакции request_user'а, если он реагировал на этот коммент
+                        }
+                    );
                 }
             }
             reactions_blocks = Some(reactions_json);

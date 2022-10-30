@@ -188,15 +188,17 @@ pub struct RepostsPostJson {
 #[derive(Serialize, Queryable)]
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct ReactionBlockJson {
-    pub count:    i32,
-    pub reaction: i32,
-    pub users:    Vec<CardReactionPostJson>,
+    pub count:         i32,
+    pub reaction:      i32,
+    pub users:         Vec<CardReactionPostJson>,
+    pub user_react_id: Option<i32>,
 }
 #[derive(Serialize, Queryable)]
 // это инфо о тех, кто реагировал и общее количество у реакции
 pub struct SmallReactionBlockJson {
-    pub count:    i32,
-    pub reaction: i32,
+    pub count:         i32,
+    pub reaction:      i32,
+    pub user_react_id: Option<i32>,
 }
 
 #[derive(Serialize, Queryable)]

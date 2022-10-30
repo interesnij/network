@@ -193,7 +193,7 @@ impl PostComment {
     }
 
     pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<ReactionBlockJson>> {
-        // получаем реакции и отреагировавших
+        // получаем реакции
         let reactions_blocks: Option<Vec<ReactionBlockJson>>;
         if reactions_list.len() == 0 {
             reactions_blocks = None;
@@ -209,7 +209,13 @@ impl PostComment {
             for reaction in reactions_list.iter() {
                 let count = self.get_count_model_for_reaction(*reaction).count;
                 if count > 0 {
-                    reactions_json.push(self.get_6_user_of_reaction(reaction, Some(user_reaction)));
+                    reactions_json.push (
+                        SmallReactionBlockJson {
+                            count:         count,         // кол-во отреагировавших
+                            reaction:      *reaction,     // id реакции
+                            user_react_id: user_reaction, // id реакции request_user'а, если он реагировал на этот коммент
+                        }
+                    );
                 }
             }
             reactions_blocks = Some(reactions_json);
