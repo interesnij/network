@@ -243,7 +243,8 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
         }
         else {
             let list: PostList;
-            let list_res = get_post_list(params.list_id);
+            let user_id = params.user_id.unwrap();
+            let list_res = get_post_list(params.list_id.unwrap());
             if list_res.is_ok() {
                 list = list_res.expect("E");
             }
