@@ -14,17 +14,17 @@ pub struct EditListJson {
     pub create_comment:       i16,
     pub copy_el:              i16,
 
-    pub see_el_include_users:         Option<Vec<i32>>,
-    pub see_comment_include_users:    Option<Vec<i32>>,
-    pub create_el_include_users:      Option<Vec<i32>>,
-    pub create_comment_include_users: Option<Vec<i32>>,
-    pub copy_el_include_users:        Option<Vec<i32>>,
+    pub see_el_include_users:         Vec<i32>,
+    pub see_comment_include_users:    Vec<i32>,
+    pub create_el_include_users:      Vec<i32>,
+    pub create_comment_include_users: Vec<i32>,
+    pub copy_el_include_users:        Vec<i32>,
 
-    pub see_el_exclude_users:         Option<Vec<i32>>,
-    pub see_comment_exclude_users:    Option<Vec<i32>>,
-    pub create_el_exclude_users:      Option<Vec<i32>>,
-    pub create_comment_exclude_users: Option<Vec<i32>>,
-    pub copy_el_exclude_users:        Option<Vec<i32>>,
+    pub see_el_exclude_users:         Vec<i32>,
+    pub see_comment_exclude_users:    Vec<i32>,
+    pub create_el_exclude_users:      Vec<i32>,
+    pub create_comment_exclude_users: Vec<i32>,
+    pub copy_el_exclude_users:        Vec<i32>,
 }
 
 #[derive(Debug, Serialize)]
