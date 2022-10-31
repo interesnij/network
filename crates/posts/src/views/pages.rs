@@ -616,7 +616,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.get_comments (
-                            reactions_list,
+                            reactions_list.clone(),
                             _limit,
                             _offset
                         )).unwrap();
@@ -634,7 +634,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.get_comments (
-                            reactions_list,
+                            reactions_list.clone(),
                             _limit,
                             _offset
                         )).unwrap();
@@ -654,7 +654,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.get_comments (
-                            reactions_list,
+                            reactions_list.clone(),
                             _limit,
                             _offset
                         )).unwrap();
@@ -672,7 +672,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.get_comments (
-                            reactions_list,
+                            reactions_list.clone(),
                             _limit,
                             _offset
                         )).unwrap();
