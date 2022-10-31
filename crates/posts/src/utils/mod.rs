@@ -26,15 +26,6 @@ use crate::models::{
 };
 use crate::errors::Error;
 
-#[derive(Serialize)]
-pub struct ErrorParams {
-    pub error: String,
-}
-#[derive(Serialize)]
-pub struct InfoParams {
-    pub info: String,
-}
-
 pub fn establish_connection() -> PgConnection {
     use dotenv::dotenv;
 

@@ -2,6 +2,14 @@ use serde::{Serialize, Deserialize};
 use crate::utils::AttachmentsJson;
 
 
+#[derive(Serialize)]
+pub struct ErrorParams {
+    pub error: String,
+}
+#[derive(Serialize)]
+pub struct InfoParams {
+    pub info: String,
+}
 #[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct EditListJson {
