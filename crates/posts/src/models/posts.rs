@@ -250,6 +250,7 @@ impl Post {
     }
     pub fn get_comments (
         &self,
+        user_id: Option<i32>,
         reactions_list: Vec<i32>,
         limit: i64,
         offset: i64,
@@ -486,7 +487,7 @@ impl Post {
                     next:                 next,
                     is_user_see_comments: list.is_user_see_comment(id),
                     is_user_create_comments: list.is_user_create_comment(id),
-                    comments:             self.get_comments(reactions_list.clone(), limit, offset),
+                    comments:             self.get_comments(user_id, reactions_list.clone(), limit, offset),
                     attachments:          None,
                 };
         } else {
@@ -510,7 +511,7 @@ impl Post {
                 next:                 next,
                 is_user_see_comments: list.is_anon_user_see_comment(),
                 is_user_create_comments: false,
-                comments:             self.get_comments(reactions_list.clone(), limit, offset),
+                comments:             self.get_comments(None, reactions_list.clone(), limit, offset),
                 attachments:          None,
             };
         }
