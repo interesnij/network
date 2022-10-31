@@ -590,7 +590,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
             }
-            let list_res = get_post_list(item.list_id.unwrap());
+            let list_res = get_post_list(item.post_list_id.unwrap());
             if list_res.is_ok() {
                 list = list_res.expect("E");
                 reactions_list = list.get_reactions_list();
