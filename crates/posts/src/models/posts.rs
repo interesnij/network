@@ -22,6 +22,7 @@ use crate::utils::{
     CardOwnerJson,
     CardCommentJson,
     AttachmentsJson,
+    EditPostJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -441,6 +442,14 @@ impl Post {
         return reactions_blocks;
     }
 
+    pub fn get_edit_data_json(&self) -> Result<EditPostJson, Error> {
+        return Ok(EditPostJson {
+            content:      self.content.clone(),
+            comments_on:  self.comments_on,
+            is_signature: self.is_signature,
+            attachments:  None,
+        });
+    }
     pub fn get_detail_post_json (
         &self,
         user_id: Option<i32>,
