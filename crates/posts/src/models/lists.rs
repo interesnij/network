@@ -170,7 +170,7 @@ impl PostList {
             reactions: _reactions,
         });
     }
-    pub fn get_edit_list_json() -> Result<EditListJson, Error> {
+    pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
         return Ok(EditListJson {
             name:                 self.name,
             description:          self.description,
