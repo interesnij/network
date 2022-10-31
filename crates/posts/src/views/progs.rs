@@ -37,5 +37,5 @@ pub async fn create_user (
     let _res = block(move ||
         User::create_user(data)
     ).await?;
-    Ok(Json(res))
+    Ok(res)
 }
