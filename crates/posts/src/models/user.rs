@@ -153,7 +153,7 @@ impl User {
                     .first::<i32>(&_connection).is_ok() {
                         let new_form = NewFriend {
                             user_id:   new_user_id,
-                            target_id: user_id,
+                            target_id: *user_id,
                         };
                         diesel::insert_into(schema::friends::table)
                             .values(&new_form)
@@ -173,7 +173,7 @@ impl User {
                     .first::<i32>(&_connection).is_ok() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
-                            target_id: user_id,
+                            target_id: *user_id,
                         };
                         diesel::insert_into(schema::follows::table)
                             .values(&new_form)
