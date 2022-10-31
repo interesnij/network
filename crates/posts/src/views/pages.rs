@@ -755,7 +755,8 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
                     HttpResponse::Ok().body(body)
                 }
                 else {
-                    let body = serde_json::to_string(&item.get_edit_data_json()).unwrap();
+                    let body = serde_json::to_string(&item.get_edit_data_json())
+                        .unwrap();
                     HttpResponse::Ok().body(body)
                 }
             }
