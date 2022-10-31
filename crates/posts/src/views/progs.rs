@@ -4,12 +4,8 @@ use actix_web::{
     web,
     web::Json,
     web::block,
-    error::InternalError,
-    http::StatusCode,
 };
 use crate::utils::{
-    is_signed_in,
-    get_request_user_data,
     get_community,
     get_post_list,
     get_post,
@@ -19,8 +15,6 @@ use crate::utils::{
     establish_connection,
     NewListValues,
 };
-use actix_session::Session;
-use sailfish::TemplateOnce;
 use crate::models::{
     User, Community,
     PostList, Post, PostComment,
@@ -39,7 +33,7 @@ pub async fn create_user (
     data: Json<NewUserJson>,
 ) -> Result<Json<User>, Error> {
     let _res = block(move ||
-        User::create(data)
+        User::create_user(data)
     ).await?;
     Ok(Json(_res))
 }
