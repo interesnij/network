@@ -2,6 +2,31 @@ use serde::{Serialize, Deserialize};
 use crate::utils::AttachmentsJson;
 
 
+#[derive(Serialize, Queryable)]
+// это объект пользователя
+pub struct EditListJson {
+    pub name:                 String,
+    pub description:          Option<String>,
+    pub image:                Option<String>,
+    pub see_el:               i16,
+    pub see_comment:          i16,
+    pub create_el:            i16,
+    pub create_comment:       i16,
+    pub copy_el:              i16,
+
+    pub see_el_include_users:         Option<Vec<i32>>,
+    pub see_comment_include_users:    Option<Vec<i32>>,
+    pub create_comment_include_users: Option<Vec<i32>>,
+    pub see_el_include_users:         Option<Vec<i32>>,
+    pub copy_el_include_users:        Option<Vec<i32>>,
+
+    pub see_el_exclude_users:         Option<Vec<i32>>,
+    pub see_comment_exclude_users:    Option<Vec<i32>>,
+    pub create_comment_exclude_users: Option<Vec<i32>>,
+    pub see_el_exclude_users:         Option<Vec<i32>>,
+    pub copy_el_exclude_users:        Option<Vec<i32>>,
+}
+
 #[derive(Debug, Serialize)]
 pub struct ReactionsJson {
     pub reactions: Vec<ReactionJson>,

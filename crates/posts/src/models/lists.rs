@@ -18,6 +18,7 @@ use crate::utils::{
     CardUserJson,
     CardOwnerJson,
     ReactionsJson,
+    EditListJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -167,6 +168,30 @@ impl PostList {
             .load::<ReactionJson>(&_connection)?;
         return Ok(ReactionsJson {
             reactions: _reactions,
+        });
+    }
+    pub fn get_edit_list_json() -> Result<EditListJson, Error> {
+        return Ok(EditListJson {
+            name:                 self.name,
+            description:          self.description,
+            image:                self.image,
+            see_el:               self.see_el,
+            see_comment:          self.see_comment,
+            create_el:            self.create_el,
+            create_comment:       self.create_comment,
+            copy_el:              self.copy_el,
+
+            see_el_include_users:         self.get_see_el_include_users_ids(),
+            see_comment_include_users:    self.get_see_comment_include_users_ids(),
+            create_el_include_users:      self.get_create_el_include_users_ids(),
+            create_comment_include_users: self.get_create_comment_include_users_ids(),
+            copy_el_include_users:        self.get_copy_el_include_users_ids(),
+
+            see_el_exclude_users:         self.get_see_el_exclude_users_ids(),
+            see_comment_exclude_users:    self.get_see_comment_exclude_users_ids(),
+            create_el_exclude_users:      self.get_create_el_exclude_users_ids(),
+            create_comment_exclude_users: self.get_create_comment_exclude_users_ids(),
+            copy_el_exclude_users:        self.get_copy_el_exclude_users_ids(),
         });
     }
     pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {

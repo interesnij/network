@@ -24,7 +24,7 @@ use serde::{Serialize, Deserialize};
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
     config.route("/add_user_list/", web::get().to(add_user_list_page));
-    //config.route("/edit_user_list/", web::get().to(edit_user_list_page));
+    config.route("/edit_user_list/", web::get().to(edit_user_list_page));
     //config.route("/add_community_list/{id}", web::get().to(add_community_list_page));
     //config.route("/edit_community_list/{id}/", web::get().to(edit_community_list_page));
     //config.route("/edit_post/{id}/", web::get().to(edit_post_page));
@@ -190,7 +190,6 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
 pub struct AddUserListParams {
     pub user_id: Option<i32>,
 }
-
 pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<AddUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
@@ -216,6 +215,61 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'user_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EditUserListParams {
+    pub user_id: Option<i32>,
+    pub list_id: Option<i32>,
+}
+pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<EditUserListParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.user_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'user_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.list_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'list_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let list: PostList;
+            let list_res = get_post_list(params.list_id);
+            if list_res.is_ok() {
+                list = list_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "list not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if list.user_id = user_id {
+                let body = serde_json::to_string(&PostList::get_edit_list_json().expect("E."))
+                    .unwrap();
+                    HttpResponse::Ok().body(body)
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied.".to_string(),
+                }).unwrap();
+                HttpResponse::Ok().body(body)
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
