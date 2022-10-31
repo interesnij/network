@@ -118,12 +118,12 @@ impl User {
         }
         let new_form = NewUser {
             user_id:        user.user_id,
-            first_name:     user.first_name,
-            last_name:      user.last_name,
+            first_name:     user.first_name.clone(),
+            last_name:      user.last_name.clone(),
             types:          user.types,
             is_man:         user.is_man,
-            link:           user.link,
-            s_avatar:       user.s_avatar,
+            link:           user.link.clone(),
+            s_avatar:       user.s_avatar.clone(),
             last_activity:  chrono::Local::now().naive_utc(),
             see_all:        user.see_all,
             see_el:         1,
@@ -145,7 +145,7 @@ impl User {
         if user.friends.is_some() {
             use crate::schema::friends::dsl::friends;
 
-            for user_id in user.friends.unwrap() {
+            for user_id in user.friends.as_deref().unwrap() {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
                     .filter(schema::friends::target_id.eq(user_id))
@@ -165,7 +165,7 @@ impl User {
         if user.follows.is_some() {
             use crate::schema::follows::dsl::follows;
 
-            for user_id in user.follows.unwrap() {
+            for user_id in user.follows.as_deref().unwrap() {
                 if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
