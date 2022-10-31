@@ -34,9 +34,9 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 
 pub async fn create_user (
     data: NewUserJson,
-) -> Result<bool, Error> {
+) -> Result<Json<bool>, Error> {
     let _res = block(move ||
         User::create_user(data)
     ).await?;
-    Ok(res)
+    Ok(Json(_res))
 }
