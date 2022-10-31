@@ -36,7 +36,7 @@ pub async fn create_user (
     let _res = block(move ||
         User::create_user(data)
     ).await?;
-    if _res.is_ok() {
+    if _res == true {
         let body = serde_json::to_string(&InfoParams {
             info: "1".to_string(),
         }).unwrap();
