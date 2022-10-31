@@ -174,7 +174,6 @@ pub struct CardPostJson {
 }
 
 #[derive(Serialize)]
-// это запись
 pub struct EditPostJson {
     // see_list не упоминаем, в случае неполных прав вернем статус 403
     pub content:      Option<String>,
