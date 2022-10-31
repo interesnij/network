@@ -32,15 +32,14 @@ use serde::{Deserialize, Serialize};
 
 pub fn progs_urls(config: &mut web::ServiceConfig) {
     config.route("/create_user/", web::post().to(create_user));
-    
+
 }
 
 pub async fn create_user (
     data: Json<NewUserJson>,
-    req: HttpRequest,
 ) -> Result<Json<User>, Error> {
     let _res = block(move ||
-        CookieStat::create(data)
+        User::create(data)
     ).await?;
     Ok(Json(_res))
 }
