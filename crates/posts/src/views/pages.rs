@@ -450,19 +450,19 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
                 _offset = 0;
             }
 
+            let item: Post;
+            let item_res = get_post(params.item_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "item not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
             if params.user_id.is_some() {
                 let user_id = params.user_id.unwrap();
-                let item: Post;
-                let item_res = get_post(params.item_id.unwrap());
-                if item_res.is_ok() {
-                    item = item_res.expect("E");
-                }
-                else {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: "item not found!".to_string(),
-                    }).unwrap();
-                    return HttpResponse::Ok().body(body);
-                }
 
                 if item.community_id.is_some() {
                     let community = item.get_community().expect("E.");
