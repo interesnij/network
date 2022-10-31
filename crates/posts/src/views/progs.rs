@@ -40,12 +40,12 @@ pub async fn create_user (
         let body = serde_json::to_string(&InfoParams {
             info: "1".to_string(),
         }).unwrap();
-        return HttpResponse::Ok().body(body);
+        HttpResponse::Ok().body(body)
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "Error!".to_string(),
         }).unwrap();
-        return HttpResponse::Ok().body(body);
+        HttpResponse::Ok().body(body)
     }
 }
