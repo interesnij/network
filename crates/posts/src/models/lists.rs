@@ -172,9 +172,9 @@ impl PostList {
     }
     pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
         return Ok(EditListJson {
-            name:                 self.name,
-            description:          self.description,
-            image:                self.image,
+            name:                 self.name.clone(),
+            description:          self.description.clone(),
+            image:                self.image.clone(),
             see_el:               self.see_el,
             see_comment:          self.see_comment,
             create_el:            self.create_el,
