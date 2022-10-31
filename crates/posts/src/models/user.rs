@@ -105,7 +105,7 @@ impl User {
         return "".to_string();
     }
 
-    pub fn create_user(user: NewUserJson) -> User {
+    pub fn create_user(user: NewUserJson) -> bool {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -185,7 +185,7 @@ impl User {
             }
         }
 
-        return new_user;
+        return true;
     }
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()

@@ -2,8 +2,8 @@ use crate::schema;
 use actix_web::{
     HttpResponse,
     web,
-    web::Json,
     web::block,
+    Responder,
 };
 use crate::utils::{
     get_community,
@@ -14,11 +14,12 @@ use crate::utils::{
     get_user_permission,
     establish_connection,
     NewListValues,
+    ErrorParams,
+    InfoParams
 };
 use crate::models::{
     User, Community,
     PostList, Post, PostComment,
-
     NewUserJson,
 };
 use serde::{Deserialize, Serialize};
@@ -30,10 +31,21 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn create_user (
-    data: Json<NewUserJson>,
-) -> Result<Json<User>, Error> {
+    data: NewUserJson,
+) -> Responder {
     let _res = block(move ||
         User::create_user(data)
     ).await?;
-    Ok(Json(_res))
+    if _res.is_ok() {
+        let body = serde_json::to_string(&InfoParams {
+            info: "1".to_string(),
+        }).unwrap();
+        return HttpResponse::Ok().body(body);
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Error!".to_string(),
+        }).unwrap();
+        return HttpResponse::Ok().body(body);
+    }
 }

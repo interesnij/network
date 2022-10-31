@@ -9,12 +9,12 @@ use crate::utils::{
     get_user,
     get_post_list,
     get_post,
-    get_post_comment,
     get_user_permission,
     get_anon_user_permission,
     get_community_permission,
     get_anon_community_permission,
     establish_connection,
+    ErrorParams,
 };
 use crate::models::{User, PostList, Post, PostComment, Community};
 use crate::diesel::RunQueryDsl;
@@ -41,11 +41,6 @@ pub async fn index_page() -> impl Responder {
                 hello, I'm posts server.
             </p>
         </div>")
-}
-
-#[derive(Debug, Serialize)]
-pub struct ErrorParams {
-    pub error: String,
 }
 
 #[derive(Debug, Deserialize)]
