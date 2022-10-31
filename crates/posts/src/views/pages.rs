@@ -27,11 +27,11 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/edit_user_list/", web::get().to(edit_user_list_page));
     config.route("/add_community_list/", web::get().to(add_community_list_page));
     config.route("/edit_community_list/", web::get().to(edit_community_list_page));
-    //config.route("/edit_post/{id}/", web::get().to(edit_post_page));
+    //config.route("/edit_post/", web::get().to(edit_post_page));
 
     config.route("/load_list/", web::get().to(load_list_page));
-    //config.route("/load_post/{id}/", web::get().to(load_post_page));
-    //config.route("/load_comments/{id}/", web::get().to(load_comments_page));
+    //config.route("/load_post/", web::get().to(load_post_page));
+    //config.route("/load_comments/", web::get().to(load_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -43,16 +43,17 @@ pub async fn index_page() -> impl Responder {
         </div>")
 }
 
+#[derive(Debug, Serialize)]
+pub struct ErrorParams {
+    pub error: String,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct LoadListParams {
     pub list_id: i32,
     pub user_id: Option<i32>,
     pub limit:   Option<i64>,
     pub offset:  Option<i64>,
-}
-#[derive(Debug, Serialize)]
-pub struct ErrorParams {
-    pub error: String,
 }
 
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
@@ -255,7 +256,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
                 return HttpResponse::Ok().body(body);
             }
 
-            if list.user_id == user_id {
+            if list.user_id == user_id && list.community_id.is_none() {
                 let body = serde_json::to_string(&list.get_edit_list_json().expect("E."))
                     .unwrap();
                     HttpResponse::Ok().body(body)
@@ -407,6 +408,141 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct LoadItemParams {
+    pub item_id: Option<i32>,
+    pub user_id: Option<i32>,
+    pub limit:   Option<i64>,
+    pub offset:  Option<i64>,
+}
+
+pub async fn load_item_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<LoadItemParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+
+        if params.item_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'item_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+
+        let _limit: i64;
+        let _offset: i64;
+
+        if params.limit.is_some() {
+            _limit = params.limit.unwrap();
+        }
+        else {
+            _limit = 20;
+        }
+        if params.offset.is_some() {
+            _offset = params.offset.unwrap();
+        }
+        else {
+            _offset = 0;
+        }
+
+        if params.user_id.is_some() {
+            let user_id = params.user_id.unwrap();
+            let item: Post;
+            let item_res = get_post(params.item_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "item not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if item.community_id.is_some() {
+                let community = item.get_community().expect("E.");
+                let _tuple = get_community_permission(&community, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string(item.get_detail_post_json (
+                        Some(user_id),
+                        _limit,
+                        _offset
+                    )).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+            else {
+                let owner = list.get_creator().expect("E.");
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string(item.get_detail_post_json (
+                        Some(user_id),
+                        _limit,
+                        _offset
+                    )).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+        else {
+            if list.community_id.is_some() {
+                let community = list.get_community().expect("E.");
+                let _tuple = get_anon_community_permission(&community);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string(item.get_detail_post_json (
+                        None,
+                        _limit,
+                        _offset
+                    )).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+            else {
+                let owner = list.get_creator().expect("E.");
+                let _tuple = get_anon_user_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
+                    let body = serde_json::to_string(item.get_detail_post_json (
+                        None,
+                        _limit,
+                        _offset
+                    )).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }

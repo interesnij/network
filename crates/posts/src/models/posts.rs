@@ -444,19 +444,12 @@ impl Post {
     pub fn get_detail_post_json (
         &self,
         user_id: Option<i32>,
-        reposts_limit: Option<i64>,
+        limit: i64,
+        offset: i64,
     ) -> PostDetailJson {
         let list = self.get_list().expect("E");
         let creator = self.get_owner_meta().expect("E");
         let reactions_list = list.get_reactions_list();
-
-        let limit: i64;
-        if reposts_limit.is_some() {
-            limit = reposts_limit.unwrap();
-        }
-        else {
-            limit = 6;
-        }
 
         let mut prev: Option<i32> = None;
         let mut next: Option<i32> = None;
@@ -493,8 +486,8 @@ impl Post {
                     prev:                 prev,
                     next:                 next,
                     is_user_see_comments: list.is_user_see_comment(id),
-                    is_user_create_el:    list.is_user_create_el(id),
-                    comments:             self.get_comments(limit, 0, user_id, reactions_list.clone()),
+                    is_user_create_comments: list.is_user_create_comment(id),
+                    comments:             self.get_comments(limit, offset, user_id, reactions_list.clone()),
                     attachments:          None,
                 };
         } else {
@@ -517,8 +510,8 @@ impl Post {
                 prev:                 prev,
                 next:                 next,
                 is_user_see_comments: list.is_anon_user_see_comment(),
-                is_user_create_el:    false,
-                comments:             self.get_comments(limit, 0, user_id, reactions_list.clone()),
+                is_user_create_comments: false,
+                comments:             self.get_comments(limit, offset, user_id, reactions_list.clone()),
                 attachments:          None,
             };
         }

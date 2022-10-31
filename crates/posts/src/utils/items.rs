@@ -196,7 +196,7 @@ pub struct PostDetailJson {
     pub prev:                 Option<i32>,
     pub next:                 Option<i32>,
     pub is_user_see_comments: bool,
-    pub is_user_create_el:    bool,
+    pub is_user_create_comments:bool,
     pub comments:             Vec<CardCommentJson>,
     pub attachments:          Option<AttachmentsJson>,
 }
