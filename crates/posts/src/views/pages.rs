@@ -579,7 +579,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
             }
 
             let item: Post;
-            let mut reactions_list: Vec<i32> = Vev::new();
+            let mut reactions_list: Vec<i32> = Vec::new();
             let item_res = get_post(params.item_id.unwrap());
             if item_res.is_ok() {
                 item = item_res.expect("E");
