@@ -35,9 +35,10 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 pub async fn create_user (
     data: Json<NewUserJson>,
 ) -> Result<Json<bool>, Error> {
-    let parse_deta: NewUserJson = serde_json::from_str(&data).unwrap();
+    let new_request = data.text().await.unwrap();
+    let parse_data: NewUserJson = serde_json::from_str(&new_request).unwrap();
     let _res = block(move ||
-        User::create_user(parse_deta)
+        User::create_user(parse_data)
     ).await?;
     Ok(Json(_res))
 }
