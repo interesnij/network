@@ -510,7 +510,7 @@ impl Post {
                 next:                 next,
                 is_user_see_comments: list.is_anon_user_see_comment(),
                 is_user_create_comments: false,
-                comments:             self.get_comments(limit, offset, user_id, reactions_list.clone()),
+                comments:             self.get_comments(limit, offset, reactions_list.clone()),
                 attachments:          None,
             };
         }
