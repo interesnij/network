@@ -111,7 +111,6 @@ impl User {
         let _connection = establish_connection();
         if users
             .filter(schema::users::user_id.eq(user.user_id))
-            .limit(1)
             .select(schema::users::id)
             .first::<i32>(&_connection).is_ok() {
                 return users
