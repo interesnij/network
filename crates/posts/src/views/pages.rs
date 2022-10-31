@@ -343,7 +343,7 @@ pub struct EditCommunityListParams {
     pub community_id: Option<i32>,
     pub list_id:      Option<i32>,
 }
-pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
+pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<EditCommunityListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
