@@ -432,110 +432,112 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
-
-        let _limit: i64;
-        let _offset: i64;
-
-        if params.limit.is_some() {
-            _limit = params.limit.unwrap();
-        }
         else {
-            _limit = 20;
-        }
-        if params.offset.is_some() {
-            _offset = params.offset.unwrap();
-        }
-        else {
-            _offset = 0;
-        }
 
-        if params.user_id.is_some() {
-            let user_id = params.user_id.unwrap();
-            let item: Post;
-            let item_res = get_post(params.item_id.unwrap());
-            if item_res.is_ok() {
-                item = item_res.expect("E");
+            let _limit: i64;
+            let _offset: i64;
+
+            if params.limit.is_some() {
+                _limit = params.limit.unwrap();
             }
             else {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "item not found!".to_string(),
-                }).unwrap();
-                return HttpResponse::Ok().body(body);
+                _limit = 20;
             }
-
-            if item.community_id.is_some() {
-                let community = item.get_community().expect("E.");
-                let _tuple = get_community_permission(&community, user_id);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    HttpResponse::Ok().body(body)
-                }
-                else {
-                    let body = serde_json::to_string(item.get_detail_post_json (
-                        Some(user_id),
-                        _limit,
-                        _offset
-                    )).unwrap();
-                    HttpResponse::Ok().body(body)
-                }
+            if params.offset.is_some() {
+                _offset = params.offset.unwrap();
             }
             else {
-                let owner = list.get_creator().expect("E.");
-                let _tuple = get_user_permission(&owner, user_id);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    HttpResponse::Ok().body(body)
-                }
-                else {
-                    let body = serde_json::to_string(item.get_detail_post_json (
-                        Some(user_id),
-                        _limit,
-                        _offset
-                    )).unwrap();
-                    HttpResponse::Ok().body(body)
-                }
+                _offset = 0;
             }
-        }
-        else {
-            if list.community_id.is_some() {
-                let community = list.get_community().expect("E.");
-                let _tuple = get_anon_community_permission(&community);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    HttpResponse::Ok().body(body)
+
+            if params.user_id.is_some() {
+                let user_id = params.user_id.unwrap();
+                let item: Post;
+                let item_res = get_post(params.item_id.unwrap());
+                if item_res.is_ok() {
+                    item = item_res.expect("E");
                 }
                 else {
-                    let body = serde_json::to_string(item.get_detail_post_json (
-                        None,
-                        _limit,
-                        _offset
-                    )).unwrap();
-                    HttpResponse::Ok().body(body)
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "item not found!".to_string(),
+                    }).unwrap();
+                    return HttpResponse::Ok().body(body);
+                }
+
+                if item.community_id.is_some() {
+                    let community = item.get_community().expect("E.");
+                    let _tuple = get_community_permission(&community, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_detail_post_json (
+                            Some(user_id),
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+                else {
+                    let owner = list.get_creator().expect("E.");
+                    let _tuple = get_user_permission(&owner, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_detail_post_json (
+                            Some(user_id),
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
                 }
             }
             else {
-                let owner = list.get_creator().expect("E.");
-                let _tuple = get_anon_user_permission(&owner);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    HttpResponse::Ok().body(body)
+                if list.community_id.is_some() {
+                    let community = list.get_community().expect("E.");
+                    let _tuple = get_anon_community_permission(&community);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_detail_post_json (
+                            None,
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
                 }
                 else {
-                    let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
-                    let body = serde_json::to_string(item.get_detail_post_json (
-                        None,
-                        _limit,
-                        _offset
-                    )).unwrap();
-                    HttpResponse::Ok().body(body)
+                    let owner = list.get_creator().expect("E.");
+                    let _tuple = get_anon_user_permission(&owner);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
+                        let body = serde_json::to_string(&item.get_detail_post_json (
+                            None,
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
                 }
             }
         }
