@@ -105,7 +105,7 @@ impl User {
         return "".to_string();
     }
 
-    pub fn create_user(user: NewUserJson) -> bool {
+    pub fn create_user(user: Json<NewUserJson>) -> bool {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
