@@ -225,7 +225,7 @@ pub struct EditUserListParams {
     pub user_id: Option<i32>,
     pub list_id: Option<i32>,
 }
-pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
+pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<EditUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -255,8 +255,8 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
                 return HttpResponse::Ok().body(body);
             }
 
-            if list.user_id = user_id {
-                let body = serde_json::to_string(&PostList::get_edit_list_json().expect("E."))
+            if list.user_id == user_id {
+                let body = serde_json::to_string(&list.get_edit_list_json().expect("E."))
                     .unwrap();
                     HttpResponse::Ok().body(body)
             }
