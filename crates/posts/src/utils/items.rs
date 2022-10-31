@@ -173,7 +173,15 @@ pub struct CardPostJson {
     pub attachments:    Option<AttachmentsJson>,
 }
 
-
+#[derive(Serialize)]
+// это запись
+pub struct EditPostJson {
+    // see_list не упоминаем, в случае неполных прав вернем статус 403
+    pub content:      Option<String>,
+    pub comments_on:  bool,
+    pub is_signature: bool,
+    pub attachments:  Option<AttachmentsJson>,
+}
 #[derive(Serialize)]
 // это запись
 pub struct PostDetailJson {

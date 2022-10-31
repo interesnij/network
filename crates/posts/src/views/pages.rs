@@ -718,6 +718,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
             HttpResponse::Ok().body(body)
         }
         else {
+            let user_id = params.user_id.unwrap();
             let item: Post;
             let item_res = get_post(params.item_id.unwrap());
             if item_res.is_ok() {
