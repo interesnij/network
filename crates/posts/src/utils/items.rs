@@ -175,7 +175,6 @@ pub struct CardPostJson {
 
 #[derive(Serialize)]
 pub struct EditPostJson {
-    // see_list не упоминаем, в случае неполных прав вернем статус 403
     pub content:      Option<String>,
     pub comments_on:  bool,
     pub is_signature: bool,
