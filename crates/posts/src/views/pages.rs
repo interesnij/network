@@ -421,7 +421,7 @@ pub struct LoadItemParams {
     pub offset:  Option<i64>,
 }
 
-pub async fn load_item_page(req: HttpRequest) -> impl Responder {
+pub async fn load_post_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<LoadItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
