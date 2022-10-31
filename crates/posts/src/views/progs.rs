@@ -3,6 +3,7 @@ use actix_web::{
     HttpResponse,
     web,
     web::block,
+    web::Json,
     Responder,
 };
 use crate::utils::{
@@ -32,20 +33,9 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 
 pub async fn create_user (
     data: NewUserJson,
-) -> Responder {
+) -> Result<bool, Error> {
     let _res = block(move ||
         User::create_user(data)
     ).await?;
-    if _res == true {
-        let body = serde_json::to_string(&InfoParams {
-            info: "1".to_string(),
-        }).unwrap();
-        HttpResponse::Ok().body(body)
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Error!".to_string(),
-        }).unwrap();
-        HttpResponse::Ok().body(body)
-    }
+    Ok(Json(res))
 }
