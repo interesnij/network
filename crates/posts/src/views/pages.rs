@@ -483,7 +483,7 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
                     }
                 }
                 else {
-                    let owner = list.get_creator().expect("E.");
+                    let owner = item.get_creator().expect("E.");
                     let _tuple = get_user_permission(&owner, user_id);
                     if _tuple.0 == false {
                         let body = serde_json::to_string(&ErrorParams {
@@ -502,8 +502,8 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
                 }
             }
             else {
-                if list.community_id.is_some() {
-                    let community = list.get_community().expect("E.");
+                if item.community_id.is_some() {
+                    let community = item.get_community().expect("E.");
                     let _tuple = get_anon_community_permission(&community);
                     if _tuple.0 == false {
                         let body = serde_json::to_string(&ErrorParams {
@@ -521,7 +521,7 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
                     }
                 }
                 else {
-                    let owner = list.get_creator().expect("E.");
+                    let owner = item.get_creator().expect("E.");
                     let _tuple = get_anon_user_permission(&owner);
                     if _tuple.0 == false {
                         let body = serde_json::to_string(&ErrorParams {
@@ -530,7 +530,6 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
                         HttpResponse::Ok().body(body)
                     }
                     else {
-                        let lists = PostList::get_user_post_lists(list.user_id, 10, 0);
                         let body = serde_json::to_string(&item.get_detail_post_json (
                             None,
                             _limit,
