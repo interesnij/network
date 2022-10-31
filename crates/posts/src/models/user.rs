@@ -86,7 +86,7 @@ pub struct NewUser {
     pub comments:       i32,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct NewUserJson {
     pub user_id:    i32,
     pub first_name: String,
