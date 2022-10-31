@@ -250,10 +250,9 @@ impl Post {
     }
     pub fn get_comments (
         &self,
+        reactions_list: Vec<i32>,
         limit: i64,
         offset: i64,
-        user_id: Option<i32>,
-        reactions_list: Vec<i32>,
     ) -> Vec<CardCommentJson> {
         use crate::schema::post_comments::dsl::post_comments;
 

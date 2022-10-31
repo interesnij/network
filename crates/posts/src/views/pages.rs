@@ -30,8 +30,8 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     //config.route("/edit_post/", web::get().to(edit_post_page));
 
     config.route("/load_list/", web::get().to(load_list_page));
-    //config.route("/load_post/", web::get().to(load_post_page));
-    //config.route("/load_comments/", web::get().to(load_comments_page));
+    config.route("/load_post/", web::get().to(load_post_page));
+    config.route("/load_comments/", web::get().to(load_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -532,6 +532,147 @@ pub async fn load_item_page(req: HttpRequest) -> impl Responder {
                     else {
                         let body = serde_json::to_string(&item.get_detail_post_json (
                             None,
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<LoadItemParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+
+        if params.item_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'item_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+
+            let _limit: i64;
+            let _offset: i64;
+
+            if params.limit.is_some() {
+                _limit = params.limit.unwrap();
+            }
+            else {
+                _limit = 20;
+            }
+            if params.offset.is_some() {
+                _offset = params.offset.unwrap();
+            }
+            else {
+                _offset = 0;
+            }
+
+            let item: Post;
+            let mut reactions_list: Vec<i32> = Vev::new();
+            let item_res = get_post(params.item_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "item not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+            let list_res = get_post_list(item.list_id.unwrap());
+            if list_res.is_ok() {
+                list = list_res.expect("E");
+                reactions_list = list.get_reactions_list();
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "list not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if params.user_id.is_some() {
+                let user_id = params.user_id.unwrap();
+
+                if item.community_id.is_some() {
+                    let community = item.get_community().expect("E.");
+                    let _tuple = get_community_permission(&community, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_comments (
+                            reactions_list,
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_user_permission(&owner, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_comments (
+                            reactions_list,
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+            else {
+                if item.community_id.is_some() {
+                    let community = item.get_community().expect("E.");
+                    let _tuple = get_anon_community_permission(&community);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_comments (
+                            reactions_list,
+                            _limit,
+                            _offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_anon_user_permission(&owner);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.get_comments (
+                            reactions_list,
                             _limit,
                             _offset
                         )).unwrap();
