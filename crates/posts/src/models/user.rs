@@ -131,6 +131,7 @@ impl User {
             see_all:        user.see_all,
             see_el:         1,
             see_comment:    1,
+            create_list:    12,
             create_el:      12,
             create_comment: 12,
             copy_el:        1,
@@ -579,6 +580,7 @@ impl User {
             _ => false,
         };
     }
+
     pub fn is_user_create_el(&self, user_id: i32) -> bool {
         if self.user_id == user_id {
             return true;

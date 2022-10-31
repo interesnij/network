@@ -2,26 +2,26 @@
 -- таблица нужна для ассоциации постов с их создателями,
 -- а также для самостоятельности сервиса.
 CREATE TABLE users (
-    id             SERIAL PRIMARY KEY,           -- id записи
-    user_id        INT NOT NULL,                 -- id пользователя (ссылка на основную таблицу)
-    first_name     VARCHAR(100) NOT NULL,        -- имя пользователя
-    last_name      VARCHAR(100) NOT NULL,        -- фамилия пользователя
-    types          SMALLINT NOT NULL DEFAULT 1,  -- тип (активен, удален, закрыт...)
-    is_man         BOOLEAN NOT NULL DEFAULT TRUE,-- это мужчина?
-    link           VARCHAR(100) NOT NULL,        -- ссылка и связь с основной таблицей
-    s_avatar       VARCHAR(500),                 -- миниатюра
-    last_activity  TIMESTAMP NOT NULL,           -- когда был в сети
+    id             SERIAL PRIMARY KEY,    -- id записи
+    user_id        INT NOT NULL,          -- id пользователя (ссылка на основную таблицу)
+    first_name     VARCHAR(100) NOT NULL, -- имя пользователя
+    last_name      VARCHAR(100) NOT NULL, -- фамилия пользователя
+    types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
+    is_man         BOOLEAN NOT NULL,      -- это мужчина?
+    link           VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
+    s_avatar       VARCHAR(500),          -- миниатюра
+    last_activity  TIMESTAMP NOT NULL,    -- когда был в сети
 
-    see_all        SMALLINT NOT NULL,          -- кто может видеть открытый профиль
-    see_el         SMALLINT NOT NULL,          -- кто может видеть записи
-    see_comment    SMALLINT NOT NULL,          -- кто может видеть комменты
-    create_el      SMALLINT NOT NULL,          -- кто может создавать записи
-    create_comment SMALLINT NOT NULL,          -- кто может создавать комменты
-    copy_el        SMALLINT NOT NULL,          -- кто может копировать / репостить
+    see_all        SMALLINT NOT NULL,     -- кто может видеть открытый профиль
+    see_el         SMALLINT NOT NULL,     -- кто может видеть записи
+    see_comment    SMALLINT NOT NULL,     -- кто может видеть комменты
+    create_el      SMALLINT NOT NULL,     -- кто может создавать записи
+    create_comment SMALLINT NOT NULL,     -- кто может создавать комменты
+    copy_el        SMALLINT NOT NULL,     -- кто может копировать / репостить
 
-    lists          INT NOT NULL,               -- кол-во списков записей
-    posts          INT NOT NULL,               -- кол-во записей
-    comments       INT NOT NULL,               -- кол-во комментов к записям
+    lists          INT NOT NULL,          -- кол-во списков записей
+    posts          INT NOT NULL,          -- кол-во записей
+    comments       INT NOT NULL,          -- кол-во комментов к записям
 
     UNIQUE(link)
 );
@@ -40,6 +40,7 @@ CREATE TABLE communitys (
 
     see_el         SMALLINT NOT NULL,     -- кто может видеть записи
     see_comment    SMALLINT NOT NULL,     -- кто может видеть комменты
+    create_list    SMALLINT NOT NULL,     -- кто может создавать списки
     create_el      SMALLINT NOT NULL,     -- кто может создавать записи
     create_comment SMALLINT NOT NULL,     -- кто может создавать комменты
     copy_el        SMALLINT NOT NULL,     -- кто может копировать / репостить
@@ -421,11 +422,15 @@ CREATE UNIQUE INDEX communities_memberships_unq ON communities_memberships (user
 -- 3 может создавать записи
 -- 4 может создавать комменты к записям
 -- 5 может копировать списки / записи
+-- 6 может создавать списки
+
 -- 11 не может видеть записи
 -- 12 не может видеть комменты к записям
 -- 13 не может создавать записи
 -- 14 не может создавать комменты к записям
 -- 15 не может копировать списки / записи
+-- 16 не может создавать списки
+
 -- 20 пользователь заблокирован у сообщества записей
 
 CREATE TABLE community_visible_perms (
@@ -452,6 +457,7 @@ CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (comm
 -- 13 не может создавать записи
 -- 14 не может создавать комменты к записям
 -- 15 не может копировать списки / записи
+
 -- 20 пользователь заблокирован у владельца записей
 
 CREATE TABLE user_visible_perms (

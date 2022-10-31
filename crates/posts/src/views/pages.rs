@@ -25,8 +25,8 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
     config.route("/add_user_list/", web::get().to(add_user_list_page));
     config.route("/edit_user_list/", web::get().to(edit_user_list_page));
-    //config.route("/add_community_list/{id}", web::get().to(add_community_list_page));
-    //config.route("/edit_community_list/{id}/", web::get().to(edit_community_list_page));
+    config.route("/add_community_list/{id}", web::get().to(add_community_list_page));
+    config.route("/edit_community_list/{id}/", web::get().to(edit_community_list_page));
     //config.route("/edit_post/{id}/", web::get().to(edit_post_page));
 
     config.route("/load_list/", web::get().to(load_list_page));
@@ -256,6 +256,142 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
             }
 
             if list.user_id == user_id {
+                let body = serde_json::to_string(&list.get_edit_list_json().expect("E."))
+                    .unwrap();
+                    HttpResponse::Ok().body(body)
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied.".to_string(),
+                }).unwrap();
+                HttpResponse::Ok().body(body)
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct AddCommunityListParams {
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+}
+pub async fn add_community_list_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<AddCommunityListParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.user_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'user_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.community_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'community_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let user_id = params.user_id.unwrap();
+            let user_ok = get_user(user_id);
+            let community_ok = get_community(params.community_id.unwrap());
+
+            if user_ok.is_err() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "user not found!".to_string(),
+                }).unwrap();
+                HttpResponse::Ok().body(body)
+            }
+            else if community_ok.is_err() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "community not found!".to_string(),
+                }).unwrap();
+                HttpResponse::Ok().body(body)
+            }
+            else {
+                let community = community_ok.expect("E.");
+                if !community.is_user_create_list(user_id) {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied".to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string(&PostList::get_add_list_json().expect("E.")).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct EditCommunityListParams {
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub list_id:      Option<i32>,
+}
+pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<EditCommunityListParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.user_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'user_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.list_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'list_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.community_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'community_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let list: PostList;
+            let community: Community;
+            let user_id = params.user_id.unwrap();
+            let list_res = get_post_list(params.list_id.unwrap());
+            if list_res.is_ok() {
+                list = list_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "list not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            let community_res = get_community(params.community_id.unwrap());
+            if community_res.is_ok() {
+                community = community_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "community not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if community.is_user_create_list(user_id) {
                 let body = serde_json::to_string(&list.get_edit_list_json().expect("E."))
                     .unwrap();
                     HttpResponse::Ok().body(body)

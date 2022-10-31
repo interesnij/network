@@ -78,6 +78,14 @@ use crate::errors::Error;
     // 94 закрыто закрытое сообщество идентификацированное
     // 95 закрыто публичное сообщество идентификацированное
 
+// Приватность
+// 1 Все пользователи
+// 2 Подписчики
+// 3 Персонал
+// 4 Администраторы
+// 5 Владелец сообщества
+// 6 Подписчики, кроме
+// 7 Некоторые подписчики
 /////// Community //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct Community {
@@ -91,6 +99,7 @@ pub struct Community {
 
     pub see_el:         i16,
     pub see_comment:    i16,
+    pub create_list:    i16,
     pub create_el:      i16,
     pub create_comment: i16,
     pub copy_el:        i16,
@@ -111,6 +120,7 @@ pub struct NewCommunity {
 
     pub see_el:         i16,
     pub see_comment:    i16,
+    pub create_list:    i16,
     pub create_el:      i16,
     pub create_comment: i16,
     pub copy_el:        i16,
@@ -156,11 +166,12 @@ impl Community {
             link:           community.link.clone(),
             s_avatar:       community.s_avatar.clone(),
 
-            see_el:         0,
-            see_comment:    0,
-            create_el:      0,
-            create_comment: 0,
-            copy_el:        0,
+            see_el:         1,
+            see_comment:    1,
+            create_list:    4,
+            create_el:      4,
+            create_comment: 1,
+            copy_el:        1,
 
             lists:          0,
             posts:          0,
@@ -677,6 +688,32 @@ impl Community {
             .expect("E");
         return items;
     }
+    pub fn get_create_list_exclude_members_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(16))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_create_list_include_members_ids(&self) -> Vec<i32> {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(6))
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
     pub fn get_create_el_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
@@ -779,6 +816,18 @@ impl Community {
             5 => self.user_id == user_id,
             6 => !self.get_see_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
             7 => self.get_see_comment_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+            _ => false,
+        };
+    }
+    pub fn is_user_create_list(&self, user_id: i32) -> bool {
+        return match self.create_el {
+            1 => true,
+            2 => self.get_members_ids().iter().any(|&i| i==user_id),
+            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
+            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            5 => self.user_id == user_id,
+            6 => !self.get_create_list_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+            7 => self.get_create_list_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
             _ => false,
         };
     }
