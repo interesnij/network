@@ -7,6 +7,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
 };
+use actix_web::web::Json;
 use crate::schema;
 use crate::schema::{
     users,
