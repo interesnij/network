@@ -24,6 +24,7 @@ use crate::models::{
     NewUserJson,
 };
 use serde::{Deserialize, Serialize};
+use crate::errors::Error;
 
 
 pub fn progs_urls(config: &mut web::ServiceConfig) {
