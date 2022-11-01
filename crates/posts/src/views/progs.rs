@@ -102,7 +102,7 @@ pub async fn delete_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else {
-        let _res = block(move || PostList:delete_item(data.id)).await?;
+        let _res = block(move || PostList::delete_item(data.id)).await?;
         Ok(Json(_res))
     }
 }
@@ -112,7 +112,7 @@ pub async recover_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else {
-        let _res = block(move || PostList:restore_item(data.id)).await?;
+        let _res = block(move || PostList::restore_item(data.id)).await?;
         Ok(Json(_res))
     }
 }
