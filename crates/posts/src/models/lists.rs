@@ -2304,7 +2304,7 @@ impl PostList {
         }
         else {
             let creator = self.get_creator().expect("E");
-            creator.minus_plus(1);
+            creator.plus_lists(1);
         }
 
         if o_1.is_ok() {
