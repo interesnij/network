@@ -114,7 +114,7 @@ impl User {
             .filter(schema::users::user_id.eq(user.user_id))
             .select(schema::users::id)
             .first::<i32>(&_connection).is_ok() {
-                return true;
+                return false;
         }
         let new_form = NewUser {
             user_id:        user.user_id,

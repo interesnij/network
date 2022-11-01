@@ -1359,24 +1359,7 @@ impl PostList {
         return (PostList::count_community_post_lists(community_id) + 1).try_into().unwrap();
     }
 
-    pub fn create_list (
-        name:                 String,
-        community_id:         Option<i32>,
-        creator_id:           i32,
-        description:          Option<String>,
-        image:                Option<String>,
-        see_el:               i16,
-        see_comment:          i16,
-        create_el:            i16,
-        create_comment:       i16,
-        copy_el:              i16,
-        see_el_users:         Option<Vec<i32>>,
-        see_comment_users:    Option<Vec<i32>>,
-        create_el_users:      Option<Vec<i32>>,
-        create_comment_users: Option<Vec<i32>>,
-        copy_el_users:        Option<Vec<i32>>,
-        reactions:            Option<String>
-    ) -> PostList {
+    pub fn create_list (data: Json<DataListJson>) -> RespListJson {
         use crate::models::{
             NewCommunityPostListPosition,
             NewUserPostListPosition,
@@ -1384,30 +1367,31 @@ impl PostList {
 
         let _connection = establish_connection();
         let _name: String;
-        if name.len() > 99 {
-            _name = name[..100].to_string();
+        let c_name = data.name.clone();
+        if c_name.len() > 99 {
+            _name = c_name[..100].to_string();
         }
         else {
-            _name = name;
+            _name = c_name;
         }
 
         let new_post_list = NewPostList {
-            name:           _name,
-            community_id:   community_id,
-            user_id:        creator_id,
+            name:           _name.clone(),
+            community_id:   data.community_id,
+            user_id:        data.creator_id,
             types:          2,
-            description:    description,
-            image:          image,
+            description:    data.description.clone(),
+            image:          data.image.clone(),
             created:        chrono::Local::now().naive_utc(),
             count:          0,
             repost:         0,
             copy:           0,
-            see_el:         see_el,
-            see_comment:    see_comment,
-            create_el:      create_el,
-            create_comment: create_comment,
-            copy_el:        copy_el,
-            reactions:      reactions,
+            see_el:         data.see_el,
+            see_comment:    data.see_comment,
+            create_el:      data.create_el,
+            create_comment: data.create_comment,
+            copy_el:        data.copy_el,
+            reactions:      data.reactions.clone(),
         };
         let new_list = diesel::insert_into(schema::post_lists::table)
             .values(&new_post_list)
@@ -1444,7 +1428,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
-                for user_id in see_el_users.unwrap() {
+                for user_id in see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1459,7 +1443,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
-                for user_id in see_el_users.unwrap() {
+                for user_id in see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1475,7 +1459,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
-                for user_id in see_comment_users.unwrap() {
+                for user_id in see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1490,7 +1474,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
-                for user_id in see_comment_users.unwrap() {
+                for user_id in see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1506,7 +1490,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
-                for user_id in create_el_users.unwrap() {
+                for user_id in create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1521,7 +1505,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
-                for user_id in create_el_users.unwrap() {
+                for user_id in create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1537,7 +1521,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
-                for user_id in create_comment_users.unwrap() {
+                for user_id in create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1552,7 +1536,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
-                for user_id in create_comment_users.unwrap() {
+                for user_id in create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1568,7 +1552,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
-                for user_id in copy_el_users.unwrap() {
+                for user_id in copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1583,7 +1567,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
-                for user_id in copy_el_users.unwrap() {
+                for user_id in copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: new_list.id,
@@ -1596,57 +1580,51 @@ impl PostList {
                 }
             }
         }
-        return new_list;
+        return RespListJson {
+            name:           _name,
+            description:    data.description,
+            image:          data.image,
+            see_el:         data.see_el,
+            see_comment:    data.see_comment,
+            create_el:      data.create_el,
+            create_comment: data.create_comment,
+            copy_el:        data.copy_el,
+            reactions:      data.reactions,
+        };
     }
-    pub fn edit_list (
-        &self,
-        name:                 String,
-        description:          Option<String>,
-        image:                Option<String>,
-        see_el:               i16,
-        see_comment:          i16,
-        create_el:            i16,
-        create_comment:       i16,
-        copy_el:              i16,
-        see_el_users:         Option<Vec<i32>>,
-        see_comment_users:    Option<Vec<i32>>,
-        create_el_users:      Option<Vec<i32>>,
-        create_comment_users: Option<Vec<i32>>,
-        copy_el_users:        Option<Vec<i32>>,
-        reactions:            Option<String>,
-    ) -> &PostList {
-
+    pub fn edit_list(data: Json<DataListJson>) -> RespListJson {
         use crate::schema::post_list_perms::dsl::post_list_perms;
 
         let _connection = establish_connection();
         let _name: String;
-        if name.len() > 99 {
-            _name = name[..100].to_string();
+        let c_name = data.name.clone();
+        if c_name.len() > 99 {
+            _name = c_name[..100].to_string();
         }
         else {
-            _name = name;
+            _name = c_name;
         }
         let mut descr: Option<String> = Some("".to_string());
         let mut react: Option<String> = Some("".to_string());
-        if description.is_some() {
-            descr = description;
+        if data.description.is_some() {
+            descr = data.description.clone();
         }
-        if reactions.is_some() {
-            react = reactions;
+        if data.reactions.is_some() {
+            react = data.reactions.clone();
         }
-
+        let list = get_post_list(data.id).expect("E.");
         let edit_post_list = EditPostList {
             name:           _name,
-            description:    descr,
-            image:          image,
-            see_el:         see_el,
-            see_comment:    see_comment,
-            create_el:      create_el,
-            create_comment: create_comment,
-            copy_el:        copy_el,
-            reactions:      react,
+            description:    descr.clone(),
+            image:          data.image.clone(),
+            see_el:         data.see_el,
+            see_comment:    data.see_comment,
+            create_el:      data.create_el,
+            create_comment: data.create_comment,
+            copy_el:        data.copy_el,
+            reactions:      react.clone(),
         };
-        diesel::update(self)
+        diesel::update(&list)
             .set(edit_post_list)
             .get_result::<PostList>(&_connection)
             .expect("Error.");
@@ -1663,7 +1641,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
-                for user_id in see_el_users.unwrap() {
+                for user_id in see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1678,7 +1656,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==see_el) {
             if see_el_users.is_some() {
-                for user_id in see_el_users.unwrap() {
+                for user_id in see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1694,7 +1672,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
-                for user_id in see_comment_users.unwrap() {
+                for user_id in see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1709,7 +1687,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==see_comment) {
             if see_comment_users.is_some() {
-                for user_id in see_comment_users.unwrap() {
+                for user_id in see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1725,7 +1703,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
-                for user_id in create_el_users.unwrap() {
+                for user_id in create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1740,7 +1718,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==create_el) {
             if create_el_users.is_some() {
-                for user_id in create_el_users.unwrap() {
+                for user_id in create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1756,7 +1734,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
-                for user_id in create_comment_users.unwrap() {
+                for user_id in create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1771,7 +1749,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==create_comment) {
             if create_comment_users.is_some() {
-                for user_id in create_comment_users.unwrap() {
+                for user_id in create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1787,7 +1765,7 @@ impl PostList {
 
         if exclude_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
-                for user_id in copy_el_users.unwrap() {
+                for user_id in copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1802,7 +1780,7 @@ impl PostList {
         }
         else if include_vec.iter().any(|&i| i==copy_el) {
             if copy_el_users.is_some() {
-                for user_id in copy_el_users.unwrap() {
+                for user_id in copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: self.id,
@@ -1815,7 +1793,17 @@ impl PostList {
                 }
             }
         }
-        return self;
+        return RespListJson {
+            name:           _name,
+            description:    descr,
+            image:          data.image.clone(),
+            see_el:         data.see_el,
+            see_comment:    data.see_comment,
+            create_el:      data.create_el,
+            create_comment: data.create_comment,
+            copy_el:        data.copy_el,
+            reactions:      react,
+        };
     }
     pub fn get_order(&self) -> UserPostListPosition {
         use crate::schema::user_post_list_positions::dsl::user_post_list_positions;

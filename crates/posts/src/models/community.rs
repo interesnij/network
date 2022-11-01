@@ -14,7 +14,7 @@ use crate::schema::{
     community_visible_perms,
 };
 use crate::errors::Error;
-
+use actix_web::web::Json;
 /////// Community //////
 
 /////// Тип сообщества //////
@@ -142,21 +142,15 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
-    pub fn create_community(community: NewCommunityJson) -> Community {
+    pub fn create_community(community: Json<NewCommunityJson>) -> bool {
         use crate::schema::communitys::dsl::communitys;
 
         let _connection = establish_connection();
         if communitys
             .filter(schema::communitys::community_id.eq(community.community_id))
-            .limit(1)
             .select(schema::communitys::id)
-            .load::<i32>(&_connection)
-            .expect("E")
-            .len() > 0 {
-                return communitys
-                    .filter(schema::communitys::community_id.eq(community.community_id))
-                    .first::<Community>(&_connection)
-                    .expect("E");
+            .first::<i32>(&_connection).is_ok() {
+                return false;
         }
         let new_community_form = NewCommunity {
             community_id:   community.community_id,
@@ -186,7 +180,7 @@ impl Community {
         if community.follows.is_some() {
             use crate::schema::communities_memberships::dsl::communities_memberships;
 
-            for (user_id, level) in community.follows.unwrap() {
+            for (user_id, level) in community.follows.as_deref().unwrap() {
                 if communities_memberships
                     .filter(schema::communities_memberships::user_id.eq(user_id))
                     .filter(schema::communities_memberships::community_id.eq(community_id))
@@ -204,7 +198,7 @@ impl Community {
                 }
             }
         }
-        return new_community;
+        return true;
     }
 
     pub fn plus_lists(&self, count: i32) -> bool {

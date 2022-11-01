@@ -10,9 +10,9 @@ pub struct ErrorParams {
 pub struct InfoParams {
     pub info: String,
 }
-#[derive(Serialize, Queryable)]
-// это объект пользователя
+#[derive(Serialize, Deserialize)]
 pub struct EditListJson {
+    pub id:                   i32,
     pub name:                 String,
     pub description:          Option<String>,
     pub image:                Option<String>,
@@ -21,6 +21,7 @@ pub struct EditListJson {
     pub create_el:            i16,
     pub create_comment:       i16,
     pub copy_el:              i16,
+    pub reactions:            Option<String>,
 
     pub see_el_include_users:         Vec<i32>,
     pub see_comment_include_users:    Vec<i32>,
@@ -33,6 +34,43 @@ pub struct EditListJson {
     pub create_el_exclude_users:      Vec<i32>,
     pub create_comment_exclude_users: Vec<i32>,
     pub copy_el_exclude_users:        Vec<i32>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct DataListJson {
+    pub id:                   i32,
+    pub community_id:         Option<i32>,
+    pub user_id:              i32,
+    pub name:                 String,
+    pub description:          Option<String>,
+    pub image:                Option<String>,
+    pub see_el:               i16,
+    pub see_comment:          i16,
+    pub create_el:            i16,
+    pub create_comment:       i16,
+    pub copy_el:              i16,
+    pub reactions:            Option<String>,
+
+    pub see_el_users:         Option<Vec<i32>>,
+    pub see_comment_users:    Option<Vec<i32>>,
+    pub create_el_users:      Option<Vec<i32>>,
+    pub create_comment_users: Option<Vec<i32>>,
+    pub copy_el_users:        Option<Vec<i32>>,
+}
+#[derive(Serialize, Deserialize)]
+pub struct RespListJson {
+    pub id:             i32,
+    pub community_id:   Option<i32>,
+    pub user_id:        i32,
+    pub name:           String,
+    pub description:    Option<String>,
+    pub image:          Option<String>,
+    pub see_el:         i16,
+    pub see_comment:    i16,
+    pub create_el:      i16,
+    pub create_comment: i16,
+    pub copy_el:        i16,
+    pub reactions:      Option<String>,
 }
 
 #[derive(Debug, Serialize)]
