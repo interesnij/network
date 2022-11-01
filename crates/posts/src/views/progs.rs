@@ -89,6 +89,6 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
         }
     }
     else {
-        Error::BadRequest("Permission Denied".to_string())
+        Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
