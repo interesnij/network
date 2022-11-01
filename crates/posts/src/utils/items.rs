@@ -10,6 +10,12 @@ pub struct ErrorParams {
 pub struct InfoParams {
     pub info: String,
 }
+#[derive(Deserialize)]
+pub struct ItemParams {
+    pub id:           i32,
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+}
 #[derive(Serialize, Deserialize)]
 pub struct EditListJson {
     pub id:                   i32,

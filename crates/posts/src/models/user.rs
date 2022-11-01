@@ -781,7 +781,7 @@ impl User {
         return true;
     }
 
-    pub fn delete_item(&self) -> bool {
+    pub fn delete_item(&self) -> i16 {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -797,13 +797,13 @@ impl User {
             .execute(&_connection);
 
         if o.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn restore_item(&self) -> bool {
+    pub fn restore_item(&self) -> i16 {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -818,10 +818,10 @@ impl User {
             .set(schema::users::types.eq(close_case))
             .execute(&_connection);
         if o.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
     pub fn add_new_community_subscriber (&self, community_id: i32) -> () {

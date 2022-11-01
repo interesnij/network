@@ -374,7 +374,7 @@ impl PostComment {
             " ответов".to_string(),
         );
     }
-    pub fn close_item(&self) -> bool {
+    pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
         let close_case = match self.types {
             1 => 21,
@@ -391,13 +391,13 @@ impl PostComment {
             .execute(&_connection);
 
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn unclose_item(&self) -> bool {
+    pub fn unclose_item(&self) -> i16 {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -416,14 +416,14 @@ impl PostComment {
             .execute(&_connection);
 
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 
-    pub fn delete_item(&self) -> bool {
+    pub fn delete_item(&self) -> i16 {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -441,13 +441,13 @@ impl PostComment {
             .set(schema::post_comments::types.eq(close_case))
             .execute(&_connection);
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn restore_item(&self) -> bool {
+    pub fn restore_item(&self) -> i16 {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -465,10 +465,10 @@ impl PostComment {
             .set(schema::post_comments::types.eq(close_case))
             .get_result::<PostComment>(&_connection);
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
     pub fn get_count_attach(&self) -> String {

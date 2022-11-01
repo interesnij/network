@@ -1072,7 +1072,7 @@ impl Post {
         return self.types == 8;
     }
 
-    pub fn delete_item(&self) -> bool {
+    pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
         let close_case = match self.types {
             1 => 11,
@@ -1103,13 +1103,13 @@ impl Post {
         }
 
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn restore_item(&self) -> bool {
+    pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
         let close_case = match self.types {
             11 => 1,
@@ -1140,14 +1140,14 @@ impl Post {
         }
 
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 
-    pub fn close_item(&self) -> bool {
+    pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
         let close_case = match self.types {
             1 => 21,
@@ -1178,13 +1178,13 @@ impl Post {
         }
 
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn unclose_item(&self) -> bool {
+    pub fn unclose_item(&self) -> i16 {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -1217,10 +1217,10 @@ impl Post {
         }
 
         if o_1.is_ok() && o_2.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
     pub fn get_format_text(&self) -> String {

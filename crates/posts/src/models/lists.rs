@@ -2052,7 +2052,7 @@ impl PostList {
             .expect("E.");
 
     }
-    pub fn close_item(&self) -> bool {
+    pub fn close_item(&self) -> i16 {
         //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
@@ -2069,13 +2069,13 @@ impl PostList {
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
         if o_1.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn unclose_item(&self) -> bool {
+    pub fn unclose_item(&self) -> i16 {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -2093,14 +2093,14 @@ impl PostList {
             .execute(&_connection);
 
         if o_1.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 
-    pub fn delete_item(&self) -> bool {
+    pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
@@ -2146,13 +2146,13 @@ impl PostList {
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
         if o_1.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn restore_item(&self) -> bool {
+    pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
         if self.community_id.is_some() {
             use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
@@ -2198,14 +2198,14 @@ impl PostList {
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
         if o_1.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 
-    pub fn suspend_item(&self) -> bool {
+    pub fn suspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
@@ -2220,13 +2220,13 @@ impl PostList {
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
         if o_1.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn unsuspend_item(&self) -> bool {
+    pub fn unsuspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
@@ -2241,10 +2241,10 @@ impl PostList {
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
         if o_1.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 
