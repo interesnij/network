@@ -53,7 +53,7 @@ pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson
 pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let list = get_post_list(data.id).expect("E.");
     if list.user_id != data.user_id {
-        Err("Permission Denied")
+        Err(errors::Error::BadRequest("Permission Denied"))
     }
     else {
         let _res = block(move || PostList::edit_list(data)).await?;
@@ -65,7 +65,7 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
         let community = get_community(data.community_id.unwrap()).expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);
         if _tuple.0 == false {
-            Err(_tuple.1)
+            Err(errors::Error::BadRequest(_tuple.1))
         }
         else {
             let _res = block(move || PostList::create_list(data)).await?;
@@ -73,7 +73,7 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
         }
     }
     else {
-        HttpResponse::Err().body("Permission Denied")
+        Err(errors::Error::BadRequest("Permission Denied"))
     }
 }
 pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
@@ -81,7 +81,7 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
         let community = get_community(data.community_id.unwrap()).expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);
         if _tuple.0 == false {
-            Err(_tuple.1)
+            Err(errors::Error::BadRequest(_tuple.1))
         }
         else {
             let _res = block(move || PostList::edit_list(data)).await?;
@@ -89,6 +89,6 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
         }
     }
     else {
-        Err("Permission Denied")
+        Err(errors::Error::BadRequest("Permission Denied"))
     }
 }
