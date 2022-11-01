@@ -28,7 +28,7 @@ use serde::{Deserialize, Serialize};
 use crate::errors::Error;
 
 
-pub fn progs_urls(config: &mut web::ServiceConfig) {
+pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/create_user/", web::post().to(create_user));
     config.route("/create_community/", web::post().to(create_community));
     config.route("/add_user_list/", web::post().to(add_user_list));
