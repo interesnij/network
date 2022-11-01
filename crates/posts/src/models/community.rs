@@ -142,6 +142,34 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
+    pub fn get_fixed_posts_ids(&self) -> Vec<i32> {
+        use crate::schema::posts::dsl::posts;
+
+        let _connection = establish_connection();
+        return posts
+            .filter(schema::posts::community_id.eq(self.community_id))
+            .filter(schema::posts::types.eq(2))
+            .order(schema::posts::created.desc())
+            .select(schema::posts::id)
+            .load::<i32>(&_connection)
+            .expect("E");
+    }
+    pub fn get_fixed_posts(&self) -> Vec<Post> {
+        use crate::schema::posts::dsl::posts;
+
+        let _connection = establish_connection();
+        return posts
+            .filter(schema::posts::id.eq_any(self.get_fixed_posts_ids()))
+            .load::<Post>(&_connection)
+            .expect("E");
+    }
+    pub fn count_fix_items(&self) -> usize {
+        return self.get_fixed_posts_ids().len();
+    }
+    pub fn is_can_fixed_post(&self) -> bool {
+        return self.count_fix_items() < 10;
+    }
+
     pub fn create_community(community: Json<NewCommunityJson>) -> bool {
         use crate::schema::communitys::dsl::communitys;
 

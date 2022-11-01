@@ -1285,20 +1285,41 @@ impl Post {
         return self.repost > 0;
     }
 
-    pub fn fixed_post(&self) -> () {
-        let _connection = establish_connection();
-        diesel::update(self)
-            .set(schema::posts::types.eq(2))
-            .get_result::<Post>(&_connection)
-            .expect("E");
+    pub fn user_fixed_post(&self, user: User) -> i16 {
+        if user.is_can_fixed_post() {
+            let _connection = establish_connection();
+            let u = diesel::update(self)
+                .set(schema::posts::types.eq("b"))
+                .execute(&_connection);
+            if u.is_ok() {
+                return 1;
+            }
+            return 0;
+        }
+        return 0;
     }
-    pub fn unfixed_post(&self) -> bool {
+    pub fn community_fixed_post(&self, community: Community) -> i16 {
+        if community.is_can_fixed_post() {
+            let _connection = establish_connection();
+            let u = diesel::update(self)
+                .set(schema::posts::types.eq("b"))
+                .execute(&_connection);
+            if u.is_ok() {
+                return 1;
+            }
+            return 0;
+        }
+        return 0;
+    }
+    pub fn unfixed_post(&self) -> i16 {
         let _connection = establish_connection();
-        diesel::update(self)
-            .set(schema::posts::types.eq(1))
-            .get_result::<Post>(&_connection)
-            .expect("E");
-        return true;
+        let u = diesel::update(self)
+            .set(schema::posts::types.eq("a"))
+            .execute(&_connection);
+        if u.is_ok() {
+            return 1;
+        }
+        return 0;
     }
     pub fn get_count_attach(&self) -> String {
         if self.attach.is_some() {

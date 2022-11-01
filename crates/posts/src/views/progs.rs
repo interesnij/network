@@ -31,6 +31,7 @@ use crate::errors::Error;
 pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/create_user/", web::post().to(create_user));
     config.route("/create_community/", web::post().to(create_community));
+
     config.route("/add_user_list/", web::post().to(add_user_list));
     config.route("/edit_user_list/", web::post().to(edit_user_list));
     config.route("/add_community_list/", web::post().to(add_community_list));
@@ -39,6 +40,9 @@ pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/recover_user_list/", web::post().to(recover_user_list));
     config.route("/delete_community_list/", web::post().to(delete_community_list));
     config.route("/recover_community_list/", web::post().to(recover_community_list));
+
+    config.route("/fixed/", web::post().to(fixed));
+    config.route("/unfixed/", web::post().to(unfixed));
 }
 
 pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
@@ -147,6 +151,57 @@ pub async fn recover_community_list(data: Json<ItemParams>) -> Result<Json<i16>,
         }
     }
     else {
+
         Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    let item = get_post(data.id).expect("E.");
+    if item.community_id.is_some() {
+        let community = get_community(item.community_id.unwrap()).expect("E.");
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || item.community_fixed_post(community)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = get_user(item.user_id).expect("E.");
+        if owner.id == data.user_id {
+            let _res = block(move || item.user_fixed_post(owner)).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+pub async fn unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    let item = get_post(data.id).expect("E.");
+    if item.community_id.is_some() {
+        let community = get_community(item.community_id.unwrap()).expect("E.");
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || item.unfixed_post()).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = get_user(item.user_id).expect("E.");
+        if owner.id == data.user_id {
+            let _res = block(move || item.unfixed_post()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
