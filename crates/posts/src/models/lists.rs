@@ -182,6 +182,7 @@ impl PostList {
             create_el:            self.create_el,
             create_comment:       self.create_comment,
             copy_el:              self.copy_el,
+            reactions:            self.reactions.clone(),
 
             see_el_include_users:         self.get_see_el_include_users_ids(),
             see_comment_include_users:    self.get_see_comment_include_users_ids(),
@@ -1617,7 +1618,8 @@ impl PostList {
         if data.reactions.is_some() {
             react = data.reactions.clone();
         }
-        let list = get_post_list(data.id).expect("E.");
+        let _id = data.id;
+        let list = get_post_list(_id).expect("E.");
         let edit_post_list = EditPostList {
             name:           _name,
             description:    descr.clone(),
@@ -1638,7 +1640,7 @@ impl PostList {
 
         diesel::delete (
           post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
+            .filter(schema::post_list_perms::post_list_id.eq(_id.id))
             .filter(schema::post_list_perms::types.ne(20))
         )
         .execute(&_connection)
@@ -1649,7 +1651,7 @@ impl PostList {
                 for user_id in see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        11,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1664,7 +1666,7 @@ impl PostList {
                 for user_id in see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        1,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1680,7 +1682,7 @@ impl PostList {
                 for user_id in see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        12,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1695,7 +1697,7 @@ impl PostList {
                 for user_id in see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        2,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1711,7 +1713,7 @@ impl PostList {
                 for user_id in create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        13,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1726,7 +1728,7 @@ impl PostList {
                 for user_id in create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        3,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1742,7 +1744,7 @@ impl PostList {
                 for user_id in create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        14,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1757,7 +1759,7 @@ impl PostList {
                 for user_id in create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        4,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1773,7 +1775,7 @@ impl PostList {
                 for user_id in copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        15,
                     };
                     diesel::insert_into(schema::post_list_perms::table)
@@ -1788,7 +1790,7 @@ impl PostList {
                 for user_id in copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
-                        post_list_id: self.id,
+                        post_list_id: _id,
                         types:        5,
                     };
                     diesel::insert_into(schema::post_list_perms::table)

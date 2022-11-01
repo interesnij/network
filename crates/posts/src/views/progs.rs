@@ -47,19 +47,19 @@ pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<bool>
     let _res = block(move || Community::create_community(data)).await?;
     Ok(Json(_res))
 }
-pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<bool>, Error> {
+pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let _res = block(move || PostList::create_list(data)).await?;
     Ok(Json(_res))
 }
-pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<bool>, Error> {
+pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let _res = block(move || PostList::edit_list(data)).await?;
     Ok(Json(_res))
 }
-pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<bool>, Error> {
+pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let _res = block(move || PostList::create_list(data)).await?;
     Ok(Json(_res))
 }
-pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<bool>, Error> {
+pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let _res = block(move || PostList::edit_list(data)).await?;
     Ok(Json(_res))
 }
