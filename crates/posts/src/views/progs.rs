@@ -102,7 +102,7 @@ pub async fn delete_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else {
-        let _res = block(move || PostList::delete_item(data.id)).await?;
+        let _res = block(move || list.delete_item()).await?;
         Ok(Json(_res))
     }
 }
@@ -112,19 +112,20 @@ pub async fn recover_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Erro
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else {
-        let _res = block(move || PostList::restore_item(data.id)).await?;
+        let _res = block(move || list.restore_item()).await?;
         Ok(Json(_res))
     }
 }
 pub async fn delete_community_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if data.community_id.is_some() {
-        let community = get_community(data.community_id.unwrap()).expect("E.");
+        let list = get_post_list(data.id).expect("E.");
+        let community = get_community(list.community_id.unwrap()).expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);
         if _tuple.0 == false || !community.is_user_create_list(data.user_id) {
             Err(Error::BadRequest(_tuple.1))
         }
         else {
-            let _res = block(move || PostList::delete_item(data.id)).await?;
+            let _res = block(move || list.delete_item()).await?;
             Ok(Json(_res))
         }
     }
@@ -134,13 +135,14 @@ pub async fn delete_community_list(data: Json<ItemParams>) -> Result<Json<i16>, 
 }
 pub async fn recover_community_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if data.community_id.is_some() {
-        let community = get_community(data.community_id.unwrap()).expect("E.");
+        let list = get_post_list(data.id).expect("E.");
+        let community = get_community(list.community_id.unwrap()).expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);
         if _tuple.0 == false || !community.is_user_create_list(data.user_id) {
             Err(Error::BadRequest(_tuple.1))
         }
         else {
-            let _res = block(move || PostList::restore_item(data.id)).await?;
+            let _res = block(move || list.restore_item()).await?;
             Ok(Json(_res))
         }
     }
