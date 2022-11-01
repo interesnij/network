@@ -1640,15 +1640,15 @@ impl PostList {
 
         diesel::delete (
           post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(_id.id))
+            .filter(schema::post_list_perms::post_list_id.eq(_id))
             .filter(schema::post_list_perms::types.ne(20))
         )
         .execute(&_connection)
         .expect("E");
 
-        if exclude_vec.iter().any(|&i| i==see_el) {
-            if see_el_users.is_some() {
-                for user_id in see_el_users.as_deref().unwrap() {
+        if exclude_vec.iter().any(|&i| i==data.see_el) {
+            if data.see_el_users.is_some() {
+                for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1661,9 +1661,9 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==see_el) {
-            if see_el_users.is_some() {
-                for user_id in see_el_users.as_deref().unwrap() {
+        else if include_vec.iter().any(|&i| i==data.see_el) {
+            if data.see_el_users.is_some() {
+                for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1677,9 +1677,9 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==see_comment) {
-            if see_comment_users.is_some() {
-                for user_id in see_comment_users.as_deref().unwrap() {
+        if exclude_vec.iter().any(|&i| i==data.see_comment) {
+            if data.see_comment_users.is_some() {
+                for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1692,9 +1692,9 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==see_comment) {
-            if see_comment_users.is_some() {
-                for user_id in see_comment_users.as_deref().unwrap() {
+        else if include_vec.iter().any(|&i| i==data.see_comment) {
+            if data.see_comment_users.is_some() {
+                for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1708,9 +1708,9 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==create_el) {
-            if create_el_users.is_some() {
-                for user_id in create_el_users.as_deref().unwrap() {
+        if exclude_vec.iter().any(|&i| i==data.create_el) {
+            if data.create_el_users.is_some() {
+                for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1723,9 +1723,9 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==create_el) {
-            if create_el_users.is_some() {
-                for user_id in create_el_users.as_deref().unwrap() {
+        else if include_vec.iter().any(|&i| i==data.create_el) {
+            if data.create_el_users.is_some() {
+                for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1739,9 +1739,9 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==create_comment) {
-            if create_comment_users.is_some() {
-                for user_id in create_comment_users.as_deref().unwrap() {
+        if exclude_vec.iter().any(|&i| i==data.create_comment) {
+            if data.create_comment_users.is_some() {
+                for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1754,9 +1754,9 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==create_comment) {
-            if create_comment_users.is_some() {
-                for user_id in create_comment_users.as_deref().unwrap() {
+        else if include_vec.iter().any(|&i| i==data.create_comment) {
+            if data.create_comment_users.is_some() {
+                for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1770,9 +1770,9 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==copy_el) {
-            if copy_el_users.is_some() {
-                for user_id in copy_el_users.as_deref().unwrap() {
+        if exclude_vec.iter().any(|&i| i==data.copy_el) {
+            if data.copy_el_users.is_some() {
+                for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,
@@ -1785,9 +1785,9 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==copy_el) {
-            if copy_el_users.is_some() {
-                for user_id in copy_el_users.as_deref().unwrap() {
+        else if include_vec.iter().any(|&i| i==data.copy_el) {
+            if data.copy_el_users.is_some() {
+                for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
                         user_id:      user_id,
                         post_list_id: _id,

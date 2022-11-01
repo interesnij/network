@@ -23,7 +23,7 @@ use crate::models::{
     PostList, Post, PostComment,
 
     NewUserJson, NewCommunityJson,
-    DataListJson,
+    DataListJson, RespListJson,
 };
 use serde::{Deserialize, Serialize};
 use crate::errors::Error;
