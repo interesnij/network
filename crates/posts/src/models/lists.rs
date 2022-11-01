@@ -1589,14 +1589,14 @@ impl PostList {
             community_id:   data.community_id,
             user_id:        data.user_id,
             name:           _name,
-            description:    data.description.as_deref(),
-            image:          data.image.as_deref(),
+            description:    data.description.clone(),
+            image:          data.image.clone(),
             see_el:         data.see_el,
             see_comment:    data.see_comment,
             create_el:      data.create_el,
             create_comment: data.create_comment,
             copy_el:        data.copy_el,
-            reactions:      data.reactions.as_deref(),
+            reactions:      data.reactions.clone(),
         };
     }
     pub fn edit_list(data: Json<DataListJson>) -> RespListJson {
