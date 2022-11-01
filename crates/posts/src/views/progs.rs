@@ -53,7 +53,7 @@ pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson
 pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let list = get_post_list(data.id).expect("E.");
     if list.user_id != data.user_id {
-        Err(BadRequest("Permission Denied"))
+        Err(BadRequest("Permission Denied").to_string())
     }
     else {
         let _res = block(move || PostList::edit_list(data)).await?;
@@ -73,7 +73,7 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
         }
     }
     else {
-        Err(Error::BadRequest("Permission Denied"))
+        Err(Error::BadRequest("Permission Denied").to_string())
     }
 }
 pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
@@ -89,6 +89,6 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
         }
     }
     else {
-        Err(Error::BadRequest("Permission Denied"))
+        Err(Error::BadRequest("Permission Denied").to_string())
     }
 }
