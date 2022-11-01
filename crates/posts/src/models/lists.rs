@@ -1382,7 +1382,7 @@ impl PostList {
         let new_post_list = NewPostList {
             name:           _name.clone(),
             community_id:   data.community_id,
-            user_id:        data.creator_id,
+            user_id:        data.user_id,
             types:          2,
             description:    data.description.clone(),
             image:          data.image.clone(),
@@ -1402,8 +1402,8 @@ impl PostList {
             .get_result::<PostList>(&_connection)
             .expect("Error.");
 
-        if community_id.is_some() {
-            let community_pk = community_id.unwrap();
+        if data.community_id.is_some() {
+            let community_pk = data.community_id.unwrap();
             let _new_posts_list_position = NewCommunityPostListPosition {
                 community_id: community_pk,
                 list_id:      new_list.id,
@@ -1417,9 +1417,9 @@ impl PostList {
         }
         else {
             let _new_posts_list_position = NewUserPostListPosition {
-                user_id:  creator_id,
+                user_id:  data.user_id,
                 list_id:  new_list.id,
-                position: PostList::get_user_post_lists_new_position(creator_id),
+                position: PostList::get_user_post_lists_new_position(data.user_id),
                 types:    1,
             };
             let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)

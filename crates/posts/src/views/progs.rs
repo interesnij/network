@@ -15,15 +15,14 @@ use crate::utils::{
     get_user_permission,
     establish_connection,
     NewListValues,
-    ErrorParams,
-    InfoParams
+    ErrorParams, InfoParams,
+    DataListJson, RespListJson,
 };
 use crate::models::{
     User, Community,
     PostList, Post, PostComment,
 
     NewUserJson, NewCommunityJson,
-    DataListJson, RespListJson,
 };
 use serde::{Deserialize, Serialize};
 use crate::errors::Error;
