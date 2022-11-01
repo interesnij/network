@@ -1589,14 +1589,14 @@ impl PostList {
             community_id:   data.community_id,
             user_id:        data.user_id,
             name:           _name,
-            description:    data.description,
-            image:          data.image,
+            description:    data.description.as_deref(),
+            image:          data.image.as_deref(),
             see_el:         data.see_el,
             see_comment:    data.see_comment,
             create_el:      data.create_el,
             create_comment: data.create_comment,
             copy_el:        data.copy_el,
-            reactions:      data.reactions,
+            reactions:      data.reactions.as_deref(),
         };
     }
     pub fn edit_list(data: Json<DataListJson>) -> RespListJson {
@@ -1622,7 +1622,7 @@ impl PostList {
         let _id = data.id;
         let list = get_post_list(_id).expect("E.");
         let edit_post_list = EditPostList {
-            name:           _name,
+            name:           _name.clone(),
             description:    descr.clone(),
             image:          data.image.clone(),
             see_el:         data.see_el,
