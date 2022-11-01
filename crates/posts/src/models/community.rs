@@ -15,6 +15,8 @@ use crate::schema::{
 };
 use crate::errors::Error;
 use actix_web::web::Json;
+use crate::models::Post;
+
 /////// Community //////
 
 /////// Тип сообщества //////
