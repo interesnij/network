@@ -1583,6 +1583,9 @@ impl PostList {
             }
         }
         return RespListJson {
+            id:             new_list.id,
+            community_id:   data.community_id,
+            user_id:        data.user_id,
             name:           _name,
             description:    data.description,
             image:          data.image,
@@ -1796,6 +1799,9 @@ impl PostList {
             }
         }
         return RespListJson {
+            id:             list.id,
+            community_id:   list.community_id,
+            user_id:        list.user_id,
             name:           _name,
             description:    descr,
             image:          data.image.clone(),
