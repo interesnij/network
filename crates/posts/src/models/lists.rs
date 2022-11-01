@@ -1402,6 +1402,15 @@ impl PostList {
             .get_result::<PostList>(&_connection)
             .expect("Error.");
 
+        if new_list.community_id.is_some() {
+            let community = new_list.get_community().expect("E");
+            community.plus_lists(1);
+        }
+        else {
+            let creator = new_list.get_creator().expect("E");
+            creator.plus_lists(1);
+        }
+
         if data.community_id.is_some() {
             let community_pk = data.community_id.unwrap();
             let _new_posts_list_position = NewCommunityPostListPosition {
@@ -2068,6 +2077,15 @@ impl PostList {
         let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.minus_lists(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.minus_lists(1);
+        }
         if o_1.is_ok() {
             return 1;
         }
@@ -2091,6 +2109,15 @@ impl PostList {
         let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.plus_lists(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.plus_lists(1);
+        }
 
         if o_1.is_ok() {
             return 1;
@@ -2145,6 +2172,16 @@ impl PostList {
         let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.minus_lists(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.minus_lists(1);
+        }
+
         if o_1.is_ok() {
             return 1;
         }
@@ -2197,6 +2234,16 @@ impl PostList {
         let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.plus_lists(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.plus_lists(1);
+        }
+
         if o_1.is_ok() {
             return 1;
         }
@@ -2219,6 +2266,16 @@ impl PostList {
         let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.minus_lists(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.minus_lists(1);
+        }
+
         if o_1.is_ok() {
             return 1;
         }
@@ -2240,6 +2297,16 @@ impl PostList {
         let o_1 = diesel::update(self)
             .set(schema::post_lists::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.plus_lists(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.minus_plus(1);
+        }
+
         if o_1.is_ok() {
             return 1;
         }

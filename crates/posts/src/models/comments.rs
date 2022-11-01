@@ -390,6 +390,15 @@ impl PostComment {
             .set(schema::post_comments::types.eq(close_case))
             .execute(&_connection);
 
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.minus_comments(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.minus_comments(1);
+        }
+
         if o_1.is_ok() && o_2.is_ok() {
             return 1;
         }
@@ -414,6 +423,15 @@ impl PostComment {
         let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.plus_comments(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.plus_comments(1);
+        }
 
         if o_1.is_ok() && o_2.is_ok() {
             return 1;
@@ -440,6 +458,16 @@ impl PostComment {
         let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
             .execute(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.minus_comments(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.minus_comments(1);
+        }
+
         if o_1.is_ok() && o_2.is_ok() {
             return 1;
         }
@@ -464,6 +492,16 @@ impl PostComment {
         let o_2 = diesel::update(self)
             .set(schema::post_comments::types.eq(close_case))
             .get_result::<PostComment>(&_connection);
+
+        if self.community_id.is_some() {
+            let community = self.get_community().expect("E");
+            community.plus_comments(1);
+        }
+        else {
+            let creator = self.get_creator().expect("E");
+            creator.plus_comments(1);
+        }
+
         if o_1.is_ok() && o_2.is_ok() {
             return 1;
         }

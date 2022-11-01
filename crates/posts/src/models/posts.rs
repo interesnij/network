@@ -1072,6 +1072,33 @@ impl Post {
         return self.types == 8;
     }
 
+    pub fn on_comments(&self) -> i16 {
+        let _connection = establish_connection();
+        let o_1 = diesel::update(self)
+            .set(schema::posts::comments_on.eq(true))
+            .execute(&_connection);
+
+        if o_1.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn off_comments(&self) -> i16 {
+        let _connection = establish_connection();
+        let o_1 = diesel::update(self)
+            .set(schema::posts::comments_on.eq(false))
+            .execute(&_connection);
+
+        if o_1.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
     pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
         let close_case = match self.types {
@@ -1095,11 +1122,11 @@ impl Post {
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
-            community.plus_posts(1);
+            community.minus_posts(1);
         }
         else {
             let creator = self.get_creator().expect("E");
-            creator.plus_posts(1);
+            creator.minus_posts(1);
         }
 
         if o_1.is_ok() && o_2.is_ok() {
@@ -1170,11 +1197,11 @@ impl Post {
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
-            community.plus_posts(1);
+            community.minus_posts(1);
         }
         else {
             let creator = self.get_creator().expect("E");
-            creator.plus_posts(1);
+            creator.minus_posts(1);
         }
 
         if o_1.is_ok() && o_2.is_ok() {

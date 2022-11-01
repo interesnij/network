@@ -188,7 +188,7 @@ pub struct AddUserListParams {
 }
 pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<AddUserListParams>::from_query(&req.query_string());
-    if params_some.is_ok() { 
+    if params_some.is_ok() {
         let params = params_some.unwrap();
         if params.user_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
