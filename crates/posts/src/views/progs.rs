@@ -106,7 +106,7 @@ pub async fn delete_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error
         Ok(Json(_res))
     }
 }
-pub async recover_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn recover_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let list = get_post_list(data.id).expect("E.");
     if list.user_id != data.user_id || list.community_id.is_some() {
         Err(Error::BadRequest("Permission Denied".to_string()))
