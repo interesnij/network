@@ -19,6 +19,7 @@ use crate::utils::{
     CardOwnerJson,
     ReactionsJson,
     EditListJson,
+    RespListJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -172,6 +173,7 @@ impl PostList {
     }
     pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
         return Ok(EditListJson {
+            id:                   self.id,
             name:                 self.name.clone(),
             description:          self.description.clone(),
             image:                self.image.clone(),

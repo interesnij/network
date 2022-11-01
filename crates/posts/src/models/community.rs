@@ -187,9 +187,9 @@ impl Community {
                     .select(schema::communities_memberships::id)
                     .first::<i32>(&_connection).is_ok() {
                         let new_form = NewCommunitiesMembership {
-                            user_id:      user_id,
+                            user_id:      *user_id,
                             community_id: community_id,
-                            level:        level,
+                            level:        *level,
                         };
                         diesel::insert_into(schema::communities_memberships::table)
                             .values(&new_form)
