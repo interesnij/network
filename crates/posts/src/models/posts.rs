@@ -1289,7 +1289,7 @@ impl Post {
         if user.is_can_fixed_post() {
             let _connection = establish_connection();
             let u = diesel::update(self)
-                .set(schema::posts::types.eq("b"))
+                .set(schema::posts::types.eq(2))
                 .execute(&_connection);
             if u.is_ok() {
                 return 1;
@@ -1302,7 +1302,7 @@ impl Post {
         if community.is_can_fixed_post() {
             let _connection = establish_connection();
             let u = diesel::update(self)
-                .set(schema::posts::types.eq("b"))
+                .set(schema::posts::types.eq(2))
                 .execute(&_connection);
             if u.is_ok() {
                 return 1;
@@ -1314,7 +1314,7 @@ impl Post {
     pub fn unfixed_post(&self) -> i16 {
         let _connection = establish_connection();
         let u = diesel::update(self)
-            .set(schema::posts::types.eq("a"))
+            .set(schema::posts::types.eq(1))
             .execute(&_connection);
         if u.is_ok() {
             return 1;
