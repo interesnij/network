@@ -1434,7 +1434,7 @@ impl PostList {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        11,
                     };
@@ -1449,7 +1449,7 @@ impl PostList {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        1,
                     };
@@ -1465,7 +1465,7 @@ impl PostList {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        12,
                     };
@@ -1480,7 +1480,7 @@ impl PostList {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        2,
                     };
@@ -1496,7 +1496,7 @@ impl PostList {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        13,
                     };
@@ -1511,7 +1511,7 @@ impl PostList {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        3,
                     };
@@ -1527,7 +1527,7 @@ impl PostList {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        14,
                     };
@@ -1542,7 +1542,7 @@ impl PostList {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        4,
                     };
@@ -1558,7 +1558,7 @@ impl PostList {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        15,
                     };
@@ -1573,7 +1573,7 @@ impl PostList {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: new_list.id,
                         types:        5,
                     };
@@ -1651,7 +1651,7 @@ impl PostList {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        11,
                     };
@@ -1666,7 +1666,7 @@ impl PostList {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        1,
                     };
@@ -1682,7 +1682,7 @@ impl PostList {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        12,
                     };
@@ -1697,7 +1697,7 @@ impl PostList {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        2,
                     };
@@ -1713,7 +1713,7 @@ impl PostList {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        13,
                     };
@@ -1728,7 +1728,7 @@ impl PostList {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        3,
                     };
@@ -1744,7 +1744,7 @@ impl PostList {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        14,
                     };
@@ -1759,7 +1759,7 @@ impl PostList {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        4,
                     };
@@ -1775,7 +1775,7 @@ impl PostList {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        15,
                     };
@@ -1790,7 +1790,7 @@ impl PostList {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
-                        user_id:      user_id,
+                        user_id:      *user_id,
                         post_list_id: _id,
                         types:        5,
                     };
