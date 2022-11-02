@@ -24,6 +24,7 @@ use crate::utils::{
     AttachmentsJson,
     EditPostJson,
     DataNewPost,
+    DataEditPost,
     RespPost,
 };
 use actix_web::web::Json;
@@ -951,7 +952,7 @@ impl Post {
     }
 
     pub fn edit_post (
-        &self, 
+        &self,
         data: Json<DataEditPost>
     ) -> RespPost {
         let _connection = establish_connection();
