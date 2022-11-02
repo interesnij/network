@@ -78,7 +78,6 @@ CREATE TABLE item_comments (
     id            SERIAL PRIMARY KEY, -- id коммента
     user_id       INT NOT NULL,       -- id комментатора
     community_id  INT,
-    sticker_id    INT,                -- id стикера
     content       VARCHAR(100),       -- часть содержания
     attach        VARCHAR(100),
     comment_id    INT NOT NULL,       -- id коммента

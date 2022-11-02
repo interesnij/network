@@ -159,7 +159,6 @@ CREATE TABLE post_comments (
     post_id      INT NOT NULL,       -- id записи
     user_id      INT NOT NULL,       -- id комментатора
     community_id INT,
-    sticker_id   INT,                -- id стикера
     parent_id    INT,                -- id родителя
     content      VARCHAR(1000),      -- содержание
     attach       VARCHAR(100),
@@ -187,7 +186,6 @@ CREATE TABLE post_comments (
 );
 CREATE INDEX post_comments_post_id_idx ON post_comments (post_id);
 CREATE INDEX post_comments_user_id_idx ON post_comments (user_id);
-CREATE INDEX post_comments_sticker_id_idx ON post_comments (sticker_id);
 CREATE INDEX post_comments_parent_id_idx ON post_comments (parent_id);
 
 

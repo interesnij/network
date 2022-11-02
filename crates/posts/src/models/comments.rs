@@ -20,6 +20,7 @@ use crate::utils::{
     RepliesSmallJson,
     AttachmentsJson,
     ReactionData,
+    DataNewComment, DataEditComment, RespComment,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -45,7 +46,6 @@ pub struct PostComment {
     pub post_id:      i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
-    pub sticker_id:   Option<i32>,
     pub parent_id:    Option<i32>,
     pub content:      Option<String>,
     pub attach:       Option<String>,
@@ -61,7 +61,6 @@ pub struct NewPostComment {
     pub post_id:      i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
-    pub sticker_id:   Option<i32>,
     pub parent_id:    Option<i32>,
     pub content:      Option<String>,
     pub attach:       Option<String>,
@@ -74,7 +73,7 @@ pub struct NewPostComment {
 
 #[derive(Queryable, Serialize, Deserialize, AsChangeset, Debug)]
 #[table_name="post_comments"]
-pub struct EditPostComment {
+pub struct EditComment {
     pub content: Option<String>,
     pub attach:  Option<String>,
 }
@@ -721,5 +720,30 @@ impl PostComment {
         else {
             return "".to_string();
         }
+    }
+    pub fn edit_comment (
+        &self,
+        data: Json<DataEditComment>
+    ) -> RespComment {
+        let _connection = establish_connection();
+        let edit_post = EditComment {
+            content: data.content.clone(),
+            attach:  data.attachments.clone(),
+        };
+        diesel::update(self)
+            .set(edit_post)
+            .execute(&_connection)
+            .expect("Error.");
+
+        return RespComment {
+            id:           self.id,
+            post_id:      self.post_id,
+            user_id:      data.user_id,
+            community_id: data.community_id,
+            content:      data.content.clone(),
+            attachments:  data.attachments.clone(),
+            parent_id:    data.parent_id,
+            attachments:  None,
+        };
     }
 }

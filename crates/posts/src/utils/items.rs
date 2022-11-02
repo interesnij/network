@@ -97,12 +97,46 @@ pub struct RespPost {
     pub id:           i32,
     pub list_id:      i32,
     pub user_id:      i32,
+    pub community_id: Option<i32>,
     pub content:      Option<String>,
     pub attach:       Option<String>,
     pub comments_on:  bool,
     pub is_signature: bool,
     pub parent_id:    Option<i32>,
     pub attachments:  Option<AttachmentsJson>,
+}
+
+#[derive(Deserialize)]
+// принимаем параметры для нового коммента
+pub struct DataNewComment {
+    pub post_id:      i32,
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub content:      Option<String>,
+    pub attachments:  Option<String>,
+    pub parent_id:    Option<i32>,
+}
+#[derive(Deserialize)]
+// принимаем параметры для редактируемого коммента
+pub struct DataEditComment {
+    pub id:           i32,
+    pub post_id:      i32,
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub content:      Option<String>,
+    pub attachments:  Option<String>,
+    pub parent_id:    Option<i32>,
+}
+#[derive(Serialize)]
+// отдаем коммент
+pub struct RespComment {
+    pub id:          i32,
+    pub post_id:     i32,
+    pub user_id:     i32,
+    pub content:     Option<String>,
+    pub attachments: Option<String>,
+    pub parent_id:   Option<i32>,
+    pub attachments: Option<AttachmentsJson>,
 }
 
 #[derive(Serialize, Deserialize)]

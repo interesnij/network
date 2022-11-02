@@ -286,7 +286,6 @@ pub struct CommentsAttach {
 pub struct CommentAttach {
     pub user_id:      i32,
     pub community_id: Option<i32>,
-    pub sticker_id:   Option<i32>,
     pub content:      Option<String>,
     pub attach:       Option<String>,
     pub comment_id:   i32,

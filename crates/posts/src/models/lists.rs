@@ -18,11 +18,7 @@ use crate::utils::{
     CardUserJson,
     CardOwnerJson,
     ReactionsJson,
-    EditListJson,
-    RespListJson,
-    DataListJson,
-    DataNewPost,
-    RespPost,
+    EditListJson, RespListJson, DataListJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -1126,6 +1122,9 @@ impl PostList {
         }
         else {
             let creator = self.get_creator().expect("E");
+            if self.user_id == user_id {
+                return true;
+            }
             return match private_field {
                 1 => true,
                 2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),

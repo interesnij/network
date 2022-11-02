@@ -27,6 +27,7 @@ use crate::utils::{
     DataEditPost,
     RespPost,
     ReactionData,
+    DataNewComment, DataEditComment, RespComment,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -955,12 +956,6 @@ impl Post {
         data: Json<DataEditPost>
     ) -> RespPost {
         let _connection = establish_connection();
-        //let mut _content: Option<String> = None;
-        //if content.is_some() {
-        //    use crate::utils::get_formatted_text;
-        //    _content = Some(get_formatted_text(&content.unwrap()));
-        //}
-
         let edit_post = EditPost {
             content:      data.content.clone(),
             attach:       data.attachments.clone(),
@@ -1432,17 +1427,12 @@ impl Post {
 
     pub fn create_comment (
         &self,
-        user_id:      i32,
-        community_id: Option<i32>,
-        attach:       Option<String>,
-        parent_id:    Option<i32>,
-        content:      Option<String>,
-        sticker_id:   Option<i32>
-    ) -> PostComment {
+        data: Json<DataNewComment>
+    ) -> RespComment {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::posts::comment.eq(self.comment + 1))
-            .get_result::<Post>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
 
         //let mut _content: Option<String> = None;
@@ -1453,12 +1443,11 @@ impl Post {
 
         let new_comment_form = NewPostComment {
             post_id:      self.id,
-            user_id:      user_id,
-            community_id: community_id,
-            sticker_id:   sticker_id,
-            parent_id:    parent_id,
-            content:      content,
-            attach:       attach,
+            user_id:      data.user_id,
+            community_id: data.community_id,
+            parent_id:    data.parent_id,
+            content:      data.content.clone(),
+            attach:       data.attachments.clone(),
             types:        1,
             created:      chrono::Local::now().naive_utc(),
             repost:       0,
@@ -1469,8 +1458,16 @@ impl Post {
             .values(&new_comment_form)
             .get_result::<PostComment>(&_connection)
             .expect("Error.");
-
-        return new_comment;
+        return RespComment {
+            id:           new_comment.id,
+            post_id:      self.id,
+            user_id:      data.user_id,
+            community_id: data.community_id,
+            content:      data.content,
+            attachments:  data.attachments,
+            parent_id:    data.parent_id,
+            attachments:  None,
+        };
     }
     pub fn get_parent(&self) -> Result<Post, Error> {
         use crate::schema::posts::dsl::posts;
