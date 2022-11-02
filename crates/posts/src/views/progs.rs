@@ -411,7 +411,7 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
     let comment = get_post_comment(data.id).expect("E.");
     let list = get_list();
     if comment.community_id.is_some() {
-        let community = comment.get_community(comment.community_id.unwrap());
+        let community = comment.get_community(comment.community_id.unwrap()).expect("E.");
         if comment.user_id == data.user_id || community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             let _res = block(move || comment.edit_comment(data)).await?;
             Ok(Json(_res))
@@ -435,7 +435,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
     let comment = get_post_comment(data.id).expect("E.");
     let list = get_list();
     if comment.community_id.is_some() {
-        let community = comment.get_community(comment.community_id.unwrap());
+        let community = comment.get_community(comment.community_id.unwrap()).expect("E.");
         if comment.user_id == data.user_id || community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             let _res = block(move || comment.delete_item()).await?;
             Ok(Json(_res))
@@ -459,7 +459,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
     let comment = get_post_comment(data.id).expect("E.");
     let list = get_list();
     if comment.community_id.is_some() {
-        let community = comment.get_community(comment.community_id.unwrap());
+        let community = comment.get_community(comment.community_id.unwrap()).expect("E.");
         if comment.user_id == data.user_id || community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             let _res = block(move || comment.restore_item()).await?;
             Ok(Json(_res))
