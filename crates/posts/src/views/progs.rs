@@ -18,11 +18,11 @@ use crate::utils::{
     NewListValues, ItemParams,
     ErrorParams, InfoParams,
     DataListJson, RespListJson,
+    DataNewPost, DataEditPost, RespPost,
 };
 use crate::models::{
     User, Community,
     PostList, Post, PostComment,
-
     NewUserJson, NewCommunityJson,
 };
 use serde::{Deserialize, Serialize};
@@ -48,6 +48,8 @@ pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/recover_post/", web::post().to(recover_post));
     config.route("/on_comment/", web::post().to(on_comment));
     config.route("/off_comment/", web::post().to(off_comment));
+    config.route("/add_post_in_list/", web::post().to(add_post_in_list));
+    config.route("/edit_post/", web::put().to(edit_post));
 }
 
 pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
@@ -302,6 +304,56 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let owner = get_user(item.user_id).expect("E.");
         if owner.id == data.user_id {
             let _res = block(move || item.on_comments()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>, Error> {
+    let list = get_post_list(data.list_id).expect("E.");
+    if list.community_id.is_some() {
+        let community = get_community(list.community_id.unwrap()).expect("E.");
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.create_post(None, Some(community), data)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = get_user(list.user_id).expect("E.");
+        if owner.id == data.user_id {
+            let _res = block(move || list.create_post(Some(owner), None, data)).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error> {
+    let item = get_post(data.id).expect("E.");
+    if item.community_id.is_some() {
+        let community = get_community(item.community_id.unwrap()).expect("E.");
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || item.edit_post(data)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = get_user(item.user_id).expect("E.");
+        if owner.id == data.user_id {
+            let _res = block(move || item.edit_post(data)).await?;
             Ok(Json(_res))
         }
         else {

@@ -2319,7 +2319,7 @@ impl PostList {
 
     pub fn create_post (
         &self,
-        creator: User,
+        creator: Option<User>,
         community: Option<Community>,
         data: Json<DataNewPost>
     ) -> RespPost {
@@ -2372,10 +2372,11 @@ impl PostList {
         }
         if community.is_some() {
             let _community = community.unwrap();
-            _community.plus_lists(1);
+            _community.plus_posts(1);
         }
-        else {
-            creator.plus_lists(1);
+        else if creator.is_some() {
+            let _creator = creator.unwrap();
+            _creator.plus_posts(1);
         }
         return RespPost {
             id:           new_post.id,
