@@ -172,7 +172,7 @@ pub async fn fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
@@ -197,7 +197,7 @@ pub async fn unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
@@ -221,7 +221,7 @@ pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
@@ -244,7 +244,7 @@ pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
@@ -268,7 +268,7 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
@@ -292,18 +292,18 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
-            let _res = block(move || item.edit_post(data)).await?;
+            let _res = block(move || item.off_comments(data)).await?;
             Ok(Json(_res))
         }
     }
     else {
         if item.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || item.edit_post(data)).await?;
+            let _res = block(move || item.off_comments(data)).await?;
             Ok(Json(_res))
         }
         else {
@@ -334,7 +334,7 @@ pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>,
 pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error> {
     let item = get_post(data.id).expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap());
+        let community = item.get_community(item.community_id.unwrap()).expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
@@ -381,7 +381,7 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
 }
 
 pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>, Error> {
-    let item = get_post(data.id).expect("E.");
+    let item = get_post(data.post_id).expect("E.");
     let list = get_post_list(item.post_list_id).expect("E.");
     if item.community_id.is_some() {
         let community = get_community(item.community_id.unwrap()).expect("E.");

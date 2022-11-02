@@ -2382,7 +2382,7 @@ impl PostList {
             id:           new_post.id,
             list_id:      self.id,
             user_id:      data.user_id,
-            community_id: data.community_id,
+            community_id: self.community_id,
             content:      data.content.clone(),
             attach:       data.attachments.clone(),
             comments_on:  data.comments_on,
