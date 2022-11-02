@@ -23,6 +23,8 @@ use crate::utils::{
     CardCommentJson,
     AttachmentsJson,
     EditPostJson,
+    DataNewPost,
+    RespPost,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -931,13 +933,9 @@ impl Post {
 
     pub fn edit_post (
         &self,
-        content:      Option<String>,
-        attach:       Option<String>,
-        comments_on:  bool,
-        is_signature: bool
-    ) -> &Post {
+        data: Json<DataNewPost>
+    ) -> RespPost {
         let _connection = establish_connection();
-
         //let mut _content: Option<String> = None;
         //if content.is_some() {
         //    use crate::utils::get_formatted_text;
@@ -945,16 +943,27 @@ impl Post {
         //}
 
         let edit_post = EditPost {
-            content:      content,
-            attach:       attach,
-            comments_on:  comments_on,
-            is_signature: is_signature,
+            content:      data.content.clone(),
+            attach:       data.attachments.clone(),
+            comments_on:  data.comments_on,
+            is_signature: data.is_signature,
         };
         diesel::update(self)
             .set(edit_post)
             .get_result::<Post>(&_connection)
             .expect("Error.");
-        return self;
+
+        return RespPost {
+            id:           self.id,
+            list_id:      self.post_list_id,
+            user_id:      self.user_id,
+            content:      data.content.clone(),
+            attach:       data.attachments.clone(),
+            comments_on:  data.comments_on,
+            is_signature: data.is_signature,
+            parent_id:    self.parent_id,
+            attachments:  None,
+        };;
     }
 
     pub fn plus_comments(&self, count: i32) -> bool {

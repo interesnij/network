@@ -16,6 +16,7 @@ pub struct ItemParams {
     pub user_id:      i32,
     pub community_id: Option<i32>,
 }
+
 #[derive(Serialize, Deserialize)]
 pub struct EditListJson {
     pub id:                   i32,
@@ -63,6 +64,42 @@ pub struct DataListJson {
     pub create_comment_users: Option<Vec<i32>>,
     pub copy_el_users:        Option<Vec<i32>>,
 }
+
+#[derive(Deserialize)]
+// принимаем параметры для нового поста
+pub struct DataNewPost {
+    pub list_id:      i32,
+    pub user_id:      i32,
+    pub content:      Option<String>,
+    pub attachments:  Option<String>,
+    pub comments_on:  bool,
+    pub is_signature: bool,
+    pub parent_id:    Option<i32>,
+}
+#[derive(Deserialize)]
+// принимаем параметры для редактируемого поста
+pub struct DataEditPost {
+    pub id:           i32,
+    pub user_id:      i32,
+    pub content:      Option<String>,
+    pub attachments:  Option<String>,
+    pub comments_on:  bool,
+    pub is_signature: bool,
+}
+#[derive(Serialize)]
+// отдаем пост
+pub struct RespPost {
+    pub id:           i32,
+    pub list_id:      i32,
+    pub user_id:      i32,
+    pub content:      Option<String>,
+    pub attach:       Option<String>,
+    pub comments_on:  bool,
+    pub is_signature: bool,
+    pub parent_id:    Option<i32>,
+    pub attachments:  Option<AttachmentsJson>,
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct RespListJson {
     pub id:             i32,

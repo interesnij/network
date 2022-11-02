@@ -21,6 +21,8 @@ use crate::utils::{
     EditListJson,
     RespListJson,
     DataListJson,
+    DataNewPost,
+    RespPost,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -2317,14 +2319,10 @@ impl PostList {
 
     pub fn create_post (
         &self,
-        content:      Option<String>,
-        user_id:      i32,
-        types:        Option<i16>,
-        attach:       Option<String>,
-        comments_on:  bool,
-        is_signature: bool,
-        parent_id:    Option<i32>
-    ) -> Post {
+        creator: User,
+        community: Option<Community>,
+        data: Json<DataNewPost>
+    ) -> RespPost {
         use crate::models::NewPost;
 
         let _connection = establish_connection();
@@ -2333,37 +2331,26 @@ impl PostList {
           .get_result::<PostList>(&_connection)
           .expect("Error.");
 
-        let _types: i16;
-        //let mut _content: Option<String> = None;
-        //let creator = get_user(user_id);
-
-        if types.is_some() {
-            _types = types.unwrap();
-        }
-        else {
-            _types = 1;
-        }
-
         //if content.is_some() {
         //    use crate::utils::get_formatted_text;
         //    _content = Some(get_formatted_text(&content.unwrap()));
         //}
         let new_post_form = NewPost {
-          content:      content,
+          content:      data.content.clone(),
           community_id: self.community_id,
-          user_id:      user_id,
+          user_id:      data.user_id,
           post_list_id: self.id,
-          types:        _types,
-          attach:       attach.clone(),
-          comments_on:  comments_on,
+          types:        1,
+          attach:       data.attachments.clone(),
+          comments_on:  data.comments_on,
           created:      chrono::Local::now().naive_utc(),
           comment:      0,
           view:         0,
           repost:       0,
           copy:         0,
           position:     (self.count).try_into().unwrap(),
-          is_signature: is_signature,
-          parent_id:    parent_id,
+          is_signature: data.is_signature,
+          parent_id:    data.parent_id,
           reactions:    0,
         };
         let new_post = diesel::insert_into(schema::posts::table)
@@ -2374,7 +2361,7 @@ impl PostList {
         if attach.is_some() {
             use crate::models::NewAttachItem;
             use crate::schema::attach_items::dsl::attach_items;
-            let _attach = attach.unwrap().to_string();
+            let _attach = data.attach.unwrap().to_string();
             let v: Vec<&str> = _attach.split(",").collect();
             for item in v.iter() {
                 if item.len() > 3 {
@@ -2383,6 +2370,23 @@ impl PostList {
                 }
             }
         }
-        return new_post;
+        if community.is_some() {
+            let _community = community.unwrap();
+            _community.plus_lists(1);
+        }
+        else {
+            creator.plus_lists(1);
+        }
+        return RespPost {
+            id:           new_post.id,
+            list_id:      self.id,
+            user_id:      data.user_id,
+            content:      data.content.clone(),
+            attach:       data.attachments.clone(),
+            comments_on:  data.comments_on,
+            is_signature: data.is_signature,
+            parent_id:    data.parent_id,
+            attachments:  None,
+        };
     }
 }
