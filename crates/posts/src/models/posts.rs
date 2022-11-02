@@ -951,8 +951,8 @@ impl Post {
     }
 
     pub fn edit_post (
-        &self,
-        data: Json<DataNewPost>
+        &self, 
+        data: Json<DataEditPost>
     ) -> RespPost {
         let _connection = establish_connection();
         //let mut _content: Option<String> = None;
