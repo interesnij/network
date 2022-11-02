@@ -16,6 +16,11 @@ pub struct ItemParams {
     pub user_id:      i32,
     pub community_id: Option<i32>,
 }
+#[derive(Deserialize)]
+pub struct ReactionData {
+    pub id:           i32,
+    pub user_id:      i32,
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct EditListJson {

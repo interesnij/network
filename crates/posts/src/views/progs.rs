@@ -19,6 +19,7 @@ use crate::utils::{
     ErrorParams, InfoParams,
     DataListJson, RespListJson,
     DataNewPost, DataEditPost, RespPost,
+    ReactionData, JsonItemReactions,
 };
 use crate::models::{
     User, Community,
@@ -50,6 +51,7 @@ pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/off_comment/", web::post().to(off_comment));
     config.route("/add_post_in_list/", web::post().to(add_post_in_list));
     config.route("/edit_post/", web::put().to(edit_post));
+    config.route("/send_reaction_post/", web::post().to(send_reaction_post));
 }
 
 pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
@@ -358,6 +360,32 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
         }
         else {
             Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+pub async fn send_reaction_post(data: Json<DataEditPost>) -> Result<Json<JsonItemReactions>, Error> {
+    let item = get_post(data.id).expect("E.");
+    if item.community_id.is_some() {
+        let community = get_community(item.community_id.unwrap()).expect("E.");
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || item.send_reaction(data)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = get_user(item.user_id).expect("E.");
+        let _tuple = get_user_permission(&owner, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || item.send_reaction(data)).await?;
+            Ok(Json(_res))
         }
     }
 }

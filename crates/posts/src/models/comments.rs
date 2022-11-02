@@ -572,8 +572,7 @@ impl PostComment {
 
     pub fn send_reaction (
         &self,
-        user_id: i32,
-        reaction_id: i32,
+        data: Json<ReactionData>
     ) -> Json<JsonItemReactions> {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
         use crate::models::{PostCommentReaction, NewPostCommentReaction};
