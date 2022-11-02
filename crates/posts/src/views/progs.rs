@@ -202,13 +202,13 @@ pub async fn unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
-            let _res = block(move || item.unfixed(data)).await?;
+            let _res = block(move || item.unfixed_post()).await?;
             Ok(Json(_res))
         }
     }
     else {
         if item.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || item.unfixed(data)).await?;
+            let _res = block(move || item.unfixed_post()).await?;
             Ok(Json(_res))
         }
         else {
@@ -226,13 +226,13 @@ pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
-            let _res = block(move || item.delete_item(data)).await?;
+            let _res = block(move || item.delete_item()).await?;
             Ok(Json(_res))
         }
     }
     else {
         if item.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || item.delete_item(data)).await?;
+            let _res = block(move || item.delete_item()).await?;
             Ok(Json(_res))
         }
         else {
@@ -249,13 +249,13 @@ pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
-            let _res = block(move || item.restore_item(data)).await?;
+            let _res = block(move || item.restore_item()).await?;
             Ok(Json(_res))
         }
     }
     else {
         if item.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || item.restore_item(data)).await?;
+            let _res = block(move || item.restore_item()).await?;
             Ok(Json(_res))
         }
         else {
@@ -273,13 +273,13 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
-            let _res = block(move || item.on_comments(data)).await?;
+            let _res = block(move || item.on_comments()).await?;
             Ok(Json(_res))
         }
     }
     else {
         if item.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || item.on_comments(data)).await?;
+            let _res = block(move || item.on_comments()).await?;
             Ok(Json(_res))
         }
         else {
@@ -297,13 +297,13 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
-            let _res = block(move || item.off_comments(data)).await?;
+            let _res = block(move || item.off_comments()).await?;
             Ok(Json(_res))
         }
     }
     else {
         if item.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || item.off_comments(data)).await?;
+            let _res = block(move || item.off_comments()).await?;
             Ok(Json(_res))
         }
         else {
