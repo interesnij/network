@@ -180,7 +180,7 @@ pub async fn fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     else {
         let owner = get_user(item.user_id).expect("E.");
         if owner.id == data.user_id {
-            let _res = block(move || item.user_fixed_post(user)).await?;
+            let _res = block(move || item.user_fixed_post(owner)).await?;
             Ok(Json(_res))
         }
         else {
