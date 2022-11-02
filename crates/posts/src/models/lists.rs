@@ -2358,7 +2358,7 @@ impl PostList {
             .get_result::<Post>(&_connection)
             .expect("Error.");
 
-        if attachments.is_some() {
+        if data.attachments.is_some() {
             use crate::models::NewAttachItem;
             use crate::schema::attach_items::dsl::attach_items;
             let _attach = data.attachments.unwrap().to_string();
