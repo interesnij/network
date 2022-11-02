@@ -401,7 +401,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
             Err(Error::BadRequest(_tuple.1))
         }
         else {
-            let _res = block(move || item.send_reaction(data)).await?;
+            let _res = block(move || item.create_comment(data)).await?;
             Ok(Json(_res))
         }
     }

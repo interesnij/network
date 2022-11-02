@@ -971,6 +971,7 @@ impl Post {
             id:           self.id,
             list_id:      self.post_list_id,
             user_id:      self.user_id,
+            community_id: data.community_id,
             content:      data.content.clone(),
             attach:       data.attachments.clone(),
             comments_on:  data.comments_on,
