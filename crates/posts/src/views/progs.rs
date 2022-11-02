@@ -364,7 +364,7 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
     }
 }
 
-pub async fn send_reaction_post(data: Json<DataEditPost>) -> Result<Json<JsonItemReactions>, Error> {
+pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
     let item = get_post(data.id).expect("E.");
     if item.community_id.is_some() {
         let community = get_community(item.community_id.unwrap()).expect("E.");

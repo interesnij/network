@@ -587,8 +587,7 @@ impl PostComment {
             let vote_ok = post_comment_reactions
                 .filter(schema::post_comment_reactions::user_id.eq(data.user_id))
                 .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-                .first::<PostCommentReaction>(&_connection)
-                .expect("E.");
+                .first::<PostCommentReaction>(&_connection);
 
             // если пользователь уже реагировал на товар
             if vote_ok.is_ok() {
