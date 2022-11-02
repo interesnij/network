@@ -880,7 +880,13 @@ impl Post {
             .expect("Error.");
         return new_post;
     }
-    pub fn copy_item(pk: i32, lists: Vec<i32>) -> bool {
+    pub fn copy_item (
+        pk: i32,
+        lists: Vec<i32>,
+        creator: User,
+        community: Option<Community>,
+        data: Json<DataNewPost>
+    ) -> bool {
         use crate::schema::posts::dsl::posts;
         use crate::schema::post_lists::dsl::post_lists;
 
@@ -888,44 +894,55 @@ impl Post {
         let item = posts
             .filter(schema::posts::id.eq(pk))
             .filter(schema::posts::types.eq_any(vec![1, 2]))
-            .load::<Post>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<Post>(&_connection)
+            .expect("E");
         let mut count = 0;
         for list_id in lists.iter() {
             count += 1;
             let list = post_lists
                 .filter(schema::post_lists::id.eq(list_id))
                 .filter(schema::post_lists::types.lt(10))
-                .load::<PostList>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
+                .first::<PostList>(&_connection)
+                .expect("E");
 
-            list.create_post (
-                item.content.clone(),
-                list.user_id,
-                None,
-                item.attach.clone(),
-                item.comments_on.clone(),
-                item.is_signature.clone(),
-                item.parent_id.clone(),
-            );
+            let new_post_form = NewPost {
+                content:      data.content.clone(),
+                community_id: community.community_id,
+                user_id:      creator.user_id,
+                post_list_id: list_id,
+                types:        1,
+                attach:       data.attachments.clone(),
+                comments_on:  data.comments_on,
+                created:      chrono::Local::now().naive_utc(),
+                comment:      0,
+                view:         0,
+                repost:       0,
+                copy:         0,
+                position:     (list.count).try_into().unwrap(),
+                is_signature: data.is_signature,
+                parent_id:    data.parent_id,
+                reactions:    0,
+            };
+            diesel::insert_into(schema::posts::table)
+                .values(&new_post_form)
+                .execute(&_connection)
+                .expect("Error.");
+
+            diesel::update(&list)
+              .set(schema::post_lists::copy.eq(list.count + 1))
+              .execute(&_connection)
+              .expect("Error.");
         }
         diesel::update(&item)
           .set(schema::posts::copy.eq(item.copy + count))
-          .get_result::<Post>(&_connection)
+          .execute(&_connection)
           .expect("Error.");
 
-        if item.community_id.is_some() {
-            let community = item.get_community().expect("E");
-            community.plus_posts(count);
+        if community.is_some() {
+            let _community = community.unwrap();
+            _community.plus_posts(count);
         }
         else {
-            let creator = item.get_creator().expect("E");
             creator.plus_posts(count);
          }
         return true;
