@@ -437,7 +437,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
     if comment.community_id.is_some() {
         let community = comment.get_community(comment.community_id.unwrap());
         if comment.user_id == data.user_id || community.get_editors_ids().iter().any(|&i| i==data.user_id) {
-            let _res = block(move || comment.delete_item(data)).await?;
+            let _res = block(move || comment.delete_item()).await?;
             Ok(Json(_res))
         }
         else {
@@ -446,7 +446,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
     }
     else {
         if comment.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || comment.delete_item(data)).await?;
+            let _res = block(move || comment.delete_item()).await?;
             Ok(Json(_res))
         }
         else {
@@ -461,7 +461,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
     if comment.community_id.is_some() {
         let community = comment.get_community(comment.community_id.unwrap());
         if comment.user_id == data.user_id || community.get_editors_ids().iter().any(|&i| i==data.user_id) {
-            let _res = block(move || comment.restore_item(data)).await?;
+            let _res = block(move || comment.restore_item()).await?;
             Ok(Json(_res))
         }
         else {
@@ -470,7 +470,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
     }
     else {
         if comment.user_id == data.user_id || list.user_id == data.user_id {
-            let _res = block(move || comment.restore_item(data)).await?;
+            let _res = block(move || comment.restore_item()).await?;
             Ok(Json(_res))
         }
         else {
