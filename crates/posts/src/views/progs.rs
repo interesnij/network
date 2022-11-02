@@ -195,7 +195,7 @@ pub async fn unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if item.community_id.is_some() {
         let community = get_community(item.community_id.unwrap()).expect("E.");
         if !community.get_administrators_ids().iter().any(|&i| i==item.user_id) {
-            Err(Error::BadRequest(_tuple.1))
+            Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
             let _res = block(move || item.unfixed_post()).await?;
