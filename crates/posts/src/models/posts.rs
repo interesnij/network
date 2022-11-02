@@ -691,7 +691,7 @@ impl Post {
     pub fn send_reaction (
         &self,
         data: Json<ReactionData>
-    ) -> Json<JsonItemReactions> {
+    ) -> JsonItemReactions {
         use crate::schema::post_reactions::dsl::post_reactions;
         use crate::models::{PostReaction, NewPostReaction};
 
