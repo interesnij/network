@@ -19,6 +19,7 @@ use crate::utils::{
     CardOwnerJson,
     ReactionsJson,
     EditListJson, RespListJson, DataListJson,
+    DataNewPost, RespPost,
 };
 use actix_web::web::Json;
 use crate::models::{
