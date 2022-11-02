@@ -334,7 +334,7 @@ pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>,
 pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error> {
     let item = get_post(data.id).expect("E.");
     if item.community_id.is_some() {
-        let community = item.get_community(item.community_id.unwrap()).expect("E.");
+        let community = item.get_community().expect("E.");
         if !community.get_editors_ids().iter().any(|&i| i==data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
