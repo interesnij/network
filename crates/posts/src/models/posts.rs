@@ -1464,7 +1464,6 @@ impl Post {
             user_id:      data.user_id,
             community_id: data.community_id,
             content:      data.content,
-            attachments:  data.attachments,
             parent_id:    data.parent_id,
             attachments:  None,
         };

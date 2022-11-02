@@ -113,8 +113,8 @@ pub struct DataNewComment {
     pub user_id:      i32,
     pub community_id: Option<i32>,
     pub content:      Option<String>,
-    pub attachments:  Option<String>,
     pub parent_id:    Option<i32>,
+    pub attachments:  Option<String>,
 }
 #[derive(Deserialize)]
 // принимаем параметры для редактируемого коммента
@@ -124,8 +124,8 @@ pub struct DataEditComment {
     pub user_id:      i32,
     pub community_id: Option<i32>,
     pub content:      Option<String>,
-    pub attachments:  Option<String>,
     pub parent_id:    Option<i32>,
+    pub attachments:  Option<String>,
 }
 #[derive(Serialize)]
 // отдаем коммент
@@ -134,7 +134,6 @@ pub struct RespComment {
     pub post_id:     i32,
     pub user_id:     i32,
     pub content:     Option<String>,
-    pub attachments: Option<String>,
     pub parent_id:   Option<i32>,
     pub attachments: Option<AttachmentsJson>,
 }
