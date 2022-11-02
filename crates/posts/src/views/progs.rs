@@ -340,6 +340,7 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
         let _res = block(move || item.edit_post(data)).await?;
         Ok(Json(_res))
     }
+    else {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
