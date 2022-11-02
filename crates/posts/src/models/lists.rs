@@ -1107,7 +1107,7 @@ impl PostList {
     }
     pub fn is_user_create_el(&self, user_id: i32) -> bool {
         let private_field = &self.create_el;
-        if self.user_id == user_id || private_field == &1 {
+        if private_field == &1 {
             return true;
         }
 
