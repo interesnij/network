@@ -316,51 +316,31 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 
 pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>, Error> {
     let list = get_post_list(data.list_id).expect("E.");
-    if list.community_id.is_some() {
-        let community = get_community(list.community_id.unwrap()).expect("E.");
-        let _tuple = get_community_permission(&community, data.user_id);
-        if _tuple.0 == false {
-            Err(Error::BadRequest(_tuple.1))
+    if list.is_user_create_el(data.user_id) {
+        if list.community_id.is_some() {
+            let community = get_community(list.community_id.unwrap()).expect("E.");
+            let _res = block(move || list.create_post(None, Some(community), data)).await?;
+            Ok(Json(_res))
         }
         else {
-            let _res = block(move || list.create_post(None, Some(community), data)).await?;
+            let owner = get_user(list.user_id).expect("E.");
+            let _res = block(move || list.create_post(Some(owner), None, data)).await?;
             Ok(Json(_res))
         }
     }
     else {
-        let owner = get_user(list.user_id).expect("E.");
-        if owner.id == data.user_id {
-            let _res = block(move || list.create_post(Some(owner), None, data)).await?;
-            Ok(Json(_res))
-        }
-        else {
-            Err(Error::BadRequest("Permission Denied".to_string()))
-        }
+        Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
 
 pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error> {
     let item = get_post(data.id).expect("E.");
-    if item.community_id.is_some() {
-        let community = get_community(item.community_id.unwrap()).expect("E.");
-        let _tuple = get_community_permission(&community, data.user_id);
-        if _tuple.0 == false {
-            Err(Error::BadRequest(_tuple.1))
-        }
-        else {
-            let _res = block(move || item.edit_post(data)).await?;
-            Ok(Json(_res))
-        }
+    let list = get_post_list(item.post_list_id).expect("E.");
+    if list.is_user_create_el(data.user_id) {
+        let _res = block(move || item.edit_post(data)).await?;
+        Ok(Json(_res))
     }
-    else {
-        let owner = get_user(item.user_id).expect("E.");
-        if owner.id == data.user_id {
-            let _res = block(move || item.edit_post(data)).await?;
-            Ok(Json(_res))
-        }
-        else {
-            Err(Error::BadRequest("Permission Denied".to_string()))
-        }
+        Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
 
