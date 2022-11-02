@@ -584,15 +584,15 @@ impl PostComment {
         let react_model = self.get_count_model_for_reaction(data.id);
 
         if reactions_of_list.iter().any(|&i| i==data.id) && list.is_user_see_el(data.user_id) && list.is_user_see_comment(data.user_id) {
-            let votes = post_comment_reactions
+            let vote_ok = post_comment_reactions
                 .filter(schema::post_comment_reactions::user_id.eq(data.user_id))
                 .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
-                .load::<PostCommentReaction>(&_connection)
+                .first::<PostCommentReaction>(&_connection)
                 .expect("E.");
 
             // если пользователь уже реагировал на товар
-            if votes.len() > 0 {
-                let vote = votes.into_iter().nth(0).unwrap();
+            if vote_ok.is_ok() {
+                let vote = vote_ok.expect("E");
 
                 // если пользователь уже реагировал этой реакцией на этот товар
                 if vote.reaction_id == data.id {
@@ -633,10 +633,10 @@ impl PostComment {
             }
         }
 
-        return Json(JsonItemReactions {
+        return JsonItemReactions {
             count:     react_model.count,
             reactions: self.reactions,
-        });
+        };
     }
 
     pub fn count_reaction_ru(&self, reaction_id: i32) -> String {
