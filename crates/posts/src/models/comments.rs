@@ -19,6 +19,7 @@ use crate::utils::{
     SmallReactionBlockJson,
     RepliesSmallJson,
     AttachmentsJson,
+    ReactionData,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -584,7 +585,7 @@ impl PostComment {
 
         if reactions_of_list.iter().any(|&i| i==data.id) && list.is_user_see_el(data.user_id) && list.is_user_see_comment(data.user_id) {
             let votes = post_comment_reactions
-                .filter(schema::post_comment_reactions::user_id.eq(user_id))
+                .filter(schema::post_comment_reactions::user_id.eq(data.user_id))
                 .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
                 .load::<PostCommentReaction>(&_connection)
                 .expect("E.");

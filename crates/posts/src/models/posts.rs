@@ -26,6 +26,7 @@ use crate::utils::{
     DataNewPost,
     DataEditPost,
     RespPost,
+    ReactionData,
 };
 use actix_web::web::Json;
 use crate::models::{
