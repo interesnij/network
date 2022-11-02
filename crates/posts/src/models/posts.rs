@@ -900,7 +900,7 @@ impl Post {
         let _community_id: Option<i32>;
         if community.is_some() {
             let _community = community.unwrap();
-            _community_id = _community.community_id;
+            _community_id = Some(_community.community_id);
             _community.plus_posts(count);
         }
         else {
