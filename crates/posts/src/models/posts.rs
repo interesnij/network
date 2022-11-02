@@ -897,6 +897,16 @@ impl Post {
             .first::<Post>(&_connection)
             .expect("E");
         let mut count = 0;
+        let _community_id: Option<i32>;
+        if community.is_some() {
+            let _community = community.unwrap();
+            _community_id = _community.community_id;
+            _community.plus_posts(count);
+        }
+        else {
+            creator.plus_posts(count);
+            _community_id = None;
+         }
         for list_id in lists.iter() {
             count += 1;
             let list = post_lists
@@ -907,9 +917,9 @@ impl Post {
 
             let new_post_form = NewPost {
                 content:      data.content.clone(),
-                community_id: community.community_id,
+                community_id: _community_id,
                 user_id:      creator.user_id,
-                post_list_id: list_id,
+                post_list_id: *list_id,
                 types:        1,
                 attach:       data.attachments.clone(),
                 comments_on:  data.comments_on,
@@ -937,14 +947,6 @@ impl Post {
           .set(schema::posts::copy.eq(item.copy + count))
           .execute(&_connection)
           .expect("Error.");
-
-        if community.is_some() {
-            let _community = community.unwrap();
-            _community.plus_posts(count);
-        }
-        else {
-            creator.plus_posts(count);
-         }
         return true;
     }
 
