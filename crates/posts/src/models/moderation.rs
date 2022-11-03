@@ -421,7 +421,6 @@ impl ModeratedReport {
                 .execute(&_connection)
                 .expect("Error.");
             return true;
-        }
     }
 }
 
