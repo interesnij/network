@@ -77,7 +77,7 @@ impl Moderated {
                 .values(&new_form)
                 .get_result::<Moderated>(&_connection)
                 .expect("Error.");
-            return new;
+            return _new;
         }
     }
     pub fn reports_count_ru(&self) -> String {
@@ -118,7 +118,7 @@ impl Moderated {
             ))
             .execute(&_connection);
 
-        ModerationPenalty::create_suspension_penalty (
+        ModeratedPenalty::create_suspension_penalty (
             self.id,
             manager_id,
             self.types,
@@ -153,7 +153,7 @@ impl Moderated {
             ))
             .execute(&_connection);
 
-        ModerationPenalty::create_close_penalty (
+        ModeratedPenalty::create_close_penalty (
             self,
             manager_id,
             self.types,
@@ -468,7 +468,7 @@ pub struct NewModeratedReport {
     pub created:      chrono::NaiveDateTime,
 }
 
-/////// ModerationPenalty //////
+/////// ModeratedPenalty //////
 
 ////////// Статус штрафа
     // 1 Приостановлено
