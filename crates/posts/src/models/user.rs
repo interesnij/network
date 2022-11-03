@@ -1370,7 +1370,7 @@ impl User {
         friends_ids: Option<Vec<i32>>,
         communities_ids: Option<Vec<i32>>
     ) -> () {
-        use crate::models::{NewFeaturedUserCommunitie, FeaturedUserCommunitie};
+        use crate::models::NewFeaturedUserCommunitie;
         use crate::schema::featured_user_communities::dsl::featured_user_communities;
 
         let _connection = establish_connection();
@@ -1464,7 +1464,6 @@ impl User {
     }
     pub fn is_member_of_community(&self, community_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        use crate::models::CommunitiesMembership;
 
         let _connection = establish_connection();
         return communities_memberships
@@ -1717,7 +1716,7 @@ impl User {
             .first::<i32>(&_connection).is_ok();
     }
     pub fn join_community(&self, community_id: i32) -> bool {
-        use crate::models::{CommunitiesMembership, NewCommunitiesMembership};
+        use crate::models::NewCommunitiesMembership;
 
         if self.is_member_of_community(community_id) || self.is_user_in_ban(community_id) {
             return false;

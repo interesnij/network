@@ -96,7 +96,7 @@ impl From<BlockingError> for Error {
 }
 
 impl From<ActixError> for Error {
-    fn from(_error: ActixError) -> Error {
+    fn from(error: ActixError) -> Error {
         Error::InternalServerError(error.to_string())
     }
 }
