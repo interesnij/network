@@ -154,7 +154,7 @@ impl Moderated {
             .execute(&_connection);
 
         ModeratedPenaltie::create_close_penalty (
-            self,
+            self.id,
             manager_id,
             self.types,
             self.object_id
