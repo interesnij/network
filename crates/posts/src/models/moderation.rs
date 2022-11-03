@@ -1,14 +1,20 @@
-//use diesel::prelude::*;
-//use crate::schema;
+use crate::schema;
 use crate::schema::{
     moderateds,
     moderated_reports,
     moderated_penalties,
     moderated_logs,
 };
-use diesel::{Queryable, Insertable};
+use diesel::{
+    Queryable,
+    Insertable,
+    RunQueryDsl,
+    ExpressionMethods,
+    QueryDsl,
+    NullableExpressionMethods,
+};
 use serde::{Serialize, Deserialize};
-//use crate::utils::establish_connection;
+use crate::utils::establish_connection;
 use crate::models::{
     User,
     //Community,
