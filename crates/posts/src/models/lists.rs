@@ -5,6 +5,7 @@ use diesel::{
     RunQueryDsl,
     NullableExpressionMethods,
     ExpressionMethods,
+    QueryDsl,
 };
 use crate::schema::post_lists;
 use crate::errors::Error;
