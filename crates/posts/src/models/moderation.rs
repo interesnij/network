@@ -118,7 +118,7 @@ impl Moderated {
             ))
             .execute(&_connection);
 
-        ModeratedPenalty::create_suspension_penalty (
+        ModeratedPenaltie::create_suspension_penalty (
             self.id,
             manager_id,
             self.types,
@@ -153,7 +153,7 @@ impl Moderated {
             ))
             .execute(&_connection);
 
-        ModeratedPenalty::create_close_penalty (
+        ModeratedPenaltie::create_close_penalty (
             self,
             manager_id,
             self.types,
@@ -468,7 +468,7 @@ pub struct NewModeratedReport {
     pub created:      chrono::NaiveDateTime,
 }
 
-/////// ModeratedPenalty //////
+/////// ModeratedPenaltie //////
 
 ////////// Статус штрафа
     // 1 Приостановлено
