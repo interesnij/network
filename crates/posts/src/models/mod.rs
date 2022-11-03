@@ -5,6 +5,7 @@ mod other;
 mod community;
 mod user;
 mod items;
+mod moderation;
 
 pub use self::{
     lists::*,
@@ -14,4 +15,5 @@ pub use self::{
     community::*,
     user::*,
     items::*,
+    moderation::*,
 };
