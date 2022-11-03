@@ -110,6 +110,7 @@ impl Moderated {
         manager_id: i32,
         duration: chrono::NaiveDateTime
     ) -> bool {
+        let _connection = establish_connection();
         diesel::update(self)
             .set((
                 schema::moderateds::types.eq(2),
@@ -144,6 +145,7 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        let _connection = establish_connection();
         diesel::update(self)
             .set((
                 schema::moderateds::types.eq(3),
@@ -177,6 +179,7 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
             object_id:       self.id,
@@ -218,6 +221,7 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
             object_id:       self.id,
@@ -259,6 +263,7 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
             object_id:       self.id,
@@ -298,6 +303,7 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
             object_id:       self.id,
@@ -333,13 +339,13 @@ impl Moderated {
             .execute(&_connection);
         return true;
     }
-    pub fn get_reports(&self) -> Vec<ModerationReport> {
+    pub fn get_reports(&self) -> Vec<ModeratedReport> {
         use crate::schema::moderated_reports::dsl::moderated_reports;
 
         let _connection = establish_connection();
         let items = moderated_reports
             .filter(schema::moderated_reports::moderated_id.eq(self.id))
-            .load::<ModerationReport>(&_connection)
+            .load::<ModeratedReport>(&_connection)
             .expect("E")
     }
     pub fn get_reporters_ids(&self) -> Vec<i32> {
@@ -373,7 +379,7 @@ pub struct NewModerated {
     pub count:       i32,
 }
 
-/////// ModerationReport //////
+/////// ModeratedReport //////
 
 ////////// Тип жалобы
     // 1 Порнография
@@ -472,7 +478,7 @@ impl ModeratedPenaltie {
         object_id: i32,
         duration: NaiveDateTime,
     ) -> bool {
-        let new_form = NewModeratedReport {
+        let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
             expiration:   Some(duration),
@@ -493,7 +499,7 @@ impl ModeratedPenaltie {
         types: i16,
         object_id: i32,
     ) -> bool {
-        let new_form = NewModeratedReport {
+        let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
             expiration:   None,
