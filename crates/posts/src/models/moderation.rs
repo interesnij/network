@@ -129,8 +129,8 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          1,
+            description:     None,
             types:           self.types,
-            object_id:       self.object_id,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: Some(duration),
         };
@@ -164,8 +164,8 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          2,
+            description:     None,
             types:           self.types,
-            object_id:       self.object_id,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -184,8 +184,8 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          4,
+            description:     None,
             types:           self.types,
-            object_id:       self.object_id,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -226,8 +226,8 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          3,
+            description:     None,
             types:           self.types,
-            object_id:       self.object_id,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -268,8 +268,8 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          5,
+            description:     None,
             types:           self.types,
-            object_id:       self.object_id,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -308,8 +308,8 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          6,
+            description:     None,
             types:           self.types,
-            object_id:       self.object_id,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -343,10 +343,10 @@ impl Moderated {
         use crate::schema::moderated_reports::dsl::moderated_reports;
 
         let _connection = establish_connection();
-        let items = moderated_reports
+        return moderated_reports
             .filter(schema::moderated_reports::moderated_id.eq(self.id))
             .load::<ModeratedReport>(&_connection)
-            .expect("E")
+            .expect("E");
     }
     pub fn get_reporters_ids(&self) -> Vec<i32> {
         use crate::schema::moderated_reports::dsl::moderated_reports;
