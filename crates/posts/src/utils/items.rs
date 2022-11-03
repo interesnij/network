@@ -130,12 +130,13 @@ pub struct DataEditComment {
 #[derive(Serialize)]
 // отдаем коммент
 pub struct RespComment {
-    pub id:          i32,
-    pub post_id:     i32,
-    pub user_id:     i32,
-    pub content:     Option<String>,
-    pub parent_id:   Option<i32>,
-    pub attachments: Option<AttachmentsJson>,
+    pub id:           i32,
+    pub post_id:      i32,
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub content:      Option<String>,
+    pub parent_id:    Option<i32>,
+    pub attachments:  Option<AttachmentsJson>,
 }
 
 #[derive(Serialize, Deserialize)]

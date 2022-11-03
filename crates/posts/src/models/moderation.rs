@@ -179,6 +179,12 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        use crate::schema::{
+            moderated_penalties::dsl::moderated_penalties,
+            moderated_reports::dsl::moderated_reports,
+            moderateds::dsl::moderateds,
+        };
+
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
@@ -221,6 +227,12 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        use crate::schema::{
+            moderated_penalties::dsl::moderated_penalties,
+            moderated_reports::dsl::moderated_reports,
+            moderateds::dsl::moderateds,
+        };
+
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
@@ -263,6 +275,11 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        use crate::schema::{
+            moderated_penalties::dsl::moderated_penalties,
+            moderated_reports::dsl::moderated_reports,
+        };
+
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
@@ -303,6 +320,11 @@ impl Moderated {
         &self,
         manager_id: i32,
     ) -> bool {
+        use crate::schema::{
+            moderated_penalties::dsl::moderated_penalties,
+            moderated_reports::dsl::moderated_reports,
+        };
+
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
@@ -476,8 +498,9 @@ impl ModeratedPenaltie {
         manager_id: i32,
         types: i16,
         object_id: i32,
-        duration: NaiveDateTime,
+        duration: chrono::NaiveDateTime,
     ) -> bool {
+        let _connection = establish_connection();
         let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
@@ -499,6 +522,7 @@ impl ModeratedPenaltie {
         types: i16,
         object_id: i32,
     ) -> bool {
+        let _connection = establish_connection();
         let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
