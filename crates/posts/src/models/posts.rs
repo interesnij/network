@@ -1464,7 +1464,7 @@ impl Post {
             post_id:      self.id,
             user_id:      data.user_id,
             community_id: data.community_id,
-            content:      data.content,
+            content:      data.content.clone(),
             parent_id:    data.parent_id,
             attachments:  None,
         };
