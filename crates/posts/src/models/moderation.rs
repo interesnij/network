@@ -116,7 +116,8 @@ impl Moderated {
                 schema::moderateds::types.eq(2),
                 schema::moderateds::verified.eq(true)
             ))
-            .execute(&_connection);
+            .execute(&_connection)
+            .expect("E");
 
         ModeratedPenaltie::create_suspension_penalty (
             self.id,
@@ -151,7 +152,8 @@ impl Moderated {
                 schema::moderateds::types.eq(3),
                 schema::moderateds::verified.eq(true)
             ))
-            .execute(&_connection);
+            .execute(&_connection)
+            .expect("E");
 
         ModeratedPenaltie::create_close_penalty (
             self.id,
@@ -313,7 +315,8 @@ impl Moderated {
             .set((
                 schema::moderateds::verified.eq(false)
             ))
-            .execute(&_connection);
+            .execute(&_connection)
+            .expect("E");
         return true;
     }
     pub fn reject (
@@ -355,10 +358,9 @@ impl Moderated {
         .expect("E");
 
         diesel::update(self)
-            .set((
-                schema::moderateds::verified.eq(true)
-            ))
-            .execute(&_connection);
+            .set(schema::moderateds::verified.eq(true))
+            .execute(&_connection)
+            .expect("E");
         return true;
     }
     pub fn get_reports(&self) -> Vec<ModeratedReport> {
