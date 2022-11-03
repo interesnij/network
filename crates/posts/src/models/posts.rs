@@ -21,13 +21,15 @@ use crate::utils::{
     CardUserJson,
     CardOwnerJson,
     CardCommentJson,
-    AttachmentsJson,
+    //AttachmentsJson,
     EditPostJson,
     DataNewPost,
     DataEditPost,
     RespPost,
     ReactionData,
-    DataNewComment, DataEditComment, RespComment,
+    DataNewComment, 
+    //DataEditComment,
+    RespComment,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -978,7 +980,7 @@ impl Post {
             is_signature: data.is_signature,
             parent_id:    self.parent_id,
             attachments:  None,
-        };;
+        };
     }
 
     pub fn plus_comments(&self, count: i32) -> bool {

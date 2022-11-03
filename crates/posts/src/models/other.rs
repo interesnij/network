@@ -5,7 +5,6 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
 };
 use crate::schema::{
     user_post_list_collections,
@@ -23,7 +22,7 @@ use crate::schema::{
     news_user_communities,
     featured_user_communities,
 };
-use crate::errors::Error;
+//use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,

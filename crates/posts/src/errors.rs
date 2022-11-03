@@ -89,14 +89,14 @@ impl From<DBError> for Error {
 }
 
 impl From<BlockingError> for Error {
-    fn from(error: BlockingError) -> Error {
+    fn from(_error: BlockingError) -> Error {
         //error!("Thread blocking error {:?}", error);
         Error::BlockingError("Thread blocking error".into())
     }
 }
 
 impl From<ActixError> for Error {
-    fn from(error: ActixError) -> Error {
+    fn from(_error: ActixError) -> Error {
         Error::InternalServerError(error.to_string())
     }
 }
