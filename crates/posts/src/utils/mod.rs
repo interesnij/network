@@ -65,6 +65,17 @@ pub fn get_count_for_ru_alt(count: i32, word1: String, word2: String, word3: Str
     }
 }
 
+pub fn get_users_from_ids(ids: Vec<i32>) -> Vec<User> {
+    use crate::schema::users::dsl::users;
+
+    let _connection = establish_connection();
+    return users
+        .filter(schema::users::id.eq_any(ids))
+        .filter(schema::users::types.lt(10))
+        .load::<User>(&_connection)
+        .expect("E");
+}
+
 pub fn get_post_list(pk: i32) -> Result<PostList, Error> {
     use crate::schema::post_lists::dsl::post_lists;
     let _connection = establish_connection();
