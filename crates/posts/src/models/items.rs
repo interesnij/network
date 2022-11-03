@@ -1,11 +1,8 @@
-use crate::schema;
 use diesel::{
     Queryable,
     Insertable,
-    RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
 };
 use crate::schema::{
     item_users,
@@ -27,9 +24,6 @@ use crate::schema::{
 };
 use crate::errors::Error;
 use serde::{Serialize, Deserialize};
-use crate::utils::{
-    establish_connection,
-};
 //use actix_web::web::Json;
 
 

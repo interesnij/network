@@ -13,12 +13,13 @@ use crate::utils::{
     get_anon_user_permission,
     get_community_permission,
     get_anon_community_permission,
-    establish_connection,
     ErrorParams,
 };
-use crate::models::{User, PostList, Post, PostComment, Community};
-use crate::diesel::RunQueryDsl;
-use serde::{Serialize, Deserialize};
+use crate::models::{PostList, Post, Community};
+use serde::{
+    //Serialize,
+    Deserialize
+};
 
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {

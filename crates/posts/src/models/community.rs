@@ -201,7 +201,7 @@ impl Community {
             posts:          0,
             comments:       0,
         };
-        let new_community = diesel::insert_into(schema::communitys::table)
+        diesel::insert_into(schema::communitys::table)
             .values(&new_community_form)
             .get_result::<Community>(&_connection)
             .expect("Error.");

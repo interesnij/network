@@ -3,8 +3,6 @@ use diesel::{
     Queryable,
     Insertable,
     RunQueryDsl,
-    ExpressionMethods,
-    QueryDsl,
     NullableExpressionMethods,
 };
 use crate::schema::post_lists;

@@ -166,7 +166,7 @@ impl User {
             posts:          0,
             comments:       0,
         };
-        let new_user = diesel::insert_into(schema::users::table)
+        diesel::insert_into(schema::users::table)
             .values(&new_form)
             .get_result::<User>(&_connection)
             .expect("Error.");

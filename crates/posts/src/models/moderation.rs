@@ -11,7 +11,6 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    NullableExpressionMethods,
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
@@ -312,9 +311,7 @@ impl Moderated {
         .expect("E");
 
         diesel::update(self)
-            .set((
-                schema::moderateds::verified.eq(false)
-            ))
+            .set(schema::moderateds::verified.eq(false))
             .execute(&_connection)
             .expect("E");
         return true;
@@ -437,8 +434,6 @@ impl ModeratedReport {
         description: Option<String>,
         repost_types: i16
     ) -> bool {
-        use crate::schema::moderated_reports::dsl::moderated_reports;
-
         let _connection = establish_connection();
         let moderated_obj = Moderated::get_or_create_moderated_object(object_id, types);
         if moderated_obj.get_reporters_ids().iter().any(|&i| i==reporter_id) {

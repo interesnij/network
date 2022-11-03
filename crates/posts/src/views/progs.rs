@@ -1,10 +1,7 @@
-use crate::schema;
 use actix_web::{
-    HttpResponse,
     web,
     web::block,
     web::Json,
-    Responder,
 };
 use crate::utils::{
     get_community,
@@ -14,9 +11,7 @@ use crate::utils::{
     get_post_comment,
     get_community_permission,
     get_user_permission,
-    establish_connection,
-    NewListValues, ItemParams,
-    ErrorParams, InfoParams,
+    ItemParams,
     DataListJson, RespListJson,
     DataNewPost, DataEditPost, RespPost,
     DataNewComment, DataEditComment, RespComment,
@@ -24,10 +19,9 @@ use crate::utils::{
 };
 use crate::models::{
     User, Community,
-    PostList, Post, PostComment,
+    PostList,
     NewUserJson, NewCommunityJson,
 };
-use serde::{Deserialize, Serialize};
 use crate::errors::Error;
 
 
