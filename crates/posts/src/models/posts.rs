@@ -932,7 +932,7 @@ impl Post {
           .set(schema::posts::copy.eq(self.copy + count))
           .execute(&_connection)
           .expect("Error.");
-        return Ok(1);
+        return 1;
     }
 
     pub fn edit_post (
