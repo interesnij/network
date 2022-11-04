@@ -886,7 +886,7 @@ impl Post {
     pub fn copy_item (
         &self,
         lists: Vec<i32>,
-    ) -> Result<i16, Error> {
+    ) -> i16 {
         use crate::schema::posts::dsl::posts;
         use crate::schema::post_lists::dsl::post_lists;
 

@@ -24,7 +24,7 @@ use crate::models::{
 };
 use crate::errors::Error;
 
-pub fn owner_urls(config: &mut web::ServiceConfig) {
+pub fn manager_urls(config: &mut web::ServiceConfig) {
     //config.route("/create_user/", web::post().to(create_user));
     //config.route("/create_community/", web::post().to(create_community));
 }
