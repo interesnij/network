@@ -931,7 +931,7 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
             }
 
             let comment: PostComment;
-            let post: Post;
+            let item: Post;
             let comment_res = get_post_comment(params.item_id.unwrap());
             if comment_res.is_ok() {
                 comment = comment_res.expect("E");
