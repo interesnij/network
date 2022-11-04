@@ -1940,7 +1940,7 @@ impl PostList {
         return 0;
     }
 
-    pub fn copy_item (
+    pub fn copy_list (
         &self,
         data: Json<DataCopyList>
     ) -> i16 {
