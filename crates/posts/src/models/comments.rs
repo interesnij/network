@@ -131,16 +131,21 @@ impl PostComment {
     }
     pub fn get_users_of_reaction (
         &self,
-        reaction_id:   &i32,
-        user_reaction: Option<i32>,
-        limit:         i64,
-        offset:        i64,
+        user_id:     i32,
+        reaction_id: i32,
+        limit:       i64,
+        offset:      i64,
     ) -> ReactionBlockJson {
         use crate::schema::{
             post_comment_reactions::dsl::post_comment_reactions,
             users::dsl::users,
         };
         use crate::utils::CardReactionPostJson;
+
+        let mut user_reaction: Option<i32> = None;
+        if self.is_have_user_reaction(user_id) {
+            user_reaction = Some(self.get_user_reaction(user_id).expect("E."));
+        }
 
         let _connection = establish_connection();
         let user_ids = post_comment_reactions
@@ -168,9 +173,9 @@ impl PostComment {
         for _item in _users.iter() {
             user_json.push (
                 CardReactionPostJson {
-                    owner_name:       _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
-                    owner_link:       _item.link.clone(),
-                    owner_image:      _item.image.clone(),
+                    owner_name:  _item.first_name.clone() + &" ".to_string() + &_item.last_name.clone(),
+                    owner_link:  _item.link.clone(),
+                    owner_image: _item.image.clone(),
                 }
             );
         }

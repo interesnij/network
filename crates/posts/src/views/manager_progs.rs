@@ -16,7 +16,6 @@ use crate::utils::{
 use crate::models::{
     User, Community,
     PostList,
-    NewUserJson, NewCommunityJson,
 };
 use crate::errors::Error;
 

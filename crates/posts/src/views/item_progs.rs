@@ -35,7 +35,7 @@ pub fn item_urls(config: &mut web::ServiceConfig) {
     config.route("/add_post_in_list/", web::post().to(add_post_in_list));
     config.route("/edit_post/", web::put().to(edit_post));
     config.route("/send_reaction_post/", web::post().to(send_reaction_post));
-    config.route("/copy_post/", web::put().to(copy_post));
+    config.route("/copy_post/", web::post().to(copy_post));
 }
 
 

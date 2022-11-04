@@ -33,6 +33,8 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/load_list/", web::get().to(load_list_page));
     config.route("/load_post/", web::get().to(load_post_page));
     config.route("/load_comments/", web::get().to(load_comments_page));
+    config.route("/post_reactions/", web::get().to(post_reactions_page));
+    //config.route("/comment_reactions/", web::get().to(comment_reactions_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -691,13 +693,13 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct EditItemParams {
+pub struct ItemParams {
     pub item_id: Option<i32>,
     pub user_id: Option<i32>,
 }
 
 pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
-    let params_some = web::Query::<EditItemParams>::from_query(&req.query_string());
+    let params_some = web::Query::<ItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
 
@@ -738,6 +740,117 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
                 }
                 else {
                     let body = serde_json::to_string(&item.get_edit_data_json()).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+            else {
+                let owner = item.get_creator().expect("E.");
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string(&item.get_edit_data_json())
+                        .unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+
+#[derive(Debug, Deserialize)]
+pub struct ItemReactionsParams {
+    pub item_id:     Option<i32>,
+    pub user_id:     Option<i32>,
+    pub reaction_id: Option<i32>,
+    pub limit:       Option<i64>,
+    pub offset:      Option<i64>,
+}
+pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+
+        if params.item_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'item_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.user_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'user_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.reaction_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'reaction_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let user_id = params.user_id.unwrap();
+            let mut limit: i64 = None;
+            let mut offset: i64 = None;
+            if params.limit.is_some() {
+                let _limit = params.limit.unwrap();
+                if _limit > 100 {
+                    limit = 20;
+                }
+                else {
+                    limit = _limit;
+                }
+            }
+            if params.offset.is_some() {
+                offset = params.offset.unwrap();
+            }
+            else {
+                offset = 0;
+            }
+
+            let item: Post;
+            let item_res = get_post(params.item_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "item not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if item.community_id.is_some() {
+                let community = item.get_community().expect("E.");
+                let _tuple = get_community_permission(&community, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string (
+                        &item.get_users_of_reaction (
+                            data.user_id,
+                            data.reaction_id,
+                            data.limit,
+                            data.offset,
+                        )
+                    )
+                    .unwrap();
                     HttpResponse::Ok().body(body)
                 }
             }

@@ -605,16 +605,21 @@ impl Post {
     }
     pub fn get_users_of_reaction (
         &self,
-        reaction_id:   &i32,
-        user_reaction: Option<i32>,
-        limit:         i64,
-        offset:        i64,
+        user_id:     i32,
+        reaction_id: i32,
+        limit:       i64,
+        offset:      i64,
     ) -> ReactionBlockJson {
         use crate::schema::{
             post_reactions::dsl::post_reactions,
             users::dsl::users,
         };
         use crate::utils::CardReactionPostJson;
+
+        let mut user_reaction: Option<i32> = None;
+        if self.is_have_user_reaction(user_id) {
+            user_reaction = Some(self.get_user_reaction(user_id).expect("E."));
+        }
 
         let _connection = establish_connection();
         let user_ids = post_reactions
