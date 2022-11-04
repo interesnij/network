@@ -11,7 +11,7 @@ use crate::utils::{
     get_post_comment,
     get_community_permission,
     get_user_permission,
-    ItemParams,
+    ItemParams, DataCopyList,
     DataListJson, RespListJson,
     DataNewPost, DataEditPost, RespPost,
     DataNewComment, DataEditComment, RespComment,
@@ -38,6 +38,7 @@ pub fn list_urls(config: &mut web::ServiceConfig) {
     config.route("/recover_user_list/", web::post().to(recover_user_list));
     config.route("/delete_community_list/", web::post().to(delete_community_list));
     config.route("/recover_community_list/", web::post().to(recover_community_list));
+    config.route("/copy_list/", web::put().to(copy_list));
 }
 
 pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
@@ -209,5 +210,31 @@ pub async fn recover_community_list(data: Json<ItemParams>) -> Result<Json<i16>,
     }
     else {
         Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
+    let list = get_post_list(data.id).expect("E.");
+    if list.community_id.is_some() {
+        let community = get_community(list.community_id.unwrap()).expect("E.");
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false || !list.is_user_copy_el(data.user_id) {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.copy_list(data)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = get_user(list.user_id).expect("E.");
+        let _tuple = get_user_permission(&owner, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.copy_list(data)).await?;
+            Ok(Json(_res))
+        }
     }
 }

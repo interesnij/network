@@ -22,6 +22,12 @@ pub struct DataCopyPost {
     pub user_id: i32,
     pub lists:   Vec<i32>,
 }
+#[derive(Deserialize)]
+pub struct DataCopyList {
+    pub id:      i32,
+    pub user_id: i32,
+    pub owners:  Vec<String>,
+}
 
 #[derive(Deserialize)]
 pub struct ReactionData {
