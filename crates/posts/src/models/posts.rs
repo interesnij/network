@@ -886,7 +886,7 @@ impl Post {
     pub fn copy_item (
         pk: i32,
         lists: Vec<i32>,
-    ) -> i16 {
+    ) -> Result<i16, Error> {
         use crate::schema::posts::dsl::posts;
         use crate::schema::post_lists::dsl::post_lists;
 
@@ -911,7 +911,7 @@ impl Post {
                 user_id:      item.user_id,
                 post_list_id: *list_id,
                 types:        1,
-                attach:       item.attachments.clone(),
+                attach:       item.attach.clone(),
                 comments_on:  item.comments_on,
                 created:      chrono::Local::now().naive_utc(),
                 comment:      0,
