@@ -1949,7 +1949,7 @@ impl PostList {
         use crate::utils::{
             get_community,
             get_user,
-        }
+        };
 
         for item in data.owners.iter() {
             let first = item.chars().nth(0).unwrap();
