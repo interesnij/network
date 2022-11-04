@@ -844,8 +844,8 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
                 else {
                     let body = serde_json::to_string (
                         &item.get_users_of_reaction (
-                            data.user_id,
-                            data.reaction_id,
+                            user_id,
+                            params.reaction_id.is_none(),
                             data.limit,
                             data.offset,
                         )
