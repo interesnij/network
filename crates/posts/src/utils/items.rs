@@ -17,6 +17,13 @@ pub struct ItemParams {
     pub community_id: Option<i32>,
 }
 #[derive(Deserialize)]
+pub struct DataCopyPost {
+    pub id:      i32,
+    pub user_id: i32,
+    pub lists:   Vec<i32>,
+}
+
+#[derive(Deserialize)]
 pub struct ReactionData {
     pub id:           i32,
     pub user_id:      i32,
