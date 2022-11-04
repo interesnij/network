@@ -251,7 +251,7 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
     }
 }
 
-pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
+pub async fn copy_post(data: Json<DataCopyPost>) -> i16 {
     let item = get_post(data.id).expect("E.");
     let list = item.get_list().expect("E.");
     if item.community_id.is_some() {
