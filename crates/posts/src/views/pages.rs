@@ -802,8 +802,8 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
         }
         else {
             let user_id = params.user_id.unwrap();
-            let mut limit: i64 = None;
-            let mut offset: i64 = None;
+            let mut limit: i64 = 0;
+            let mut offset: i64 = 0;
             if params.limit.is_some() {
                 let _limit = params.limit.unwrap();
                 if _limit > 100 {

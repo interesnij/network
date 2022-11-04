@@ -180,8 +180,8 @@ impl PostComment {
             );
         }
         return ReactionBlockJson {
-            count:         self.get_count_model_for_reaction(*reaction_id).count,
-            reaction:      *reaction_id,
+            count:         self.get_count_model_for_reaction(reaction_id).count,
+            reaction:      reaction_id,
             users:         user_json,
             user_react_id: user_reaction,
         };
