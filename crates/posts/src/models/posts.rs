@@ -27,7 +27,7 @@ use crate::utils::{
     DataEditPost,
     RespPost,
     ReactionData,
-    DataNewComment, 
+    DataNewComment,
     //DataEditComment,
     RespComment,
 };
@@ -886,10 +886,7 @@ impl Post {
     pub fn copy_item (
         pk: i32,
         lists: Vec<i32>,
-        creator: User,
-        community: Option<Community>,
-        data: Json<DataNewPost>
-    ) -> bool {
+    ) -> i16 {
         use crate::schema::posts::dsl::posts;
         use crate::schema::post_lists::dsl::post_lists;
 
@@ -900,16 +897,6 @@ impl Post {
             .first::<Post>(&_connection)
             .expect("E");
         let mut count = 0;
-        let _community_id: Option<i32>;
-        if community.is_some() {
-            let _community = community.unwrap();
-            _community_id = Some(_community.community_id);
-            _community.plus_posts(count);
-        }
-        else {
-            creator.plus_posts(count);
-            _community_id = None;
-         }
         for list_id in lists.iter() {
             count += 1;
             let list = post_lists
@@ -919,21 +906,21 @@ impl Post {
                 .expect("E");
 
             let new_post_form = NewPost {
-                content:      data.content.clone(),
-                community_id: _community_id,
-                user_id:      creator.user_id,
+                content:      item.content.clone(),
+                community_id: item.community_id,
+                user_id:      item.user_id,
                 post_list_id: *list_id,
                 types:        1,
-                attach:       data.attachments.clone(),
-                comments_on:  data.comments_on,
+                attach:       item.attachments.clone(),
+                comments_on:  item.comments_on,
                 created:      chrono::Local::now().naive_utc(),
                 comment:      0,
                 view:         0,
                 repost:       0,
                 copy:         0,
                 position:     (list.count).try_into().unwrap(),
-                is_signature: data.is_signature,
-                parent_id:    data.parent_id,
+                is_signature: item.is_signature,
+                parent_id:    item.parent_id,
                 reactions:    0,
             };
             diesel::insert_into(schema::posts::table)
