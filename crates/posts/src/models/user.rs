@@ -850,21 +850,21 @@ impl User {
             return 0;
         }
     }
-
     pub fn restore_item(&self) -> i16 {
-        //use crate::models::show_wall_notify_items;
+        //use crate::models::hide_wall_notify_items;
 
         let _connection = establish_connection();
         let user_types = self.types;
-        let close_case = match user_types {
+        let _case = match user_types {
             31 => 1,
             36 => 6,
             37 => 7,
             _ => 1,
         };
         let o = diesel::update(self)
-            .set(schema::users::types.eq(close_case))
+            .set(schema::users::types.eq(_case))
             .execute(&_connection);
+
         if o.is_ok() {
             return 1;
         }
@@ -872,6 +872,7 @@ impl User {
             return 0;
         }
     }
+
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
@@ -892,7 +893,7 @@ impl User {
             return 0;
         }
     }
-    pub fn restore_item(&self) -> i16 {
+    pub fn unclose_item(&self) -> i16 {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
@@ -913,26 +914,7 @@ impl User {
             return 0;
         }
     }
-    pub fn close_item(&self) -> i16 {
-        let _connection = establish_connection();
-        let user_types = self.types;
-        let _case = match user_types {
-            1 => 51,
-            6 => 56,
-            7 => 57,
-            _ => 51,
-        };
-        let o = diesel::update(self)
-            .set(schema::users::types.eq(_case))
-            .execute(&_connection);
 
-        if o.is_ok() {
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
     pub fn change_perm_user(&self, types: i16) -> i16 {
         let _connection = establish_connection();
         if types > 30 {
@@ -942,27 +924,6 @@ impl User {
             .set(schema::users::types.eq(types))
             .execute(&_connection);
 
-        if o.is_ok() {
-            return 1;
-        }
-        else {
-            return 0;
-        }
-    }
-    pub fn restore_item(&self) -> i16 {
-        //use crate::models::show_wall_notify_items;
-
-        let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
-            51 => 1,
-            56 => 6,
-            57 => 7,
-            _ => 1,
-        };
-        let o = diesel::update(self)
-            .set(schema::users::types.eq(close_case))
-            .execute(&_connection);
         if o.is_ok() {
             return 1;
         }
