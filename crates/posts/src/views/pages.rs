@@ -34,7 +34,7 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/load_post/", web::get().to(load_post_page));
     config.route("/load_comments/", web::get().to(load_comments_page));
     config.route("/post_reactions/", web::get().to(post_reactions_page));
-    //config.route("/comment_reactions/", web::get().to(comment_reactions_page));
+    config.route("/comment_reactions/", web::get().to(comment_reactions_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -880,7 +880,118 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametr 'item_id' not found!".to_string(),
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+
+        if params.item_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'comment_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.user_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'user_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.reaction_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'reaction_id' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let user_id = params.user_id.unwrap();
+            let mut limit: i64 = 0;
+            let mut offset: i64 = 0;
+            if params.limit.is_some() {
+                let _limit = params.limit.unwrap();
+                if _limit > 100 {
+                    limit = 20;
+                }
+                else {
+                    limit = _limit;
+                }
+            }
+            if params.offset.is_some() {
+                offset = params.offset.unwrap();
+            }
+            else {
+                offset = 0;
+            }
+
+            let comment: PostComment;
+            let post: Post;
+            let comment_res = get_post_comment(params.item_id.unwrap());
+            if comment_res.is_ok() {
+                comment = comment_res.expect("E");
+                item = comment.get_item().expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "comment not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if comment.community_id.is_some() {
+                let community = item.get_community().expect("E.");
+                let _tuple = get_community_permission(&community, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string (
+                        &comment.get_users_of_reaction (
+                            user_id,
+                            params.reaction_id.unwrap(),
+                            limit,
+                            offset,
+                        )
+                    )
+                    .unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+            else {
+                let owner = item.get_creator().expect("E.");
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+                else {
+                    let body = serde_json::to_string (
+                        &comment.get_users_of_reaction (
+                            user_id,
+                            params.reaction_id.unwrap(),
+                            limit,
+                            offset,
+                        )
+                    )
+                    .unwrap();
+                    HttpResponse::Ok().body(body)
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
