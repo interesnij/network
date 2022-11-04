@@ -846,8 +846,8 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
                         &item.get_users_of_reaction (
                             user_id,
                             params.reaction_id.unwrap(),
-                            data.limit,
-                            data.offset,
+                            limit,
+                            offset,
                         )
                     )
                     .unwrap();
@@ -864,7 +864,14 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
                     HttpResponse::Ok().body(body)
                 }
                 else {
-                    let body = serde_json::to_string(&item.get_edit_data_json())
+                    let body = serde_json::to_string (
+                        &item.get_users_of_reaction (
+                            user_id,
+                            params.reaction_id.unwrap(),
+                            limit,
+                            offset,
+                        )
+                    )
                         .unwrap();
                     HttpResponse::Ok().body(body)
                 }
