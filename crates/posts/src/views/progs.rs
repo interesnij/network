@@ -29,6 +29,10 @@ pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/create_user/", web::post().to(create_user));
     config.route("/create_community/", web::post().to(create_community));
 
+    config.route("/add_list_in_user_collection/", web::post().to(add_list_in_user_collection));
+    config.route("/add_list_in_community_collection/", web::post().to(add_list_in_community_collection));
+    config.route("/delete_list_from_user_collection/", web::post().to(delete_list_from_user_collection));
+    config.route("/delete_list_from_community_collection/", web::post().to(delete_list_from_community_collection));
     config.route("/add_user_list/", web::post().to(add_user_list));
     config.route("/edit_user_list/", web::post().to(edit_user_list));
     config.route("/add_community_list/", web::post().to(add_community_list));
@@ -53,8 +57,6 @@ pub fn progs_routes(config: &mut web::ServiceConfig) {
     config.route("/delete_comment/", web::post().to(delete_comment));
     config.route("/recover_comment/", web::post().to(recover_comment));
     config.route("/send_reaction_comment/", web::post().to(send_reaction_comment));
-
-
 }
 
 pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
@@ -65,6 +67,81 @@ pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<bool>
     let _res = block(move || Community::create_community(data)).await?;
     Ok(Json(_res))
 }
+
+pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    let list = get_post_list(data.id).expect("E.");
+    if list.community_id.is_some() {
+        let community = list.get_community().expect("E.");
+        let data_community_id = list.community_id.unwrap();
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.add_in_user_collections(data.user_id)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = list.get_creator().expect("E.");
+        let _tuple = get_user_permission(&owner, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.add_in_user_collections(data.user_id)).await?;
+            Ok(Json(_res))
+        }
+    }
+}
+pub async fn delete_list_from_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    let list = get_post_list(data.id).expect("E.");
+    let _res = block(move || list.remove_in_user_collections(data.user_id)).await?;
+    Ok(Json(_res))
+}
+
+pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    let list = get_post_list(data.id).expect("E.");
+    let target_community = get_community(data.community_id.unwrap()).expect("E.");
+    if !target_community.get_administrators_ids().iter().any(|&i| i==data.user_id) {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if list.community_id.is_some() {
+        let community = list.get_community().expect("E.");
+        let data_community_id = list.community_id.unwrap();
+        let _tuple = get_community_permission(&community, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.add_in_community_collections(data_community_id)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let owner = list.get_creator().expect("E.");
+        let _tuple = get_user_permission(&owner, data.user_id);
+        if _tuple.0 == false {
+            Err(Error::BadRequest(_tuple.1))
+        }
+        else {
+            let _res = block(move || list.add_in_community_collections(data.community_id.unwrap())).await?;
+            Ok(Json(_res))
+        }
+    }
+}
+pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    let list = get_post_list(data.id).expect("E.");
+    let target_community = get_community(data.community_id.unwrap()).expect("E.");
+    if !target_community.get_administrators_ids().iter().any(|&i| i==data.user_id) {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else {
+        let _res = block(move || list.remove_in_community_collections(data.community_id.unwrap())).await?;
+        Ok(Json(_res))
+    }
+}
+
 pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let _res = block(move || PostList::create_list(data)).await?;
     Ok(Json(_res))

@@ -24,21 +24,37 @@ use crate::models::Post;
     // 6 пославший запрос на идентификацию
     // 7 идентифицированный
 
-    // 11 удаленный стандартный
-    // 16 удаленный пославший запрос на идентификацию
-    // 17 удаленный идентифицированный
+    // 10 TRAINEE_MODERATOR
+    // 11 MODERATOR
+    // 12 HIGH_MODERATOR
+    // 13 TEAMLEAD_MODERATOR
+    // 14 TRAINEE_MANAGER
+    // 15 MANAGER
+    // 16 HIGH_MANAGER
+    // 17 TEAMLEAD_MANAGER
+    // 18 ADVERTISER
+    // 19 HIGH_ADVERTISER
+    // 20 TEAMLEAD_ADVERTISER
+    // 21 ADMINISTRATOR
+    // 22 HIGH_ADMINISTRATOR
+    // 23 TEAMLEAD_ADMINISTRATOR
+    // 25 SUPERMANAGER
 
-    // 21 закрытый стандартный
-    // 26 закрытый пославший запрос на идентификацию
-    // 27 закрытый идентифицированный
+    // 31 удаленный стандартный
+    // 36 удаленный пославший запрос на идентификацию
+    // 37 удаленный идентифицированный
 
-    // 31 приостановленный стандартный
-    // 36 приостановленный пославший запрос на идентификацию
-    // 37 приостановленный идентифицированный
+    // 41 закрытый стандартный
+    // 46 закрытый пославший запрос на идентификацию
+    // 47 закрытый идентифицированный
 
-    // 41 закрытый баннером стандартный
-    // 46 закрытый баннером пославший запрос на идентификацию
-    // 47 закрытый баннером идентифицированный
+    // 51 приостановленный стандартный
+    // 56 приостановленный пославший запрос на идентификацию
+    // 57 приостановленный идентифицированный
+
+    // 61 закрытый баннером стандартный
+    // 66 закрытый баннером пославший запрос на идентификацию
+    // 67 закрытый баннером идентифицированный
 
 
 #[derive(Serialize, Identifiable, Queryable)]
@@ -818,10 +834,52 @@ impl User {
         let _connection = establish_connection();
         let user_types = self.types;
         let _case = match user_types {
-            1 => 11,
-            6 => 16,
-            7 => 17,
-            _ => self.types,
+            1 => 31,
+            6 => 36,
+            7 => 37,
+            _ => 31,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    pub fn restore_item(&self) -> i16 {
+        //use crate::models::show_wall_notify_items;
+
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let close_case = match user_types {
+            31 => 1,
+            36 => 6,
+            37 => 7,
+            _ => 1,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(close_case))
+            .execute(&_connection);
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn close_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            1 => 41,
+            6 => 46,
+            7 => 47,
+            _ => 41,
         };
         let o = diesel::update(self)
             .set(schema::users::types.eq(_case))
@@ -840,10 +898,10 @@ impl User {
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
-            11 => 1,
-            16 => 6,
-            17 => 7,
-            _ => self.types,
+            41 => 1,
+            46 => 6,
+            47 => 7,
+            _ => 1,
         };
         let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
@@ -855,6 +913,64 @@ impl User {
             return 0;
         }
     }
+    pub fn close_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            1 => 51,
+            6 => 56,
+            7 => 57,
+            _ => 51,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn change_perm_user(&self, types: i16) -> i16 {
+        let _connection = establish_connection();
+        if types > 30 {
+            return 0;
+        }
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(types))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn restore_item(&self) -> i16 {
+        //use crate::models::show_wall_notify_items;
+
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let close_case = match user_types {
+            51 => 1,
+            56 => 6,
+            57 => 7,
+            _ => 1,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(close_case))
+            .execute(&_connection);
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
     pub fn add_new_community_subscriber (&self, community_id: i32) -> () {
         use crate::models::NewNewsUserCommunitie;
         use crate::schema::news_user_communities::dsl::news_user_communities;
@@ -1273,22 +1389,22 @@ impl User {
         return self.is_man;
     }
     pub fn is_suspended(&self) -> bool {
-        return self.types < 40 && self.types > 30;
+        return self.types < 60 && self.types > 50;
     }
     pub fn is_have_warning_banner(&self) -> bool {
-        return self.types < 50 && self.types > 40;
+        return self.types < 70 && self.types > 60;
     }
     pub fn is_deleted(&self) -> bool {
-        return self.types < 20 && self.types > 10;
+        return self.types < 40 && self.types > 30;
     }
     pub fn is_closed(&self) -> bool {
-        return self.types < 30 && self.types > 20;
+        return self.types < 50 && self.types > 40;
     }
     pub fn is_identified_send(&self) -> bool {
         return self.types == 6;
     }
     pub fn is_identified(&self) -> bool {
-        return self.types == 7;
+        return self.types > 6 && self.types < 30;
     }
 
     pub fn is_online(&self) -> bool {
@@ -1763,6 +1879,22 @@ impl User {
             return "Мужской".to_string();
         }
         return "Женский".to_string();
+    }
+
+    pub fn is_supermanager(&self) -> bool {
+        return self.types == 25;
+    }
+    pub fn is_administrator(&self) -> bool {
+        return self.types > 20 && self.types < 30;
+    }
+    pub fn is_advertiser(&self) -> bool {
+        return self.types > 17 && self.types < 30;
+    }
+    pub fn is_manager(&self) -> bool {
+        return self.types > 13 && self.types < 30;
+    }
+    pub fn is_moderator(&self) -> bool {
+        return self.types > 9 && self.types < 30;
     }
 }
 

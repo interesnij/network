@@ -1834,17 +1834,14 @@ impl PostList {
         return user_post_list_positions
             .filter(schema::user_post_list_positions::list_id.eq(self.id))
             .filter(schema::user_post_list_positions::types.eq(1))
-            .load::<UserPostListPosition>(&_connection)
-            .expect("E")
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<UserPostListPosition>(&_connection)
+            .expect("E");
     }
-    pub fn add_in_community_collections(&self, community_id: i32) -> () {
+    pub fn add_in_community_collections(&self, community_id: i32) -> i16 {
         use crate::models::NewCommunityPostListPosition;
 
         if !self.get_communities_ids().iter().any(|&i| i==community_id) && self.community_id.is_some() && self.community_id.unwrap() == community_id {
-            return;
+            return 0;
         }
         let _connection = establish_connection();
         let new_item = NewCommunityPostListCollection {
@@ -1866,13 +1863,14 @@ impl PostList {
             .values(&new_pos)
             .get_result::<CommunityPostListPosition>(&_connection)
             .expect("Error.");
+        return 1;
     }
-    pub fn remove_in_community_collections(&self, community_id: i32) -> () {
+    pub fn remove_in_community_collections(&self, community_id: i32) -> i16 {
         use crate::schema::community_post_list_collections::dsl::community_post_list_collections;
         use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
 
         if self.get_communities_ids().iter().any(|&i| i==community_id) {
-            return;
+            return 0;
         }
         let _connection = establish_connection();
         diesel::delete(community_post_list_collections
@@ -1887,17 +1885,18 @@ impl PostList {
          )
          .execute(&_connection)
          .expect("E");
+        return 1;
     }
 
-    pub fn add_in_user_collections(&self, user_id: i32) -> () {
+    pub fn add_in_user_collections(&self, user_id: i32) -> i16 {
         use crate::models::NewUserPostListPosition;
 
         if !self.get_users_ids().iter().any(|&i| i==user_id) && self.user_id == user_id {
-            return;
+            return 0;
         }
         let _connection = establish_connection();
         let new_item = NewUserPostListCollection {
-            user_id: user_id,
+            user_id:      user_id,
             post_list_id: self.id,
         };
         diesel::insert_into(schema::user_post_list_collections::table)
@@ -1915,13 +1914,14 @@ impl PostList {
             .values(&new_pos)
             .get_result::<UserPostListPosition>(&_connection)
             .expect("Error.");
+        return 1;
     }
-    pub fn remove_in_user_collections(&self, user_id: i32) -> () {
+    pub fn remove_in_user_collections(&self, user_id: i32) -> i16 {
         use crate::schema::user_post_list_collections::dsl::user_post_list_collections;
         use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
 
         if self.get_users_ids().iter().any(|&i| i==user_id) {
-            return;
+            return 0;
         }
         let _connection = establish_connection();
         diesel::delete(user_post_list_collections
@@ -1936,9 +1936,10 @@ impl PostList {
          )
          .execute(&_connection)
          .expect("E");
+        return 0;
     }
 
-    pub fn copy_item(pk: i32, user_or_communities: Vec<String>) -> () {
+    pub fn copy_item(pk: i32, user_or_communities: Vec<String>) -> i16 {
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
@@ -1961,6 +1962,7 @@ impl PostList {
                 }
             }
         }
+        return 1;
     }
     pub fn get_posts_ids(&self) -> Vec<i32> {
         use crate::schema::posts::dsl::posts;
