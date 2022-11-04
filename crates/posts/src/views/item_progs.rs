@@ -261,7 +261,7 @@ pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest(_tuple.1))
         }
         else {
-            let _res = block(move || item.copy_item(data.user_id, data.lists)).await?;
+            let _res = block(move || item.copy_item(data.lists)).await?;
             Ok(Json(_res))
         }
     }
@@ -272,7 +272,7 @@ pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
             Err(Error::BadRequest(_tuple.1))
         }
         else {
-            let _res = block(move || item.copy_item(data.user_id, data.lists)).await?;
+            let _res = block(move || item.copy_item(data.lists)).await?;
             Ok(Json(_res))
         }
     }
