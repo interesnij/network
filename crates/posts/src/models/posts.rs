@@ -884,18 +884,13 @@ impl Post {
         return new_post;
     }
     pub fn copy_item (
-        pk: i32,
+        &self,
         lists: Vec<i32>,
     ) -> Result<i16, Error> {
         use crate::schema::posts::dsl::posts;
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
-        let item = posts
-            .filter(schema::posts::id.eq(pk))
-            .filter(schema::posts::types.eq_any(vec![1, 2]))
-            .first::<Post>(&_connection)
-            .expect("E");
         let mut count = 0;
         for list_id in lists.iter() {
             count += 1;
@@ -906,21 +901,21 @@ impl Post {
                 .expect("E");
 
             let new_post_form = NewPost {
-                content:      item.content.clone(),
-                community_id: item.community_id,
-                user_id:      item.user_id,
+                content:      self.content.clone(),
+                community_id: self.community_id,
+                user_id:      self.user_id,
                 post_list_id: *list_id,
                 types:        1,
-                attach:       item.attach.clone(),
-                comments_on:  item.comments_on,
+                attach:       self.attach.clone(),
+                comments_on:  self.comments_on,
                 created:      chrono::Local::now().naive_utc(),
                 comment:      0,
                 view:         0,
                 repost:       0,
                 copy:         0,
                 position:     (list.count).try_into().unwrap(),
-                is_signature: item.is_signature,
-                parent_id:    item.parent_id,
+                is_signature: self.is_signature,
+                parent_id:    self.parent_id,
                 reactions:    0,
             };
             diesel::insert_into(schema::posts::table)
@@ -933,11 +928,11 @@ impl Post {
               .execute(&_connection)
               .expect("Error.");
         }
-        diesel::update(&item)
-          .set(schema::posts::copy.eq(item.copy + count))
+        diesel::update(self)
+          .set(schema::posts::copy.eq(self.copy + count))
           .execute(&_connection)
           .expect("Error.");
-        return true;
+        return 1;
     }
 
     pub fn edit_post (
