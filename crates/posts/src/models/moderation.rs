@@ -519,13 +519,13 @@ impl ModeratedPenaltie {
         manager_id: i32,
         types: i16,
         object_id: i32,
-        duration: chrono::NaiveDateTime,
+        duration: Option<chrono::NaiveDateTime>,
     ) -> bool {
         let _connection = establish_connection();
         let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
-            expiration:   Some(duration),
+            expiration:   duration,
             types:        types,
             object_id:    object_id,
             status:       1,
