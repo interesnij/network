@@ -146,23 +146,19 @@ impl Moderated {
                 use crate::utils::get_user;
                 let item = get_user(self.object_id).expect("E.");
                 item.suspend_item();
-                return 1
             },
             2 => {
                 use crate::utils::get_community;
                 let item = get_community(self.object_id).expect("E.");
                 item.suspend_item();
-                return 1
             },
             3 => {
                 use crate::utils::get_post_list;
                 let item = get_post_list(self.object_id).expect("E.");
                 item.suspend_item();
-                return 1
             },
             _ => 1,
         };
-        return 1;
     }
     pub fn create_close (
         &self,
