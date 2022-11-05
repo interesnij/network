@@ -183,16 +183,19 @@ impl Community {
             35 => 15,
             _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::communitys::types.eq(_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return 1;
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         }
-        else {
-            return 0;
-        }
+        return 0;
     }
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
@@ -208,16 +211,19 @@ impl Community {
             15 => 75,
             _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::communitys::types.eq(_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return 1;
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         }
-        else {
-            return 0;
-        }
+        return 0;
     }
     pub fn unclose_item(&self) -> i16 {
         let _connection = establish_connection();
@@ -233,16 +239,19 @@ impl Community {
             75 => 15,
             _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::communitys::types.eq(_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return 1;
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         }
-        else {
-            return 0;
-        }
+        return 0;
     }
 
     pub fn get_fixed_posts_ids(&self) -> Vec<i32> {
