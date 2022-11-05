@@ -13,8 +13,7 @@ use crate::utils::{
     get_user_permission,
 };
 use crate::models::{
-    User, Community,
-    PostList,
+    ModeratedLog, ModeratedPenaltie
 };
 use crate::errors::Error;
 use serde::Deserialize;
@@ -27,14 +26,14 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
 
     config.route("/close_community/", web::post().to(close_community));
     config.route("/close_user/", web::post().to(close_user));
-    //config.route("/close_list/", web::post().to(close_list));
-    //config.route("/close_post/", web::post().to(close_post));
-    //config.route("/close_comment/", web::post().to(close_comment));
+    config.route("/close_list/", web::post().to(close_list));
+    config.route("/close_post/", web::post().to(close_post));
+    config.route("/close_comment/", web::post().to(close_comment));
     config.route("/unclose_community/", web::post().to(unclose_community));
     config.route("/unclose_user/", web::post().to(unclose_user));
-    //config.route("/unclose_list/", web::post().to(unclose_list));
-    //config.route("/unclose_post/", web::post().to(unclose_post));
-    //config.route("/unclose_comment/", web::post().to(unclose_comment));
+    config.route("/unclose_list/", web::post().to(unclose_list));
+    config.route("/unclose_post/", web::post().to(unclose_post));
+    config.route("/unclose_comment/", web::post().to(unclose_comment));
 
     //config.route("/suspend_community/", web::post().to(suspend_community));
     //config.route("/suspend_user/", web::post().to(suspend_user));
@@ -221,6 +220,74 @@ pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Err
     let item = get_community(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
+        let _res = block(move || item.unclose_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn close_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_post_list(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_moderator() {
+        let _res = block(move || item.close_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn close_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_post(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_moderator() {
+        let _res = block(move || item.close_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn close_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_post_comment(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_moderator() {
+        let _res = block(move || item.close_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn unclose_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_post_list(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_moderator() {
+        let _res = block(move || item.unclose_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn unclose_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_post(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_moderator() {
+        let _res = block(move || item.unclose_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_post_comment(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_moderator() {
         let _res = block(move || item.unclose_item()).await?;
         Ok(Json(_res))
     }

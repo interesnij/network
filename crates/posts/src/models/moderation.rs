@@ -567,6 +567,32 @@ pub struct ModeratedLog {
     pub created:         chrono::NaiveDateTime,
     pub time_to_suspend: Option<chrono::NaiveDateTime>,
 }
+
+impl ModeratedLog {
+    pub fn create (
+        manager_id:  i32,
+        object_id:   i32,
+        action:      i16,
+        description: Option<String>,
+        types:       i16,
+        time_to_suspend: Option<chrono::NaiveDateTime>
+    ) -> () {
+        let _connection = establish_connection();
+        let new_log_form = NewModeratedLog {
+            user_id:         manager_id,
+            object_id:       object_id,
+            action:          action,
+            description:     description,
+            types:           types,
+            created:         chrono::Local::now().naive_utc(),
+            time_to_suspend: time_to_suspend,
+        };
+        let _new = diesel::insert_into(schema::moderated_logs::table)
+            .values(&new_log_form)
+            .execute(&_connection)
+            .expect("Error.");
+    }
+}
 #[derive(Deserialize, Insertable)]
 #[table_name="moderated_logs"]
 pub struct NewModeratedLog {
