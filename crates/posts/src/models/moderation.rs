@@ -127,7 +127,7 @@ impl Moderated {
                 let item = get_post_list(self.object_id).expect("E.");
                 item.suspend_item();
             },
-            _ => 0,
+            _ => (),
         };
         diesel::update(self)
             .set((
