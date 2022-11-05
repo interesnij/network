@@ -111,7 +111,7 @@ impl Moderated {
         description: Option<String>
     ) -> i16 {
         let _connection = establish_connection();
-        match self.types {
+        let ma = match self.types {
             1 =>  {
                 use crate::utils::get_user;
                 let item = get_user(self.object_id).expect("E.");
@@ -164,7 +164,7 @@ impl Moderated {
         &self,
         manager_id:  i32,
         description: Option<String>
-    ) -> bool {
+    ) -> i16 {
         let _connection = establish_connection();
         diesel::update(self)
             .set((
@@ -194,13 +194,13 @@ impl Moderated {
             .values(&new_log_form)
             .execute(&_connection)
             .expect("Error.");
-        return true;
+        return 1;
     }
     pub fn delete_close (
         &self,
         manager_id:  i32,
         description: Option<String>
-    ) -> bool {
+    ) -> i16 {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
             moderated_reports::dsl::moderated_reports,
@@ -243,13 +243,13 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        return true;
+        return 1;
     }
     pub fn delete_suspend (
         &self,
         manager_id:  i32,
         description: Option<String>
-    ) -> bool {
+    ) -> i16 {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
             moderated_reports::dsl::moderated_reports,
@@ -292,13 +292,13 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        return true;
+        return 1;
     }
     pub fn unverify (
         &self,
         manager_id:  i32,
         description: Option<String>
-    ) -> bool {
+    ) -> i16 {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
             moderated_reports::dsl::moderated_reports,
@@ -337,13 +337,13 @@ impl Moderated {
             .set(schema::moderateds::verified.eq(false))
             .execute(&_connection)
             .expect("E");
-        return true;
+        return 1;
     }
     pub fn reject (
         &self,
         manager_id: i32,
         description: Option<String>
-    ) -> bool {
+    ) -> i16 {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
             moderated_reports::dsl::moderated_reports,
@@ -382,7 +382,7 @@ impl Moderated {
             .set(schema::moderateds::verified.eq(true))
             .execute(&_connection)
             .expect("E");
-        return true;
+        return 1;
     }
     pub fn get_reports(&self) -> Vec<ModeratedReport> {
         use crate::schema::moderated_reports::dsl::moderated_reports;
