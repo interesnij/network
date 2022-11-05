@@ -555,6 +555,8 @@ pub struct NewModeratedPenaltie {
 // 2 закрыто
 // 3 отмена приостановки
 // 4 отмена закрытия
+// 5 отмена верификации
+// 6 отклонение жалоб
 
 #[derive(Debug, Queryable, Serialize, Identifiable,  Associations)]
 pub struct ModeratedLog {

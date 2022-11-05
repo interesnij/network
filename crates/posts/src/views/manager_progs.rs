@@ -35,12 +35,12 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/unclose_post/", web::post().to(unclose_post));
     config.route("/unclose_comment/", web::post().to(unclose_comment));
 
-    //config.route("/suspend_community/", web::post().to(suspend_community));
-    //config.route("/suspend_user/", web::post().to(suspend_user));
-    //config.route("/suspend_list/", web::post().to(suspend_list));
-    //config.route("/unsuspend_community/", web::post().to(unsuspend_community));
-    //config.route("/unsuspend_user/", web::post().to(unsuspend_user));
-    //config.route("/unsuspend_list/", web::post().to(unsuspend_list));
+    config.route("/suspend_community/", web::post().to(suspend_community));
+    config.route("/suspend_user/", web::post().to(suspend_user));
+    config.route("/suspend_list/", web::post().to(suspend_list));
+    config.route("/unsuspend_community/", web::post().to(unsuspend_community));
+    config.route("/unsuspend_user/", web::post().to(unsuspend_user));
+    config.route("/unsuspend_list/", web::post().to(unsuspend_list));
 }
 
 #[derive(Deserialize)]
@@ -63,8 +63,8 @@ pub struct SuspendParams {
     pub id:          i32,
     pub user_id:     i32,
     pub item_id:     i32,
-    pub expiration:  Option<chrono::NaiveDateTime>,
     pub description: Option<String>,
+    pub expiration:  Option<chrono::NaiveDateTime>,
 }
 
 pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Error> {
@@ -409,6 +409,148 @@ pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error
                     None
                 );
                 item.close_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+
+pub async fn suspend_community(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+    let item = get_community(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    2,
+                    data.description.clone(),
+                    1,
+                    data.expiration
+                );
+                item.suspend_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn unsuspend_community(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+    let item = get_community(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    2,
+                    data.description.clone(),
+                    3,
+                    data.expiration
+                );
+                item.unsuspend_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn suspend_user(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+    let item = get_user(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    1,
+                    data.description.clone(),
+                    1,
+                    data.expiration
+                );
+                item.suspend_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn unsuspend_user(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+    let item = get_user(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    1,
+                    data.description.clone(),
+                    3,
+                    data.expiration
+                );
+                item.unsuspend_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn suspend_list(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+    let item = get_post_list(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    3,
+                    data.description.clone(),
+                    1,
+                    data.expiration
+                );
+                item.suspend_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn unsuspend_list(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+    let item = get_post_list(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    3,
+                    data.description.clone(),
+                    3,
+                    data.expiration
+                );
+                item.unsuspend_item()
             }
         ).await?;
         Ok(Json(_res))
