@@ -162,6 +162,7 @@ impl Moderated {
             },
             _ => 1,
         };
+        return 1;
     }
     pub fn create_close (
         &self,
