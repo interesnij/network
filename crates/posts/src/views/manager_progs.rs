@@ -206,3 +206,25 @@ pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
+pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_user(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block(move || item.unclose_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_community(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block(move || item.unclose_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}

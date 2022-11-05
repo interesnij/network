@@ -412,85 +412,114 @@ impl User {
         return true;
     }
 
-    pub fn delete_item(&self) -> bool {
+    pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
-        let _case = match user_types {
-            1 => 11,
-            6 => 16,
-            7 => 17,
-            _ => 11,
+        let _case = match self.types {
+            1 => 21,
+            2 => 22,
+            3 => 23,
+            7 => 27,
+            8 => 28,
+            9 => 29,
+            13 => 33,
+            14 => 34,
+            15 => 35,
+            _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::users::types.eq(_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return true;
+            if o.is_ok() {
+                return 1;
+            }
         }
-        else {
-            return false;
-        }
+        return 0;
     }
-    pub fn restore_item(&self) -> bool {
+    pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
-            31 => 1,
-            36 => 6,
-            37 => 7,
-            _ => 1,
+        let _case = match self.types {
+            21 => 1,
+            22 => 2,
+            23 => 3,
+            27 => 7,
+            28 => 8,
+            29 => 9,
+            33 => 13,
+            34 => 14,
+            35 => 15,
+            _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::users::types.eq(close_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return true;
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         }
-        else {
-            return false;
-        }
+        return 0;
     }
-    pub fn delete_item(&self) -> bool {
+    pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
-        let _case = match user_types {
-            31 => 1,
-            36 => 6,
-            37 => 7,
-            _ => 1,
+        let _case = match self.types {
+            1 => 61,
+            2 => 62,
+            3 => 63,
+            7 => 67,
+            8 => 68,
+            9 => 69,
+            13 => 73,
+            14 => 74,
+            15 => 75,
+            _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::users::types.eq(_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return true;
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         }
-        else {
-            return false;
-        }
+        return 0;
     }
-    pub fn restore_item(&self) -> bool {
+    pub fn unclose_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
+        let _case = match self.types {
             61 => 1,
             62 => 2,
             63 => 3,
-            _ => 1,
+            67 => 7,
+            68 => 8,
+            69 => 9,
+            73 => 13,
+            74 => 14,
+            75 => 15,
+            _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::users::types.eq(close_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return true;
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
         }
-        else {
-            return false;
-        }
+        return 0;
     }
 
     pub fn get_verb_gender(&self, str: &str) -> String {
