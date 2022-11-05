@@ -114,17 +114,17 @@ impl Moderated {
         match self.types {
             1 =>  {
                 use crate::utils::get_user;
-                let item = get_user(self.object_id);
+                let item = get_user(self.object_id).expect("E.");
                 item.suspend_item()
             },
             2 => {
                 use crate::utils::get_community;
-                let item = get_community(self.object_id);
+                let item = get_community(self.object_id).expect("E.");
                 item.suspend_item()
             },
             3 => {
                 use crate::utils::get_post_list;
-                let item = get_post_list(self.object_id);
+                let item = get_post_list(self.object_id).expect("E.");
                 item.suspend_item()
             },
             _ => 0,
@@ -158,7 +158,7 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
 
-        return true;
+        return 1;
     }
     pub fn create_close (
         &self,
