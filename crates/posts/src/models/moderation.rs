@@ -151,7 +151,7 @@ impl Moderated {
             description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
-            time_to_suspend: Some(duration),
+            time_to_suspend: duration,
         };
         let _new = diesel::insert_into(schema::moderated_logs::table)
             .values(&new_log_form)
