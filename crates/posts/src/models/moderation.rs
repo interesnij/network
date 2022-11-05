@@ -194,7 +194,34 @@ impl Moderated {
             .values(&new_log_form)
             .execute(&_connection)
             .expect("Error.");
-        return 1;
+        return match self.types {
+            1 =>  {
+                use crate::utils::get_user;
+                let item = get_user(self.object_id).expect("E.");
+                item.close_item()
+            },
+            2 => {
+                use crate::utils::get_community;
+                let item = get_community(self.object_id).expect("E.");
+                item.close_item()
+            },
+            3 => {
+                use crate::utils::get_post_list;
+                let item = get_post_list(self.object_id).expect("E.");
+                item.close_item()
+            },
+            4 => {
+                use crate::utils::get_post;
+                let item = get_post(self.object_id).expect("E.");
+                item.close_item()
+            },
+            5 => {
+                use crate::utils::get_post_comment;
+                let item = get_post_comment(self.object_id).expect("E.");
+                item.close_item()
+            },
+            _ => 1,
+        };
     }
     pub fn delete_close (
         &self,
@@ -243,7 +270,34 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        return 1;
+        return match self.types {
+            1 =>  {
+                use crate::utils::get_user;
+                let item = get_user(self.object_id).expect("E.");
+                item.unclose_item()
+            },
+            2 => {
+                use crate::utils::get_community;
+                let item = get_community(self.object_id).expect("E.");
+                item.unclose_item()
+            },
+            3 => {
+                use crate::utils::get_post_list;
+                let item = get_post_list(self.object_id).expect("E.");
+                item.unclose_item()
+            },
+            4 => {
+                use crate::utils::get_post;
+                let item = get_post(self.object_id).expect("E.");
+                item.unclose_item()
+            },
+            5 => {
+                use crate::utils::get_post_comment;
+                let item = get_post_comment(self.object_id).expect("E.");
+                item.unclose_item()
+            },
+            _ => 1,
+        };
     }
     pub fn delete_suspend (
         &self,
@@ -292,7 +346,24 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        return 1;
+        return match self.types {
+            1 =>  {
+                use crate::utils::get_user;
+                let item = get_user(self.object_id).expect("E.");
+                item.unsuspend_item()
+            },
+            2 => {
+                use crate::utils::get_community;
+                let item = get_community(self.object_id).expect("E.");
+                item.unsuspend_item()
+            },
+            3 => {
+                use crate::utils::get_post_list;
+                let item = get_post_list(self.object_id).expect("E.");
+                item.unsuspend_item()
+            },
+            _ => 1,
+        };
     }
     pub fn unverify (
         &self,

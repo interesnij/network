@@ -44,11 +44,11 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/unsuspend_list/", web::post().to(unsuspend_list));
 
     config.route("/suspend_moderation/", web::post().to(suspend_moderation));
-    //config.route("/close_moderation/", web::post().to(close_moderation));
-    //config.route("/unclose_moderation/", web::post().to(unclose_moderation));
-    //config.route("/unsuspend_moderation/", web::post().to(unsuspend_moderation));
-    //config.route("/unverify_moderation/", web::post().to(unverify_moderation));
-    //config.route("/reject_moderation/", web::post().to(reject_moderation));
+    config.route("/close_moderation/", web::post().to(close_moderation));
+    config.route("/unclose_moderation/", web::post().to(unclose_moderation));
+    config.route("/unsuspend_moderation/", web::post().to(unsuspend_moderation));
+    config.route("/unverify_moderation/", web::post().to(unverify_moderation));
+    config.route("/reject_moderation/", web::post().to(reject_moderation));
 }
 
 #[derive(Deserialize)]
@@ -578,6 +578,90 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
                 data.expiration,
                 data.description.clone(),
 
+            )).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let item = get_moderation(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || item.create_close (
+                manager.id,
+                data.description.clone(),
+
+            )).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let item = get_moderation(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || item.delete_suspend (
+                manager.id,
+                data.expiration,
+                data.description.clone(),
+
+            )).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let item = get_moderation(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || item.delete_close (
+                manager.id,
+                data.description.clone(),
+
+            )).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let item = get_moderation(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || item.unverify (
+                manager.id,
+                data.description.clone(),
+            )).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let item = get_moderation(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || item.reject (
+                manager.id,
+                data.description.clone(),
             )).await?;
         Ok(Json(_res))
     }
