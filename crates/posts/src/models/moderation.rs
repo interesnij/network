@@ -521,7 +521,7 @@ impl ModeratedPenaltie {
         types: i16,
         object_id: i32,
         duration: Option<chrono::NaiveDateTime>,
-    ) -> bool {
+    ) -> i16 {
         let _connection = establish_connection();
         let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
@@ -536,14 +536,14 @@ impl ModeratedPenaltie {
             .values(&new_form)
             .execute(&_connection)
             .expect("Error.");
-        return true;
+        return 1;
     }
     pub fn create_close_penalty (
         moderated_id: i32,
         manager_id: i32,
         types: i16,
         object_id: i32,
-    ) -> bool {
+    ) -> i16 {
         let _connection = establish_connection();
         let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
@@ -558,7 +558,7 @@ impl ModeratedPenaltie {
             .values(&new_form)
             .execute(&_connection)
             .expect("Error.");
-        return true;
+        return 1;
     }
 }
 
