@@ -141,7 +141,7 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
 
-        match self.types {
+        let ma: i16 = self.types {
             1 =>  {
                 use crate::utils::get_user;
                 let item = get_user(self.object_id).expect("E.");
@@ -159,7 +159,7 @@ impl Moderated {
             },
             _ => 1,
         };
-        return 1;
+        return ma;
     }
     pub fn create_close (
         &self,
