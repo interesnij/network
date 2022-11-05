@@ -268,7 +268,7 @@ pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Err
                     4,
                     None
                 );
-                item.close_item()
+                item.unclose_item()
             }
         ).await?;
         Ok(Json(_res))
@@ -282,7 +282,19 @@ pub async fn close_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let item = get_post_list(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_moderator() {
-        let _res = block(move || item.close_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    3,
+                    data.description.clone(),
+                    2,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -293,7 +305,19 @@ pub async fn close_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_moderator() {
-        let _res = block(move || item.close_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    4,
+                    data.description.clone(),
+                    2,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -304,7 +328,19 @@ pub async fn close_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> 
     let item = get_post_comment(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_moderator() {
-        let _res = block(move || item.close_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    5,
+                    data.description.clone(),
+                    2,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -316,7 +352,19 @@ pub async fn unclose_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let item = get_post_list(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_moderator() {
-        let _res = block(move || item.unclose_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    3,
+                    data.description.clone(),
+                    4,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -327,7 +375,19 @@ pub async fn unclose_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let item = get_post(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_moderator() {
-        let _res = block(move || item.unclose_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    4,
+                    data.description.clone(),
+                    4,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -338,7 +398,19 @@ pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error
     let item = get_post_comment(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_moderator() {
-        let _res = block(move || item.unclose_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    5,
+                    data.description.clone(),
+                    4,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
