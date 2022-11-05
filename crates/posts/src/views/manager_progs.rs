@@ -25,8 +25,8 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/create_claim_post/", web::post().to(create_claim_post));
     config.route("/create_claim_comment/", web::post().to(create_claim_comment));
 
-    //config.route("/close_community/", web::post().to(close_community));
-    //config.route("/close_user/", web::post().to(close_user));
+    config.route("/close_community/", web::post().to(close_community));
+    config.route("/close_user/", web::post().to(close_user));
     //config.route("/close_list/", web::post().to(close_list));
     //config.route("/close_post/", web::post().to(close_post));
     //config.route("/close_comment/", web::post().to(close_comment));
@@ -181,5 +181,28 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
             )).await?;
             Ok(Json(_res))
         }
+    }
+}
+
+pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_user(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block(move || item.close_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let item = get_community(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block(move || item.close_item()).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
