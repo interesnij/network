@@ -195,7 +195,7 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
                     manager.id,
                     item.id,
                     1,
-                    data.description,
+                    data.description.clone(),
                     2,
                     None
                 );
