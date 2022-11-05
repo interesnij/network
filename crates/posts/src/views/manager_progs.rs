@@ -578,7 +578,7 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
                     manager.id,
                     data.expiration,
                     data.description.clone(),
-                );
+                )
             }
         ).await?;
         Ok(Json(_res))
