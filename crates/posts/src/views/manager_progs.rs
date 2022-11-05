@@ -9,6 +9,7 @@ use crate::utils::{
     get_post_list,
     get_post,
     get_post_comment,
+    get_moderation,
     get_community_permission,
     get_user_permission,
 };
@@ -41,6 +42,13 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/unsuspend_community/", web::post().to(unsuspend_community));
     config.route("/unsuspend_user/", web::post().to(unsuspend_user));
     config.route("/unsuspend_list/", web::post().to(unsuspend_list));
+
+    config.route("/suspend_moderation/", web::post().to(suspend_moderation));
+    //config.route("/close_moderation/", web::post().to(close_moderation));
+    //config.route("/unclose_moderation/", web::post().to(unclose_moderation));
+    //config.route("/unsuspend_moderation/", web::post().to(unsuspend_moderation));
+    //config.route("/unverify_moderation/", web::post().to(unverify_moderation));
+    //config.route("/reject_moderation/", web::post().to(reject_moderation));
 }
 
 #[derive(Deserialize)]
@@ -59,7 +67,7 @@ pub struct CloseParams {
     pub description: Option<String>,
 }
 #[derive(Deserialize)]
-pub struct SuspendParams {
+pub struct ModerationParams {
     pub id:          i32,
     pub user_id:     i32,
     pub item_id:     i32,
@@ -419,7 +427,7 @@ pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error
 }
 
 
-pub async fn suspend_community(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let item = get_community(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
@@ -442,7 +450,7 @@ pub async fn suspend_community(data: Json<SuspendParams>) -> Result<Json<i16>, E
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
-pub async fn unsuspend_community(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let item = get_community(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
@@ -466,7 +474,7 @@ pub async fn unsuspend_community(data: Json<SuspendParams>) -> Result<Json<i16>,
     }
 }
 
-pub async fn suspend_user(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let item = get_user(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
@@ -489,7 +497,7 @@ pub async fn suspend_user(data: Json<SuspendParams>) -> Result<Json<i16>, Error>
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
-pub async fn unsuspend_user(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let item = get_user(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
@@ -513,7 +521,7 @@ pub async fn unsuspend_user(data: Json<SuspendParams>) -> Result<Json<i16>, Erro
     }
 }
 
-pub async fn suspend_list(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+pub async fn suspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let item = get_post_list(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
@@ -536,7 +544,7 @@ pub async fn suspend_list(data: Json<SuspendParams>) -> Result<Json<i16>, Error>
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
-pub async fn unsuspend_list(data: Json<SuspendParams>) -> Result<Json<i16>, Error> {
+pub async fn unsuspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let item = get_post_list(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
@@ -551,6 +559,26 @@ pub async fn unsuspend_list(data: Json<SuspendParams>) -> Result<Json<i16>, Erro
                     data.expiration
                 );
                 item.unsuspend_item()
+            }
+        ).await?;
+        Ok(Json(_res))
+    }
+    else {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+}
+
+pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let item = get_moderation(data.id).expect("E.");
+    let manager = get_user(data.user_id).expect("E.");
+    if manager.is_administrator() {
+        let _res = block (
+            move || {
+                item.create_suspend (
+                    manager.id,
+                    Some(data.expiration),
+                    data.description.clone(),
+                );
             }
         ).await?;
         Ok(Json(_res))

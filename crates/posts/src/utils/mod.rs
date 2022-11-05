@@ -23,6 +23,7 @@ use crate::models::{
     PostComment,
     User,
     Community,
+    Moderated,
 };
 use crate::errors::Error;
 
@@ -116,6 +117,13 @@ pub fn get_community(pk: i32) -> Result<Community, Error> {
         .first::<Community>(&_connection)?);
 }
 
+pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
+    use crate::schema::moderateds::dsl::moderateds;
+    let _connection = establish_connection();
+    return Ok(moderateds
+        .filter(schema::moderateds::id.eq(pk))
+        .first::<Moderated>(&_connection)?);
+}
 
 pub fn get_user_permission(user: &User, user_id: i32)
     -> (bool, String) {

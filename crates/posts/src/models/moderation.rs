@@ -106,10 +106,29 @@ impl Moderated {
     }
     pub fn create_suspend (
         &self,
-        manager_id: i32,
-        duration: chrono::NaiveDateTime
-    ) -> bool {
+        manager_id:  i32,
+        duration:    chrono::NaiveDateTime,
+        description: Option<String>
+    ) -> i16 {
         let _connection = establish_connection();
+        match self.types {
+            1 =>  {
+                use crate::utils::get_user;
+                let item = get_user(self.object_id);
+                item.suspend_item()
+            },
+            2 => {
+                use crate::utils::get_community;
+                let item = get_community(self.object_id);
+                item.suspend_item()
+            },
+            3 => {
+                use crate::utils::get_post_list;
+                let item = get_post_list(self.object_id);
+                item.suspend_item()
+            },
+            _ => 0,
+        };
         diesel::update(self)
             .set((
                 schema::moderateds::types.eq(2),
@@ -129,7 +148,7 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          1,
-            description:     None,
+            description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: Some(duration),
@@ -143,7 +162,8 @@ impl Moderated {
     }
     pub fn create_close (
         &self,
-        manager_id: i32,
+        manager_id:  i32,
+        description: Option<String>
     ) -> bool {
         let _connection = establish_connection();
         diesel::update(self)
@@ -165,7 +185,7 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          2,
-            description:     None,
+            description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
@@ -178,7 +198,8 @@ impl Moderated {
     }
     pub fn delete_close (
         &self,
-        manager_id: i32,
+        manager_id:  i32,
+        description: Option<String>
     ) -> bool {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
@@ -191,7 +212,7 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          4,
-            description:     None,
+            description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
@@ -226,7 +247,8 @@ impl Moderated {
     }
     pub fn delete_suspend (
         &self,
-        manager_id: i32,
+        manager_id:  i32,
+        description: Option<String>
     ) -> bool {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
@@ -239,7 +261,7 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          3,
-            description:     None,
+            description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
@@ -274,7 +296,8 @@ impl Moderated {
     }
     pub fn unverify (
         &self,
-        manager_id: i32,
+        manager_id:  i32,
+        description: Option<String>
     ) -> bool {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
@@ -286,7 +309,7 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          5,
-            description:     None,
+            description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
@@ -319,6 +342,7 @@ impl Moderated {
     pub fn reject (
         &self,
         manager_id: i32,
+        description: Option<String>
     ) -> bool {
         use crate::schema::{
             moderated_penalties::dsl::moderated_penalties,
@@ -330,7 +354,7 @@ impl Moderated {
             user_id:         manager_id,
             object_id:       self.id,
             action:          6,
-            description:     None,
+            description:     description,
             types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
