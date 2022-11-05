@@ -914,6 +914,45 @@ impl User {
             return 0;
         }
     }
+    pub fn suspend_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            1 => 51,
+            6 => 56,
+            7 => 57,
+            _ => 51,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn unsuspend_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let close_case = match user_types {
+            51 => 1,
+            56 => 6,
+            57 => 7,
+            _ => 1,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(close_case))
+            .execute(&_connection);
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 
     pub fn change_perm_user(&self, types: i16) -> i16 {
         let _connection = establish_connection();
