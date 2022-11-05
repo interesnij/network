@@ -81,7 +81,7 @@ pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Er
                 data.user_id,
                 data.types,
                 data.id,
-                data.description,
+                data.description.clone(),
                 3,
             )).await?;
             Ok(Json(_res))
@@ -98,7 +98,7 @@ pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Er
                 data.user_id,
                 data.types,
                 data.id,
-                data.description,
+                data.description.clone(),
                 3,
             )).await?;
             Ok(Json(_res))
@@ -120,7 +120,7 @@ pub async fn create_claim_post(data: Json<ReportParams>) -> Result<Json<i16>, Er
                 data.user_id,
                 data.types,
                 data.id,
-                data.description,
+                data.description.clone(),
                 4,
             )).await?;
             Ok(Json(_res))
@@ -137,7 +137,7 @@ pub async fn create_claim_post(data: Json<ReportParams>) -> Result<Json<i16>, Er
                 data.user_id,
                 data.types,
                 data.id,
-                data.description,
+                data.description.clone(),
                 4,
             )).await?;
             Ok(Json(_res))
@@ -159,7 +159,7 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
                 data.user_id,
                 data.types,
                 data.id,
-                data.description,
+                data.description.clone(),
                 5,
             )).await?;
             Ok(Json(_res))
@@ -176,7 +176,7 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
                 data.user_id,
                 data.types,
                 data.id,
-                data.description,
+                data.description.clone(),
                 4,
             )).await?;
             Ok(Json(_res))
