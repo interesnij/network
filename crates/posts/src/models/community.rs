@@ -156,17 +156,18 @@ impl Community {
             13 => 33,
             14 => 34,
             15 => 35,
+            _ => 0,
         };
-        let o = diesel::update(self)
-            .set(schema::communitys::types.eq(_case))
-            .execute(&_connection);
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
 
-        if o.is_ok() {
-            return 1;
+            if o.is_ok() {
+                return 1;
+            }
         }
-        else {
-            return 0;
-        }
+        return 0;
     }
     pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
@@ -180,6 +181,7 @@ impl Community {
             33 => 13,
             34 => 14,
             35 => 15,
+            _ => 0,
         };
         let o = diesel::update(self)
             .set(schema::communitys::types.eq(_case))
@@ -204,6 +206,7 @@ impl Community {
             13 => 73,
             14 => 74,
             15 => 75,
+            _ => 0,
         };
         let o = diesel::update(self)
             .set(schema::communitys::types.eq(_case))
@@ -228,6 +231,7 @@ impl Community {
             73 => 13,
             74 => 14,
             75 => 15,
+            _ => 0,
         };
         let o = diesel::update(self)
             .set(schema::communitys::types.eq(_case))
