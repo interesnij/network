@@ -576,7 +576,7 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
             move || {
                 item.create_suspend (
                     manager.id,
-                    Some(data.expiration),
+                    data.expiration,
                     data.description.clone(),
                 );
             }
