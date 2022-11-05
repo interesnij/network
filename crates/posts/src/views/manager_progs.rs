@@ -212,7 +212,19 @@ pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error
     let item = get_community(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
-        let _res = block(move || item.close_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    2,
+                    data.description.clone(),
+                    2,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -223,7 +235,19 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let item = get_user(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
-        let _res = block(move || item.unclose_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    1,
+                    data.description.clone(),
+                    4,
+                    None
+                );
+                item.unclose_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
@@ -234,7 +258,19 @@ pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Err
     let item = get_community(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
-        let _res = block(move || item.unclose_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    2,
+                    data.description.clone(),
+                    4,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
