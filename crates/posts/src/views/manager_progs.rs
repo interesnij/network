@@ -53,16 +53,18 @@ pub struct ReportParams {
 }
 #[derive(Deserialize)]
 pub struct CloseParams {
-    pub id:      i32,
-    pub user_id: i32,
-    pub item_id: i32,
+    pub id:          i32,
+    pub user_id:     i32,
+    pub item_id:     i32,
+    pub description: Option<String>,
 }
 #[derive(Deserialize)]
 pub struct SuspendParams {
-    pub id:         i32,
-    pub user_id:    i32,
-    pub item_id:    i32,
-    pub expiration: Option<chrono::NaiveDateTime>,
+    pub id:          i32,
+    pub user_id:     i32,
+    pub item_id:     i32,
+    pub expiration:  Option<chrono::NaiveDateTime>,
+    pub description: Option<String>,
 }
 
 pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Error> {
@@ -187,7 +189,19 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let item = get_user(data.id).expect("E.");
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
-        let _res = block(move || item.close_item()).await?;
+        let _res = block (
+            move || {
+                ModeratedLog::create (
+                    manager.id,
+                    item.id,
+                    1,
+                    data.description,
+                    2,
+                    None
+                );
+                item.close_item()
+            }
+        ).await?;
         Ok(Json(_res))
     }
     else {
