@@ -144,6 +144,107 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
+    pub fn delete_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            1 => 21,
+            2 => 22,
+            3 => 23,
+            7 => 27,
+            8 => 28,
+            9 => 29,
+            13 => 33,
+            14 => 34,
+            15 => 35,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn restore_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            21 => 1,
+            22 => 2,
+            23 => 3,
+            27 => 7,
+            28 => 8,
+            29 => 9,
+            33 => 13,
+            34 => 14,
+            35 => 15,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn close_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            1 => 61,
+            2 => 62,
+            3 => 63,
+            7 => 67,
+            8 => 68,
+            9 => 69,
+            13 => 73,
+            14 => 74,
+            15 => 75,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn unclose_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            61 => 1,
+            62 => 2,
+            63 => 3,
+            67 => 7,
+            68 => 8,
+            69 => 9,
+            73 => 13,
+            74 => 14,
+            75 => 15,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+
     pub fn get_fixed_posts_ids(&self) -> Vec<i32> {
         use crate::schema::posts::dsl::posts;
 

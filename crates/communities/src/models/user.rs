@@ -413,15 +413,13 @@ impl User {
     }
 
     pub fn delete_item(&self) -> bool {
-        //use crate::models::hide_wall_notify_items;
-
         let _connection = establish_connection();
         let user_types = self.types;
         let _case = match user_types {
             1 => 11,
             6 => 16,
             7 => 17,
-            _ => self.types,
+            _ => 11,
         };
         let o = diesel::update(self)
             .set(schema::users::types.eq(_case))
@@ -433,19 +431,15 @@ impl User {
         else {
             return false;
         }
-
-        //hide_wall_notify_items(1, self.id);
     }
     pub fn restore_item(&self) -> bool {
-        //use crate::models::show_wall_notify_items;
-
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
-            11 => 1,
-            16 => 6,
-            17 => 7,
-            _ => self.types,
+            31 => 1,
+            36 => 6,
+            37 => 7,
+            _ => 1,
         };
         let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
@@ -457,8 +451,48 @@ impl User {
         else {
             return false;
         }
-        //show_wall_notify_items(1, self.id);
     }
+    pub fn delete_item(&self) -> bool {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            31 => 1,
+            36 => 6,
+            37 => 7,
+            _ => 1,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    pub fn restore_item(&self) -> bool {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let close_case = match user_types {
+            61 => 1,
+            62 => 2,
+            63 => 3,
+            _ => 1,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(close_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     pub fn get_verb_gender(&self, str: &str) -> String {
         if self.is_man == false {
             return "W".to_string() + &str;
