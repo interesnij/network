@@ -107,7 +107,7 @@ impl Moderated {
     pub fn create_suspend (
         &self,
         manager_id:  i32,
-        duration:    chrono::NaiveDateTime,
+        duration:    Option<chrono::NaiveDateTime>,
         description: Option<String>
     ) -> i16 {
         let _connection = establish_connection();
