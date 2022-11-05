@@ -30,8 +30,8 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     //config.route("/close_list/", web::post().to(close_list));
     //config.route("/close_post/", web::post().to(close_post));
     //config.route("/close_comment/", web::post().to(close_comment));
-    //config.route("/unclose_community/", web::post().to(unclose_community));
-    //config.route("/unclose_user/", web::post().to(unclose_user));
+    config.route("/unclose_community/", web::post().to(unclose_community));
+    config.route("/unclose_user/", web::post().to(unclose_user));
     //config.route("/unclose_list/", web::post().to(unclose_list));
     //config.route("/unclose_post/", web::post().to(unclose_post));
     //config.route("/unclose_comment/", web::post().to(unclose_comment));
