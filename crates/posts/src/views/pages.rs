@@ -542,7 +542,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametr 'item_id' not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -687,7 +687,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametr 'item_id' not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -763,7 +763,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametr 'item_id' not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -804,7 +804,7 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
         else {
             let user_id = params.user_id.unwrap();
             let mut limit: i64 = 0;
-            let mut offset: i64 = 0;
+            let mut offset: i64;
             if params.limit.is_some() {
                 let _limit = params.limit.unwrap();
                 if _limit > 100 {
@@ -913,7 +913,7 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
         else {
             let user_id = params.user_id.unwrap();
             let mut limit: i64 = 0;
-            let mut offset: i64 = 0;
+            let mut offset: i64;
             if params.limit.is_some() {
                 let _limit = params.limit.unwrap();
                 if _limit > 100 {

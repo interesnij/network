@@ -433,11 +433,11 @@ impl ModeratedReport {
         object_id: i32,
         description: Option<String>,
         repost_types: i16
-    ) -> bool {
+    ) -> i16 {
         let _connection = establish_connection();
         let moderated_obj = Moderated::get_or_create_moderated_object(object_id, types);
         if moderated_obj.get_reporters_ids().iter().any(|&i| i==reporter_id) {
-            return false;
+            return 0;
         }
 
         let new_form = NewModeratedReport {
@@ -451,7 +451,7 @@ impl ModeratedReport {
                 .values(&new_form)
                 .execute(&_connection)
                 .expect("Error.");
-            return true;
+            return 1;
     }
 }
 
