@@ -573,14 +573,12 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
     let manager = get_user(data.user_id).expect("E.");
     if manager.is_administrator() {
         let _res = block (
-            move || {
-                item.create_suspend (
-                    manager.id,
-                    data.expiration,
-                    data.description.clone(),
-                )
-            }
-        ).await?;
+            move || item.create_suspend (
+                manager.id,
+                data.expiration,
+                data.description.clone(),
+
+            )).await?;
         Ok(Json(_res))
     }
     else {
