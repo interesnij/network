@@ -14,7 +14,8 @@ use crate::utils::{
     get_user_permission,
 };
 use crate::models::{
-    ModeratedLog, ModeratedPenaltie
+    ModeratedLog,
+    //ModeratedPenaltie,
 };
 use crate::errors::Error;
 use serde::Deserialize;

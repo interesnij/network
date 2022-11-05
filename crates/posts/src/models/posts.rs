@@ -23,7 +23,6 @@ use crate::utils::{
     CardCommentJson,
     //AttachmentsJson,
     EditPostJson,
-    DataNewPost,
     DataEditPost,
     RespPost,
     ReactionData,
@@ -892,7 +891,6 @@ impl Post {
         &self,
         lists: Vec<i32>,
     ) -> i16 {
-        use crate::schema::posts::dsl::posts;
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
