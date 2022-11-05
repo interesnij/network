@@ -141,7 +141,7 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
 
-        let ma: i16 = self.types {
+        let ma: i16 = match self.types {
             1 =>  {
                 use crate::utils::get_user;
                 let item = get_user(self.object_id).expect("E.");
