@@ -134,6 +134,7 @@ pub struct NewCommunity {
 
 #[derive(Deserialize)]
 pub struct NewCommunityJson {
+    pub token:        String,
     pub community_id: i32,
     pub user_id:      i32,
     pub name:         String,

@@ -49,10 +49,11 @@ pub async fn index_page() -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct LoadListParams {
-    pub list_id: i32,
-    pub user_id: Option<i32>,
-    pub limit:   Option<i64>,
-    pub offset:  Option<i64>,
+    pub token:   Option<String>, // токен приложения
+    pub user_id: Option<i32>,    // кто запрашивает
+    pub list_id: Option<i32>,    // какой список интересует
+    pub limit:   Option<i64>,    // кол-во постов
+    pub offset:  Option<i64>,    // число смещения
 }
 
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
@@ -188,6 +189,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct AddUserListParams {
+    pub token:   Option<String>,
     pub user_id: Option<i32>,
 }
 pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
@@ -222,7 +224,8 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct EditUserListParams {
-    pub user_id: Option<i32>,
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,    // кто запрашивает
     pub list_id: Option<i32>,
 }
 pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
@@ -278,7 +281,8 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct AddCommunityListParams {
-    pub user_id:      Option<i32>,
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,    // кто запрашивает
     pub community_id: Option<i32>,
 }
 pub async fn add_community_list_page(req: HttpRequest) -> impl Responder {
@@ -339,9 +343,8 @@ pub async fn add_community_list_page(req: HttpRequest) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct EditCommunityListParams {
-    pub user_id:      Option<i32>,
-    pub community_id: Option<i32>,
-    pub list_id:      Option<i32>,
+    pub token:   Option<String>,
+    pub list_id: Option<i32>,
 }
 pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<EditCommunityListParams>::from_query(&req.query_string());
@@ -415,7 +418,7 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct LoadItemParams {
     pub item_id: Option<i32>,
-    pub user_id: Option<i32>,
+    pub token:   Option<String>,
     pub limit:   Option<i64>,
     pub offset:  Option<i64>,
 }
@@ -695,8 +698,8 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct ItemParams {
+    pub token:   Option<String>,
     pub item_id: Option<i32>,
-    pub user_id: Option<i32>,
 }
 
 pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
@@ -772,8 +775,8 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
 
 #[derive(Debug, Deserialize)]
 pub struct ItemReactionsParams {
+    pub token:       Option<String>,
     pub item_id:     Option<i32>,
-    pub user_id:     Option<i32>,
     pub reaction_id: Option<i32>,
     pub limit:       Option<i64>,
     pub offset:      Option<i64>,

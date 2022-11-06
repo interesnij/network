@@ -107,6 +107,7 @@ pub struct NewUser {
 
 #[derive(Deserialize, Serialize)]
 pub struct NewUserJson {
+    pub token:      String,
     pub user_id:    i32,
     pub first_name: String,
     pub last_name:  String,

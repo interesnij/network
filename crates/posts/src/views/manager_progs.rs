@@ -54,6 +54,7 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
 
 #[derive(Deserialize)]
 pub struct ReportParams {
+    pub token:       String,
     pub id:          i32,
     pub user_id:     i32,
     pub item_id:     i32,
@@ -62,6 +63,7 @@ pub struct ReportParams {
 }
 #[derive(Deserialize)]
 pub struct CloseParams {
+    pub token:       String,
     pub id:          i32,
     pub user_id:     i32,
     pub item_id:     i32,
@@ -69,6 +71,7 @@ pub struct CloseParams {
 }
 #[derive(Deserialize)]
 pub struct ModerationParams {
+    pub token:       String,
     pub id:          i32,
     pub user_id:     i32,
     pub item_id:     i32,

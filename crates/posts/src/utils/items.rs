@@ -12,27 +12,30 @@ pub struct InfoParams {
 }
 #[derive(Deserialize)]
 pub struct ItemParams {
-    pub id:           i32,
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub id:      Option<i32>,
 }
 #[derive(Deserialize)]
 pub struct DataCopyPost {
-    pub id:      i32,
-    pub user_id: i32,
+    pub token:   Option<String>,
+    pub id:      Option<i32>,
+    pub user_id: Option<i32>,
     pub lists:   Vec<i32>,
 }
 #[derive(Deserialize)]
 pub struct DataCopyList {
-    pub id:      i32,
-    pub user_id: i32,
+    pub token:   Option<String>,
+    pub id:      Option<i32>,
+    pub user_id: Option<i32>,
     pub owners:  Vec<String>,
 }
 
 #[derive(Deserialize)]
 pub struct ReactionData {
-    pub id:           i32,
-    pub user_id:      i32,
+    pub token:   Option<String>,
+    pub id:      Option<i32>,
+    pub user_id: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -63,6 +66,7 @@ pub struct EditListJson {
 
 #[derive(Serialize, Deserialize)]
 pub struct DataListJson {
+    pub token:                String,
     pub id:                   i32,
     pub community_id:         Option<i32>,
     pub user_id:              i32,
@@ -86,8 +90,9 @@ pub struct DataListJson {
 #[derive(Deserialize)]
 // принимаем параметры для нового поста
 pub struct DataNewPost {
-    pub list_id:      i32,
-    pub user_id:      i32,
+    pub token:        Option<String>,
+    pub list_id:      Option<i32>,
+    pub user_id:      Option<i32>,
     pub content:      Option<String>,
     pub attachments:  Option<String>,
     pub comments_on:  bool,
@@ -97,8 +102,9 @@ pub struct DataNewPost {
 #[derive(Deserialize)]
 // принимаем параметры для редактируемого поста
 pub struct DataEditPost {
-    pub id:           i32,
-    pub user_id:      i32,
+    pub token:        Option<String>,
+    pub id:           Option<i32>,
+    pub user_id:      Option<i32>,
     pub content:      Option<String>,
     pub attachments:  Option<String>,
     pub comments_on:  bool,
@@ -122,8 +128,9 @@ pub struct RespPost {
 #[derive(Deserialize)]
 // принимаем параметры для нового коммента
 pub struct DataNewComment {
-    pub post_id:      i32,
-    pub user_id:      i32,
+    pub token:        Option<String>,
+    pub post_id:      Option<i32>,
+    pub user_id:      Option<i32>,
     pub community_id: Option<i32>,
     pub content:      Option<String>,
     pub parent_id:    Option<i32>,
@@ -132,9 +139,10 @@ pub struct DataNewComment {
 #[derive(Deserialize)]
 // принимаем параметры для редактируемого коммента
 pub struct DataEditComment {
-    pub id:           i32,
-    pub post_id:      i32,
-    pub user_id:      i32,
+    pub token:        Option<String>,
+    pub id:           Option<i32>,
+    pub post_id:      Option<i32>,
+    pub user_id:      Option<i32>,
     pub community_id: Option<i32>,
     pub content:      Option<String>,
     pub parent_id:    Option<i32>,
