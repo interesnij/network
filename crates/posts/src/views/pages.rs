@@ -63,7 +63,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         let _limit: i64;
         let _offset: i64;
         let list: PostList;
-        let list_res = get_post_list(params.list_id);
+        let list_res = get_post_list(params.list_id.unwrap());
         if list_res.is_ok() {
             list = list_res.expect("E");
         }
