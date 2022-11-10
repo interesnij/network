@@ -122,13 +122,6 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
         .first::<Moderated>(&_connection)?);
 }
 
-
-pub struct ItemParams {
-    pub error:        Option<String>,
-    pub user_id:      i32,
-    pub community_id: i32,
-}
-
 pub fn get_owner_data (
     token: Option<String>,
     user_id: Option<i32>
