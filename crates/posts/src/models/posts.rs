@@ -703,7 +703,7 @@ impl Post {
         use crate::models::{PostReaction, NewPostReaction};
 
         let _connection = establish_connection();
-        let list = self.get_list();
+        let list = self.get_list().expect("E.");
         let reactions_of_list = list.get_reactions_list();
         let react_model = self.get_count_model_for_reaction(reaction_id);
 
