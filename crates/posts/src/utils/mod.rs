@@ -159,7 +159,7 @@ pub fn get_owner_data (
             }
             else if owner.types == 2 {
                 // токен пользователя
-                return (None, owner.user_id.unwrap(), 0);
+                return (None, owner.user_id, 0);
             }
             else if owner.types == 3 {
                 // токен сообщества

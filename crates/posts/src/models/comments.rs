@@ -578,7 +578,8 @@ impl PostComment {
 
     pub fn send_reaction (
         &self,
-        data: Json<ReactionData>
+        user_id:     i32,
+        reaction_id: i32,
     ) -> JsonItemReactions {
         use crate::schema::post_comment_reactions::dsl::post_comment_reactions;
         use crate::models::{PostCommentReaction, NewPostCommentReaction};
@@ -586,11 +587,11 @@ impl PostComment {
         let _connection = establish_connection();
         let list = self.get_list();
         let reactions_of_list = list.get_reactions_list();
-        let react_model = self.get_count_model_for_reaction(data.id);
+        let react_model = self.get_count_model_for_reaction(reaction_id);
 
-        if reactions_of_list.iter().any(|&i| i==data.id) && list.is_user_see_el(data.user_id) && list.is_user_see_comment(data.user_id) {
+        if reactions_of_list.iter().any(|&i| i==reaction_id) && list.is_user_see_el(user_id) && list.is_user_see_comment(user_id) {
             let vote_ok = post_comment_reactions
-                .filter(schema::post_comment_reactions::user_id.eq(data.user_id))
+                .filter(schema::post_comment_reactions::user_id.eq(user_id))
                 .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
                 .first::<PostCommentReaction>(&_connection);
 
@@ -599,41 +600,41 @@ impl PostComment {
                 let vote = vote_ok.expect("E");
 
                 // если пользователь уже реагировал этой реакцией на этот товар
-                if vote.reaction_id == data.id {
+                if vote.reaction_id == reaction_id {
                     diesel::delete(post_comment_reactions
-                        .filter(schema::post_comment_reactions::user_id.eq(data.user_id))
+                        .filter(schema::post_comment_reactions::user_id.eq(user_id))
                         .filter(schema::post_comment_reactions::post_comment_id.eq(self.id))
                         )
                         .execute(&_connection)
                         .expect("E");
-                    react_model.update_count(self.id, data.user_id, false);
+                    react_model.update_count(self.id, user_id, false);
                     self.minus_reactions(1);
                 }
                 // если пользователь уже реагировал другой реакцией на этот товар
                 else {
                     diesel::update(&vote)
-                        .set(schema::post_comment_reactions::reaction_id.eq(data.id))
+                        .set(schema::post_comment_reactions::reaction_id.eq(reaction_id))
                         .get_result::<PostCommentReaction>(&_connection)
                         .expect("Error.");
 
-                    react_model.update_count(self.id, data.user_id, false);
+                    react_model.update_count(self.id, user_id, false);
                 }
             }
 
             // если пользователь не реагировал на этот товар
             else {
                 let new_vote = NewPostCommentReaction {
-                    user_id:         data.user_id,
+                    user_id:         user_id,
                     post_comment_id: self.id,
-                    reaction_id:     data.id,
+                    reaction_id:     reaction_id,
                 };
                 diesel::insert_into(schema::post_comment_reactions::table)
                     .values(&new_vote)
                     .get_result::<PostCommentReaction>(&_connection)
                     .expect("Error.");
 
-                react_model.update_count(self.id, data.user_id, true);
-                self.plus_reactions(1, data.user_id);
+                react_model.update_count(self.id, user_id, true);
+                self.plus_reactions(1, user_id);
             }
         }
 
