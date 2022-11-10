@@ -143,7 +143,7 @@ pub fn get_owner_data (
         let _connection = establish_connection();
         let owner_res = owners
             .filter(schema::owners::service_key.eq(token.unwrap()))
-            .first::<Owner>(&_connection)?);
+            .first::<Owner>(&_connection)?;
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if owner.types == 1 {
@@ -197,7 +197,7 @@ pub fn get_user_owner_id (
         let _connection = establish_connection();
         let owner_res = owners
             .filter(schema::owners::service_key.eq(token.unwrap()))
-            .first::<Owner>(&_connection)?);
+            .first::<Owner>(&_connection)?;
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if owner.types == 1 {
@@ -243,7 +243,7 @@ pub fn get_community_owner_id (
         let _connection = establish_connection();
         let owner_res = owners
             .filter(schema::owners::service_key.eq(token.unwrap()))
-            .first::<Owner>(&_connection)?);
+            .first::<Owner>(&_connection)?;
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if owner.types == 1 {
