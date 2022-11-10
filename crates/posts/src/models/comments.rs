@@ -187,7 +187,7 @@ impl PostComment {
         };
     }
 
-    pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<SmallReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<SmallReactionBlockJson>> {
         // получаем реакции
         let reactions_blocks: Option<Vec<SmallReactionBlockJson>>;
         if reactions_list.len() == 0 {
@@ -197,8 +197,8 @@ impl PostComment {
             let mut reactions_json: Vec<SmallReactionBlockJson> = Vec::new();
             let mut user_reaction = 0;
 
-            if user_id.is_some() && self.is_have_user_reaction(user_id.unwrap()) {
-                user_reaction = self.get_user_reaction(user_id.unwrap()).expect("E.");
+            if user_id > 0 && self.is_have_user_reaction(user_id) {
+                user_reaction = self.get_user_reaction(user_id).expect("E.");
             }
 
             for reaction in reactions_list.iter() {

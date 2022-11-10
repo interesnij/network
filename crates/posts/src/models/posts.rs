@@ -286,7 +286,7 @@ impl Post {
                 reactions:      c.reactions,
                 types:          c.get_code(),       // например cpo1
                 replies:        c.replies,    // кол-во ответов
-                reactions_list: c.get_reactions_json(Some(user_id), reactions_list.clone()),
+                reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
                 attachments:    None,
             });
         }
@@ -417,7 +417,7 @@ impl Post {
         return reposts_window;
     }
 
-    pub fn get_reactions_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> Option<Vec<SmallReactionBlockJson>> {
+    pub fn get_reactions_json (&self, user_id: i32, reactions_list: Vec<i32>) -> Option<Vec<SmallReactionBlockJson>> {
         // получаем реакции и отреагировавших
         let reactions_blocks: Option<Vec<SmallReactionBlockJson>>;
         if reactions_list.len() == 0 {
@@ -427,8 +427,8 @@ impl Post {
             let mut reactions_json: Vec<SmallReactionBlockJson> = Vec::new();
             let mut user_reaction = 0;
 
-            if user_id.is_some() && self.is_have_user_reaction(user_id.unwrap()) {
-                user_reaction = self.get_user_reaction(user_id.unwrap()).expect("E.");
+            if user_id > 0 && self.is_have_user_reaction(user_id) {
+                user_reaction = self.get_user_reaction(user_id).expect("E.");
             }
 
             for reaction in reactions_list.iter() {
@@ -525,7 +525,7 @@ impl Post {
                 next:                 next,
                 is_user_see_comments: list.is_anon_user_see_comment(),
                 is_user_create_comments: false,
-                comments:             self.get_comments(None, reactions_list.clone(), limit, offset),
+                comments:             self.get_comments(user_id, reactions_list.clone(), limit, offset),
                 attachments:          None,
             };
         }
