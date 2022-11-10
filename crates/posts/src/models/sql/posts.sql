@@ -1,3 +1,19 @@
+-- ключи доступа / токены к записям -------
+CREATE TABLE owners (
+    id           SERIAL PRIMARY KEY,     -- id
+    user_id      INT NOT NULL,           -- id создателя или владельца
+    community_id INT,                    -- id сообщества-владельца (если есть)
+    name         VARCHAR(100) NOT NULL,  -- название
+    description  VARCHAR(500),           -- описание
+    types        SMALLINT NOT NULL,      -- тип владельца: приложение, пользователь, сообщество
+    seсret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
+    service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ
+    is_active    BOOLEAN NOT NULL,       -- активно
+
+    UNIQUE(service_key)
+);
+CREATE INDEX item_service_key_index ON apps (service_key);
+
 -- пользователи -------
 -- таблица нужна для ассоциации постов с их создателями,
 -- а также для самостоятельности сервиса.

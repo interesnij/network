@@ -257,7 +257,7 @@ impl Post {
     }
     pub fn get_comments (
         &self,
-        user_id: Option<i32>,
+        user_id: i32,
         reactions_list: Vec<i32>,
         limit: i64,
         offset: i64,
@@ -286,7 +286,7 @@ impl Post {
                 reactions:      c.reactions,
                 types:          c.get_code(),       // например cpo1
                 replies:        c.replies,    // кол-во ответов
-                reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
+                reactions_list: c.get_reactions_json(Some(user_id), reactions_list.clone()),
                 attachments:    None,
             });
         }
@@ -458,7 +458,7 @@ impl Post {
     }
     pub fn get_detail_post_json (
         &self,
-        user_id: Option<i32>,
+        user_id: i32,
         limit: i64,
         offset: i64,
     ) -> PostDetailJson {
@@ -480,8 +480,7 @@ impl Post {
                 break;
             }
         };
-        if user_id.is_some() {
-            let id = user_id.unwrap();
+        if user_id > 0 {
             return PostDetailJson {
                     content:              self.content.clone(),
                     owner_name:           creator.name.clone(),
@@ -500,8 +499,8 @@ impl Post {
                     reactions_list:       self.get_reactions_json(user_id, reactions_list.clone()),
                     prev:                 prev,
                     next:                 next,
-                    is_user_see_comments: list.is_user_see_comment(id),
-                    is_user_create_comments: list.is_user_create_comment(id),
+                    is_user_see_comments: list.is_user_see_comment(user_id),
+                    is_user_create_comments: list.is_user_create_comment(user_id),
                     comments:             self.get_comments(user_id, reactions_list.clone(), limit, offset),
                     attachments:          None,
                 };
@@ -1415,7 +1414,11 @@ impl Post {
 
     pub fn create_comment (
         &self,
-        data: Json<DataNewComment>
+        user_id:      i32,
+        community_id: Option<i32>,
+        content:      Option<String>,
+        parent_id:    Option<i32>,
+        attachments:  Option<String>,
     ) -> RespComment {
         let _connection = establish_connection();
         diesel::update(self)
@@ -1431,11 +1434,11 @@ impl Post {
 
         let new_comment_form = NewPostComment {
             post_id:      self.id,
-            user_id:      data.user_id,
-            community_id: data.community_id,
-            parent_id:    data.parent_id,
-            content:      data.content.clone(),
-            attach:       data.attachments.clone(),
+            user_id:      user_id,
+            community_id: community_id,
+            parent_id:    parent_id,
+            content:      content.clone(),
+            attach:       attachments.clone(),
             types:        1,
             created:      chrono::Local::now().naive_utc(),
             repost:       0,
@@ -1449,10 +1452,10 @@ impl Post {
         return RespComment {
             id:           new_comment.id,
             post_id:      self.id,
-            user_id:      data.user_id,
-            community_id: data.community_id,
-            content:      data.content.clone(),
-            parent_id:    data.parent_id,
+            user_id:      user_id,
+            community_id: community_id,
+            content:      content.clone(),
+            parent_id:    parent_id,
             attachments:  None,
         };
     }

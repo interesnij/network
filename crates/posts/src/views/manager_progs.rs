@@ -12,11 +12,9 @@ use crate::utils::{
     get_moderation,
     get_community_permission,
     get_user_permission,
+    get_owner_data,
 };
-use crate::models::{
-    ModeratedLog,
-    //ModeratedPenaltie,
-};
+use crate::models::ModeratedLog;
 use crate::errors::Error;
 use serde::Deserialize;
 

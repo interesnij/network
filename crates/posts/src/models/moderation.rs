@@ -4,6 +4,7 @@ use crate::schema::{
     moderated_reports,
     moderated_penalties,
     moderated_logs,
+    owners,
 };
 use diesel::{
     Queryable,
@@ -20,8 +21,39 @@ use crate::models::{
 };
 
 
-/////// Moderated //////
+/////// Owner //////
+////////// Тип владельца
+    // 1 Приложение
+    // 2 Пользователь
+    // 2 Сообщество
 
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct Owner {
+    pub id:           i32,
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub name:         String,
+    pub description:  Option<String>,
+    pub types:        i16,
+    pub secret_key:   String,
+    pub service_key:  String,
+    pub is_active:    bool,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owners"]
+pub struct NewOwner {
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub name:         String,
+    pub description:  Option<String>,
+    pub types:        i16,
+    pub secret_key:   String,
+    pub service_key:  String,
+    pub is_active:    bool,
+}
+
+/////// Moderated //////
 ////////// Тип модерируемого объекта
     // 1 Пользователь
     // 2 Сообщество

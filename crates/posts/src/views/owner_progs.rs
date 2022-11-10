@@ -8,6 +8,7 @@ use crate::models::{
     NewUserJson, NewCommunityJson,
 };
 use crate::errors::Error;
+use crate::utils::get_owner_data;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {

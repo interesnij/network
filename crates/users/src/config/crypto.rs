@@ -7,11 +7,11 @@ use std::{result::Result};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
-    pub id: u64,
+    pub id: i32,
     pub exp: i64,
 }
 
-pub async fn gen_jwt(id: u64, secret: &String) -> Result<String, jsonwebtoken::errors::Error> {
+pub async fn gen_jwt(id: i32, secret: &String) -> Result<String, jsonwebtoken::errors::Error> {
     let jwt_key = secret.clone();
 
     block(move || {
@@ -48,7 +48,7 @@ pub async fn unwrap_jwt (
 pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
     let claims = unwrap_jwt(_token, _secret).await;
 
-    if let Err(_) = claims{
+    if let Err(_) = claims {
         return Err(403);
     }
 

@@ -729,12 +729,13 @@ impl PostComment {
     }
     pub fn edit_comment (
         &self,
-        data: Json<DataEditComment>
+        content: Option<String>,
+        attachments: Option<String>
     ) -> RespComment {
         let _connection = establish_connection();
         let edit_post = EditComment {
-            content: data.content.clone(),
-            attach:  data.attachments.clone(),
+            content: content.clone(),
+            attach:  attachments.clone(),
         };
         diesel::update(self)
             .set(edit_post)
@@ -746,7 +747,7 @@ impl PostComment {
             post_id:      self.post_id,
             user_id:      data.user_id,
             community_id: data.community_id,
-            content:      data.content.clone(),
+            content:      content.clone(),
             parent_id:    data.parent_id,
             attachments:  None,
         };
