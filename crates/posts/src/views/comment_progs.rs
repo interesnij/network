@@ -207,15 +207,21 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if params.id.is_none() {
+    else if params.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametr reaction 'id' not found!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+    else if params.reaction_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'reaction_id' not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
     else {
-        let item = get_post(data.id.unwrap()).expect("E.");
-        let list = get_post_list(item.post_list_id).expect("E.");
+        let item = get_post_comment(data.item_id.unwrap()).expect("E.");
+        let list = item.get_list();
         if item.community_id.is_some() {
             let c_id = item.community_id.unwrap();
             if community_id > 0 && c_id != community_id {
@@ -230,7 +236,7 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
                 else {
                     let _res = block(move || item.send_reaction (
                         user_id,
-                        data.id.unwrap(),
+                        data.reaction_id.unwrap(),
                     )).await?;
                     Ok(Json(_res))
                 }
@@ -249,7 +255,7 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
                 else {
                     let _res = block(move || item.send_reaction (
                         user_id,
-                        data.id.unwrap(),
+                        data.reaction_id.unwrap(),
                     )).await?;
                     Ok(Json(_res))
                 }
