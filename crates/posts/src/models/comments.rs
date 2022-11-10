@@ -745,10 +745,10 @@ impl PostComment {
         return RespComment {
             id:           self.id,
             post_id:      self.post_id,
-            user_id:      data.user_id,
-            community_id: data.community_id,
+            user_id:      self.user_id,
+            community_id: self.community_id,
             content:      content.clone(),
-            parent_id:    data.parent_id,
+            parent_id:    self.parent_id,
             attachments:  None,
         };
     }

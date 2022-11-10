@@ -24,6 +24,7 @@ use crate::models::{
     PostComment,
 };
 use serde::Deserialize;
+use crate::errors::Error;
 
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
@@ -561,7 +562,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                 }
                 else {
                     // если список пользователя
-                    let owner = list.get_creator().expect("E.");
+                    let owner = item.get_creator().expect("E.");
                     let _tuple = get_user_permission(&owner, user_id);
                     if _tuple.0 == false {
                         // если пользователь не может просматривать информацию владельца списка
@@ -582,8 +583,8 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
             }
             else {
                 // если пользователь анонимный, то есть параметра user_id нет
-                if list.community_id.is_some() {
-                    let c_id = list.community_id.unwrap();
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
                     if community_id > 0 && c_id != community_id {
                         // если токен сообщества, но список не этого сообщества
                         let body = serde_json::to_string(&ErrorParams {
@@ -592,7 +593,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                         HttpResponse::Ok().body(body)
                     }
                     else {
-                        let community = list.get_community().expect("E.");
+                        let community = item.get_community().expect("E.");
                         let _tuple = get_anon_community_permission(&community);
                         if _tuple.0 == false {
                             let body = serde_json::to_string(&ErrorParams {
@@ -611,7 +612,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                     }
                 }
                 else {
-                    let owner = list.get_creator().expect("E.");
+                    let owner = item.get_creator().expect("E.");
                     let _tuple = get_anon_user_permission(&owner);
                     if _tuple.0 == false {
                         let body = serde_json::to_string(&ErrorParams {

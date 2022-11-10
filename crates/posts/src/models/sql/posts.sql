@@ -12,7 +12,7 @@ CREATE TABLE owners (
 
     UNIQUE(service_key)
 );
-CREATE INDEX item_service_key_index ON apps (service_key);
+CREATE INDEX item_service_key_index ON owners (service_key);
 
 -- пользователи -------
 -- таблица нужна для ассоциации постов с их создателями,

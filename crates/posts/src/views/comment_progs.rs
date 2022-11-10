@@ -150,7 +150,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
             }
         }
         else {
-            if  (community_id == 0 && (user_id == item.user_id || user_id == list.user_id)
+            if  (community_id == 0 && (user_id == item.user_id || user_id == list.user_id))
                 ||
                 (community_id > 0 && list.community_id.is_some() && list.community_id.unwrap() == community_id)
             {
@@ -186,7 +186,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
             }
         }
         else {
-            if  (community_id == 0 && (user_id == item.user_id || user_id == list.user_id)
+            if  (community_id == 0 && (user_id == item.user_id || user_id == list.user_id))
                 ||
                 (community_id > 0 && list.community_id.is_some() && list.community_id.unwrap() == community_id)
             {
