@@ -145,7 +145,7 @@ pub fn get_owner_data (
                     // параметр id текущего пользователя
                     let _id = user_id.unwrap();
                     let _user = get_user(_id);
-                    if owner_res.is_ok() {
+                    if _user.is_ok() {
                         return (None, _id, 0);
                     }
                     else {
@@ -197,7 +197,7 @@ pub fn get_user_owner_id (
                 if user_id.is_some() {
                     let _id = user_id.unwrap();
                     let _user = get_user(_id);
-                    if owner_res.is_ok() {
+                    if _user.is_ok() {
                         return (None, _id);
                     }
                     else {
@@ -243,7 +243,7 @@ pub fn get_community_owner_id (
                 if community_id.is_some() {
                     let _id = community_id.unwrap();
                     let _community = get_community(_id);
-                    if owner_res.is_ok() {
+                    if _community.is_ok() {
                         return (None, _id);
                     }
                     else {
