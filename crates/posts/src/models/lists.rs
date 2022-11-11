@@ -1942,7 +1942,8 @@ impl PostList {
 
     pub fn copy_list (
         &self,
-        data: Json<DataCopyList>
+        user_id: i32,
+        owners: Vec<String>
     ) -> i16 {
         //user_or_communities - список владельцев (c16, u8),
         // в коллекции которыхъ копируется список
@@ -1951,19 +1952,19 @@ impl PostList {
             get_user,
         };
 
-        for item in data.owners.iter() {
+        for item in owners.iter() {
             let first = item.chars().nth(0).unwrap();
             if first == 'c' {
                 let c_id: i32 = item[..1].parse().unwrap();
                 let community = get_community(c_id).expect("E.");
-                if community.get_administrators_ids().iter().any(|&i| i==data.user_id) {
+                if community.get_administrators_ids().iter().any(|&i| i==user_id) {
                     self.add_in_community_collections(c_id);
                 }
             }
             else if first == 'u' {
                 let u_id: i32 = item[..1].parse().unwrap();
                 let owner = get_user(u_id).expect("E.");
-                if owner.user_id == data.user_id {
+                if owner.user_id == user_id {
                     self.add_in_user_collections(u_id);
                 }
             }
@@ -2346,7 +2347,7 @@ impl PostList {
         let new_post_form = NewPost {
           content:      data.content.clone(),
           community_id: self.community_id,
-          user_id:      data.user_id,
+          user_id:      data.user_id.unwrap(),
           post_list_id: self.id,
           types:        1,
           attach:       data.attachments.clone(),
@@ -2389,7 +2390,7 @@ impl PostList {
         return RespPost {
             id:           new_post.id,
             list_id:      self.id,
-            user_id:      data.user_id,
+            user_id:      data.user_id.unwrap(),
             community_id: self.community_id,
             content:      data.content.clone(),
             attach:       data.attachments.clone(),

@@ -29,7 +29,7 @@ pub fn comment_urls(config: &mut web::ServiceConfig) {
 
 
 pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -39,16 +39,15 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
     }
     else {
         let item = get_post(data.item_id.unwrap()).expect("E.");
-        let list = get_post_list(item.post_list_id).expect("E.");
+        let list = item.get_list().expect("E.");
         if item.community_id.is_some() {
-            let c_id = item.community_id.unwrap();
-            if community_id > 0 && c_id != community_id {
+            if community_id > 0 && (item.community_id.unwrap() != community_id || list.community_id.unwrap() != community_id) {
                 Err(Error::BadRequest("Permission Denied".to_string()));
             }
             else {
-                let community = get_community(c_id).expect("E.");
+                let community = item.get_community().expect("E.");
                 let _tuple = get_community_permission(&community, user_id);
-                if _tuple.0 == false || !list.is_user_create_comment(user_id) {
+                if _tuple.0 == false || (user_id > 0 && !list.is_user_create_comment(user_id)) {
                     Err(Error::BadRequest(_tuple.1))
                 }
                 else {
@@ -70,7 +69,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
             else {
                 let owner = get_user(item.user_id).expect("E.");
                 let _tuple = get_user_permission(&owner, user_id);
-                if _tuple.0 == false || !list.is_user_create_comment(user_id) {
+                if _tuple.0 == false || (user_id > 0 && !list.is_user_create_comment(user_id)) {
                     Err(Error::BadRequest(_tuple.1))
                 }
                 else {
@@ -89,7 +88,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
 }
 
 pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -99,10 +98,12 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
     }
     else {
         let item = get_post_comment(data.id.unwrap()).expect("E.");
-        //let list = get_post_list(item.post_list_id).expect("E.");
         if item.community_id.is_some() {
-            let c_id = item.community_id.unwrap();
-            if community_id > 0 && c_id != community_id {
+            let community = item.get_community().expect("E.");
+            if (community_id > 0 && item.community_id.unwrap() != community_id)
+                ||
+                (user_id > 0 && !community.get_editors_ids().iter().any(|&i| i==user_id))
+                {
                 Err(Error::BadRequest("Permission Denied".to_string()));
             }
             else {
@@ -114,22 +115,22 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
             }
         }
         else {
-            if community_id > 0 || user_id != item.user_id {
-                Err(Error::BadRequest("Permission Denied".to_string()));
-            }
-            else {
+            if community_id == 0 || user_id == item.user_id {
                 let _res = block(move || item.edit_comment (
                     data.content,
                     data.attachments,
                 )).await?;
                 Ok(Json(_res))
             }
+            else {
+                Err(Error::BadRequest("Permission Denied".to_string()));
+            }
         }
     }
 }
 
 pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -138,9 +139,10 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
         let item = get_post_comment(data.id.unwrap()).expect("E.");
         let list = item.get_list();
         if item.community_id.is_some() {
+            let community = item.get_community().expect("E.");
             if (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id))
                 ||
-                (user_id > 0 && list.user_id == user_id)
+                (user_id > 0 && community.get_moderators_ids().iter().any(|&i| i==user_id))
             {
                 let _res = block(move || item.delete_item()).await?;
                 Ok(Json(_res))
@@ -165,7 +167,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
 }
 
 pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -174,9 +176,10 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
         let item = get_post_comment(data.id.unwrap()).expect("E.");
         let list = item.get_list();
         if item.community_id.is_some() {
+            let community = item.get_community().expect("E.");
             if (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id))
                 ||
-                (user_id > 0 && list.user_id == user_id)
+                (user_id > 0 && community.get_moderators_ids().iter().any(|&i| i==user_id))
             {
                 let _res = block(move || item.restore_item()).await?;
                 Ok(Json(_res))
@@ -202,18 +205,18 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
 
 
 pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
-    let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if params.item_id.is_none() {
+    else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
-    else if params.reaction_id.is_none() {
+    else if data.reaction_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'reaction_id' not found!".to_string(),
         }).unwrap();
@@ -224,13 +227,13 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
         let list = item.get_list();
         if item.community_id.is_some() {
             let c_id = item.community_id.unwrap();
-            if community_id > 0 && c_id != community_id {
+            if community_id > 0 && list.community_id.unwrap() != community_id {
                 Err(Error::BadRequest("Permission Denied".to_string()));
             }
             else {
-                let community = get_community(c_id).expect("E.");
+                let community = list.get_community().expect("E.");
                 let _tuple = get_community_permission(&community, user_id);
-                if _tuple.0 == false || !list.is_user_see_comment(user_id) {
+                if _tuple.0 == false || (user_id > 0 && !list.is_user_see_comment(user_id)) {
                     Err(Error::BadRequest(_tuple.1))
                 }
                 else {
@@ -243,13 +246,13 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
             }
         }
         else {
-            if community_id > 0 || user_id == 0 {
+            if (community_id > 0 && list.community_id.unwrap() != community_id) || user_id == 0 {
                 Err(Error::BadRequest("Permission Denied".to_string()));
             }
             else {
                 let owner = get_user(item.user_id).expect("E.");
                 let _tuple = get_user_permission(&owner, user_id);
-                if _tuple.0 == false || !list.is_user_see_comment(user_id) {
+                if _tuple.0 == false || (user_id > 0 && !list.is_user_see_comment(user_id)) {
                     Err(Error::BadRequest(_tuple.1))
                 }
                 else {

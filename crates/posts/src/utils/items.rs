@@ -19,8 +19,8 @@ pub struct ItemParams {
 #[derive(Deserialize)]
 pub struct DataCopyPost {
     pub token:   Option<String>,
-    pub id:      Option<i32>,
     pub user_id: Option<i32>,
+    pub item_id: Option<i32>,
     pub lists:   Vec<i32>,
 }
 #[derive(Deserialize)]

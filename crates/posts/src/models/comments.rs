@@ -218,7 +218,7 @@ impl PostComment {
         return reactions_blocks;
     }
 
-    pub fn get_comment_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> CardCommentJson {
+    pub fn get_comment_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardCommentJson {
         let creator = self.get_owner_meta().expect("E");
         let card = CardCommentJson {
             content:        self.content.clone(),
@@ -234,7 +234,7 @@ impl PostComment {
         };
         return card;
     }
-    pub fn get_reply_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>) -> CardReplyJson {
+    pub fn get_reply_json (&self, user_id: i32, reactions_list: Vec<i32>) -> CardReplyJson {
         let creator = self.get_owner_meta().expect("E");
         let card = CardReplyJson {
             content:        self.content.clone(),
