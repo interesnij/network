@@ -66,7 +66,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -247,7 +247,7 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<AddUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || user_id == 0 {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -279,7 +279,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<EditUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || user_id == 0 {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -337,7 +337,7 @@ pub async fn add_community_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<AddCommunityListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || (user_id == 0 && community_id == 0) {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -398,7 +398,7 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<EditCommunityListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || (user_id == 0 && community_id == 0) {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -483,7 +483,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -491,9 +491,9 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if params.list_id.is_none() {
+        else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'list_id' not found!".to_string(),
+                error: "parametr 'item_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -645,7 +645,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -830,7 +830,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<ItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || (user_id == 0 && community_id == 0) {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -856,7 +856,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
             }
-            let list = item.get_list();
+            let list = item.get_list().expect("E.");
             if (community_id > 0 && list.community_id.is_some() && list.community_id.unwrap() == community_id)
                 ||
                 list.user_id == user_id
@@ -895,7 +895,7 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || (user_id == 0 && community_id == 0) {
             // если проверка токена не удалась или запрос анонимный...
             let body = serde_json::to_string(&ErrorParams {
@@ -1005,7 +1005,7 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token, params.user_id);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || (user_id == 0 && community_id == 0) {
             // если проверка токена не удалась или запрос анонимный...
             let body = serde_json::to_string(&ErrorParams {
