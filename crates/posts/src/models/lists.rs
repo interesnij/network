@@ -1631,7 +1631,7 @@ impl PostList {
         if data.reactions.is_some() {
             react = data.reactions.clone();
         }
-        let _id = data.id;
+        let _id = data.id.unwrap();
         let list = get_post_list(_id).expect("E.");
         let edit_post_list = EditPostList {
             name:           _name.clone(),
