@@ -203,24 +203,59 @@ pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson
     }
 }
 pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
-    let list = get_post_list(data.id.unwrap()).expect("E.");
-    if list.user_id != data.user_id || list.community_id.is_some() {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || (user_id == 0 && community_id > 0) {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Добавьте название".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Номер списка не передан".to_string()))
     }
     else {
-        let _res = block(move || PostList::edit_list(data)).await?;
-        Ok(Json(_res))
-    }
-}
-pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
-    if data.community_id.is_some() {
-        let community = get_community(data.community_id.unwrap()).expect("E.");
-        if !community.is_user_create_list(data.user_id) {
+        let list = get_post_list(data.id.unwrap()).expect("E.");
+        if list.user_id != data.user_id || list.community_id.is_some() {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
+            let _res = block(move || PostList::edit_list(data)).await?;
+            Ok(Json(_res))
+        }
+    }
+}
+pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'id' not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if community_id == 0 || data.community_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'community_id' not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if community_id > 0 {
+        let community = get_community(community_id).expect("E.");
+        let _res = block(move || PostList::create_list(data)).await?;
+        Ok(Json(_res))
+    }
+    else if data.community_id.is_some() {
+        let community = get_community(data.community_id.unwrap()).expect("E.");
+        if user_id > 0 && community.is_user_create_list() {
             let _res = block(move || PostList::create_list(data)).await?;
             Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
         }
     }
     else {
@@ -228,14 +263,36 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
     }
 }
 pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
-    if data.community_id.is_some() {
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'id' not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if community_id == 0 || data.community_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'community_id' not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if community_id > 0 {
+        let community = get_community(community_id).expect("E.");
+        let _res = block(move || PostList::edit_list(data)).await?;
+        Ok(Json(_res))
+    }
+    else if data.community_id.is_some() {
         let community = get_community(data.community_id.unwrap()).expect("E.");
-        if !community.is_user_create_list(data.user_id) {
-            Err(Error::BadRequest("Permission Denied".to_string()))
-        }
-        else {
+        if user_id > 0 && get_administrators_ids().iter().any(|&i| i==user_id) {
             let _res = block(move || PostList::edit_list(data)).await?;
             Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
         }
     }
     else {
