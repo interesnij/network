@@ -781,148 +781,250 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
 }
 
 pub async fn suspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_post_list(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || {
-                ModeratedLog::create (
-                    manager.id,
-                    item.id,
-                    3,
-                    data.description.clone(),
-                    1,
-                    data.expiration
-                );
-                item.suspend_item()
-            }
-        ).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_post_list(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || {
+                    ModeratedLog::create (
+                        manager.id,
+                        item.id,
+                        3,
+                        data.description.clone(),
+                        1,
+                        data.expiration,
+                    );
+                    item.close_item()
+                }
+            ).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 pub async fn unsuspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_post_list(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || {
-                ModeratedLog::create (
-                    manager.id,
-                    item.id,
-                    3,
-                    data.description.clone(),
-                    3,
-                    data.expiration
-                );
-                item.unsuspend_item()
-            }
-        ).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_post_list(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || {
+                    ModeratedLog::create (
+                        manager.id,
+                        item.id,
+                        3,
+                        data.description.clone(),
+                        3,
+                        data.expiration,
+                    );
+                    item.close_item()
+                }
+            ).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
 pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_moderation(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || item.create_suspend (
-                manager.id,
-                data.expiration,
-                data.description.clone(),
-
-            )).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_moderation(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || item.create_suspend (
+                    manager.id,
+                    data.expiration,
+                    data.description.clone(),
+
+                )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
 pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_moderation(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || item.create_close (
-                manager.id,
-                data.description.clone(),
-
-            )).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_moderation(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || item.create_close (
+                    manager.id,
+                    data.description.clone(),
+                )).await?;
+                Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
 pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_moderation(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || item.delete_suspend (
-                manager.id,
-                data.description.clone(),
-            )).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_moderation(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || item.delete_suspend (
+                    manager.id,
+                    data.description.clone(),
+                )).await?;
+                Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
 pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_moderation(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || item.delete_close (
-                manager.id,
-                data.description.clone(),
-
-            )).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_moderation(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || item.delete_close (
+                    manager.id,
+                    data.description.clone(),
+                )).await?;
+                Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
 pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_moderation(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || item.unverify (
-                manager.id,
-                data.description.clone(),
-            )).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_moderation(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || item.unverify (
+                    manager.id,
+                    data.description.clone(),
+                )).await?;
+                Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
 pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let item = get_moderation(data.id.unwrap()).expect("E.");
-    let manager = get_user(data.user_id).expect("E.");
-    if manager.is_administrator() {
-        let _res = block (
-            move || item.reject (
-                manager.id,
-                data.description.clone(),
-            )).await?;
-        Ok(Json(_res))
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
     else {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+        let item = get_moderation(data.item_id.unwrap()).expect("E.");
+        let manager = get_user(user_id).expect("E.");
+        if manager.is_administrator() {
+            let _res = block (
+                move || item.reject (
+                    manager.id,
+                    data.description.clone(),
+                )).await?;
+                Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
