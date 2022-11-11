@@ -142,6 +142,7 @@ pub struct DataNewComment {
 pub struct DataEditComment {
     pub token:       Option<String>,
     pub id:          Option<i32>,
+    pub user_id:     Option<i32>,
     pub content:     Option<String>,
     pub attachments: Option<String>,
 }
