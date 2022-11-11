@@ -33,7 +33,7 @@ pub struct DataCopyList {
 
 #[derive(Deserialize)]
 pub struct ReactionData {
-    pub token:       Option<&str>,
+    pub token:       Option<String>,
     pub user_id:     Option<i32>,
     pub item_id:     Option<i32>,
     pub reaction_id: Option<i32>,
