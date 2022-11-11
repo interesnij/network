@@ -216,7 +216,7 @@ pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJso
     }
     else {
         let list = get_post_list(data.id.unwrap()).expect("E.");
-        if list.user_id != data.user_id || list.community_id.is_some() {
+        if list.user_id != user_id || list.community_id.is_some() {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
         else {
@@ -250,7 +250,7 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
     }
     else if data.community_id.is_some() {
         let community = get_community(data.community_id.unwrap()).expect("E.");
-        if user_id > 0 && community.is_user_create_list() {
+        if user_id > 0 && community.is_user_create_list(user_id) {
             let _res = block(move || PostList::create_list(data)).await?;
             Ok(Json(_res))
         }
