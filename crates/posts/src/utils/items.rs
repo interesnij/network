@@ -27,8 +27,8 @@ pub struct DataCopyPost {
 #[derive(Deserialize)]
 pub struct DataCopyList {
     pub token:   Option<String>,
-    pub id:      Option<i32>,
     pub user_id: Option<i32>,
+    pub item_id: Option<i32>,
     pub owners:  Vec<String>,
 }
 

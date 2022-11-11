@@ -311,14 +311,14 @@ pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         Err(Error::BadRequest(body))
     }
     else {
-        let item = get_post_list(data.id.unwrap()).expect("E.");
-        if item.community_id.is_some() {
-            let community = item.get_community().expect("E.");
-            if  (community_id > 0 && item.community_id.unwrap() == community_id)
+        let list = get_post_list(data.id.unwrap()).expect("E.");
+        if list.community_id.is_some() {
+            let community = list.get_community().expect("E.");
+            if  (community_id > 0 && list.community_id.unwrap() == community_id)
                 ||
                 (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)) {
 
-                let _res = block(move || item.delete_item()).await?;
+                let _res = block(move || list.delete_item()).await?;
                 Ok(Json(_res))
             }
             else {
@@ -351,14 +351,14 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         Err(Error::BadRequest(body))
     }
     else {
-        let item = get_post_list(data.id.unwrap()).expect("E.");
-        if item.community_id.is_some() {
-            let community = item.get_community().expect("E.");
-            if  (community_id > 0 && item.community_id.unwrap() == community_id)
+        let list = get_post_list(data.id.unwrap()).expect("E.");
+        if list.community_id.is_some() {
+            let community = list.get_community().expect("E.");
+            if  (community_id > 0 && list.community_id.unwrap() == community_id)
                 ||
                 (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)) {
 
-                let _res = block(move || item.restore_item()).await?;
+                let _res = block(move || list.restore_item()).await?;
                 Ok(Json(_res))
             }
             else {
@@ -366,9 +366,9 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             }
         }
         else {
-            if community_id == 0 && (item.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(item.user_id).expect("E.");
-                let _res = block(move || item.restore_item()).await?;
+            if community_id == 0 && (list.user_id == user_id || list.user_id == user_id) {
+                let owner = get_user(list.user_id).expect("E.");
+                let _res = block(move || list.restore_item()).await?;
                 Ok(Json(_res))
             }
             else {
