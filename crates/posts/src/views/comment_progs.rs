@@ -29,7 +29,7 @@ pub fn comment_urls(config: &mut web::ServiceConfig) {
 
 
 pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -88,7 +88,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
 }
 
 pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -167,7 +167,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
 }
 
 pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -205,7 +205,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
 
 
 pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))

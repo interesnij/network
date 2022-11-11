@@ -36,7 +36,7 @@ pub fn item_urls(config: &mut web::ServiceConfig) {
 
 pub async fn user_fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id > 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -65,7 +65,7 @@ pub async fn user_fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 pub async fn community_fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -97,7 +97,7 @@ pub async fn community_fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error>
 }
 
 pub async fn user_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id > 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -125,7 +125,7 @@ pub async fn user_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 pub async fn community_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -155,7 +155,7 @@ pub async fn community_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Erro
 }
 
 pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -195,7 +195,7 @@ pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -236,7 +236,7 @@ pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -277,7 +277,7 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -318,7 +318,7 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -363,7 +363,7 @@ pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>,
 }
 
 pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -405,7 +405,7 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
 }
 
 pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -468,7 +468,7 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
 }
 
 pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token, data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.as_ref(), data.user_id);
     if err.is_some() || (user_id == 0 && community_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
