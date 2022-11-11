@@ -68,18 +68,18 @@ pub struct EditListJson {
 
 #[derive(Serialize, Deserialize)]
 pub struct DataListJson {
-    pub token:                String,
-    pub id:                   i32,
+    pub token:                Option<String>,
+    pub id:                   Option<i32>,
     pub community_id:         Option<i32>,
-    pub user_id:              i32,
-    pub name:                 String,
+    pub user_id:              Option<i32>,
+    pub name:                 Option<String>,
     pub description:          Option<String>,
     pub image:                Option<String>,
-    pub see_el:               i16,
-    pub see_comment:          i16,
-    pub create_el:            i16,
-    pub create_comment:       i16,
-    pub copy_el:              i16,
+    pub see_el:               Option<i16>,
+    pub see_comment:          Option<i16>,
+    pub create_el:            Option<i16>,
+    pub create_comment:       Option<i16>,
+    pub copy_el:              Option<i16>,
     pub reactions:            Option<String>,
 
     pub see_el_users:         Option<Vec<i32>>,

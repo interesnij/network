@@ -123,7 +123,7 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
             }
             else if data.community_id.is_some() {
                 let community = get_community(data.community_id.unwrap()).expect("E.");
-                if user_id > 0 target_community.get_administrators_ids().iter().any(|&i| i==user_id) {
+                if user_id > 0 && target_community.get_administrators_ids().iter().any(|&i| i==user_id) {
                     let _res = block(move || list.add_in_community_collections(community.id)).await?;
                     Ok(Json(_res))
                 }
@@ -174,7 +174,7 @@ pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Re
         }
         else if data.community_id.is_some() {
             let community = get_community(data.community_id.unwrap()).expect("E.");
-            if user_id > 0 community.get_administrators_ids().iter().any(|&i| i==user_id) {
+            if user_id > 0 && community.get_administrators_ids().iter().any(|&i| i==user_id) {
                 let _res = block(move || list.remove_in_community_collections(community.id)).await?;
                 Ok(Json(_res))
             }
@@ -189,8 +189,18 @@ pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Re
 }
 
 pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
-    let _res = block(move || PostList::create_list(data)).await?;
-    Ok(Json(_res))
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || (user_id == 0 && community_id > 0) {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Добавьте название".to_string()))
+    }
+    else {
+        let _res = block(move || PostList::create_list(data)).await?;
+        Ok(Json(_res))
+    }
 }
 pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let list = get_post_list(data.id.unwrap()).expect("E.");

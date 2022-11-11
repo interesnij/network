@@ -1385,7 +1385,7 @@ impl PostList {
         let new_post_list = NewPostList {
             name:           _name.clone(),
             community_id:   data.community_id,
-            user_id:        data.user_id,
+            user_id:        data.user_id.unwrap(),
             types:          2,
             description:    data.description.clone(),
             image:          data.image.clone(),
@@ -1393,11 +1393,11 @@ impl PostList {
             count:          0,
             repost:         0,
             copy:           0,
-            see_el:         data.see_el,
-            see_comment:    data.see_comment,
-            create_el:      data.create_el,
-            create_comment: data.create_comment,
-            copy_el:        data.copy_el,
+            see_el:         data.see_el.unwrap(),
+            see_comment:    data.see_comment.unwrap(),
+            create_el:      data.create_el.unwrap(),
+            create_comment: data.create_comment.unwrap(),
+            copy_el:        data.copy_el.unwrap(),
             reactions:      data.reactions.clone(),
         };
         let new_list = diesel::insert_into(schema::post_lists::table)
@@ -1429,7 +1429,7 @@ impl PostList {
         }
         else {
             let _new_posts_list_position = NewUserPostListPosition {
-                user_id:  data.user_id,
+                user_id:  data.user_id.unwrap(),
                 list_id:  new_list.id,
                 position: PostList::get_user_post_lists_new_position(data.user_id),
                 types:    1,
@@ -1442,7 +1442,7 @@ impl PostList {
         let exclude_vec = vec![3, 5, 8, 10, 18];
         let include_vec = vec![4, 6, 9, 11, 19];
 
-        if exclude_vec.iter().any(|&i| i==data.see_el) {
+        if exclude_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1457,7 +1457,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.see_el) {
+        else if include_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1473,7 +1473,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.see_comment) {
+        if exclude_vec.iter().any(|&i| i==data.see_comment.unwrap()) {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1488,7 +1488,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.see_comment) {
+        else if include_vec.iter().any(|&i| i==data.see_comment.unwrap()) {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1504,7 +1504,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.create_el) {
+        if exclude_vec.iter().any(|&i| i==data.create_el.unwrap()) {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1519,7 +1519,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.create_el) {
+        else if include_vec.iter().any(|&i| i==data.create_el.unwrap()) {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1535,7 +1535,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.create_comment) {
+        if exclude_vec.iter().any(|&i| i==data.create_comment.unwrap()) {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1550,7 +1550,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.create_comment) {
+        else if include_vec.iter().any(|&i| i==data.create_comment.unwrap()) {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1566,7 +1566,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.copy_el) {
+        if exclude_vec.iter().any(|&i| i==data.copy_el.unwrap()) {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1581,7 +1581,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.copy_el) {
+        else if include_vec.iter().any(|&i| i==data.copy_el.unwrap()) {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1599,15 +1599,15 @@ impl PostList {
         return RespListJson {
             id:             new_list.id,
             community_id:   data.community_id,
-            user_id:        data.user_id,
+            user_id:        data.user_id.unwrap(),
             name:           _name,
             description:    data.description.clone(),
             image:          data.image.clone(),
-            see_el:         data.see_el,
-            see_comment:    data.see_comment,
-            create_el:      data.create_el,
-            create_comment: data.create_comment,
-            copy_el:        data.copy_el,
+            see_el:         data.see_el.unwrap(),
+            see_comment:    data.see_comment.unwrap(),
+            create_el:      data.create_el.unwrap(),
+            create_comment: data.create_comment.unwrap(),
+            copy_el:        data.copy_el.unwrap(),
             reactions:      data.reactions.clone(),
         };
     }
@@ -1637,11 +1637,11 @@ impl PostList {
             name:           _name.clone(),
             description:    descr.clone(),
             image:          data.image.clone(),
-            see_el:         data.see_el,
-            see_comment:    data.see_comment,
-            create_el:      data.create_el,
-            create_comment: data.create_comment,
-            copy_el:        data.copy_el,
+            see_el:         data.see_el.unwrap(),
+            see_comment:    data.see_comment.unwrap(),
+            create_el:      data.create_el.unwrap(),
+            create_comment: data.create_comment.unwrap(),
+            copy_el:        data.copy_el.unwrap(),
             reactions:      react.clone(),
         };
         diesel::update(&list)
@@ -1659,7 +1659,7 @@ impl PostList {
         .execute(&_connection)
         .expect("E");
 
-        if exclude_vec.iter().any(|&i| i==data.see_el) {
+        if exclude_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1674,7 +1674,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.see_el) {
+        else if include_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1690,7 +1690,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.see_comment) {
+        if exclude_vec.iter().any(|&i| i==data.see_comment.unwrap()) {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1705,7 +1705,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.see_comment) {
+        else if include_vec.iter().any(|&i| i==data.see_comment.unwrap()) {
             if data.see_comment_users.is_some() {
                 for user_id in data.see_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1721,7 +1721,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.create_el) {
+        if exclude_vec.iter().any(|&i| i==data.create_el.unwrap()) {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1736,7 +1736,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.create_el) {
+        else if include_vec.iter().any(|&i| i==data.create_el.unwrap()) {
             if data.create_el_users.is_some() {
                 for user_id in data.create_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1752,7 +1752,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.create_comment) {
+        if exclude_vec.iter().any(|&i| i==data.create_comment.unwrap()) {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1767,7 +1767,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.create_comment) {
+        else if include_vec.iter().any(|&i| i==data.create_comment.unwrap()) {
             if data.create_comment_users.is_some() {
                 for user_id in data.create_comment_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1783,7 +1783,7 @@ impl PostList {
             }
         }
 
-        if exclude_vec.iter().any(|&i| i==data.copy_el) {
+        if exclude_vec.iter().any(|&i| i==data.copy_el.unwrap()) {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1798,7 +1798,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.copy_el) {
+        else if include_vec.iter().any(|&i| i==data.copy_el.unwrap()) {
             if data.copy_el_users.is_some() {
                 for user_id in data.copy_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1816,15 +1816,15 @@ impl PostList {
         return RespListJson {
             id:             list.id,
             community_id:   list.community_id,
-            user_id:        list.user_id,
+            user_id:        list.user_id.unwrap(),
             name:           _name,
             description:    descr,
             image:          data.image.clone(),
-            see_el:         data.see_el,
-            see_comment:    data.see_comment,
-            create_el:      data.create_el,
-            create_comment: data.create_comment,
-            copy_el:        data.copy_el,
+            see_el:         data.see_el.unwrap(),
+            see_comment:    data.see_comment.unwrap(),
+            create_el:      data.create_el.unwrap(),
+            create_comment: data.create_comment.unwrap(),
+            copy_el:        data.copy_el.unwrap(),
             reactions:      react,
         };
     }
