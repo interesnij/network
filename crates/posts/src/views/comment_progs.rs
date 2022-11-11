@@ -4,9 +4,9 @@ use actix_web::{
     web::Json,
 };
 use crate::utils::{
-    get_community,
+    //get_community,
     get_user,
-    get_post_list,
+    //get_post_list,
     get_post,
     get_post_comment,
     get_community_permission,

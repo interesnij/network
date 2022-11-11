@@ -6,7 +6,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_community,
-    get_user,
+    //get_user,
     get_post_list,
     get_post,
     get_post_comment,
@@ -345,7 +345,7 @@ pub async fn add_community_list_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (params.community_id.is_none() && community_id == 0) {
+        else if params.community_id.is_none() && community_id == 0 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametr 'community_id' not found!".to_string(),
             }).unwrap();
@@ -406,12 +406,6 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (params.community_id.is_none() && community_id == 0) {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'community_id' not found!".to_string(),
-            }).unwrap();
-            HttpResponse::Ok().body(body)
-        }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametr 'list_id' not found!".to_string(),
@@ -424,26 +418,11 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
             let list_res = get_post_list(params.list_id.unwrap());
             if list_res.is_ok() {
                 list = list_res.expect("E");
+                community = list.get_community().expect("E");
             }
             else {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "list not found!".to_string(),
-                }).unwrap();
-                return HttpResponse::Ok().body(body);
-            }
-            let community_res: Result<Community, Error>;
-            if community_id > 0 {
-                community_res = get_community(community_id);
-            }
-            else {
-                community_res = get_community(params.community_id.unwrap());
-            }
-            if community_res.is_ok() {
-                community = community_res.expect("E");
-            }
-            else {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "community not found!".to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
             }
