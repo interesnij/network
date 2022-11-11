@@ -6,7 +6,7 @@ CREATE TABLE owners (
     name         VARCHAR(100) NOT NULL,  -- название
     description  VARCHAR(500),           -- описание
     types        SMALLINT NOT NULL,      -- тип владельца: приложение, пользователь, сообщество
-    seсret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
+    secret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
     service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ
     is_active    BOOLEAN NOT NULL,       -- активно
 

@@ -178,7 +178,7 @@ pub fn get_owner_data (
     }
 }
 
-pub fn get_user_owner_id (
+pub fn get_user_owner_data (
     token: Option<String>,
     user_id: Option<i32>
 ) -> (Option<String>, i32) {
