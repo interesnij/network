@@ -379,27 +379,40 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id.unwrap()).expect("E.");
-    if list.community_id.is_some() {
-        let community = get_community(list.community_id.unwrap()).expect("E.");
-        let _tuple = get_community_permission(&community, data.user_id);
-        if _tuple.0 == false || !list.is_user_copy_el(data.user_id) {
-            Err(Error::BadRequest(_tuple.1))
-        }
-        else {
-            let _res = block(move || list.copy_list(data)).await?;
-            Ok(Json(_res))
-        }
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if data.item_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'item_id' not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
     }
     else {
-        let owner = get_user(list.user_id).expect("E.");
-        let _tuple = get_user_permission(&owner, data.user_id);
-        if _tuple.0 == false {
-            Err(Error::BadRequest(_tuple.1))
+        let list = get_post_list(data.item_id.unwrap()).expect("E.");
+        if list.community_id.is_some() {
+            let community = get_community(list.community_id.unwrap()).expect("E.");
+            let _tuple = get_community_permission(&community, user_id);
+            if _tuple.0 == false || !list.is_user_copy_el(user_id) || !community.is_user_copy_el(user_id) {
+                Err(Error::BadRequest(_tuple.1))
+            }
+            else {
+                let _res = block(move || list.copy_list(user_id, data.owners.clone())).await?;
+                Ok(Json(_res))
+            }
         }
         else {
-            let _res = block(move || list.copy_list(data)).await?;
-            Ok(Json(_res))
+            let owner = get_user(list.user_id).expect("E.");
+            let _tuple = get_user_permission(&owner, user_id);
+            if _tuple.0 == false || !list.is_user_copy_el(user_id) || !owner.is_user_copy_el(user_id) {
+                Err(Error::BadRequest(_tuple.1))
+            }
+            else {
+                let _res = block(move || list.copy_list(user_id, data.owners.clone())).await?;
+                Ok(Json(_res))
+            }
         }
     }
 }
