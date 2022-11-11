@@ -13,6 +13,7 @@ use crate::utils::{
     get_community_permission,
     get_user_permission,
     get_user_owner_data,
+    ErrorParams,
 };
 use crate::models::ModeratedLog;
 use crate::errors::Error;
@@ -87,19 +88,19 @@ pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Er
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.types.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'types' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_list(data.id.unwrap()).expect("E.");
@@ -151,19 +152,19 @@ pub async fn create_claim_post(data: Json<ReportParams>) -> Result<Json<i16>, Er
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.types.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'types' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -216,19 +217,19 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.types.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'types' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_comment(data.id.unwrap()).expect("E.");
@@ -280,7 +281,7 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_user(data.item_id.unwrap()).expect("E.");
@@ -316,7 +317,7 @@ pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_community(data.item_id.unwrap()).expect("E.");
@@ -352,7 +353,7 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_user(data.item_id.unwrap()).expect("E.");
@@ -388,7 +389,7 @@ pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Err
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_community(data.item_id.unwrap()).expect("E.");
@@ -425,7 +426,7 @@ pub async fn close_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_list(data.item_id.unwrap()).expect("E.");
@@ -461,7 +462,7 @@ pub async fn close_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.item_id.unwrap()).expect("E.");
@@ -497,7 +498,7 @@ pub async fn close_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> 
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_comment(data.item_id.unwrap()).expect("E.");
@@ -534,7 +535,7 @@ pub async fn unclose_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_list(data.item_id.unwrap()).expect("E.");
@@ -570,7 +571,7 @@ pub async fn unclose_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.item_id.unwrap()).expect("E.");
@@ -606,7 +607,7 @@ pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_comment(data.item_id.unwrap()).expect("E.");
@@ -644,7 +645,7 @@ pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_community(data.item_id.unwrap()).expect("E.");
@@ -680,7 +681,7 @@ pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i1
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_community(data.item_id.unwrap()).expect("E.");
@@ -717,7 +718,7 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_user(data.item_id.unwrap()).expect("E.");
@@ -753,7 +754,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_user(data.item_id.unwrap()).expect("E.");
@@ -790,7 +791,7 @@ pub async fn suspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Err
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_list(data.item_id.unwrap()).expect("E.");
@@ -826,7 +827,7 @@ pub async fn unsuspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, E
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_list(data.item_id.unwrap()).expect("E.");
@@ -863,7 +864,7 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_moderation(data.item_id.unwrap()).expect("E.");
@@ -894,7 +895,7 @@ pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>,
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_moderation(data.item_id.unwrap()).expect("E.");
@@ -923,7 +924,7 @@ pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_moderation(data.item_id.unwrap()).expect("E.");
@@ -952,7 +953,7 @@ pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_moderation(data.item_id.unwrap()).expect("E.");
@@ -981,7 +982,7 @@ pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i1
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_moderation(data.item_id.unwrap()).expect("E.");
@@ -1010,7 +1011,7 @@ pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_moderation(data.item_id.unwrap()).expect("E.");

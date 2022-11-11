@@ -45,7 +45,7 @@ pub async fn user_fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -74,7 +74,7 @@ pub async fn community_fixed(data: Json<ItemParams>) -> Result<Json<i16>, Error>
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -106,7 +106,7 @@ pub async fn user_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -134,7 +134,7 @@ pub async fn community_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Erro
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -142,10 +142,13 @@ pub async fn community_unfixed(data: Json<ItemParams>) -> Result<Json<i16>, Erro
             let community = item.get_community().expect("E.");
             if item.community_id.unwrap() == community_id
                 ||
-                (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)) {
-
+                (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id))
+                {
                 let _res = block(move || item.unfixed_post()).await?;
                 Ok(Json(_res))
+            }
+            else {
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
         }
         else {
@@ -164,7 +167,7 @@ pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -204,7 +207,7 @@ pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -245,7 +248,7 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -286,7 +289,7 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
@@ -327,7 +330,7 @@ pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>,
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'list_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.content.is_none() && data.attachments.is_none() {
         Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()))
@@ -372,7 +375,7 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.content.is_none() && data.attachments.is_none() {
         Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()))
@@ -414,13 +417,13 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.reaction_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'reaction_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.item_id.unwrap()).expect("E.");
@@ -477,7 +480,7 @@ pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post(data.item_id.unwrap()).expect("E.");

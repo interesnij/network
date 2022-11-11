@@ -214,13 +214,13 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else if data.reaction_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'reaction_id' not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
     else {
         let item = get_post_comment(data.item_id.unwrap()).expect("E.");
