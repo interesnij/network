@@ -168,7 +168,7 @@ pub async fn create_claim_post(data: Json<ReportParams>) -> Result<Json<i16>, Er
     }
     else {
         let item = get_post(data.id.unwrap()).expect("E.");
-        let list = get_list().expect("E.");
+        let list = item.get_list().expect("E.");
         if list.community_id.is_some() {
             let community = get_community(list.community_id.unwrap()).expect("E.");
             let _tuple = get_community_permission(&community, user_id);

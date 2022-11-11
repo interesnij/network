@@ -664,6 +664,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
             let _limit: i64;
             let _offset: i64;
             let item: Post;
+            let list: PostList;
             let reactions_list: Vec<i32>;
             let item_res = get_post(params.item_id.unwrap());
             if item_res.is_ok() {
@@ -679,7 +680,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
 
             let list_res = get_post_list(item.post_list_id);
             if list_res.is_ok() {
-                let list = list_res.expect("E");
+                list = list_res.expect("E");
                 reactions_list = list.get_reactions_list();
             }
             else {
