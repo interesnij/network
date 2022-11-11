@@ -530,7 +530,7 @@ impl Post {
             };
         }
     }
-    pub fn get_post_json (&self, user_id: Option<i32>, reactions_list: Vec<i32>,) -> CardPostJson {
+    pub fn get_post_json (&self, user_id: i32, reactions_list: Vec<i32>,) -> CardPostJson {
         let creator = self.get_owner_meta().expect("E");
         return CardPostJson {
                 id:              self.id,

@@ -42,7 +42,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
         let list = item.get_list().expect("E.");
         if item.community_id.is_some() {
             if community_id > 0 && (item.community_id.unwrap() != community_id || list.community_id.unwrap() != community_id) {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let community = item.get_community().expect("E.");
@@ -64,7 +64,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
         }
         else {
             if community_id > 0 || user_id == 0 {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let owner = get_user(item.user_id).expect("E.");
@@ -104,7 +104,7 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
                 ||
                 (user_id > 0 && !community.get_editors_ids().iter().any(|&i| i==user_id))
                 {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let _res = block(move || item.edit_comment (
@@ -123,7 +123,7 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
                 Ok(Json(_res))
             }
             else {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
         }
     }
@@ -148,7 +148,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
                 Ok(Json(_res))
             }
             else {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
         }
         else {
@@ -160,7 +160,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
                 Ok(Json(_res))
             }
             else {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
         }
     }
@@ -228,7 +228,7 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
         if item.community_id.is_some() {
             let c_id = item.community_id.unwrap();
             if community_id > 0 && list.community_id.unwrap() != community_id {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let community = list.get_community().expect("E.");
@@ -247,7 +247,7 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
         }
         else {
             if (community_id > 0 && list.community_id.unwrap() != community_id) || user_id == 0 {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let owner = get_user(item.user_id).expect("E.");
