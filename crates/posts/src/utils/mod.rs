@@ -123,7 +123,7 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
 }
 
 pub fn get_owner_data (
-    token: Option<String>,
+    token: Option<&str>,
     user_id: Option<i32>
 ) -> (Option<String>, i32, i32) {
     // проверка токена на допуск к нейтральным объектам
