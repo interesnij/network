@@ -34,7 +34,7 @@ pub fn list_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     if list.community_id.is_some() {
         let community = list.get_community().expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);
@@ -59,13 +59,13 @@ pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<
     }
 }
 pub async fn delete_list_from_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     let _res = block(move || list.remove_in_user_collections(data.user_id)).await?;
     Ok(Json(_res))
 }
 
 pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     let target_community = get_community(data.community_id.unwrap()).expect("E.");
     if !target_community.get_administrators_ids().iter().any(|&i| i==data.user_id) {
         Err(Error::BadRequest("Permission Denied".to_string()))
@@ -95,7 +95,7 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
     }
 }
 pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     let target_community = get_community(data.community_id.unwrap()).expect("E.");
     if !target_community.get_administrators_ids().iter().any(|&i| i==data.user_id) {
         Err(Error::BadRequest("Permission Denied".to_string()))
@@ -111,7 +111,7 @@ pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson
     Ok(Json(_res))
 }
 pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     if list.user_id != data.user_id || list.community_id.is_some() {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
@@ -152,7 +152,7 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
 }
 
 pub async fn delete_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     if list.user_id != data.user_id || list.community_id.is_some() {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
@@ -162,7 +162,7 @@ pub async fn delete_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error
     }
 }
 pub async fn recover_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     if list.user_id != data.user_id || list.community_id.is_some() {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
@@ -173,7 +173,7 @@ pub async fn recover_user_list(data: Json<ItemParams>) -> Result<Json<i16>, Erro
 }
 pub async fn delete_community_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if data.community_id.is_some() {
-        let list = get_post_list(data.id).expect("E.");
+        let list = get_post_list(data.id.unwrap()).expect("E.");
         let community = get_community(list.community_id.unwrap()).expect("E.");
         if !community.is_user_create_list(data.user_id) {
             Err(Error::BadRequest("Permission Denied".to_string()))
@@ -189,7 +189,7 @@ pub async fn delete_community_list(data: Json<ItemParams>) -> Result<Json<i16>, 
 }
 pub async fn recover_community_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if data.community_id.is_some() {
-        let list = get_post_list(data.id).expect("E.");
+        let list = get_post_list(data.id.unwrap()).expect("E.");
         let community = get_community(list.community_id.unwrap()).expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);
         if _tuple.0 == false || !community.is_user_create_list(data.user_id) {
@@ -206,7 +206,7 @@ pub async fn recover_community_list(data: Json<ItemParams>) -> Result<Json<i16>,
 }
 
 pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
-    let list = get_post_list(data.id).expect("E.");
+    let list = get_post_list(data.id.unwrap()).expect("E.");
     if list.community_id.is_some() {
         let community = get_community(list.community_id.unwrap()).expect("E.");
         let _tuple = get_community_permission(&community, data.user_id);

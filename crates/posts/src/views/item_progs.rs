@@ -378,7 +378,7 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
         Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()))
     }
     else {
-        let item = get_post(data.id).expect("E.");
+        let item = get_post(data.id.unwrap()).expect("E.");
         if item.community_id.is_some() {
             let community = item.get_community().expect("E.");
             if (community_id > 0 && item.community_id.unwrap() != community_id)
