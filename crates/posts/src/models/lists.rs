@@ -349,7 +349,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) )
+            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
         }
 
         let data = PostListDetailJson {
@@ -406,7 +406,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None, reactions_list.clone()) );
+            posts_json.push ( i.get_post_json(0, reactions_list.clone()) );
         }
 
         let data = PostListDetailJson {
@@ -465,7 +465,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(Some(user_id), reactions_list.clone()) );
+            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) );
         }
 
         let data = PostListDetailJson {
@@ -522,7 +522,7 @@ impl PostList {
 
         let mut posts_json = Vec::new();
         for i in posts.iter() {
-            posts_json.push ( i.get_post_json(None, reactions_list.clone()) );
+            posts_json.push ( i.get_post_json(0, reactions_list.clone()) );
         }
 
         let data = PostListDetailJson {
