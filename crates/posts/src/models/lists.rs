@@ -1374,7 +1374,7 @@ impl PostList {
 
         let _connection = establish_connection();
         let _name: String;
-        let c_name = data.name.as_deref().unwrap();
+        let c_name = data.name.as_deref().unwrap().to_string();
         if c_name.len() > 99 {
             _name = c_name[..100].to_string();
         }
@@ -1431,7 +1431,7 @@ impl PostList {
             let _new_posts_list_position = NewUserPostListPosition {
                 user_id:  data.user_id.unwrap(),
                 list_id:  new_list.id,
-                position: PostList::get_user_post_lists_new_position(data.user_id),
+                position: PostList::get_user_post_lists_new_position(data.user_id.unwrap()),
                 types:    1,
             };
             let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)
@@ -1616,7 +1616,7 @@ impl PostList {
 
         let _connection = establish_connection();
         let _name: String;
-        let c_name = data.name.as_deref().unwrap();
+        let c_name = data.name.as_deref().unwrap().to_string();
         if c_name.len() > 99 {
             _name = c_name[..100].to_string();
         }
