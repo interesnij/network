@@ -1374,7 +1374,7 @@ impl PostList {
 
         let _connection = establish_connection();
         let _name: String;
-        let c_name = data.name.clone();
+        let c_name = data.name.as_deref().unwrap();
         if c_name.len() > 99 {
             _name = c_name[..100].to_string();
         }
@@ -1616,7 +1616,7 @@ impl PostList {
 
         let _connection = establish_connection();
         let _name: String;
-        let c_name = data.name.clone();
+        let c_name = data.name.as_deref().unwrap();
         if c_name.len() > 99 {
             _name = c_name[..100].to_string();
         }
@@ -1816,7 +1816,7 @@ impl PostList {
         return RespListJson {
             id:             list.id,
             community_id:   list.community_id,
-            user_id:        list.user_id.unwrap(),
+            user_id:        list.user_id,
             name:           _name,
             description:    descr,
             image:          data.image.clone(),
