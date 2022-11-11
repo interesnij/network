@@ -171,7 +171,7 @@ pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let list = item.get_list().expect("E.");
         if item.community_id.is_some() {
             let community = item.get_community().expect("E.");
-            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id)
+            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id))
                 ||
                 (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)) {
 
@@ -211,7 +211,7 @@ pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let list = item.get_list().expect("E.");
         if item.community_id.is_some() {
             let community = item.get_community().expect("E.");
-            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id)
+            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id))
                 ||
                 (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)) {
 
@@ -252,7 +252,7 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let list = item.get_list().expect("E.");
         if item.community_id.is_some() {
             let community = item.get_community().expect("E.");
-            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id)
+            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id))
                 ||
                 (user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)) {
 
@@ -293,10 +293,10 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         let list = item.get_list().expect("E.");
         if item.community_id.is_some() {
             let community = item.get_community().expect("E.");
-            if  (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id)
+            if (community_id > 0 && (item.community_id.unwrap() == community_id || list.community_id.unwrap() == community_id))
                 ||
-                user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id) {
-
+                user_id > 0 && community.get_editors_ids().iter().any(|&i| i==user_id)
+                {
                 let _res = block(move || item.off_comments()).await?;
                 Ok(Json(_res))
             }
