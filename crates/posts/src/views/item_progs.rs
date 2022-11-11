@@ -330,14 +330,14 @@ pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>,
         HttpResponse::Ok().body(body)
     }
     else if data.content.is_none() && data.attachments.is_none() {
-        Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()));
+        Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()))
     }
     else {
 
-        let list = get_post_list(data.list_id).expect("E.");
+        let list = get_post_list(data.list_id.unwrap()).expect("E.");
 
         if list.community_id.is_some() {
-            let community = get_community(list.community_id.unwrap()).expect("E.");
+            let community = list.get_community().expect("E.");
             if community_id > 0 && list.community_id.unwrap() == community_id
                 ||
                 user_id > 0 && (list.is_user_create_el(user_id) || community.is_user_create_el(user_id))
@@ -356,7 +356,7 @@ pub async fn add_post_in_list(data: Json<DataNewPost>) -> Result<Json<RespPost>,
                 Ok(Json(_res))
             }
             else {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
         }
     }
@@ -375,7 +375,7 @@ pub async fn edit_post(data: Json<DataEditPost>) -> Result<Json<RespPost>, Error
         HttpResponse::Ok().body(body)
     }
     else if data.content.is_none() && data.attachments.is_none() {
-        Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()));
+        Err(Error::BadRequest("Добавьте текст или сведения о прикрепляемых объектах".to_string()))
     }
     else {
         let item = get_post(data.id).expect("E.");
@@ -428,7 +428,7 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
         if item.community_id.is_some() {
             let c_id = item.community_id.unwrap();
             if community_id > 0 && c_id != community_id {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let community = get_community(c_id).expect("E.");
@@ -447,7 +447,7 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
         }
         else {
             if community_id > 0 || user_id == 0 {
-                Err(Error::BadRequest("Permission Denied".to_string()));
+                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let owner = get_user(item.user_id).expect("E.");
@@ -495,7 +495,7 @@ pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
         }
         else {
             let owner = get_user(item.user_id).expect("E.");
-            let _tuple = get_user_permission(&owner, data.user_id);
+            let _tuple = get_user_permission(&owner, user_id);
             if _tuple.0 == false || !list.is_user_copy_el(user_id) || !owner.is_user_copy_el(user_id) {
                 Err(Error::BadRequest(_tuple.1))
             }
