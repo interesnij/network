@@ -106,7 +106,6 @@ pub struct UserSignup {
 
 /////// UserNotifications //////
 #[derive(Queryable, Serialize, Identifiable, Associations)]
-#[belongs_to(User)]
 pub struct UserNotification {
     pub id:                   i32,
     pub user_id:         i32,

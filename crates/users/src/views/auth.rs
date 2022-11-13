@@ -71,7 +71,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                     },
                     Err(err) => {
                         let body = serde_json::to_string(&ErrorParams {
-                            error: err,
+                            error: err.to_string(),
                         }).unwrap();
                         Err(Error::BadRequest(body))
                     }
@@ -194,9 +194,9 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         let count = User::count_users() + 1;
         let link = "/id".to_string() + &count.to_string() + &"/".to_string();
         let form_user = NewUser {
-            first_name:    data.first_name.as_deref().unwrap(),
-            last_name:     data.last_name.as_deref().unwrap(),
-            phone:         data.phone.as_deref().unwrap(),
+            first_name:    data.first_name.as_deref().unwrap().to_string(),
+            last_name:     data.last_name.as_deref().unwrap().to_string(),
+            phone:         data.phone.as_deref().unwrap().to_string(),
             types:         1,
             is_man:        is_man,
             password:      hash(data.password.as_deref().unwrap(), 8).unwrap(),
@@ -278,7 +278,7 @@ pub struct PhoneCodeJson {
     pub code:  String,
 }
 pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
-    let req_phone = data.phone;
+    let req_phone = data.phone.clone();
     if req_phone.len() > 8 {
         use crate::models::NewPhoneCode;
         use crate::schema::{
