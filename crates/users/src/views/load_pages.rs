@@ -379,7 +379,7 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResp
     }
 }
 
-pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<FollowsResponse>, Error> {
+pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResponse>, Error> {
     let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
