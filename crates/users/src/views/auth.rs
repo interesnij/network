@@ -278,7 +278,7 @@ pub struct PhoneCodeJson {
     pub phone: String,
     pub code:  String,
 }
-pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
+pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, Error> {
     let req_phone = data.phone.clone();
     if req_phone.len() > 8 {
         use crate::models::NewPhoneCode;
@@ -338,7 +338,7 @@ pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
     }
 }
 
-pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
+pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, Error> {
     use crate::schema::phone_codes::dsl::phone_codes;
     use crate::models::NewVerifiedPhone;
 
@@ -368,10 +368,10 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
             )
             .execute(&_connection)
             .expect("E");
-            1
+            Json(*1)
         }
         else {
-            0
+            Json(*0)
         }
     }).await?;
 
