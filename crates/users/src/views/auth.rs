@@ -12,14 +12,14 @@ use crate::utils::{
     establish_connection, gen_jwt,
     get_user_owner_data,
     Claims, ErrorParams, InfoParams,
-    hash, verify, DEFAULT_COST,
 };
+use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{
     Queryable,
-    Insertable,
-    //RunQueryDsl,
-    //ExpressionMethods,
-    //QueryDsl,
+    Insertable, 
+    RunQueryDsl,
+    ExpressionMethods,
+    QueryDsl,
 };
 use crate::schema;
 use crate::models::{User, NewUser};
@@ -27,17 +27,17 @@ use crate::errors::Error;
 
 
 pub fn auth_routes(config: &mut web::ServiceConfig) {
-    config.route("/phone_send/{phone}/", web::get().to(phone_send));
-    config.route("/phone_verify/{phone}/{code}/", web::get().to(phone_verify));
+    config.route("/phone_send/", web::get().to(phone_send));
+    config.route("/phone_verify/", web::get().to(phone_verify));
     config.route("/signup/", web::post().to(process_signup));
     config.route("/login/", web::post().to(login));
-    config.route("/logout/", web::get().to(logout));
+    //config.route("/logout/", web::get().to(logout));
 }
 
-pub async fn logout(session: Session) -> HttpResponse {
-    session.clear();
-    HttpResponse::Ok().body("ok")
-}
+//pub async fn logout(session: Session) -> HttpResponse {
+//    session.clear();
+//    HttpResponse::Ok().body("ok")
+//}
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LoginUser2 {
@@ -76,7 +76,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
             }
     } else {
         let body = serde_json::to_string(&ErrorParams {
-            error: error: "Пароль неверный!".to_string(),,
+            error: "Пароль неверный!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -344,7 +344,7 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
             diesel::insert_into(schema::verified_phones::table)
                 .values(&new_phone_v)
                 .execute(&_connection)
-                .expect("E.")
+                .expect("E.");
 
             diesel::delete (
             phone_codes
