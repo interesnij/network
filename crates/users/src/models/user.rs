@@ -1237,23 +1237,6 @@ impl User {
         return items;
     }
 
-    pub fn get_see_all_exclude_friends(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_all_exclude_friends_ids());
-    }
-    pub fn get_see_all_include_friends(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_all_include_friends_ids());
-    }
-    pub fn get_see_all_exclude_follows(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_all_exclude_follows_ids());
-    }
-    pub fn get_see_all_include_follows(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_all_include_follows_ids());
-    }
-
     pub fn get_see_info_exclude_friends_ids(&self) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
@@ -1306,24 +1289,6 @@ impl User {
             .expect("E");
         return items;
     }
-
-    pub fn get_see_info_exclude_friends(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_info_exclude_friends_ids());
-    }
-    pub fn get_see_info_include_friends(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_info_include_friends_ids());
-    }
-    pub fn get_see_info_exclude_follows(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_info_exclude_follows_ids());
-    }
-    pub fn get_see_info_include_follows(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_info_include_follows_ids());
-    }
-
     pub fn get_see_friend_exclude_friends_ids(&self) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
@@ -1377,22 +1342,241 @@ impl User {
         return items;
     }
 
-    pub fn get_see_friend_exclude_friends(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_friend_exclude_friends_ids());
+    pub fn get_limit_see_all_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(11))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
     }
-    pub fn get_see_friend_include_friends(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_friend_include_friends_ids());
+    pub fn get_limit_see_all_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(11))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
     }
-    pub fn get_see_friend_exclude_follows(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_friend_exclude_follows_ids());
+    pub fn get_limit_see_all_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(1))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
     }
-    pub fn get_see_friend_include_follows(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_see_friend_include_follows_ids());
+    pub fn get_limit_see_all_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(1))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
     }
+
+    pub fn get_limit_see_info_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(12))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_limit_see_info_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(12))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_limit_see_info_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(2))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_limit_see_info_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(2))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+
+    pub fn get_limit_see_friend_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(13))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_limit_see_friend_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(13))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_limit_see_friend_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(3))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_limit_see_friend_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(3))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+
+    ///////////////////////////////
+    pub fn get_limit_see_all_exclude_friends(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_all_exclude_friends_ids(limit, offset));
+    }
+    pub fn get_limit_see_all_include_friends(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_all_include_friends_ids(limit, offset));
+    }
+    pub fn get_limit_see_all_exclude_follows(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_all_exclude_follows_ids(limit, offset));
+    }
+    pub fn get_limit_see_all_include_follows(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_all_include_follows_ids(limit, offset));
+    }
+
+    pub fn get_limit_see_info_exclude_friends(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_info_exclude_friends_ids(limit, offset));
+    }
+    pub fn get_limit_see_info_include_friends(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_info_include_friends_ids(limit, offset));
+    }
+    pub fn get_limit_see_info_exclude_follows(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_info_exclude_follows_ids(limit, offset));
+    }
+    pub fn get_limit_see_info_include_follows(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_info_include_follows_ids(limit, offset));
+    }
+
+    pub fn get_limit_see_friend_exclude_friends(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_friend_exclude_friends_ids(limit, offset));
+    }
+    pub fn get_limit_see_friend_include_friends(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_friend_include_friends_ids(limit, offset));
+    }
+    pub fn get_limit_see_friend_exclude_follows(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_friend_exclude_follows_ids(limit, offset));
+    }
+    pub fn get_limit_see_friend_include_follows(&self, limit: i64, offset: i64) -> Vec<User> {
+        use crate::utils::get_users_from_ids;
+        return get_users_from_ids(self.get_limit_see_friend_include_follows_ids(limit, offset));
+    }
+    ///////////////////
 
     pub fn get_private_model(&self) -> Result<UserPrivate, Error> {
         let private = self.find_private_model();
