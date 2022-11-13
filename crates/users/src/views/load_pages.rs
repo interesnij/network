@@ -64,7 +64,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
                 }
                 _user.get_friends(_limit, _offset)
             }).await;
-            HttpResponse::Ok().body(_res);
+            HttpResponse::Ok().body(_res)
         }
     }
     else {
