@@ -67,7 +67,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                         let body = serde_json::to_string(&InfoParams {
                             info: token_str.to_string(),
                         }).unwrap();
-                        Ok(Json(body))
+                        Ok(body)
                     },
                     Err(err) => {
                         let body = serde_json::to_string(&ErrorParams {
