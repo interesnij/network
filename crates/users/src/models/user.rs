@@ -871,7 +871,7 @@ impl User {
             .expect("E.");
         return _friends;
     }
-    pub fn get_6_friends(&self) -> CardUserJson> {
+    pub fn get_6_friends(&self) -> CardUserJson {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();

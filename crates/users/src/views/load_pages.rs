@@ -105,7 +105,7 @@ pub async fn follows_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
                 else {
                     _offset = 0;
                 }
-                _user.get_follows(_limit, _offset)
+                _user.get_followers(_limit, _offset)
             }).await?;
             Ok(Json(_res))
         }
