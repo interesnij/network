@@ -133,12 +133,17 @@ pub struct IEListData {
 }
 
 #[derive(Serialize)]
-pub struct IEResponse {
+pub struct FriendsResponse {
     pub users:   Vec<CardUserJson>,
     pub friends: Vec<CardUserJson>,
 }
+#[derive(Serialize)]
+pub struct FollowsResponse {
+    pub users:   Vec<CardUserJson>,
+    pub follows: Vec<CardUserJson>,
+}
 
-pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, Error> {
+pub async fn include_friends_load(req: HttpRequest) -> Result<Json<FriendsResponse>, Error> {
     let params_some = web::Query::<IEListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -197,7 +202,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
                     3 => _user.get_limit_see_friend_include_friends(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                IEResponse {
+                FriendsResponse {
                     users:   _users,
                     friends: _user.get_friends(_friends_limit, _friends_offset),
                 }
@@ -213,7 +218,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
     }
 }
 
-pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, Error> {
+pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<FriendsResponse>, Error> {
     let params_some = web::Query::<IEListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -272,7 +277,7 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
                     13 => _user.get_limit_see_friend_exclude_friends(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                IEResponse {
+                FriendsResponse {
                     users:   _users,
                     friends: _user.get_friends(_friends_limit, _friends_offset),
                 }
@@ -289,7 +294,7 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
 }
 
 
-pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEResponse>, Error> {
+pub async fn include_follows_load(req: HttpRequest) -> Result<Json<FollowsResponse>, Error> {
     let params_some = web::Query::<IEListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -348,7 +353,7 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEResponse>, 
                     3 => _user.get_limit_see_friend_include_follows(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                IEResponse {
+                FollowsResponse {
                     users:   _users,
                     follows: _user.get_followers(_follows_limit, _follows_offset),
                 }
@@ -364,7 +369,7 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEResponse>, 
     }
 }
 
-pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<IEResponse>, Error> {
+pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<FollowsResponse>, Error> {
     let params_some = web::Query::<IEListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -423,7 +428,7 @@ pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<IEResponse>, 
                     13 => _user.get_limit_see_friend_exclude_follows(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                IEResponse {
+                FollowsResponse {
                     users:   _users,
                     follows: _user.get_followers(_follows_limit, _follows_offset),
                 }
