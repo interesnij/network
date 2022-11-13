@@ -31,7 +31,7 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
-    };
+    }; 
     use crate::routes::routes;
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
 
         App::new()
-            //.app_data(web::Data::new(app_state.to_owned()))
+            .app_data(web::Data::new(app_state.to_owned()))
             .wrap(cors)
             .configure(routes)
 
