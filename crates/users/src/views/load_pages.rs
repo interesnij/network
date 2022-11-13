@@ -63,7 +63,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
                     _offset = 0;
                 }
                 _user.get_friends(_limit, _offset)
-            )}).await?;
+            }).await?;
             Ok(Json(_res))
         }
     }
