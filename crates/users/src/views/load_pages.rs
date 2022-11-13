@@ -66,10 +66,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
             }).await;
             let resp = match _res {
                 Ok(_ok) => _ok,
-                Err(_e) => serde_json::to_string (
-                    &ErrorParams {
-                    error: _e.to_string(),
-                }).unwrap(),
+                Err(_e) => _e.to_string(),
             };
             HttpResponse::Ok().body(resp)
         }
