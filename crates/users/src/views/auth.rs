@@ -3,6 +3,8 @@ use actix_web::{
     Responder,
     HttpResponse,
     web,
+    web::block,
+    web::Json,
     cookie::time::{Duration, OffsetDateTime},
     http::{header::HeaderName, header::HeaderValue, header},
 };
@@ -16,7 +18,7 @@ use crate::utils::{
 use bcrypt::{hash, verify, DEFAULT_COST};
 use diesel::{
     Queryable,
-    Insertable, 
+    Insertable,
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
