@@ -40,7 +40,7 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
 
         App::new()
-            .app_data(web::Data::new(app_state.to_owned()))
+            //.app_data(web::Data::new(app_state.to_owned()))
             .wrap(cors)
             .configure(routes)
 
