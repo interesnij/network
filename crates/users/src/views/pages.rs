@@ -7,7 +7,7 @@ use actix_web::{
 };
 //use serde::Deserialize;
 
-pub fn pages_routes(config: &mut web::ServiceConfig) {
+pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
 }
 

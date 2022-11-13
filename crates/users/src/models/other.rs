@@ -4,6 +4,7 @@ use crate::schema::{
     user_visible_perms,
     featured_friends,
     verified_phones,
+    user_notifications,
 };
 use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};
@@ -101,4 +102,23 @@ pub struct UserSignup {
     pub password:      String,
     pub link:          String,
     pub last_activity: chrono::NaiveDateTime,
+}
+
+/////// UserNotifications //////
+#[derive(Queryable, Serialize, Identifiable, Associations)]
+#[belongs_to(User)]
+pub struct UserNotification {
+    pub id:                   i32,
+    pub user_id:         i32,
+    pub connection_request:   bool,
+    pub connection_confirmed: bool,
+    pub user_invite:     bool,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="user_notifications"]
+pub struct NewUserNotification {
+    pub user_id:         i32,
+    pub connection_request:   bool,
+    pub connection_confirmed: bool,
+    pub user_invite:     bool,
 }

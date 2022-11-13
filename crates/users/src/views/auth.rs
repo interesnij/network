@@ -8,7 +8,7 @@ use actix_web::{
     cookie::time::{Duration, OffsetDateTime},
     http::{header::HeaderName, header::HeaderValue, header},
 };
-
+use crate::AppState;
 use serde::{Deserialize, Serialize};
 use crate::utils::{
     establish_connection, gen_jwt,
@@ -48,39 +48,40 @@ pub struct LoginUser2 {
 }
 
 pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<InfoParams>, Error> {
-    let _user = User::get_user_by_phone(&_data.phone);
+    let _user = User::get_user_by_phone(&data.phone);
 
-    if let None = _user {
+    if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телефоном не найден!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
+    else {
+        let _user = _user.unwrap();
 
-    let _user = _user.unwrap();
+        if bcrypt::verify(data.password.as_str(), _user.password.as_str()).unwrap() {
+                let token = gen_jwt(_user.id, state.key.as_ref()).await;
 
-    if bcrypt::verify(_data.password.as_str(), _user.password.as_str()).unwrap() {
-            let token = gen_jwt(_user.id, _state.key.as_ref()).await;
-
-            match token {
-                Ok(token_str) => {
-                    let body = serde_json::to_string(&InfoParams {
-                        info: token_str,
-                    }).unwrap();
-                    Ok(Json(body))
-                },
-                Err(err) => {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: err,
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
+                match token {
+                    Ok(token_str) => {
+                        let body = serde_json::to_string(&InfoParams {
+                            info: token_str,
+                        }).unwrap();
+                        Ok(Json(body))
+                    },
+                    Err(err) => {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: err,
+                        }).unwrap();
+                        Err(Error::BadRequest(body))
+                    }
                 }
-            }
-    } else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Пароль неверный!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
+        } else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Пароль неверный!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
     }
 }
 
@@ -115,8 +116,16 @@ pub struct NewUserForm {
     pub password:   Option<String>,
     pub phone:      Option<String>,
 }
+#[derive(Serialize)]
+pub struct NewUserDetailJson {
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub is_man:     bool,
+    pub link:       String,
+}
 
-pub async fn process_signup(data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
+pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
     use crate::models::{
         NewUserLocation, NewUserInfo, NewIpUser,
         NewUserPrivate, NewUserNotification,
@@ -271,7 +280,10 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
     let req_phone = data.phone;
     if req_phone.len() > 8 {
         use crate::models::NewPhoneCode;
-        use crate::schema::users::dsl::users;
+        use crate::schema::{
+            users::dsl::users,
+            verified_phones::dsl::verified_phones,
+        };
 
         let _connection = establish_connection();
         if users
@@ -302,7 +314,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
             let phone200: PhoneJson = serde_json::from_str(&new_request).unwrap();
             let code_i32: i32 = phone200.code.parse().unwrap();
             let new_phone_code = NewPhoneCode {
-                phone: _phone.to_string(),
+                phone: req_phone.to_string(),
                 code:  code_i32,
             };
             let c = diesel::insert_into(schema::phone_codes::table)
