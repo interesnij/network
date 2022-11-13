@@ -162,7 +162,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         Err(Error::BadRequest(body))
     }
     else if verified_phones
-        .filter(schema::verified_phones::phone.eq(data.phone.clone()))
+        .filter(schema::verified_phones::phone.eq(data.phone.as_deref().unwrap()))
         .select(schema::verified_phones::id)
         .first::<i32>(&_connection)
         .is_err() {
@@ -194,9 +194,9 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         let count = User::count_users() + 1;
         let link = "/id".to_string() + &count.to_string() + &"/".to_string();
         let form_user = NewUser {
-            first_name:    data.first_name.clone(),
-            last_name:     data.last_name.clone(),
-            phone:         data.phone.clone(),
+            first_name:    data.first_name.as_deref().unwrap(),
+            last_name:     data.last_name.as_deref().unwrap(),
+            phone:         data.phone.as_deref().unwrap(),
             types:         1,
             is_man:        is_man,
             password:      hash(data.password.as_deref().unwrap(), 8).unwrap(),
