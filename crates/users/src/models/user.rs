@@ -843,7 +843,7 @@ impl User {
         return _friends;
     }
 
-    pub fn get_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -867,10 +867,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_friends);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _friends;
     }
-    pub fn get_6_friends(&self) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_6_friends(&self) -> CardUserJson> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -884,11 +885,12 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_friends);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _friends;
     }
 
-    pub fn get_online_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_online_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -915,8 +917,9 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
     pub fn get_online_friends_count(&self) -> usize {
         let count = self.get_online_friends(500, 0);
@@ -925,7 +928,7 @@ impl User {
           Err(_) => 0,
         };
     }
-    pub fn get_6_online_friends(&self) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_6_online_friends(&self) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -951,11 +954,12 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
 
-    pub fn get_followers(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_followers(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             follows::dsl::follows,
@@ -980,11 +984,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
-    pub fn get_6_followers(&self) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_6_followers(&self) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             follows::dsl::follows,
@@ -1008,8 +1012,9 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
     pub fn get_all_users_count(&self) -> usize {
         use crate::schema::users::dsl::users;
@@ -1023,25 +1028,7 @@ impl User {
             .len();
     }
 
-    pub fn get_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
-        use crate::schema::users::dsl::users;
-
-        let _connection = establish_connection();
-        let users_list = users
-            .filter(schema::users::types.lt(30))
-            .limit(limit)
-            .offset(offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar,
-            ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(users_list);
-    }
-    pub fn get_anon_users(limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_users(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1056,9 +1043,28 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
+    }
+    pub fn get_anon_users(limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::users::dsl::users;
 
-        return Ok(_users);
+        let _connection = establish_connection();
+        let _users = users
+            .filter(schema::users::types.lt(30))
+            .limit(limit)
+            .offset(offset)
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
 
     pub fn get_anon_users_count() -> usize {
@@ -1073,7 +1079,7 @@ impl User {
             .len();
     }
 
-    pub fn get_followings(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_followings(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::follows::dsl::follows;
         use crate::schema::users::dsl::users;
 
@@ -1096,11 +1102,12 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
 
-    pub fn get_common_friends_of_user(&self, user: &User, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_common_friends_of_user(&self, user: &User, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1124,11 +1131,11 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
-    pub fn get_6_common_friends_of_user(&self, user: &User) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_6_common_friends_of_user(&self, user: &User) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -1151,8 +1158,9 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
 
     pub fn count_common_friends_of_user(&self, user: &User) -> usize {
