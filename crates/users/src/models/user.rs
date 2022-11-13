@@ -843,7 +843,7 @@ impl User {
         return _friends;
     }
 
-    pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
@@ -867,9 +867,8 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E.");
-        return _friends;
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(_friends);
     }
     pub fn get_6_friends(&self) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
