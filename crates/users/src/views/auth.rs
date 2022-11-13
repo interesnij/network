@@ -311,7 +311,12 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
                     .execute(&_connection)
                     .expect("E.")
             }).await?;
-            Ok(Json(1))
+            if _res.is_ok() {
+                Ok(Json(1))
+            }
+            else {
+                Ok(Json(0))
+            }
         }
     }
     else {
@@ -357,13 +362,12 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
             )
             .execute(&_connection)
             .expect("E");
-            Ok(Json(1))
         }
-        else {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Код подтверждения неверный. Проверьте, пожалуйста, номер, с которого мы Вам звонили. Последние 4 цифры этого номера и есть код подтверждения".to_string(),
-            }).unwrap();
-            Err(Error::BadRequest(body))
-        }
-    })
+    });
+    if _res.is_ok() {
+        Ok(Json(1))
+    }
+    else {
+        Ok(Json(0))
+    }
 }

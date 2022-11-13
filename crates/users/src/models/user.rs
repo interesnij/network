@@ -124,10 +124,10 @@ impl User {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        return Ok(users
+        return users
             .filter(schema::users::phone.eq(phone))
             .filter(schema::users::types.lt(30))
-            .first::<User>(&_connection));
+            .first::<User>(&_connection);
     }
     pub fn get_user_detail_json(&self) -> UserDetailJson {
         let language: String;
