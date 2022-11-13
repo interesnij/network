@@ -1,7 +1,7 @@
 use actix_web::web;
 use crate::views::{
     pages,
-    //load_pages,
+    load_pages,
     //profile,
     //progs,
     //manager_progs,

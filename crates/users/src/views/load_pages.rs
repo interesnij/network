@@ -8,7 +8,7 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 use crate::utils::{
-    establish_connection,
+    establish_connection, get_user,
     get_user_owner_data,
     ErrorParams, CardUserJson, RegListData,
 };
