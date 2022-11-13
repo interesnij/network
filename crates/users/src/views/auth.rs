@@ -65,7 +65,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                 match token {
                     Ok(token_str) => {
                         let body = serde_json::to_string(&InfoParams {
-                            info: token_str,
+                            info: token_str.to_string(),
                         }).unwrap();
                         Ok(Json(body))
                     },
@@ -132,6 +132,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     };
     use crate::schema::verified_phones::dsl::verified_phones;
 
+    let _connection = establish_connection();
     let (err, _) = get_user_owner_data(data.token.clone(), None);
     if err.is_some() {
         // если проверка токена не удалась...
