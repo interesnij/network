@@ -32,7 +32,7 @@ pub fn load_urls(config: &mut web::ServiceConfig) {
 }
 
 
-pub async fn friends_load(req: HttpRequest) -> impl Responder {
+pub async fn friends_load(req: HttpRequest) -> Result<Json<CardUserJson>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -42,7 +42,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            Err(Error::BadRequest(body))
         }
         else {
             let _res = block(move || {
@@ -64,17 +64,13 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
                 }
                 _user.get_friends(_limit, _offset)
             }).await;
-            match _res {
-                Ok(_ok) => HttpResponse::Ok().body(_ok),
-                Err(_e) => HttpResponse::Err().body(_e),
-            }
-            //HttpResponse::Ok().body(_res)
+            Ok(Json(_res))
         }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        Err(Error::BadRequest(body))
     }
 }
