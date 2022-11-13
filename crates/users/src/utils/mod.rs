@@ -1,14 +1,12 @@
 use diesel::{
-    //Queryable,
-    //Insertable,
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
-    //NullableExpressionMethods,
     PgConnection,
     Connection,
 };
 use crate::schema;
+use crate::errors::Error;
 
 mod lists;
 mod profile;
@@ -77,7 +75,7 @@ pub fn get_user(pk: i32) -> Result<User, Error> {
     use crate::schema::users::dsl::users;
     let _connection = establish_connection();
     return Ok(users
-        .filter(schema::users::user_id.eq(pk))
+        .filter(schema::users::id.eq(pk))
         .first::<User>(&_connection)?);
 }
 

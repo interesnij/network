@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 
 
 #[derive(Serialize, Queryable)]
@@ -10,10 +10,6 @@ pub struct CardUserJson {
     pub link:       String,
     pub image:      Option<String>,
 }
-
-use serde::{Serialize, Deserialize};
-use crate::utils::AttachmentsJson;
-
 
 #[derive(Serialize)]
 pub struct ErrorParams {

@@ -10,7 +10,8 @@ use crate::views::{
     auth,
 };
 
-pub fn routes(cfg: &mut ServiceConfig) {
+
+pub fn routes(cfg: &mut web::ServiceConfig) {
     cfg
     .configure(profile::profile_urls)
     .configure(pages::pages_urls)

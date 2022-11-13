@@ -15,6 +15,7 @@ use actix_web::{
 use actix_cors::Cors;
 
 mod models;
+mod views;
 mod utils;
 mod schema;
 mod errors;

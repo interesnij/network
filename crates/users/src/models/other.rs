@@ -3,6 +3,7 @@ use crate::schema::{
     phone_codes,
     user_visible_perms,
     featured_friends,
+    verified_phones,
 };
 use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};

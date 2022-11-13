@@ -328,7 +328,7 @@ impl User {
             .filter(schema::user_populate_stickers::user_id.eq(self.id))
             .filter(schema::user_populate_stickers::sticker_id.eq(sticker_id))
             .first::<UserPopulateSticker>(&_connection);
-        if populate_stickers.len() > 0 {
+        if populate_sticker.is_ok() {
             let _sticker = populate_sticker.expect("E.");
             diesel::update(&_sticker)
                 .set(schema::user_populate_stickers::count.eq(_sticker.count + 1))
