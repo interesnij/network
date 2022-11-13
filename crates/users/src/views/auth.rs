@@ -323,10 +323,10 @@ pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, Err
                 .values(&new_phone_code)
                 .execute(&_connection);
             if c.is_ok() {
-                Ok(*Json(1))
+                Ok(Json(1))
             }
             else {
-                Ok(*Json(0))
+                Ok(Json(0))
             }
         }
     }
