@@ -42,7 +42,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
-            return HttpResponse::Ok().body(body);
+            HttpResponse::Ok().body(body)
         }
         else {
             let _res = block(move || {
@@ -64,7 +64,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
                 }
                 _user.get_friends(_limit, _offset)
             }).await;
-            Ok(Json(_res))
+            HttpResponse::Ok().body(_res);
         }
     }
     else {
