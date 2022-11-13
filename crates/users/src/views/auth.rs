@@ -33,13 +33,12 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/phone_verify/", web::post().to(phone_verify));
     config.route("/signup/", web::post().to(process_signup));
     config.route("/login/", web::post().to(login));
-    //config.route("/logout/", web::get().to(logout));
+    config.route("/logout/", web::get().to(logout));
 }
 
-//pub async fn logout(session: Session) -> HttpResponse {
-//    session.clear();
-//    HttpResponse::Ok().body("ok")
-//}
+pub async fn logout() -> HttpResponse {
+    HttpResponse::Unauthorized().finish()
+}
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LoginUser2 {
@@ -59,7 +58,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
     else {
         let _user = _user.unwrap();
 
-        if bcrypt::verify(data.password.as_str(), _user.password.as_str()).unwrap() {
+        if verify(data.password.as_str(), _user.password.as_str()).unwrap() {
                 let token = gen_jwt(_user.id, state.key.as_ref()).await;
 
                 match token {
