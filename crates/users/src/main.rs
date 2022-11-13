@@ -13,21 +13,12 @@ use actix_web::{
     Result
 };
 use actix_cors::Cors;
-//use log::Level;
-
 
 mod models;
-mod handlers;
-mod repositories;
-mod config;
 mod utils;
 mod schema;
 mod errors;
-
-//use handlers::{
-//    auth_handlers::auth_scope,
-//    user_handlers::user_scope,
-//};
+mod routes;
 
 
 #[derive(Clone)]
@@ -38,7 +29,7 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    let app_state = AppState{
+    let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
 
@@ -51,8 +42,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(app_state.to_owned()))
             .wrap(cors)
-            //.service(user_scope())
-            //.service(auth_scope())
+            .configure(routes)
 
     })
     .bind("194.58.90.123:9001")?

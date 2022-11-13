@@ -118,7 +118,7 @@ pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Er
                     data.description.clone(),
                     3,
                 )).await?;
-                Ok(Json(_res))
+                Ok(Json(_res)) 
             }
         }
         else {
@@ -271,6 +271,7 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
     }
 }
 
+// веерное событие
 pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -288,17 +289,7 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        1,
-                        data.description.clone(),
-                        2,
-                        None
-                    );
-                    item.close_item()
-                }
+                move || item.close_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -307,6 +298,8 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         }
     }
 }
+
+// веерное событие
 pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -324,17 +317,7 @@ pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        2,
-                        data.description.clone(),
-                        2,
-                        None
-                    );
-                    item.close_item()
-                }
+                move || item.close_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -343,6 +326,8 @@ pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error
         }
     }
 }
+
+// веерное событие
 pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -360,17 +345,7 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        1,
-                        data.description.clone(),
-                        4,
-                        None
-                    );
-                    item.close_item()
-                }
+                move || item.close_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -379,6 +354,8 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         }
     }
 }
+
+// веерное событие
 pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -396,17 +373,7 @@ pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Err
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        2,
-                        data.description.clone(),
-                        4,
-                        None
-                    );
-                    item.close_item()
-                }
+                move || item.close_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -634,7 +601,7 @@ pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error
     }
 }
 
-
+// веерное событие
 pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -652,17 +619,7 @@ pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        2,
-                        data.description.clone(),
-                        1,
-                        data.expiration,
-                    );
-                    item.close_item()
-                }
+                move || item.suspend_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -671,6 +628,8 @@ pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>
         }
     }
 }
+
+// веерное событие
 pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -688,17 +647,7 @@ pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i1
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        2,
-                        data.description.clone(),
-                        3,
-                        data.expiration,
-                    );
-                    item.close_item()
-                }
+                move || item.unsuspend_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -708,6 +657,7 @@ pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i1
     }
 }
 
+// веерное событие
 pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -725,17 +675,7 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        1,
-                        data.description.clone(),
-                        1,
-                        data.expiration,
-                    );
-                    item.close_item()
-                }
+                move || item.suspend_item()
             ).await?;
             Ok(Json(_res))
         }
@@ -744,6 +684,8 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
         }
     }
 }
+
+// веерное событие
 pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
     if err.is_some() || user_id == 0 {
@@ -761,17 +703,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
         let manager = get_user(user_id).expect("E.");
         if manager.is_administrator() {
             let _res = block (
-                move || {
-                    ModeratedLog::create (
-                        manager.id,
-                        item.id,
-                        1,
-                        data.description.clone(),
-                        3,
-                        data.expiration,
-                    );
-                    item.close_item()
-                }
+                move || item.unsuspend_item()
             ).await?;
             Ok(Json(_res))
         }

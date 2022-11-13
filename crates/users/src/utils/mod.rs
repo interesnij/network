@@ -9,13 +9,18 @@ use diesel::{
     Connection,
 };
 use crate::schema;
+
 mod lists;
 mod profile;
+mod crypto;
 pub use self::{
     lists::*,
     profile::*,
+    crypto::*,
 };
-use crate::models::User;
+use crate::models::{
+    User, Owner, Moderated,
+};
 
 
 pub fn establish_connection() -> PgConnection {
@@ -66,4 +71,67 @@ pub fn get_users_from_ids(ids: Vec<i32>) -> Vec<User> {
         .filter(schema::users::types.lt(10))
         .load::<User>(&_connection)
         .expect("E");
+}
+
+pub fn get_user(pk: i32) -> Result<User, Error> {
+    use crate::schema::users::dsl::users;
+    let _connection = establish_connection();
+    return Ok(users
+        .filter(schema::users::user_id.eq(pk))
+        .first::<User>(&_connection)?);
+}
+
+pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
+    use crate::schema::moderateds::dsl::moderateds;
+    let _connection = establish_connection();
+    return Ok(moderateds
+        .filter(schema::moderateds::id.eq(pk))
+        .first::<Moderated>(&_connection)?);
+}
+
+pub fn get_user_owner_data (
+    token: Option<String>,
+    user_id: Option<i32>
+) -> (Option<String>, i32) {
+    // проверка токена на допуск к объектам пользователя
+    // нам нужно узнать по токену тип владельца.
+    // заодним мы выясним id пользователя.
+    if token.is_some() {
+        use crate::schema::owners::dsl::owners;
+        let _connection = establish_connection();
+        let owner_res = owners
+            .filter(schema::owners::service_key.eq(token.unwrap()))
+            .first::<Owner>(&_connection);
+        if owner_res.is_ok() {
+            let owner = owner_res.expect("E");
+            if owner.types == 1 {
+                if user_id.is_some() {
+                    let _id = user_id.unwrap();
+                    let _user = get_user(_id);
+                    if _user.is_ok() {
+                        return (None, _id);
+                    }
+                    else {
+                        return (Some("user not found!".to_string()), 0);
+                    }
+                }
+                else {
+                    // параметра user_id нет - значит пользователь анонимный
+                    return (None, 0);
+                }
+            }
+            else if owner.types == 2 {
+                return (None, owner.user_id);
+            }
+            else {
+                return (Some("owner not found!".to_string()), 0);
+            }
+        }
+        else {
+            return (Some("tokens owner not found!".to_string()), 0);
+        }
+    }
+    else {
+        return (Some("parametr 'token' not found!".to_string()), 0);
+    }
 }

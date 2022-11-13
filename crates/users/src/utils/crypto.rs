@@ -5,23 +5,32 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use std::{result::Result};
 
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
     pub id: i32,
     pub exp: i64,
 }
 
-pub async fn gen_jwt(id: i32, secret: &String) -> Result<String, jsonwebtoken::errors::Error> {
+pub async fn gen_jwt (
+    id: i32,
+    secret: &String
+) -> Result<String, jsonwebtoken::errors::Error> {
     let jwt_key = secret.clone();
 
     block(move || {
         let header = Header::default();
         let encoding_key = EncodingKey::from_secret(jwt_key.as_bytes());
         let exp = Utc::now()
-            + Duration::days(env::var("COOKIE_MAX_AGE").unwrap().parse::<i64>().unwrap());
+            + Duration::days (
+                env::var("COOKIE_MAX_AGE")
+                .unwrap()
+                .parse::<i64>()
+                .unwrap()
+            );
 
         let claim = Claims {
-            id: id,
+            id:  id,
             exp: exp.timestamp(),
         };
 
