@@ -361,7 +361,7 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
             .expect("E");
         }
     }).await?;
-    if _res.await.is_ok() {
+    if _res.is_ok() {
         Ok(*Json(1))
     }
     else {
