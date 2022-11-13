@@ -867,8 +867,9 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_friends);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _friends;
     }
     pub fn get_6_friends(&self) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::users::dsl::users;
