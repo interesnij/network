@@ -199,7 +199,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
             phone:         data.phone.clone(),
             types:         1,
             is_man:        is_man,
-            password:      hash(data.password.clone(), 8).unwrap(),
+            password:      hash(data.password.as_deref().unwrap(), 8).unwrap(),
             link:          link,
             last_activity: chrono::Local::now().naive_utc(),
         };
@@ -240,10 +240,10 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
 
         // записываем приватность нового пользователя
         let _user_private = NewUserPrivate {
-            user_id:        _new_user.id,
-            can_see_all:    1,
-            can_see_info:   1,
-            can_see_friend: 1,
+            user_id:    _new_user.id,
+            see_all:    1,
+            see_info:   1,
+            see_friend: 1,
         };
         diesel::insert_into(schema::user_privates::table)
             .values(&_user_private)
@@ -275,7 +275,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
 #[derive(Deserialize, Serialize)]
 pub struct PhoneCodeJson {
     pub phone: String,
-    pub code:  i32,
+    pub code:  String,
 }
 pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
     let req_phone = data.phone;
@@ -343,7 +343,7 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
 
     let _connection = establish_connection();
     let _phone = data.phone.clone();
-    let _code = data.code;
+    let _code: i32 = data.code.parse().unwrap();
 
     let _res = block(move || {
         if phone_codes
@@ -367,12 +367,12 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
             )
             .execute(&_connection)
             .expect("E");
+            1
+        }
+        else {
+            0
         }
     }).await?;
-    if _res.is_ok() {
-        Ok(*Json(1))
-    }
-    else {
-        Ok(*Json(0))
-    }
+
+    Ok(_res)
 }
