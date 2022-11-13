@@ -1527,54 +1527,54 @@ impl User {
 
     ///////////////////////////////
     pub fn get_limit_see_all_exclude_friends(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_all_exclude_friends_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_all_exclude_friends_ids(limit, offset));
     }
     pub fn get_limit_see_all_include_friends(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_all_include_friends_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_all_include_friends_ids(limit, offset));
     }
     pub fn get_limit_see_all_exclude_follows(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_all_exclude_follows_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_all_exclude_follows_ids(limit, offset));
     }
     pub fn get_limit_see_all_include_follows(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_all_include_follows_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_all_include_follows_ids(limit, offset));
     }
 
     pub fn get_limit_see_info_exclude_friends(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_info_exclude_friends_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_info_exclude_friends_ids(limit, offset));
     }
     pub fn get_limit_see_info_include_friends(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_info_include_friends_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_info_include_friends_ids(limit, offset));
     }
     pub fn get_limit_see_info_exclude_follows(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_info_exclude_follows_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_info_exclude_follows_ids(limit, offset));
     }
     pub fn get_limit_see_info_include_follows(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_info_include_follows_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_info_include_follows_ids(limit, offset));
     }
 
     pub fn get_limit_see_friend_exclude_friends(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_friend_exclude_friends_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_friend_exclude_friends_ids(limit, offset));
     }
     pub fn get_limit_see_friend_include_friends(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_friend_include_friends_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_friend_include_friends_ids(limit, offset));
     }
     pub fn get_limit_see_friend_exclude_follows(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_friend_exclude_follows_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_friend_exclude_follows_ids(limit, offset));
     }
     pub fn get_limit_see_friend_include_follows(&self, limit: i64, offset: i64) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
-        return get_users_from_ids(self.get_limit_see_friend_include_follows_ids(limit, offset));
+        use crate::utils::get_card_users_from_ids;
+        return get_card_users_from_ids(self.get_limit_see_friend_include_follows_ids(limit, offset));
     }
     ///////////////////
 
