@@ -32,7 +32,7 @@ pub fn load_urls(config: &mut web::ServiceConfig) {
 }
 
 
-pub async fn friends_load(req: HttpRequest) -> Result<Json<CardUserJson>, Error> {
+pub async fn friends_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
