@@ -262,21 +262,22 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
             .execute(&_connection)
             .expect("Error saving user_notification.");
 
-        Ok(NewUserDetailJson {
+        Ok(Json(NewUserDetailJson {
             id:         _new_user.id,
             first_name: _new_user.first_name.clone(),
             last_name:  _new_user.last_name.clone(),
             is_man:     _new_user.is_man,
             link:       _new_user.link.clone(),
-        })
+        }))
     }
 }
 
-#[derive(Deserialize, Serialize, Clone)]
-pub struct PhoneJson {
+#[derive(Deserialize, Serialize)]
+pub struct PhoneCodeJson {
     pub phone: String,
+    pub code:  i32,
 }
-pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
+pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
     let req_phone = data.phone;
     if req_phone.len() > 8 {
         use crate::models::NewPhoneCode;
@@ -311,7 +312,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
             let new_request = __request.text().await.unwrap();
             println!("{:?}", new_request);
 
-            let phone200: PhoneJson = serde_json::from_str(&new_request).unwrap();
+            let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
             let code_i32: i32 = phone200.code.parse().unwrap();
             let new_phone_code = NewPhoneCode {
                 phone: req_phone.to_string(),
@@ -336,11 +337,6 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
     }
 }
 
-#[derive(Deserialize, Serialize)]
-pub struct PhoneCodeJson {
-    pub phone: String,
-    pub code:  i32,
-}
 pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
     use crate::schema::phone_codes::dsl::phone_codes;
     use crate::models::NewVerifiedPhone;
