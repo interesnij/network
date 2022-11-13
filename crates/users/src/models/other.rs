@@ -23,6 +23,17 @@ pub struct NewPhoneCode {
     pub code:  i32,
 }
 
+/////// VerifiedPhone //////
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct VerifiedPhone {
+    pub id:    i32,
+    pub phone: String,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="verified_phones"]
+pub struct NewVerifiedPhone {
+    pub phone: String,
+}
 
 /////// Варианты значения полей приватности //////
 // исключения/включения пользователей (связь user_id на основных пользователей)

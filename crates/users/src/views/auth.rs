@@ -119,6 +119,7 @@ pub async fn process_signup(data: Json<NewUserForm>) -> Result<Json<NewUserDetai
         NewUserLocation, NewUserInfo, NewIpUser,
         NewUserPrivate, NewUserNotification,
     };
+    use crate::schema::verified_phones::dsl::verified_phones;
 
     let (err, _) = get_user_owner_data(data.token.clone(), None);
     if err.is_some() {
@@ -148,6 +149,15 @@ pub async fn process_signup(data: Json<NewUserForm>) -> Result<Json<NewUserDetai
             error: "parametr 'phone' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
+    }
+    else if verified_phones
+        .filter(schema::verified_phones::phone.eq(data.phone.clone()))
+        .first::<VerifiedPhone>(&_connection)
+        .is_err() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "phone not verified!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
     }
     else {
         let is_man: bool;
@@ -261,15 +271,25 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        let _some_user = users
+        if users
             .filter(schema::users::phone.eq(&req_phone))
-            .first::<User>(&_connection);
-        if _some_user.is_ok() {
+            .first::<User>(&_connection)
+            .is_ok() {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
-        } else {
+        }
+        else if verified_phones
+            .filter(schema::verified_phones::phone.eq(data.phone.clone()))
+            .first::<VerifiedPhone>(&_connection)
+            .is_ok() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "phone already verified!".to_string(),
+                }).unwrap();
+                Err(Error::BadRequest(body))
+        }
+        else {
             let _res = block(move || {
                 let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
                 let __request = reqwest::get(_url).await.expect("E.");
@@ -305,19 +325,27 @@ pub struct PhoneCodeJson {
 }
 pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> {
     use crate::schema::phone_codes::dsl::phone_codes;
-    use crate::models::PhoneCode;
+    use crate::models::NewVerifiedPhone;
 
     let _connection = establish_connection();
     let _phone = data.phone.clone();
     let _code = data.code;
 
     let _res = block(move || {
-        let _phone_codes = phone_codes
+        if phone_codes
             .filter(schema::phone_codes::phone.eq(&_phone))
             .filter(schema::phone_codes::code.eq(&_code))
             .select(schema::phone_codes::id)
-            .first::<i32>(&_connection);
-        if _phone_codes.is_ok() {
+            .first::<i32>(&_connection)
+            .is_ok() {
+            let new_phone_v = NewVerifiedPhone {
+                phone: _phone.to_string(),
+            };
+            diesel::insert_into(schema::verified_phones::table)
+                .values(&new_phone_v)
+                .execute(&_connection)
+                .expect("E.")
+
             diesel::delete (
             phone_codes
                 .filter(schema::phone_codes::phone.eq(&_phone))

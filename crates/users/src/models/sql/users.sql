@@ -212,6 +212,11 @@ CREATE TABLE phone_codes (
     phone VARCHAR(14) NOT NULL,
     code  INT NOT NULL
 );
+-- телефоные подтвержденные
+CREATE TABLE verified_phones (
+    id    SERIAL PRIMARY KEY,
+    phone VARCHAR(14) NOT NULL
+);
 
 -- друзья -------
 CREATE TABLE friends (
