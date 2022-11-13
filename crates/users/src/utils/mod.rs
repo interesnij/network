@@ -19,7 +19,6 @@ pub use self::{
 use crate::models::{
     User, Owner, Moderated,
 };
-use crate::utils::CardUserJson;
 
 
 pub fn establish_connection() -> PgConnection {
