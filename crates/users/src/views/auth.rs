@@ -294,28 +294,25 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
                 Err(Error::BadRequest(body))
         }
         else {
-            let _res = block(move || {
-                let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
-                let __request = reqwest::get(_url).expect("E.");
-                let new_request = __request.text().unwrap();
-                println!("{:?}", new_request);
+            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
+            let __request = reqwest::get(_url).await.expect("E.");
+            let new_request = __request.text().await.unwrap();
+            println!("{:?}", new_request);
 
-                let phone200: PhoneJson = serde_json::from_str(&new_request).unwrap();
-                let code_i32: i32 = phone200.code.parse().unwrap();
-                let new_phone_code = NewPhoneCode {
-                    phone: _phone.to_string(),
-                    code:  code_i32,
-                };
-                diesel::insert_into(schema::phone_codes::table)
-                    .values(&new_phone_code)
-                    .execute(&_connection)
-                    .expect("E.")
-            }).await?;
-            if _res.is_ok() {
-                Ok(Json(1))
+            let phone200: PhoneJson = serde_json::from_str(&new_request).unwrap();
+            let code_i32: i32 = phone200.code.parse().unwrap();
+            let new_phone_code = NewPhoneCode {
+                phone: _phone.to_string(),
+                code:  code_i32,
+            };
+            let c = diesel::insert_into(schema::phone_codes::table)
+                .values(&new_phone_code)
+                .execute(&_connection);
+            if c.is_ok() {
+                Ok(*Json(1))
             }
             else {
-                Ok(Json(0))
+                Ok(*Json(0))
             }
         }
     }
@@ -363,11 +360,11 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<i16, Error> 
             .execute(&_connection)
             .expect("E");
         }
-    });
-    if _res.is_ok() {
-        Ok(Json(1))
+    }).await?;
+    if _res.await.is_ok() {
+        Ok(*Json(1))
     }
     else {
-        Ok(Json(0))
+        Ok(*Json(0))
     }
 }
