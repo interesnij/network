@@ -19,3 +19,11 @@ pub struct ErrorParams {
 pub struct InfoParams {
     pub info: String,
 }
+
+#[derive(Deserialize)]
+pub struct RegListData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub limit:   Option<i64>,
+    pub offset:  Option<i64>,
+}
