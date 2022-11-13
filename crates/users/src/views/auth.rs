@@ -368,12 +368,12 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, E
             )
             .execute(&_connection)
             .expect("E");
-            Json(*1)
+            1
         }
         else {
-            Json(*0)
+            0
         }
     }).await?;
 
-    Ok(_res)
+    Ok(Json(_res))
 }
