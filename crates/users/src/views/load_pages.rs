@@ -152,7 +152,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametr 'types' not found!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            Err(Error::BadRequest(body))
         }
         else {
             let _users_limit: i64;
