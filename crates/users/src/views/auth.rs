@@ -48,7 +48,7 @@ pub struct LoginUser2 {
 }
 
 pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<InfoParams>, Error> {
-    let _user = User::get_user_by_phone(&_data.phone).await;
+    let _user = User::get_user_by_phone(&_data.phone);
 
     if let None = _user {
         let body = serde_json::to_string(&ErrorParams {
@@ -294,8 +294,8 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
         else {
             let _res = block(move || {
                 let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
-                let __request = reqwest::get(_url).await.expect("E.");
-                let new_request = __request.text().await.unwrap();
+                let __request = reqwest::get(_url).expect("E.");
+                let new_request = __request.text().unwrap();
                 println!("{:?}", new_request);
 
                 let phone200: PhoneJson = serde_json::from_str(&new_request).unwrap();
@@ -308,7 +308,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
                     .values(&new_phone_code)
                     .execute(&_connection)
                     .expect("E.")
-            });
+            }).await?;
             Ok(Json(1))
         }
     }
