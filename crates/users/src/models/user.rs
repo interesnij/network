@@ -871,7 +871,7 @@ impl User {
             .expect("E.");
         return _friends;
     }
-    pub fn get_6_friends(&self) -> CardUserJson {
+    pub fn get_6_friends(&self) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -922,11 +922,7 @@ impl User {
         return _users;
     }
     pub fn get_online_friends_count(&self) -> usize {
-        let count = self.get_online_friends(500, 0);
-        return match count {
-          Ok(_ok) => _ok.len(),
-          Err(_) => 0,
-        };
+        return self.get_online_friends(500, 0);
     }
     pub fn get_6_online_friends(&self) -> Vec<CardUserJson> {
         use crate::schema::{
