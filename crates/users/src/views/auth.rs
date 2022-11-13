@@ -47,7 +47,7 @@ pub struct LoginUser2 {
     pub password: String,
 }
 
-pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<InfoParams>, Error> {
+pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
 
     if _user.is_err() {
@@ -67,7 +67,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                         let body = serde_json::to_string(&InfoParams {
                             info: token_str.to_string(),
                         }).unwrap();
-                        Ok(body)
+                        Ok(Json(body))
                     },
                     Err(err) => {
                         let body = serde_json::to_string(&ErrorParams {
