@@ -66,7 +66,7 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
             }).await;
             let resp = match _res {
                 Ok(_ok) => _ok,
-                Err(_) => (),
+                Err(_) => Err(403),
             };
             HttpResponse::Ok().body(resp)
         }
