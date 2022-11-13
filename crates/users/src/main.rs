@@ -21,7 +21,6 @@ mod schema;
 mod errors;
 mod routes;
 
-
 #[derive(Clone)]
 pub struct AppState {
     key: Arc<String>,
@@ -33,7 +32,7 @@ async fn main() -> std::io::Result<()> {
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
-
+    use crate::routes::routes;
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8000")

@@ -28,7 +28,7 @@ use crate::models::{User, NewUser};
 use crate::errors::Error;
 
 
-pub fn auth_routes(config: &mut web::ServiceConfig) {
+pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/phone_send/", web::get().to(phone_send));
     config.route("/phone_verify/", web::get().to(phone_verify));
     config.route("/signup/", web::post().to(process_signup));
@@ -59,7 +59,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
 
     let _user = _user.unwrap();
 
-    if (bcrypt::verify(_data.password.as_str(), _user.password.as_str()).unwrap()) {
+    if bcrypt::verify(_data.password.as_str(), _user.password.as_str()).unwrap() {
             let token = gen_jwt(_user.id, _state.key.as_ref()).await;
 
             match token {
@@ -154,7 +154,8 @@ pub async fn process_signup(data: Json<NewUserForm>) -> Result<Json<NewUserDetai
     }
     else if verified_phones
         .filter(schema::verified_phones::phone.eq(data.phone.clone()))
-        .first::<VerifiedPhone>(&_connection)
+        .select(schema::verified_phones::id)
+        .first::<i32>(&_connection)
         .is_err() {
             let body = serde_json::to_string(&ErrorParams {
                 error: "phone not verified!".to_string(),
@@ -284,7 +285,8 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<i16, Error> {
         }
         else if verified_phones
             .filter(schema::verified_phones::phone.eq(data.phone.clone()))
-            .first::<VerifiedPhone>(&_connection)
+            .select(schema::verified_phones::id)
+            .first::<i32>(&_connection)
             .is_ok() {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "phone already verified!".to_string(),
