@@ -64,11 +64,11 @@ pub async fn friends_load(req: HttpRequest) -> impl Responder {
                 }
                 _user.get_friends(_limit, _offset)
             }).await;
-            let resp = match _res {
-                Ok(_ok) => _ok,
-                Err(_e) => _e,
-            };
-            HttpResponse::Ok().body(resp)
+            //let resp = match _res {
+            //    Ok(_ok) => _ok,
+            //    Err(_e) => _e,
+            //};
+            HttpResponse::Ok().body(_res)
         }
     }
     else {
