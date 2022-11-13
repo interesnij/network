@@ -148,6 +148,12 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
             }).unwrap();
             Err(Error::BadRequest(body))
         }
+        else if params.types.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'types' not found!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
         else {
             let _users_limit: i64;
             let _users_offset: i64;
@@ -183,7 +189,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
 
-                let _users = match types {
+                let _users = match params.types.unwrap() {
                     1 => _user.get_limit_see_all_include_friends(_users_limit, _users_offset),
                     2 => _user.get_limit_see_info_include_friends(_users_limit, _users_offset),
                     3 => _user.get_limit_see_friend_include_friends(_users_limit, _users_offset),
@@ -191,7 +197,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEResponse>, 
                 };
                 IEResponse {
                     users:   _users,
-                    friends: _user.get_friends(_limit, _offset),
+                    friends: _user.get_friends(_friends_limit, _friends_offset),
                 }
             }).await?;
             Ok(Json(_res))
