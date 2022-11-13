@@ -122,7 +122,7 @@ pub async fn follows_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
 
 
 #[derive(Deserialize)]
-pub struct IEListData {
+pub struct IEFriendsData {
     pub token:          Option<String>,
     pub types:          Option<i16>,
     pub user_id:        Option<i32>,
@@ -131,20 +131,30 @@ pub struct IEListData {
     pub friends_limit:  Option<i64>,
     pub friends_offset: Option<i64>,
 }
+#[derive(Deserialize)]
+pub struct IEFollowsData {
+    pub token:          Option<String>,
+    pub types:          Option<i16>,
+    pub user_id:        Option<i32>,
+    pub users_limit:    Option<i64>,
+    pub users_offset:   Option<i64>,
+    pub follows_limit:  Option<i64>,
+    pub follows_offset: Option<i64>,
+}
 
 #[derive(Serialize)]
-pub struct FriendsResponse {
+pub struct IEFriendsResponse {
     pub users:   Vec<CardUserJson>,
     pub friends: Vec<CardUserJson>,
 }
 #[derive(Serialize)]
-pub struct FollowsResponse {
+pub struct IEFollowsResponse {
     pub users:   Vec<CardUserJson>,
     pub follows: Vec<CardUserJson>,
 }
 
-pub async fn include_friends_load(req: HttpRequest) -> Result<Json<FriendsResponse>, Error> {
-    let params_some = web::Query::<IEListData>::from_query(&req.query_string());
+pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResponse>, Error> {
+    let params_some = web::Query::<IEFriendsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
@@ -202,7 +212,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<FriendsRespon
                     3 => _user.get_limit_see_friend_include_friends(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                FriendsResponse {
+                IEFriendsResponse {
                     users:   _users,
                     friends: _user.get_friends(_friends_limit, _friends_offset),
                 }
@@ -218,8 +228,8 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<FriendsRespon
     }
 }
 
-pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<FriendsResponse>, Error> {
-    let params_some = web::Query::<IEListData>::from_query(&req.query_string());
+pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResponse>, Error> {
+    let params_some = web::Query::<IEFriendsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
@@ -277,7 +287,7 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<FriendsRespon
                     13 => _user.get_limit_see_friend_exclude_friends(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                FriendsResponse {
+                IEFriendsResponse {
                     users:   _users,
                     friends: _user.get_friends(_friends_limit, _friends_offset),
                 }
@@ -294,8 +304,8 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<FriendsRespon
 }
 
 
-pub async fn include_follows_load(req: HttpRequest) -> Result<Json<FollowsResponse>, Error> {
-    let params_some = web::Query::<IEListData>::from_query(&req.query_string());
+pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResponse>, Error> {
+    let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
@@ -353,7 +363,7 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<FollowsRespon
                     3 => _user.get_limit_see_friend_include_follows(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                FollowsResponse {
+                IEFollowsResponse {
                     users:   _users,
                     follows: _user.get_followers(_follows_limit, _follows_offset),
                 }
@@ -370,7 +380,7 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<FollowsRespon
 }
 
 pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<FollowsResponse>, Error> {
-    let params_some = web::Query::<IEListData>::from_query(&req.query_string());
+    let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
@@ -428,7 +438,7 @@ pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<FollowsRespon
                     13 => _user.get_limit_see_friend_exclude_follows(_users_limit, _users_offset),
                     _ => Vec::new(),
                 };
-                FollowsResponse {
+                IEFollowsResponse {
                     users:   _users,
                     follows: _user.get_followers(_follows_limit, _follows_offset),
                 }
