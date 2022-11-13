@@ -13,9 +13,9 @@ use serde::{Deserialize, Serialize};
 use crate::utils::{
     establish_connection, gen_jwt,
     get_user_owner_data,
-    Claims, ErrorParams, InfoParams,
+    ErrorParams, InfoParams,
 };
-use bcrypt::{hash, verify, DEFAULT_COST};
+use bcrypt::{hash, verify};
 use diesel::{
     Queryable,
     Insertable,
