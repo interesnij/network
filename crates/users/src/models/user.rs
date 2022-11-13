@@ -124,7 +124,7 @@ impl User {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        return Ok(users 
+        return Ok(users
             .filter(schema::users::phone.eq(phone))
             .filter(schema::users::types.lt(30))
             .first::<User>(&_connection)?);
@@ -843,7 +843,7 @@ impl User {
         return _friends;
     }
 
-    pub fn get_friends(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
