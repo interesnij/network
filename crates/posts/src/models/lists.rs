@@ -1365,7 +1365,6 @@ impl PostList {
                 .values(&_new_posts_list_position)
                 .execute(&_connection)
                 .expect("Error.");
-            }
             return new_list;
         }
     }
