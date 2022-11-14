@@ -1388,7 +1388,7 @@ impl Post {
         let _types: i16;
         let list = self.get_list().expect("E");
         if list.community_id.is_some() {
-            let _community = list.get_community();
+            let _community = list.get_community().expect("E");
             if list.is_anon_user_see_el() && _community.is_anon_user_see_el() {
                 _types = 0;
             }

@@ -655,7 +655,7 @@ impl PostList {
     pub fn search_items (
         &self,
         q:       &String,
-        user_id: i64,
+        user_id: i32,
         limit:   i64,
         offset:  i64,
     ) -> Vec<CardPostJson> {
@@ -1297,9 +1297,8 @@ impl PostList {
         let _post_list_positions = user_post_list_positions
             .filter(schema::user_post_list_positions::user_id.eq(user_id))
             .filter(schema::user_post_list_positions::types.eq(1))
-            .limit(1)
             .select(schema::user_post_list_positions::list_id)
-            .load::<i32>(&_connection);
+            .first::<i32>(&_connection);
         if _post_list_positions.is_ok() {
             return _post_list_positions.expect("E.");
         }
@@ -1456,7 +1455,10 @@ impl PostList {
         use crate::utils::get_user;
 
         let _user = get_user(user_id).expect("E.");
-        return _user.count_lists();
+        return _user
+            .count_lists()
+            .try_into()
+            .unwrap();
     }
 
     pub fn get_community_post_lists(community_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
@@ -1477,7 +1479,10 @@ impl PostList {
         use crate::utils::get_community;
 
         let _community = get_community(community_id).expect("E.");
-        return _community.count_lists();
+        return _community
+            .count_lists()
+            .try_into()
+            .unwrap();
     }
 
     pub fn get_user_post_lists_new_position(user_id: i32) -> i16 {
@@ -1795,7 +1800,7 @@ impl PostList {
             else {
                 for item in list.get_items().iter() {
                     if item.types == 0 {
-                        diesel::update(&item)
+                        diesel::update(item)
                             .set(types.eq(types + 5))
                             .execute(&_connection)
                             .expect("Error.");
