@@ -17,14 +17,9 @@ use crate::utils::{
     CardReplyJson,
     ReactionBlockJson,
     SmallReactionBlockJson,
-    //RepliesSmallJson,
-    //AttachmentsJson,
-    //ReactionData,
-    //DataNewComment,
-    //DataEditComment, 
     RespComment,
 };
-//use actix_web::web::Json;
+
 use crate::models::{
     Post, User, Community, PostList,
     PostCommentCounterReaction,
@@ -35,12 +30,16 @@ use crate::errors::Error;
 
 /////// PostComment //////
 
-// 1 Опубликованный
+/////// PostComment //////
+// 0 Опубликованный
 // 2 Изменённый
-// 11 Удаленый
+// 5 Опубликованный приватный
+// 10 Удаленый
 // 12 Изменённый Удаленый
+// 15 Удаленый приватный
 // 21 Закрытый
 // 22 Изменённый Закрытый
+// 26 приватный Закрытый
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct PostComment {
@@ -257,16 +256,16 @@ impl PostComment {
         let _connection = establish_connection();
         return Ok(post_comments
             .filter(schema::post_comments::parent_id.eq(self.id))
-            .filter(schema::post_comments::types.eq_any(vec![1, 2]))
+            .filter(schema::post_comments::types.lt(10))
             .limit(limit)
             .offset(offset)
             .load::<PostComment>(&_connection)?);
     }
     pub fn is_deleted(&self) -> bool {
-        return self.types == 11 && self.types == 12;
+        return self.types > 39 && self.types < 80;
     }
     pub fn is_closed(&self) -> bool {
-        return self.types == 21 && self.types == 22;
+        return self.types > 79 && self.types < 120;
     }
 
     pub fn get_str_id(&self) -> String {
@@ -285,7 +284,7 @@ impl PostComment {
         let _connection = establish_connection();
         return Ok(posts
             .filter(schema::posts::id.eq(self.post_id))
-            .filter(schema::posts::types.eq_any(vec![1,1]))
+            .filter(schema::posts::types.lt(31))
             .first::<Post>(&_connection)?);
     }
     pub fn get_list(&self) -> PostList {
@@ -301,7 +300,7 @@ impl PostComment {
         let _connection = establish_connection();
         return Ok(post_comments
             .filter(schema::post_comments::id.eq(self.parent_id.unwrap()))
-            .filter(schema::post_comments::types.eq_any(vec![1, 2]))
+            .filter(schema::post_comments::types.lt(10))
             .first::<PostComment>(&_connection)?);
     }
     pub fn get_creator(&self) -> Result<User, Error> {
@@ -383,18 +382,13 @@ impl PostComment {
     }
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
-        let close_case = match self.types {
-            1 => 21,
-            2 => 22,
-            _ => 21,
-        };
         let item = self.get_item().expect("E");
         let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment - 1))
             .execute(&_connection);
 
         let o_2 = diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
+            .set(schema::post_comments::types.eq(self.types + 20))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -417,18 +411,13 @@ impl PostComment {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
-        let close_case = match self.types {
-            21 => 1,
-            22 => 2,
-            _ => 1,
-        };
         let item = self.get_item().expect("E");
         let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment + 1))
             .execute(&_connection);
 
         let o_2 = diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
+            .set(schema::post_comments::types.eq(self.types - 20))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -449,21 +438,14 @@ impl PostComment {
     }
 
     pub fn delete_item(&self) -> i16 {
-        //use crate::models::hide_wall_notify_items;
-
         let _connection = establish_connection();
-        let close_case = match self.types {
-            1 => 11,
-            2 => 12,
-            _ => 11,
-        };
         let item = self.get_item().expect("E");
         let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment - 1))
             .execute(&_connection);
 
         let o_2 = diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
+            .set(schema::post_comments::types.eq(self.types + 10))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -483,22 +465,15 @@ impl PostComment {
         }
     }
     pub fn restore_item(&self) -> i16 {
-        //use crate::models::show_wall_notify_items;
-
         let _connection = establish_connection();
-        let close_case = match self.types {
-            11 => 1,
-            12 => 2,
-            _ => 1,
-        };
         let item = self.get_item().expect("E");
         let o_1 = diesel::update(&item)
             .set(schema::posts::comment.eq(item.comment + 1))
-            .get_result::<Post>(&_connection);
+            .execute(&_connection);
 
         let o_2 = diesel::update(self)
-            .set(schema::post_comments::types.eq(close_case))
-            .get_result::<PostComment>(&_connection);
+            .set(schema::post_comments::types.eq(self.types - 10))
+            .execute(&_connection);
 
         if self.community_id.is_some() {
             let community = self.get_community().expect("E");
@@ -557,10 +532,9 @@ impl PostComment {
         let _connection = establish_connection();
         let _react_model = post_comment_counter_reactions
             .filter(schema::post_comment_counter_reactions::post_comment_id.eq(self.id))
-            .load::<PostCommentCounterReaction>(&_connection)
-            .expect("E.");
-        if _react_model.len() > 0 {
-            return _react_model.into_iter().nth(0).unwrap();
+            .first::<PostCommentCounterReaction>(&_connection);
+        if _react_model.is_ok() {
+            return _react_model.expect("Error.");
         }
         else {
             let new_react_model = NewPostCommentCounterReaction {
@@ -615,7 +589,7 @@ impl PostComment {
                 else {
                     diesel::update(&vote)
                         .set(schema::post_comment_reactions::reaction_id.eq(reaction_id))
-                        .get_result::<PostCommentReaction>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
 
                     react_model.update_count(self.id, user_id, false);
@@ -631,7 +605,7 @@ impl PostComment {
                 };
                 diesel::insert_into(schema::post_comment_reactions::table)
                     .values(&new_vote)
-                    .get_result::<PostCommentReaction>(&_connection)
+                    .execute(&_connection)
                     .expect("Error.");
 
                 react_model.update_count(self.id, user_id, true);
@@ -705,14 +679,14 @@ impl PostComment {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::post_comments::reactions.eq(self.reactions + count))
-            .get_result::<PostComment>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
     }
     pub fn minus_reactions(&self, count: i32) -> () {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::post_comments::reactions.eq(self.reactions - count))
-            .get_result::<PostComment>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
     }
     pub fn get_small_content(&self) -> String {

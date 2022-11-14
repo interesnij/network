@@ -273,6 +273,13 @@ pub struct PostListDetailJson {
     pub is_user_create_el: bool,
 }
 
+#[derive(Serialize)]
+pub struct PostListJson {
+    pub reactions_list:    Vec<i32>,
+    pub posts:             Vec<CardPostJson>,
+    pub is_user_create_el: bool,
+}
+
 // это объект страницы записей (подгружается по нажатию на список)
 #[derive(Serialize)]
 pub struct PostListPageJson {

@@ -20,7 +20,6 @@ use crate::utils::{
     ReactionsJson,
     EditListJson, RespListJson, DataListJson,
     DataNewPost, RespPost,
-    //DataCopyList,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -29,34 +28,36 @@ use crate::models::{
     UserPostListPosition, CommunityPostListPosition,
     CommunityPostListCollection, NewCommunityPostListCollection,
     PostListPerm, NewPostListPerm,
-    //PostListRepost,
 };
 
-/////// PostList //////
 ////////// Тип списка
-    // 1 основной список
-    // 2 пользовательский список
-    // 3 список предложки
-    // 4 Фото со страницы
-    // 5 Фото со стены
+    // 0 основной список
+    // 5 пользовательский список
+    // 10 список предложки
+    // 15 Фото со страницы
+    // 20 Фото со стены
+    // 25 основной список приватный
+    // 30 пользовательский список приватный
 
-    // 11 удаленный основной список
-    // 12 удаленный пользовательский список
-    // 13 удаленный список предложки
-    // 14 удаленный Фото со страницы
-    // 15 удаленный Фото со стены
+    // 45 удаленный пользовательский список
+    // 70 удаленный пользовательский список приватный
 
-    // 21 закрытый основной список
-    // 22 закрытый пользовательский список
-    // 23 закрытый список предложки
-    // 24 закрытый Фото со страницы
-    // 25 закрытый Фото со стены
+    // 80 закрытый основной список
+    // 85 закрытый пользовательский список
+    // 95 закрытый Фото со страницы
+    // 100 закрытый Фото со стены
+    // 105 закрытый основной список приватный
+    // 110 закрытый пользовательский список приватный
 
-    // 31 замороженный основной список
-    // 32 замороженный пользовательский список
-    // 33 замороженный список предложки
-    // 34 замороженный Фото со страницы
-    // 35 замороженный Фото со стены
+    // 120 замороженный основной список
+    // 125 замороженный пользовательский список
+    // 135 замороженный Фото со страницы
+    // 140 замороженный Фото со стены
+    // 145 замороженный основной список приватный
+    // 150 замороженный пользовательский список приватный
+
+    // 165 полностью удаленный пользовательский список
+    // 190 полностью удаленный пользовательский список приватный
 
 //////////// Приватность списка
     // 1 Все пользователи
@@ -645,10 +646,46 @@ impl PostList {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.eq(1))
+            .filter(schema::posts::types.lt(11))
             .order(schema::posts::created.desc())
             .load::<Post>(&_connection)
             .expect("E.");
+    }
+
+    pub fn search_items (
+        &self,
+        q:       &String,
+        user_id: i64,
+        limit:   i64,
+        offset:  i64,
+    ) -> Vec<CardPostJson> {
+        use crate::schema::posts::dsl::posts;
+
+        let _connection = establish_connection();
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let reactions_list = list.get_reactions_list();
+
+        let mut posts_json = Vec::new();
+        let items = posts
+            .filter(schema::posts::post_list_id.eq(self.id))
+            .filter(schema::items::content.ilike(&q))
+            .filter(schema::posts::types.lt(11))
+            .limit(_limit)
+            .offset(offset)
+            .order(schema::posts::created.desc())
+            .load::<Post>(&_connection)
+            .expect("E.");
+
+        for i in items.iter() {
+            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
+        }
+        return posts_json;
     }
     pub fn get_paginate_items(&self, limit: i64, offset: i64) -> Vec<Post> {
         use crate::schema::posts::dsl::posts;
@@ -656,7 +693,7 @@ impl PostList {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.eq(1))
+            .filter(schema::posts::types.lt(11))
             .limit(limit)
             .offset(offset)
             .order(schema::posts::created.desc())
@@ -1243,15 +1280,10 @@ impl PostList {
         let _post_list_positions = community_post_list_positions
             .filter(schema::community_post_list_positions::community_id.eq(community_id))
             .filter(schema::community_post_list_positions::types.eq(1))
-            .limit(1)
             .select(schema::community_post_list_positions::list_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-        if _post_list_positions.len() > 0 {
-            return _post_list_positions
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .first::<i32>(&_connection);
+        if _post_list_positions.is_ok() {
+            return _post_list_positions.expect("E.");
         }
         else {
             return PostList::get_community_post_list(community_id).id;
@@ -1267,13 +1299,9 @@ impl PostList {
             .filter(schema::user_post_list_positions::types.eq(1))
             .limit(1)
             .select(schema::user_post_list_positions::list_id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-        if _post_list_positions.len() > 0 {
-            return _post_list_positions
-            .into_iter()
-            .nth(0)
-            .unwrap();
+            .load::<i32>(&_connection);
+        if _post_list_positions.is_ok() {
+            return _post_list_positions.expect("E.");
         }
         else {
             return PostList::get_user_post_list(user_id).id;
@@ -1283,25 +1311,132 @@ impl PostList {
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
-        let lists = post_lists
+        let list = post_lists
             .filter(schema::post_lists::user_id.eq(user_id))
             .filter(schema::post_lists::community_id.is_null())
-            .filter(schema::post_lists::types.eq(1))
-            .load::<PostList>(&_connection)
-            .expect("E.");
+            .filter(schema::post_lists::types.eq(0))
+            .first::<PostList>(&_connection);
 
-        return lists.into_iter().nth(0).unwrap();
+        if  list.is_ok() {
+            return list.expect("E.");
+        }
+        else {
+            use crate::models::{
+                NewCommunityPostListPosition,
+                NewUserPostListPosition,
+            };
+            use crate::utils::get_user;
+
+            let _connection = establish_connection();
+
+            let new_post_list = NewPostList {
+                name:           "Список записей".to_string(),
+                community_id:   None,
+                user_id:        user_id,
+                types:          0,
+                description:    None,
+                image:          None,
+                created:        chrono::Local::now().naive_utc(),
+                count:          0,
+                repost:         0,
+                copy:           0,
+                see_el:         1,
+                see_comment:    1,
+                create_el:      12,
+                create_comment: 1,
+                copy_el:        1,
+                reactions:      None,
+            };
+            let new_list = diesel::insert_into(schema::post_lists::table)
+                .values(&new_post_list)
+                .get_result::<PostList>(&_connection)
+                .expect("Error.");
+
+            let _user = get_user(user_id).expect("Error.");
+            _user.plus_lists(1);
+
+            let _new_posts_list_position = NewUserPostListPosition {
+                user_id:  user_id,
+                list_id:  new_list.id,
+                position: 1,
+                types:    1,
+            };
+            let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)
+                .values(&_new_posts_list_position)
+                .execute(&_connection)
+                .expect("Error.");
+            }
+            return new_list;
+        }
     }
     pub fn get_community_post_list(community_id: i32) -> PostList {
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
-        let lists = post_lists
+        let list = post_lists
             .filter(schema::post_lists::community_id.eq(community_id))
-            .filter(schema::post_lists::types.eq(1))
-            .load::<PostList>(&_connection)
-            .expect("E.");
-        return lists.into_iter().nth(0).unwrap();
+            .filter(schema::post_lists::types.eq(0))
+            .first::<PostList>(&_connection);
+
+        if  list.is_ok() {
+            return list.expect("E.");
+        }
+        else {
+            use crate::models::{
+                NewCommunityPostListPosition,
+                NewCommunityPostListPosition,
+            };
+            use crate::utils::get_community;
+
+            let _community = get_community(community_id).expect("Error.");
+            let open_vec = vac![1,7,13];
+            let create_type: i16;
+            if open_vec.iter().any()(|&i| i==_community.types) {
+                open_type = 14;
+            }
+            else {
+                open_type = 15;
+            }
+            let _connection = establish_connection();
+
+            let new_post_list = NewPostList {
+                name:           "Список записей".to_string(),
+                community_id:   Some(community_id),
+                user_id:        community.user_id,
+                types:          0,
+                description:    None,
+                image:          None,
+                created:        chrono::Local::now().naive_utc(),
+                count:          0,
+                repost:         0,
+                copy:           0,
+                see_el:         open_type,
+                see_comment:    open_type,
+                create_el:      12,
+                create_comment: open_type,
+                copy_el:        open_type,
+                reactions:      None,
+            };
+            let new_list = diesel::insert_into(schema::post_lists::table)
+                .values(&new_post_list)
+                .get_result::<PostList>(&_connection)
+                .expect("Error.");
+
+            _community.plus_lists(1);
+
+            let _new_posts_list_position = NewCommunityPostListPosition {
+                community_id: community_id,
+                list_id:      new_list.id,
+                position:     1,
+                types:        1,
+            };
+            diesel::insert_into(schema::community_post_list_positions::table)
+                .values(&_new_posts_list_position)
+                .execute(&_connection)
+                .expect("Error.");
+            }
+            return new_list;
+        }
     }
 
     pub fn get_user_post_lists(user_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
@@ -1311,25 +1446,18 @@ impl PostList {
         return post_lists
             .filter(schema::post_lists::user_id.eq(user_id))
             .filter(schema::post_lists::community_id.is_null())
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
             .limit(limit)
             .offset(offset)
             .load::<PostList>(&_connection)
             .expect("E.");
     }
-    pub fn count_user_post_lists(user_id: i32) -> usize {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn count_user_post_lists(user_id: i32) -> i16 {
+        use crate::utils::get_user;
 
-        let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::user_id.eq(user_id))
-            .filter(schema::post_lists::community_id.is_null())
-            .filter(schema::post_lists::types.lt(10))
-            .select(schema::post_lists::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len();
+        let _user = get_user(user_id).expect("E.");
+        return _user.count_lists();
     }
 
     pub fn get_community_post_lists(community_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
@@ -1338,7 +1466,7 @@ impl PostList {
         let _connection = establish_connection();
         return post_lists
             .filter(schema::post_lists::community_id.eq(community_id))
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
             .limit(limit)
             .offset(offset)
@@ -1346,24 +1474,24 @@ impl PostList {
             .expect("E.");
     }
 
-    pub fn count_community_post_lists(community_id: i32) -> usize {
-        use crate::schema::post_lists::dsl::post_lists;
+    pub fn count_community_post_lists(community_id: i32) -> i16 {
+        use crate::utils::get_community;
 
-        let _connection = establish_connection();
-        return post_lists
-            .filter(schema::post_lists::community_id.eq(community_id))
-            .filter(schema::post_lists::types.lt(10))
-            .select(schema::post_lists::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len();
+        let _community = get_community(community_id).expect("E.");
+        return _community.count_lists();
     }
 
     pub fn get_user_post_lists_new_position(user_id: i32) -> i16 {
-        return (PostList::count_user_post_lists(user_id) + 1).try_into().unwrap();
+        let _user = get_user(user_id).expect("E.");
+        let count = _user.count_lists() + 1;
+        _user.plus_lists(1);
+        return count;
     }
     pub fn get_community_post_lists_new_position(community_id: i32) -> i16 {
-        return (PostList::count_community_post_lists(community_id) + 1).try_into().unwrap();
+        let _community = get_community(community_id).expect("E.");
+        let count = _community.count_lists() + 1;
+        _community.plus_lists(1);
+        return count;
     }
 
     pub fn create_list (data: Json<DataListJson>) -> RespListJson {
@@ -1405,15 +1533,10 @@ impl PostList {
             .get_result::<PostList>(&_connection)
             .expect("Error.");
 
-        if new_list.community_id.is_some() {
-            let community = new_list.get_community().expect("E");
-            community.plus_lists(1);
-        }
-        else {
-            let creator = new_list.get_creator().expect("E");
-            creator.plus_lists(1);
-        }
-
+        // тут мелкий фокус: чтобы не получать владельца триста раз
+        // мы в одной проге получаем его, добавляем 1 к списку
+        // его записей и возвращаем порядковый номер для создания
+        // такой таблицы.
         if data.community_id.is_some() {
             let community_pk = data.community_id.unwrap();
             let _new_posts_list_position = NewCommunityPostListPosition {
@@ -1633,6 +1756,8 @@ impl PostList {
         }
         let _id = data.id.unwrap();
         let list = get_post_list(_id).expect("E.");
+        let list_see_el = list.see_el;
+
         let edit_post_list = EditPostList {
             name:           _name.clone(),
             description:    descr.clone(),
@@ -1651,6 +1776,35 @@ impl PostList {
         let exclude_vec = vec![3, 5, 8, 10, 18];
         let include_vec = vec![4, 6, 9, 11, 19];
 
+        // если отредактированный список стал видимым всем,
+        // мы всем записям списка, которые опубликованы,
+        // присвоим тип "приватные", чтобы они не участвовали
+        // в публичных мероприятиях типа поиска
+        // Ну и наоборот, в противном случае.
+        let see_el_unwrap = data.see_el.unwrap();
+        if see_el_unwrap != list_see_el {
+            if see_el_unwrap == 1 || see_el_unwrap == 14 {
+                for item in list.get_items().iter() {
+                    if item.types == 5 {
+                        diesel::update(&item)
+                            .set(types.eq(types - 5))
+                            .execute(&_connection)
+                            .expect("Error.");
+                    }
+                }
+            }
+            else {
+                for item in list.get_items().iter() {
+                    if item.types == 0 {
+                        diesel::update(&item)
+                            .set(types.eq(types + 5))
+                            .execute(&_connection)
+                            .expect("Error.");
+                    }
+                }
+            }
+        }
+
         diesel::delete (
           post_list_perms
             .filter(schema::post_list_perms::post_list_id.eq(_id))
@@ -1659,7 +1813,7 @@ impl PostList {
         .execute(&_connection)
         .expect("E");
 
-        if exclude_vec.iter().any(|&i| i==data.see_el.unwrap()) {
+        if exclude_vec.iter().any(|&i| i==see_el_unwrap) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1674,7 +1828,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==data.see_el.unwrap()) {
+        else if include_vec.iter().any(|&i| i==see_el_unwrap) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {
@@ -1851,7 +2005,7 @@ impl PostList {
         };
         diesel::insert_into(schema::community_post_list_collections::table)
             .values(&new_item)
-            .get_result::<CommunityPostListCollection>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
 
         let new_pos = NewCommunityPostListPosition {
@@ -1862,27 +2016,31 @@ impl PostList {
         };
         diesel::insert_into(schema::community_post_list_positions::table)
             .values(&new_pos)
-            .get_result::<CommunityPostListPosition>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return 1;
     }
     pub fn remove_in_community_collections(&self, community_id: i32) -> i16 {
-        use crate::schema::community_post_list_collections::dsl::community_post_list_collections;
-        use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
+        use crate::schema::{
+            community_post_list_collections::dsl::community_post_list_collections,
+            community_post_list_positions::dsl::community_post_list_positions
+        };
 
         if self.get_communities_ids().iter().any(|&i| i==community_id) {
             return 0;
         }
         let _connection = establish_connection();
-        diesel::delete(community_post_list_collections
-            .filter(schema::community_post_list_collections::community_id.eq(community_id))
-            .filter(schema::community_post_list_collections::post_list_id.eq(self.id))
+        diesel::delete (
+            community_post_list_collections
+                .filter(schema::community_post_list_collections::community_id.eq(community_id))
+                .filter(schema::community_post_list_collections::post_list_id.eq(self.id))
             )
           .execute(&_connection)
           .expect("E");
-        diesel::delete(community_post_list_positions
-            .filter(schema::community_post_list_positions::community_id.eq(community_id))
-            .filter(schema::community_post_list_positions::list_id.eq(self.id))
+        diesel::delete (
+            community_post_list_positions
+                .filter(schema::community_post_list_positions::community_id.eq(community_id))
+                .filter(schema::community_post_list_positions::list_id.eq(self.id))
          )
          .execute(&_connection)
          .expect("E");
@@ -1902,7 +2060,7 @@ impl PostList {
         };
         diesel::insert_into(schema::user_post_list_collections::table)
             .values(&new_item)
-            .get_result::<UserPostListCollection>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
 
         let new_pos = NewUserPostListPosition {
@@ -1913,27 +2071,31 @@ impl PostList {
         };
         diesel::insert_into(schema::user_post_list_positions::table)
             .values(&new_pos)
-            .get_result::<UserPostListPosition>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return 1;
     }
     pub fn remove_in_user_collections(&self, user_id: i32) -> i16 {
-        use crate::schema::user_post_list_collections::dsl::user_post_list_collections;
-        use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
+        use crate::schema::{
+            user_post_list_collections::dsl::user_post_list_collections,
+            user_post_list_positions::dsl::user_post_list_positions
+        };
 
         if self.get_users_ids().iter().any(|&i| i==user_id) {
             return 0;
         }
         let _connection = establish_connection();
-        diesel::delete(user_post_list_collections
-            .filter(schema::user_post_list_collections::user_id.eq(user_id))
-            .filter(schema::user_post_list_collections::post_list_id.eq(self.id))
+        diesel::delete (
+            user_post_list_collections
+                .filter(schema::user_post_list_collections::user_id.eq(user_id))
+                .filter(schema::user_post_list_collections::post_list_id.eq(self.id))
             )
           .execute(&_connection)
           .expect("E");
-        diesel::delete(user_post_list_positions
-            .filter(schema::user_post_list_positions::user_id.eq(user_id))
-            .filter(schema::user_post_list_positions::list_id.eq(self.id))
+        diesel::delete (
+            user_post_list_positions
+                .filter(schema::user_post_list_positions::user_id.eq(user_id))
+                .filter(schema::user_post_list_positions::list_id.eq(self.id))
          )
          .execute(&_connection)
          .expect("E");
@@ -1977,17 +2139,18 @@ impl PostList {
         let _connection = establish_connection();
         let fix_list_ids = posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.lt(10))
+            .filter(schema::posts::types.lt(35))
             .select(schema::posts::id)
             .load::<i32>(&_connection)
             .expect("E.");
         return fix_list_ids;
     }
     pub fn get_user_lists(user_pk: i32) -> Vec<PostList> {
-        use crate::schema::user_post_list_collections::dsl::user_post_list_collections;
-        use crate::schema::user_post_list_positions::dsl::user_post_list_positions;
-        use crate::schema::post_lists::dsl::post_lists;
-
+        use crate::schema::{
+            user_post_list_collections::dsl::user_post_list_collections,
+            user_post_list_positions::dsl::user_post_list_positions,
+            post_lists::dsl::post_lists,
+        };
         let _connection = establish_connection();
         let position_lists = user_post_list_positions
             .filter(schema::user_post_list_positions::user_id.eq(user_pk))
@@ -2023,14 +2186,16 @@ impl PostList {
         };
         return post_lists
             .filter(schema::post_lists::id.eq_any(stack))
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .load::<PostList>(&_connection)
             .expect("E.");
     }
     pub fn get_community_lists(community_pk: i32) -> Vec<PostList> {
-        use crate::schema::community_post_list_collections::dsl::community_post_list_collections;
-        use crate::schema::community_post_list_positions::dsl::community_post_list_positions;
-        use crate::schema::post_lists::dsl::post_lists;
+        use crate::schema::{
+            community_post_list_collections::dsl::community_post_list_collections,
+            community_post_list_positions::dsl::community_post_list_positions,
+            post_lists::dsl::post_lists,
+        };
 
         let _connection = establish_connection();
         let position_lists = community_post_list_positions
@@ -2042,7 +2207,7 @@ impl PostList {
         if position_lists.len() > 0 {
             return post_lists
                 .filter(schema::post_lists::id.eq_any(position_lists))
-                .filter(schema::post_lists::types.lt(10))
+                .filter(schema::post_lists::types.lt(31))
                 .load::<PostList>(&_connection)
                 .expect("E.");
         }
@@ -2050,7 +2215,7 @@ impl PostList {
         let mut stack = Vec::new();
         let community_lists = post_lists
             .filter(schema::post_lists::community_id.eq(community_pk))
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .select(schema::post_lists::id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -2067,26 +2232,15 @@ impl PostList {
         };
         return post_lists
             .filter(schema::post_lists::id.eq_any(stack))
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .load::<PostList>(&_connection)
             .expect("E.");
 
     }
     pub fn close_item(&self) -> i16 {
-        //use crate::models::hide_wall_notify_items;
-
         let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
-            1 => 21,
-            2 => 22,
-            3 => 23,
-            4 => 24,
-            5 => 25,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
+            .set(schema::post_lists::types.eq(self.types + 80))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -2105,20 +2259,9 @@ impl PostList {
         }
     }
     pub fn unclose_item(&self) -> i16 {
-        //use crate::models::show_wall_notify_items;
-
         let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
-            21 => 1,
-            22 => 2,
-            23 => 3,
-            24 => 4,
-            25 => 5,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
+            .set(schema::post_lists::types.eq(self.types - 80))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -2146,13 +2289,12 @@ impl PostList {
             let list_positions = community_post_list_positions
                 .filter(schema::community_post_list_positions::community_id.eq(self.community_id.unwrap()))
                 .filter(schema::community_post_list_positions::list_id.eq(self.id))
-                .load::<CommunityPostListPosition>(&_connection)
-                .expect("E.");
-            if list_positions.len() > 0 {
-                let list_position = list_positions.into_iter().nth(0).unwrap();
+                .first::<CommunityPostListPosition>(&_connection);
+            if list_positions.is_ok() {
+                let list_position = list_positions.expect("Error.");
                 diesel::update(&list_position)
                   .set(schema::community_post_list_positions::types.eq(2))
-                  .get_result::<CommunityPostListPosition>(&_connection)
+                  .execute(&_connection)
                   .expect("Error.");
             }
         } else {
@@ -2161,27 +2303,17 @@ impl PostList {
             let list_positions = user_post_list_positions
                 .filter(schema::user_post_list_positions::user_id.eq(self.user_id))
                 .filter(schema::user_post_list_positions::list_id.eq(self.id))
-                .load::<UserPostListPosition>(&_connection)
-                .expect("E.");
-            if list_positions.len() > 0 {
-                let list_position = list_positions.into_iter().nth(0).unwrap();
+                .first::<UserPostListPosition>(&_connection);
+            if list_positions.is_ok() {
+                let list_position = list_positions.expect("E.");
                 diesel::update(&list_position)
                   .set(schema::user_post_list_positions::types.eq(2))
-                  .get_result::<UserPostListPosition>(&_connection)
+                  .execute(&_connection)
                   .expect("Error.");
             }
         }
-        let user_types = self.types;
-        let close_case = match user_types {
-            1 => 11,
-            2 => 12,
-            3 => 13,
-            4 => 14,
-            5 => 15,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
+            .set(schema::post_lists::types.eq(self.types + 40))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -2208,13 +2340,12 @@ impl PostList {
             let list_positions = community_post_list_positions
                 .filter(schema::community_post_list_positions::community_id.eq(self.community_id.unwrap()))
                 .filter(schema::community_post_list_positions::list_id.eq(self.id))
-                .load::<CommunityPostListPosition>(&_connection)
-                .expect("E.");
-            if list_positions.len() > 0 {
-                let list_position = list_positions.into_iter().nth(0).unwrap();
+                .load::<CommunityPostListPosition>(&_connection);
+            if list_positions.is_ok() {
+                let list_position = list_positions.expect("Error.");
                 diesel::update(&list_position)
                   .set(schema::community_post_list_positions::types.eq(1))
-                  .get_result::<CommunityPostListPosition>(&_connection)
+                  .execute(&_connection)
                   .expect("Error.");
             }
         } else {
@@ -2223,27 +2354,17 @@ impl PostList {
             let list_positions = user_post_list_positions
                 .filter(schema::user_post_list_positions::user_id.eq(self.user_id))
                 .filter(schema::user_post_list_positions::list_id.eq(self.id))
-                .load::<UserPostListPosition>(&_connection)
-                .expect("E.");
-            if list_positions.len() > 0 {
-                let list_position = list_positions.into_iter().nth(0).unwrap();
+                .load::<UserPostListPosition>(&_connection);
+            if list_positions.is_ok() {
+                let list_position = list_positions.expect("E.");
                 diesel::update(&list_position)
                   .set(schema::user_post_list_positions::types.eq(1))
-                  .get_result::<UserPostListPosition>(&_connection)
+                  .execute(&_connection)
                   .expect("Error.");
             }
         }
-        let user_types = self.types;
-        let close_case = match user_types {
-            11 => 1,
-            12 => 2,
-            13 => 3,
-            14 => 4,
-            15 => 5,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
+            .set(schema::post_lists::types.eq(self.types - 40))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -2265,17 +2386,8 @@ impl PostList {
 
     pub fn suspend_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
-            1 => 31,
-            2 => 32,
-            3 => 33,
-            4 => 34,
-            5 => 35,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
+            .set(schema::post_lists::types.eq(self.types + 120))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -2296,17 +2408,8 @@ impl PostList {
     }
     pub fn unsuspend_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
-        let close_case = match user_types {
-            31 => 1,
-            32 => 2,
-            33 => 3,
-            34 => 4,
-            35 => 5,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::post_lists::types.eq(close_case))
+            .set(schema::post_lists::types.eq(self.types - 120))
             .execute(&_connection);
 
         if self.community_id.is_some() {
@@ -2336,20 +2439,46 @@ impl PostList {
 
         let _connection = establish_connection();
         diesel::update(self)
-          .set(schema::post_lists::count.eq(self.count + 1))
-          .get_result::<PostList>(&_connection)
-          .expect("Error.");
+            .set(schema::post_lists::count.eq(self.count + 1))
+            .execute(&_connection)
+            .expect("Error.");
 
         //if content.is_some() {
         //    use crate::utils::get_formatted_text;
         //    _content = Some(get_formatted_text(&content.unwrap()));
         //}
+        let _types: i16;
+        if community.is_some() {
+            community.unwrap().plus_posts(1);
+        }
+        else if creator.is_some() {
+            creator.unwrap().plus_posts(1);
+        }
+        if self.community_id.is_some() {
+            let _community = self.get_community().expect("E.");
+            if self.is_anon_user_see_el() && _community.is_anon_user_see_el() {
+                _types = 0;
+            }
+            else {
+                _types = 5;
+            }
+        }
+        else {
+            let _creator = self.get_creator().expect("E.");;
+            if self.is_anon_user_see_el() && _creator.is_anon_user_see_el() {
+                _types = 0;
+            }
+            else {
+                _types = 5;
+            }
+        }
+
         let new_post_form = NewPost {
           content:      data.content.clone(),
           community_id: self.community_id,
           user_id:      data.user_id.unwrap(),
           post_list_id: self.id,
-          types:        1,
+          types:        _types,
           attach:       data.attachments.clone(),
           comments_on:  data.comments_on,
           created:      chrono::Local::now().naive_utc(),
@@ -2379,14 +2508,7 @@ impl PostList {
             //    }
             //}
         }
-        if community.is_some() {
-            let _community = community.unwrap();
-            _community.plus_posts(1);
-        }
-        else if creator.is_some() {
-            let _creator = creator.unwrap();
-            _creator.plus_posts(1);
-        }
+
         return RespPost {
             id:           new_post.id,
             list_id:      self.id,

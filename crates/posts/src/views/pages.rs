@@ -40,6 +40,10 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/load_comments/", web::get().to(load_comments_page));
     config.route("/post_reactions/", web::get().to(post_reactions_page));
     config.route("/comment_reactions/", web::get().to(comment_reactions_page));
+
+    config.route("/search_lists/", web::get().to(search_lists_page));
+    config.route("/search_posts/", web::get().to(search_posts_page));
+    config.route("/search_comments/", web::get().to(search_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -1091,4 +1095,14 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct SearchParams {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub q:       Option<String>,
+    pub item_id: Option<i32>,
+    pub limit:   Option<i64>,
+    pub offset:  Option<i64>,
 }

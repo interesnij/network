@@ -21,13 +21,9 @@ use crate::utils::{
     CardUserJson,
     CardOwnerJson,
     CardCommentJson,
-    //AttachmentsJson,
     EditPostJson,
     DataEditPost,
     RespPost,
-    //ReactionData,
-    //DataNewComment,
-    //DataEditComment,
     RespComment,
 };
 use actix_web::web::Json;
@@ -37,33 +33,40 @@ use crate::models::{
 };
 use crate::schema::posts;
 use crate::errors::Error;
+
+
 /////// Post //////
-
 //////////// тип
-// 1 Опубликовано
-// 2 Закрепленый
-// 3 Черновик владельца
-// 4 Черновик предложки
-// 5 Предложка сообщества
-// 6 Предложка пользователя
-// 7 Родительский пост
+// 0 Опубликовано
+// 5 Опубликовано приватно
+// 10 Закрепленый
+// 15 Черновик владельца
+// 20 Черновик предложки
+// 25 Предложка сообщества
+// 30 Предложка пользователя
+// 35 Родительский пост
 
-// 11 Удаленый Опубликовано
-// 12 Удаленый Закрепленый
-// 13 Удаленый Черновик владельца
-// 14 Удаленый Черновик предложки
-// 15 Удаленый Предложка сообщества
-// 16 Удаленый Предложка пользователя
-// 17 Удаленый Родительский пост
+// 40 Удаленый Опубликовано
+// 45 Удаленый Опубликовано приватно
+// 50 Удаленый Закрепленый
+// 55 Удаленый Черновик владельца
+// 60 Удаленый Черновик предложки
+// 65 Удаленый Предложка сообщества
+// 70 Удаленый Предложка пользователя
+// 75 Удаленый Родительский пост
 
-// 21 Закрытый Опубликовано
-// 22 Удаленый Закрепленый
-// 23 Удаленый Черновик владельца
-// 24 Удаленый Черновик предложки
-// 25 Удаленый Предложка сообщества
-// 26 Удаленый Предложка пользователя
-// 27 Удаленый Родительский пост
+// 80 Закрытый Опубликовано
+// 85 Закрытый Опубликовано приватно
+// 90 Закрытый Закрепленый
+// 95 Закрытый Черновик владельца
+// 100 Закрытый Черновик предложки
+// 105 Закрытый Предложка сообщества
+// 110 Закрытый Предложка пользователя
+// 115 Закрытый Родительский пост
 
+// 120 Удаленый полностью Опубликовано
+// 125 Удаленый полностью Опубликовано приватно
+// 130 Удаленый полностью Закрепленый
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct Post {
@@ -166,7 +169,7 @@ impl Post {
         }
         return posts
             .filter(schema::posts::id.eq_any(stack))
-            .filter(schema::posts::types.lt(10))
+            .filter(schema::posts::types.lt(36))
             .load::<Post>(&_connection)
             .expect("E");
     }
@@ -196,7 +199,7 @@ impl Post {
         }
         return posts
             .filter(schema::posts::id.eq_any(stack))
-            .filter(schema::posts::types.lt(10))
+            .filter(schema::posts::types.lt(36))
             .load::<Post>(&_connection)
             .expect("E");
     }
@@ -533,22 +536,22 @@ impl Post {
     pub fn get_post_json (&self, user_id: i32, reactions_list: Vec<i32>,) -> CardPostJson {
         let creator = self.get_owner_meta().expect("E");
         return CardPostJson {
-                id:              self.id,
-                content:         self.content.clone(),
-                owner_name:      creator.name.clone(),
-                owner_link:      creator.link.clone(),
-                owner_image:     creator.image.clone(),
-                comments_on:     self.comments_on,
-                created:         self.created.format("%d-%m-%Y в %H:%M").to_string(),
-                comment:         self.comment,
-                view:            self.view,
-                repost:          self.repost,
-                is_signature:    self.is_signature,
-                reactions:       self.reactions,
-                types:           self.get_code(),
-                parent:          self.get_parent_post_json(),
-                reactions_list:  self.get_reactions_json(user_id, reactions_list.clone()),
-                attachments:     None,
+                id:             self.id,
+                content:        self.content.clone(),
+                owner_name:     creator.name.clone(),
+                owner_link:     creator.link.clone(),
+                owner_image:    creator.image.clone(),
+                comments_on:    self.comments_on,
+                created:        self.created.format("%d-%m-%Y в %H:%M").to_string(),
+                comment:        self.comment,
+                view:           self.view,
+                repost:         self.repost,
+                is_signature:   self.is_signature,
+                reactions:      self.reactions,
+                types:          self.get_code(),
+                parent:         self.get_parent_post_json(),
+                reactions_list: self.get_reactions_json(user_id, reactions_list.clone()),
+                attachments:    None,
             };
     }
 
@@ -675,10 +678,9 @@ impl Post {
         let _connection = establish_connection();
         let _react_model = post_counter_reactions
             .filter(schema::post_counter_reactions::post_id.eq(self.id))
-            .load::<PostCounterReaction>(&_connection)
-            .expect("E.");
-        if _react_model.len() > 0 {
-            return _react_model.into_iter().nth(0).unwrap();
+            .first::<PostCounterReaction>(&_connection);
+        if _react_model.is_ok() {
+            return _react_model.expect("Error.");
         }
         else {
             let new_react_model = NewPostCounterReaction {
@@ -719,9 +721,10 @@ impl Post {
 
                 // если пользователь уже реагировал этой реакцией на этот товар
                 if vote.reaction_id == reaction_id {
-                    diesel::delete(post_reactions
-                        .filter(schema::post_reactions::user_id.eq(user_id))
-                        .filter(schema::post_reactions::post_id.eq(self.id))
+                    diesel::delete (
+                        post_reactions
+                            .filter(schema::post_reactions::user_id.eq(user_id))
+                            .filter(schema::post_reactions::post_id.eq(self.id))
                         )
                         .execute(&_connection)
                         .expect("E");
@@ -732,7 +735,7 @@ impl Post {
                 else {
                     diesel::update(&vote)
                         .set(schema::post_reactions::reaction_id.eq(reaction_id))
-                        .get_result::<PostReaction>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
 
                     react_model.update_count(self.id, user_id, false);
@@ -848,7 +851,7 @@ impl Post {
         let _connection = establish_connection();
         return Ok(post_lists
             .filter(schema::post_lists::id.eq(self.post_list_id))
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .first::<PostList>(&_connection)?);
     }
 
@@ -951,7 +954,7 @@ impl Post {
         };
         diesel::update(self)
             .set(edit_post)
-            .get_result::<Post>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
 
         return RespPost {
@@ -972,7 +975,7 @@ impl Post {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::posts::comment.eq(self.comment + count))
-            .get_result::<Post>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
@@ -980,7 +983,7 @@ impl Post {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::posts::reactions.eq(self.reactions + count))
-            .get_result::<Post>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
 
         //if self.community_id.is_some() {
@@ -1036,7 +1039,7 @@ impl Post {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::posts::reactions.eq(self.reactions - count))
-            .get_result::<Post>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
 
         //let _q_standalone = "%".to_owned() + &"отреагировал на запись".to_string() + &"%".to_string();
@@ -1062,25 +1065,25 @@ impl Post {
         let _connection = establish_connection();
         diesel::update(self)
             .set(schema::posts::comment.eq(self.comment - count))
-            .get_result::<Post>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
         return true;
     }
 
     pub fn is_open(&self) -> bool {
-        return self.types == 1 && self.types == 2;
+        return self.types < 11;
     }
     pub fn is_deleted(&self) -> bool {
-        return self.types > 10 || self.types < 20;
+        return self.types > 39 || self.types < 80;
     }
     pub fn is_closed(&self) -> bool {
-        return self.types > 20 || self.types < 30;
+        return self.types > 79 || self.types < 120;
     }
     pub fn is_fixed(&self) -> bool {
-        return self.types == 2;
+        return self.types == 10;
     }
     pub fn is_repost(&self) -> bool {
-        return self.types == 8;
+        return self.types == 35;
     }
 
     pub fn on_comments(&self) -> i16 {
@@ -1112,19 +1115,8 @@ impl Post {
 
     pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
-        let close_case = match self.types {
-            1 => 11,
-            2 => 12,
-            3 => 13,
-            4 => 14,
-            5 => 15,
-            6 => 16,
-            7 => 17,
-            8 => 18,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
+            .set(schema::posts::types.eq(self.types + 40))
             .execute(&_connection);
         let list = self.get_list().expect("E");
         let o_2 = diesel::update(&list)
@@ -1149,19 +1141,8 @@ impl Post {
     }
     pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
-        let close_case = match self.types {
-            11 => 1,
-            12 => 2,
-            13 => 3,
-            14 => 4,
-            15 => 5,
-            16 => 6,
-            17 => 7,
-            18 => 8,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
+            .set(schema::posts::types.eq(self.types - 40))
             .execute(&_connection);
         let list = self.get_list().expect("E");
         let o_2 = diesel::update(&list)
@@ -1187,19 +1168,8 @@ impl Post {
 
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
-        let close_case = match self.types {
-            1 => 21,
-            2 => 22,
-            3 => 23,
-            4 => 24,
-            5 => 25,
-            6 => 26,
-            7 => 27,
-            8 => 28,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
+            .set(schema::posts::types.eq(self.types + 80))
             .execute(&_connection);
         let list = self.get_list().expect("E");
         let o_2 = diesel::update(&list)
@@ -1223,22 +1193,9 @@ impl Post {
         }
     }
     pub fn unclose_item(&self) -> i16 {
-        //use crate::models::show_wall_notify_items;
-
         let _connection = establish_connection();
-        let close_case = match self.types {
-            21 => 1,
-            22 => 2,
-            23 => 3,
-            24 => 4,
-            25 => 5,
-            26 => 6,
-            27 => 7,
-            28 => 8,
-            _ => self.types,
-        };
         let o_1 = diesel::update(self)
-            .set(schema::posts::types.eq(close_case))
+            .set(schema::posts::types.eq(self.types - 80))
             .execute(&_connection);
         let list = self.get_list().expect("E");
         let o_2 = diesel::update(&list)
@@ -1327,7 +1284,7 @@ impl Post {
         if user.is_can_fixed_post() {
             let _connection = establish_connection();
             let u = diesel::update(self)
-                .set(schema::posts::types.eq(2))
+                .set(schema::posts::types.eq(10))
                 .execute(&_connection);
             if u.is_ok() {
                 return 1;
@@ -1340,7 +1297,7 @@ impl Post {
         if community.is_can_fixed_post() {
             let _connection = establish_connection();
             let u = diesel::update(self)
-                .set(schema::posts::types.eq(2))
+                .set(schema::posts::types.eq(10))
                 .execute(&_connection);
             if u.is_ok() {
                 return 1;
@@ -1352,7 +1309,7 @@ impl Post {
     pub fn unfixed_post(&self) -> i16 {
         let _connection = establish_connection();
         let u = diesel::update(self)
-            .set(schema::posts::types.eq(1))
+            .set(schema::posts::types.eq(0))
             .execute(&_connection);
         if u.is_ok() {
             return 1;
@@ -1373,7 +1330,7 @@ impl Post {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::parent_id.eq(self.id))
-            .filter(schema::posts::types.eq_any(vec![1, 2]))
+            .filter(schema::posts::types.lt(40))
             .limit(limit)
             .offset(offset)
             .load::<Post>(&_connection)
@@ -1385,7 +1342,7 @@ impl Post {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::parent_id.eq(self.id))
-            .filter(schema::posts::types.eq_any(vec![1, 2]))
+            .filter(schema::posts::types.lt(40))
             .limit(limit)
             .load::<Post>(&_connection)
             .expect("E");
@@ -1398,18 +1355,14 @@ impl Post {
         for i in query.iter() {
             let item = posts
                 .filter(schema::posts::id.eq(i.key))
-                .filter(schema::posts::types.eq(1))
-                .limit(1)
-                .load::<Post>(&_connection)
-                .expect("E")
-                .into_iter()
-                .nth(0)
-                .unwrap();
-
-            diesel::update(&item)
-                .set(schema::posts::position.eq(i.value))
-                .get_result::<Post>(&_connection)
-                .expect("Error.");
+                .filter(schema::posts::types.lt(10))
+                .first::<Post>(&_connection);
+            if item.is_ok() {
+                diesel::update(&item.expect("E."))
+                    .set(schema::posts::position.eq(i.value))
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
         }
     }
 
@@ -1432,7 +1385,36 @@ impl Post {
         //    use crate::utils::get_formatted_text;
         //    _content = Some(get_formatted_text(&content.unwrap()));
         //}
-
+        let _types: i16;
+        let list = self.get_list();
+        if list.community_id.is_some() {
+            let _community = list.get_community();
+            if list.is_anon_user_see_el() && _community.is_anon_user_see_el() {
+                _types = 0;
+            }
+            else {
+                _types = 5;
+            }
+        }
+        else {
+            let _creator = list.get_creator().expect("E.");
+            if list.is_anon_user_see_el() && _creator.is_anon_user_see_el() {
+                _types = 0;
+            }
+            else {
+                _types = 5;
+            }
+        }
+        if community_id.is_some() {
+            get_community(community_id.unwrap())
+                .expect("E.")
+                .plus_posts(1);
+        }
+        else {
+            get_creator(user_id)
+                .expect("E.")
+                .plus_posts(1);
+        }
         let new_comment_form = NewPostComment {
             post_id:      self.id,
             user_id:      user_id,
@@ -1440,7 +1422,7 @@ impl Post {
             parent_id:    parent_id,
             content:      content.clone(),
             attach:       attachments.clone(),
-            types:        1,
+            types:        _types,
             created:      chrono::Local::now().naive_utc(),
             repost:       0,
             reactions:    0,
@@ -1450,6 +1432,8 @@ impl Post {
             .values(&new_comment_form)
             .get_result::<PostComment>(&_connection)
             .expect("Error.");
+
+
         return RespComment {
             id:           new_comment.id,
             post_id:      self.id,
@@ -1466,7 +1450,7 @@ impl Post {
         let _connection = establish_connection();
         return Ok(posts
             .filter(schema::posts::id.eq(self.parent_id.unwrap()))
-            .filter(schema::posts::types.lt(10))
+            .filter(schema::posts::types.lt(31))
             .first::<Post>(&_connection)?);
     }
 }
