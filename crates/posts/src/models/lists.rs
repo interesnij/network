@@ -1785,7 +1785,7 @@ impl PostList {
             if see_el_unwrap == 1 || see_el_unwrap == 14 {
                 for item in list.get_items().iter() {
                     if item.types == 5 {
-                        diesel::update(&item)
+                        diesel::update(item)
                             .set(types.eq(types - 5))
                             .execute(&_connection)
                             .expect("Error.");
@@ -2339,7 +2339,7 @@ impl PostList {
             let list_positions = community_post_list_positions
                 .filter(schema::community_post_list_positions::community_id.eq(self.community_id.unwrap()))
                 .filter(schema::community_post_list_positions::list_id.eq(self.id))
-                .load::<CommunityPostListPosition>(&_connection);
+                .first::<CommunityPostListPosition>(&_connection);
             if list_positions.is_ok() {
                 let list_position = list_positions.expect("Error.");
                 diesel::update(&list_position)
@@ -2353,7 +2353,7 @@ impl PostList {
             let list_positions = user_post_list_positions
                 .filter(schema::user_post_list_positions::user_id.eq(self.user_id))
                 .filter(schema::user_post_list_positions::list_id.eq(self.id))
-                .load::<UserPostListPosition>(&_connection);
+                .first::<UserPostListPosition>(&_connection);
             if list_positions.is_ok() {
                 let list_position = list_positions.expect("E.");
                 diesel::update(&list_position)
