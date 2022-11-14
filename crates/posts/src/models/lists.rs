@@ -13,13 +13,12 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     get_post_list,
-    PostListDetailJson,
-    PostListPageJson,
+    PostListDetailJson, PostListPageJson,
     CardUserJson,
     CardOwnerJson,
     ReactionsJson,
     EditListJson, RespListJson, DataListJson,
-    DataNewPost, RespPost,
+    DataNewPost, RespPost, CardPostJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -669,7 +668,7 @@ impl PostList {
         else {
             _limit = limit;
         }
-        let reactions_list = list.get_reactions_list();
+        let reactions_list = self.get_reactions_list();
 
         let mut posts_json = Vec::new();
         let items = posts
@@ -1400,7 +1399,7 @@ impl PostList {
             let new_post_list = NewPostList {
                 name:           "Список записей".to_string(),
                 community_id:   Some(community_id),
-                user_id:        community.user_id,
+                user_id:        _community.user_id,
                 types:          0,
                 description:    None,
                 image:          None,
@@ -1490,14 +1489,14 @@ impl PostList {
         let _user = get_user(user_id).expect("E.");
         let count = _user.count_lists() + 1;
         _user.plus_lists(1);
-        return count;
+        return count.try_into().unwrap();
     }
     pub fn get_community_post_lists_new_position(community_id: i32) -> i16 {
         use crate::utils::get_community;
         let _community = get_community(community_id).expect("E.");
         let count = _community.count_lists() + 1;
         _community.plus_lists(1);
-        return count;
+        return count.try_into().unwrap();
     }
 
     pub fn create_list (data: Json<DataListJson>) -> RespListJson {
@@ -1793,7 +1792,7 @@ impl PostList {
                 for item in list.get_items().iter() {
                     if item.types == 5 {
                         diesel::update(item)
-                            .set(types.eq(schema::post_lists::types - 5))
+                            .set(schema::post_lists::types.eq(item.types + 5))
                             .execute(&_connection)
                             .expect("Error.");
                     }
@@ -1803,7 +1802,7 @@ impl PostList {
                 for item in list.get_items().iter() {
                     if item.types == 0 {
                         diesel::update(item)
-                            .set(types.eq(schema::post_lists::types + 5))
+                            .set(schema::post_lists::types.eq(item.types + 5))
                             .execute(&_connection)
                             .expect("Error.");
                     }
