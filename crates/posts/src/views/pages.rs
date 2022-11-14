@@ -251,7 +251,7 @@ pub async fn add_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<AddUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || user_id == 0 {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -283,7 +283,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<EditUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() || user_id == 0 {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {

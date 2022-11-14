@@ -187,7 +187,6 @@ pub async fn delete_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
         else {
             if community_id == 0 && (item.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(item.user_id).expect("E.");
                 let _res = block(move || item.delete_item()).await?;
                 Ok(Json(_res))
             }
@@ -227,7 +226,6 @@ pub async fn recover_post(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
         else {
             if community_id == 0 && (item.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(item.user_id).expect("E.");
                 let _res = block(move || item.restore_item()).await?;
                 Ok(Json(_res))
             }
@@ -268,7 +266,6 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
         else {
             if community_id == 0 && (item.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(item.user_id).expect("E.");
                 let _res = block(move || item.on_comments()).await?;
                 Ok(Json(_res))
             }
@@ -309,7 +306,6 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
         else {
             if community_id == 0 && (item.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(item.user_id).expect("E.");
                 let _res = block(move || item.off_comments()).await?;
                 Ok(Json(_res))
             }

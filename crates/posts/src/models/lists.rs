@@ -24,9 +24,9 @@ use crate::utils::{
 use actix_web::web::Json;
 use crate::models::{
     Post, User, Community,
-    UserPostListCollection, NewUserPostListCollection,
+    NewUserPostListCollection,
     UserPostListPosition, CommunityPostListPosition,
-    CommunityPostListCollection, NewCommunityPostListCollection,
+    NewCommunityPostListCollection,
     PostListPerm, NewPostListPerm,
 };
 

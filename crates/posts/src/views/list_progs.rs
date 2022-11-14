@@ -242,7 +242,6 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
         Err(Error::BadRequest(body))
     }
     else if community_id > 0 {
-        let community = get_community(community_id).expect("E.");
         let _res = block(move || PostList::create_list(data)).await?;
         Ok(Json(_res))
     }
@@ -279,7 +278,6 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
         Err(Error::BadRequest(body))
     }
     else if community_id > 0 {
-        let community = get_community(community_id).expect("E.");
         let _res = block(move || PostList::edit_list(data)).await?;
         Ok(Json(_res))
     }
@@ -327,7 +325,6 @@ pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
         else {
             if community_id == 0 && (list.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(list.user_id).expect("E.");
                 let _res = block(move || list.delete_item()).await?;
                 Ok(Json(_res))
             }
@@ -367,7 +364,6 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
         else {
             if community_id == 0 && (list.user_id == user_id || list.user_id == user_id) {
-                let owner = get_user(list.user_id).expect("E.");
                 let _res = block(move || list.restore_item()).await?;
                 Ok(Json(_res))
             }

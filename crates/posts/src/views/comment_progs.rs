@@ -226,7 +226,6 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
         let item = get_post_comment(data.item_id.unwrap()).expect("E.");
         let list = item.get_list();
         if item.community_id.is_some() {
-            let c_id = item.community_id.unwrap();
             if community_id > 0 && list.community_id.unwrap() != community_id {
                 Err(Error::BadRequest("Permission Denied".to_string()))
             }
