@@ -119,7 +119,7 @@ impl PostComment {
                 reactions:      c.reactions,
                 types:          c.get_code(),       // например cpo1
                 replies:        c.replies,          // кол-во ответов
-                reactions_list: c.get_reactions_json(user_id, c.get_list().reactions_list),
+                reactions_list: c.get_reactions_json(user_id, c.get_list().get_reactions_list()),
                 attachments:    None,
             });
         }
