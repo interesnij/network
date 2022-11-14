@@ -1388,7 +1388,7 @@ impl PostList {
 
             let _community = get_community(community_id).expect("Error.");
             let open_vec = vac![1,7,13];
-            let create_type: i16;
+            let open_type: i16;
             if open_vec.iter().any()(|&i| i==_community.types) {
                 open_type = 14;
             }
@@ -1486,12 +1486,14 @@ impl PostList {
     }
 
     pub fn get_user_post_lists_new_position(user_id: i32) -> i16 {
+        use crate::utils::get_user;
         let _user = get_user(user_id).expect("E.");
         let count = _user.count_lists() + 1;
         _user.plus_lists(1);
         return count;
     }
     pub fn get_community_post_lists_new_position(community_id: i32) -> i16 {
+        use crate::utils::get_community;
         let _community = get_community(community_id).expect("E.");
         let count = _community.count_lists() + 1;
         _community.plus_lists(1);
@@ -1791,7 +1793,7 @@ impl PostList {
                 for item in list.get_items().iter() {
                     if item.types == 5 {
                         diesel::update(item)
-                            .set(types.eq(types - 5))
+                            .set(types.eq(schema::post_lists::types - 5))
                             .execute(&_connection)
                             .expect("Error.");
                     }
@@ -1801,7 +1803,7 @@ impl PostList {
                 for item in list.get_items().iter() {
                     if item.types == 0 {
                         diesel::update(item)
-                            .set(types.eq(types + 5))
+                            .set(types.eq(schema::post_lists::types + 5))
                             .execute(&_connection)
                             .expect("Error.");
                     }
@@ -2468,7 +2470,7 @@ impl PostList {
             }
         }
         else {
-            let _creator = self.get_creator().expect("E.");;
+            let _creator = self.get_creator().expect("E.");
             if self.is_anon_user_see_el() && _creator.is_anon_user_see_el() {
                 _types = 0;
             }

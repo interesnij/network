@@ -1406,11 +1406,13 @@ impl Post {
             }
         }
         if community_id.is_some() {
+            use crate::utils::get_community;
             get_community(community_id.unwrap())
                 .expect("E.")
                 .plus_posts(1);
         }
         else {
+            use crate::utils::get_creator;
             get_creator(user_id)
                 .expect("E.")
                 .plus_posts(1);

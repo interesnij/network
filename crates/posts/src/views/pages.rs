@@ -41,9 +41,9 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/post_reactions/", web::get().to(post_reactions_page));
     config.route("/comment_reactions/", web::get().to(comment_reactions_page));
 
-    config.route("/search_lists/", web::get().to(search_lists_page));
-    config.route("/search_posts/", web::get().to(search_posts_page));
-    config.route("/search_comments/", web::get().to(search_comments_page));
+    //config.route("/search_lists/", web::get().to(search_lists_page));
+    //config.route("/search_posts/", web::get().to(search_posts_page));
+    //config.route("/search_comments/", web::get().to(search_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
