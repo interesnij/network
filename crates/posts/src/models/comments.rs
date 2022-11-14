@@ -4,6 +4,7 @@ use diesel::{
     Insertable,
     RunQueryDsl,
     ExpressionMethods,
+    PgTextExpressionMethods,
     QueryDsl,
     NullableExpressionMethods,
 };

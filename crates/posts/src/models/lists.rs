@@ -5,6 +5,7 @@ use diesel::{
     RunQueryDsl,
     NullableExpressionMethods,
     ExpressionMethods,
+    PgTextExpressionMethods,
     QueryDsl,
 };
 use crate::schema::post_lists;
@@ -1382,7 +1383,7 @@ impl PostList {
             let _community = get_community(community_id).expect("Error.");
             let open_vec = vec![1,7,13];
             let open_type: i16;
-            if open_vec.iter().any()(|&i| i==_community.types) {
+            if open_vec.iter().any(|&i| i==_community.types) {
                 open_type = 14;
             }
             else {
