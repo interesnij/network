@@ -124,6 +124,39 @@ pub struct EditPostPosition {
 }
 
 impl Post {
+    pub fn search_items (
+        q:       &String,
+        user_id: i32,
+        limit:   i64,
+        offset:  i64,
+    ) -> Vec<CardPostJson> {
+        use crate::schema::posts::dsl::posts;
+
+        let _connection = establish_connection();
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let reactions_list = self.get_reactions_list();
+
+        let mut posts_json = Vec::new();
+        let items = posts
+            .filter(schema::posts::content.ilike(&q))
+            .filter(schema::posts::types.lt(11))
+            .limit(_limit)
+            .offset(offset)
+            .order(schema::posts::created.desc())
+            .load::<Post>(&_connection)
+            .expect("E.");
+
+        for i in items.iter() {
+            posts_json.push ( i.get_post_json(user_id, i.get_list().expect("E.").get_reactions_list()) )
+        }
+        return posts_json;
+    }
     pub fn item_message_reposts_count (
         item_id: i32,
         types: i16
