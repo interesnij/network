@@ -140,7 +140,6 @@ impl Post {
         else {
             _limit = limit;
         }
-        let reactions_list = self.get_reactions_list();
 
         let mut posts_json = Vec::new();
         let items = posts
