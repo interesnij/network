@@ -15,7 +15,7 @@ mod views;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use actix_web::{App, HttpServer, JsonConfig};
+    use actix_web::{App, HttpServer, web::JsonConfig};
     use actix_cors::Cors;
     use crate::routes::routes;
 

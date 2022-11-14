@@ -1412,8 +1412,8 @@ impl Post {
                 .plus_posts(1);
         }
         else {
-            use crate::utils::get_creator;
-            get_creator(user_id)
+            use crate::utils::get_user;
+            get_user(user_id)
                 .expect("E.")
                 .plus_posts(1);
         }

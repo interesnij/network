@@ -673,7 +673,7 @@ impl PostList {
         let mut posts_json = Vec::new();
         let items = posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::items::content.ilike(&q))
+            .filter(schema::posts::content.ilike(&q))
             .filter(schema::posts::types.lt(11))
             .limit(_limit)
             .offset(offset)
@@ -1319,10 +1319,7 @@ impl PostList {
             return list.expect("E.");
         }
         else {
-            use crate::models::{
-                NewCommunityPostListPosition,
-                NewUserPostListPosition,
-            };
+            use crate::models::NewUserPostListPosition;
             use crate::utils::get_user;
 
             let _connection = establish_connection();
@@ -1379,14 +1376,11 @@ impl PostList {
             return list.expect("E.");
         }
         else {
-            use crate::models::{
-                NewCommunityPostListPosition,
-                NewCommunityPostListPosition,
-            };
+            use crate::models::NewCommunityPostListPosition;
             use crate::utils::get_community;
 
             let _community = get_community(community_id).expect("Error.");
-            let open_vec = vac![1,7,13];
+            let open_vec = vec![1,7,13];
             let open_type: i16;
             if open_vec.iter().any()(|&i| i==_community.types) {
                 open_type = 14;
@@ -1792,7 +1786,7 @@ impl PostList {
                 for item in list.get_items().iter() {
                     if item.types == 5 {
                         diesel::update(item)
-                            .set(schema::post_lists::types.eq(item.types + 5))
+                            .set(schema::posts::types.eq(item.types + 5))
                             .execute(&_connection)
                             .expect("Error.");
                     }
@@ -1802,7 +1796,7 @@ impl PostList {
                 for item in list.get_items().iter() {
                     if item.types == 0 {
                         diesel::update(item)
-                            .set(schema::post_lists::types.eq(item.types + 5))
+                            .set(schema::posts::types.eq(item.types + 5))
                             .execute(&_connection)
                             .expect("Error.");
                     }
