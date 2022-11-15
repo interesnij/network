@@ -124,7 +124,7 @@ pub struct EditPostPosition {
 }
 
 pub struct SearchAllPosts {
-    pub posts:  CardPostJson,
+    pub posts:  Vec<CardPostJson>,
     pub offset: i64,
 }
 
@@ -279,7 +279,7 @@ impl Post {
         }
         else {
             return SearchAllPosts {
-                posts:  Vec::new(),
+                posts:  posts_json,
                 offset: 0,
             };
         }
