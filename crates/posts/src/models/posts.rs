@@ -274,7 +274,7 @@ impl Post {
                             }
                         }
                         else {
-                            creator_include.push(i.user_id);
+                            creator_exclude.push(i.user_id);
                             continue;
                         }
                     }
