@@ -294,9 +294,6 @@ impl Post {
         }
     }
 
-
-
-
     pub fn item_message_reposts_count (
         item_id: i32,
         types: i16

@@ -15,9 +15,8 @@ use crate::utils::{
     establish_connection,
     get_post_list,
     PostListDetailJson, PostListPageJson,
-    CardUserJson,
-    CardOwnerJson,
-    ReactionsJson,
+    CardUserJson, CardOwnerJson,
+    ReactionsJson, CardCommentJson,
     EditListJson, RespListJson, DataListJson,
     DataNewPost, RespPost, CardPostJson,
 };
@@ -651,6 +650,17 @@ impl PostList {
             .load::<Post>(&_connection)
             .expect("E.");
     }
+    pub fn get_items_ids(&self) -> Vec<i32> {
+        use crate::schema::posts::dsl::posts;
+
+        let _connection = establish_connection();
+        return posts
+            .filter(schema::posts::post_list_id.eq(self.id))
+            .filter(schema::posts::types.lt(10))
+            .select(schema::posts::id.desc())
+            .load::<i32>(&_connection)
+            .expect("E.");
+    }
 
     pub fn search_items (
         &self,
@@ -693,6 +703,54 @@ impl PostList {
 
         return posts_json;
     }
+    pub fn search_comments (
+        &self,
+        q:       &String,
+        user_id: i32,
+        limit:   i64,
+        offset:  i64,
+    ) -> Vec<CardCommentJson> {
+        if limit < 101 && ((user_id > 0 && self.is_user_see_el(user_id))
+            ||
+            (user_id == 0 && self.is_anon_user_see_el()))
+            {
+            use crate::schema::post_comments::dsl::post_comments;
+
+            let _connection = establish_connection();
+            let reactions_list = self.get_reactions_list();
+            let mut comments_json = Vec::new();
+            let items = post_comments
+                .filter(schema::post_comments::post_id.eq_any(self.get_posts_ids()))
+                .filter(schema::post_comments::content.ilike(&q))
+                .filter(schema::post_comments::types.lt(5))
+                .limit(limit)
+                .offset(offset)
+                .order(schema::post_comments::created.desc())
+                .load::<PostComment>(&_connection)
+                .expect("E.");
+
+            for c in items.iter() {
+                let creator = c.get_owner_meta().expect("E");
+                comments_json.push (CardCommentJson {
+                    content:        c.content.clone(),
+                    owner_name:     creator.name.clone(),
+                    owner_link:     creator.link.clone(),
+                    owner_image:    creator.image.clone(),
+                    created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                    reactions:      c.reactions,
+                    types:          c.get_code(),       // например cpo1
+                    replies:        c.replies,          // кол-во ответов
+                    reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
+                    attachments:    None,
+                });
+            }
+            return comments_json;
+        }
+        else {
+            return Vec::new();
+        }
+    }
+
     pub fn get_paginate_items(&self, limit: i64, offset: i64) -> Vec<Post> {
         use crate::schema::posts::dsl::posts;
 

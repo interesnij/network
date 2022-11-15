@@ -7,6 +7,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
     NullableExpressionMethods,
+    PgTextExpressionMethods,
 };
 use crate::schema;
 use crate::models::{
@@ -729,6 +730,41 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
+            .load::<CardUserJson>(&_connection)?;
+        return Ok(blocked_users);
+    }
+    pub fn search_blocked_users (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Result<Vec<CardUserJson>, Error> {
+        use crate::schema::{
+            user_blocks::dsl::user_blocks,
+            users::dsl::users,
+        };
+
+        let _connection = establish_connection();
+        let all_user_blocks = user_blocks
+            .filter(schema::user_blocks::user_id.eq(self.id))
+            .order(schema::user_blocks::id.desc())
+            .select(schema::user_blocks::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        let blocked_users = users
+            .filter(schema::users::id.eq_any(all_user_blocks))
+            .filter(schema::users::types.lt(30))
+            .filter(schema::posts::first_name.ilike(&q))
+            .or_filter(schema::posts::last_name.ilike(&q))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .limit(limit)
+            .offset(offset)
             .load::<CardUserJson>(&_connection)?;
         return Ok(blocked_users);
     }

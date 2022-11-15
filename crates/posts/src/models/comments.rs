@@ -80,51 +80,173 @@ pub struct EditComment {
     pub attach:  Option<String>,
 }
 
+pub struct SearchAllComments {
+    pub posts:  Vec<CardPostJson>,
+    pub offset: i64,
+}
 impl PostComment {
-    pub fn search_items (
+    pub fn search_posts (
         q:       &String,
         user_id: i32,
         limit:   i64,
         offset:  i64,
-    ) -> Vec<CardCommentJson> {
-        use crate::schema::post_comments::dsl::post_comments;
-
-        let _connection = establish_connection();
-        let _limit: i64;
+    ) -> SearchAllComments {
         if limit > 100 {
-            _limit = 20;
+            use crate::schema::post_comments::dsl::post_comments;
+
+            let _connection = establish_connection();
+            let mut _count = 0;
+            let mut _step = 0;
+            let mut _offset = offset;
+
+            let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
+            let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
+            let mut list_include: Vec<i32> = Vec::new();
+            let mut creator_exclude: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых нельзя смотреть посты
+            let mut community_exclude: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно нельзя посты
+            let mut list_exclude: Vec<i32> = Vec::new();      // запишем ids списков, у которых можно нельзя посты
+            let mut list_json = Vec::new();
+
+            while _count < limit {
+                _step += limit;
+
+                let items = post_comments
+                    .filter(schema::post_comments::content.ilike(&q))
+                    .filter(schema::post_comments::types.lt(10))
+                    .limit(_step)
+                    .offset(_offset)
+                    .order(schema::post_comments::created.desc())
+                    .load::<PostComment>(&_connection)
+                    .expect("E.");
+
+                for i in items.iter() {
+                    if _count == limit {
+                        break;
+                    }
+                    let list = i.get_list();
+                    // проверяем, запрещено ли запрашивающему смотреть
+                    // посты пользователя или сообщества или списка
+                    if creator_exclude.iter().any(|&a| a==list.user_id)
+                        ||
+                        (list.community_id.is_some() && community_exclude.iter().any(|&a| a==list.community_id.unwrap()))
+                        ||
+                        list_exclude.iter().any(|&a| a==list.id)
+                    {
+                        continue;
+                    }
+                    else if list_include.iter().any(|&a| a==list.id) {
+                        _count += 1;
+                        list_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                        continue;
+
+                    }
+
+                    if list.community_id.is_some() {
+                        // если пост сообщества
+                        if community_include.iter().any(|&a| a==list.community_id.unwrap()) {
+                            // если id сообщества в разрешенных community_include,
+                            if (user_id > 0 && list.is_user_see_el(user_id))
+                                ||
+                                (user_id == 0 && list.is_anon_user_see_el())
+                            {
+                                list_json.push ( i.get_comment_json(user_id, list.get_reactions_list()) );
+                                _count += 1;
+                                list_include.push(list.id);
+                                continue;
+                            }
+                            else {
+                                list_exclude.push(list.id);
+                                continue;
+                            }
+                        }
+                        else {
+                            // если id сообщества нет в разрешенных community_include,
+                            let community = list.get_community().expect("E.");
+                            if (user_id > 0 && community.is_user_see_el(user_id))
+                                ||
+                                (user_id == 0 && community.is_anon_user_see_el())
+                            {
+                                community_include.push(community.id);
+                                if (user_id > 0 && list.is_user_see_el(user_id))
+                                    ||
+                                    (user_id == 0 && list.is_anon_user_see_el())
+                                {
+                                    list_json.push ( i.get_comment_json(user_id, list.get_reactions_list()) );
+                                    _count += 1;
+                                    list_include.push(list.id);
+                                    continue;
+                                }
+                                else {
+                                    list_exclude.push(list.id);
+                                    continue;
+                                }
+                            }
+                            else {
+                                community_exclude.push(list.community_id.unwrap());
+                                continue;
+                            }
+                        }
+                    }
+                    // если пост пользователя
+                    if creator_include.iter().any(|&a| a==list.user_id) {
+                        // если id пользователя в разрешенных creator_include,
+                        if (user_id > 0 && list.is_user_see_el(user_id))
+                            ||
+                            (user_id == 0 && list.is_anon_user_see_el())
+                        {
+                            list_json.push ( i.get_comment_json(user_id, list.get_reactions_list()) );
+                            _count += 1;
+                            list_include.push(list.id);
+                            continue;
+                        }
+                        else {
+                            list_exclude.push(list.id);
+                            continue;
+                        }
+                    }
+                    else {
+                        // если id пользователя нет в разрешенных creator_include,
+                        let creator = list.get_creator().expect("E.");
+                        if (user_id > 0 && creator.is_user_see_el(user_id))
+                            ||
+                            (user_id == 0 && creator.is_anon_user_see_el())
+                        {
+                            creator_include.push(creator.id);
+                            if (user_id > 0 && list.is_user_see_el(user_id))
+                                ||
+                                (user_id == 0 && list.is_anon_user_see_el())
+                            {
+                                list_json.push ( i.get_comment_json(user_id, list.get_reactions_list()) );
+                                _count += 1;
+                                list_include.push(list.id);
+                                continue;
+                            }
+                            else {
+                                list_exclude.push(list.id);
+                                continue;
+                            }
+                        }
+                        else {
+                            creator_exclude.push(list.user_id);
+                            continue;
+                        }
+                    }
+                }
+                _offset += limit;
+            }
+            return SearchAllComments {
+                comments: comments_json,
+                offset:   offset,
+            };
         }
         else {
-            _limit = limit;
+            return SearchAllComments {
+                comments: Vec::new(),
+                offset:   0,
+            };
         }
-
-        let mut comments_json = Vec::new();
-        let items = post_comments
-            .filter(schema::post_comments::content.ilike(&q))
-            .filter(schema::post_comments::types.lt(5))
-            .limit(_limit)
-            .offset(offset)
-            .order(schema::post_comments::created.desc())
-            .load::<PostComment>(&_connection)
-            .expect("E.");
-
-        for c in items.iter() {
-            let creator = c.get_owner_meta().expect("E");
-            comments_json.push (CardCommentJson {
-                content:        c.content.clone(),
-                owner_name:     creator.name.clone(),
-                owner_link:     creator.link.clone(),
-                owner_image:    creator.image.clone(),
-                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
-                reactions:      c.reactions,
-                types:          c.get_code(),       // например cpo1
-                replies:        c.replies,          // кол-во ответов
-                reactions_list: c.get_reactions_json(user_id, c.get_list().get_reactions_list()),
-                attachments:    None,
-            });
-        }
-        return comments_json;
     }
+
     pub fn get_6_user_of_reaction (
         &self,
         reaction_id:   &i32,
