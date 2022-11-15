@@ -279,7 +279,7 @@ impl Post {
         }
         else {
             return SearchAllPosts {
-                posts:  posts_json,
+                posts:  Vec::new(),
                 offset: 0,
             };
         }
