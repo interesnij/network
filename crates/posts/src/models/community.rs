@@ -1,5 +1,8 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
+use crate::utils::{
+    establish_connection,
+    CardPostJson,
+};
 use diesel::{
     Queryable,
     Insertable,
