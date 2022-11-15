@@ -81,8 +81,8 @@ pub struct EditComment {
 }
 
 pub struct SearchAllComments {
-    pub posts:  Vec<CardPostJson>,
-    pub offset: i64,
+    pub comments: Vec<CardPostJson>,
+    pub offset:   i64,
 }
 impl PostComment {
     pub fn search_posts (
@@ -136,7 +136,7 @@ impl PostComment {
                     }
                     else if list_include.iter().any(|&a| a==list.id) {
                         _count += 1;
-                        list_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                        list_json.push ( i.get_comment_json(user_id, list.get_reactions_list()) );
                         continue;
 
                     }

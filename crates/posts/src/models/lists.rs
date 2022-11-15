@@ -657,7 +657,7 @@ impl PostList {
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
             .filter(schema::posts::types.lt(10))
-            .select(schema::posts::id.desc())
+            .select(schema::posts::id)
             .load::<i32>(&_connection)
             .expect("E.");
     }
