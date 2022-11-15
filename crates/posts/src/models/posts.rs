@@ -142,13 +142,13 @@ impl Post {
             let mut _count = 0;
             let mut _step = 0;
 
-            let mut posts_list = Vec::new();
             let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
             let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
             let mut list_include: Vec<i32> = Vec::new();
             let mut creator_exclude: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых нельзя смотреть посты
             let mut community_exclude: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно нельзя посты
             let mut list_exclude: Vec<i32> = Vec::new();      // запишем ids списков, у которых можно нельзя посты
+            let mut posts_json = Vec::new();
 
             while _count < limit {
                 _step += limit;
@@ -186,7 +186,7 @@ impl Post {
                     }
 
                     let list = i.get_list().expect("E.");
-                    let mut posts_json = Vec::new();
+
                     if i.community_id.is_some() {
                         // если пост сообщества
                         if community_include.iter().any(|&a| a==i.community_id.unwrap()) {
