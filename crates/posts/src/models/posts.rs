@@ -171,7 +171,7 @@ impl Post {
                     // посты пользователя или сообщества или списка
                     if creator_exclude.iter().any(|&a| a==i.user_id)
                         ||
-                        (i.community_id.is_some() && community_exclude.iter().any(|&a| a==community_id.unwrap()))
+                        (i.community_id.is_some() && community_exclude.iter().any(|&a| a==i.community_id.unwrap()))
                         ||
                         list_exclude.iter().any(|&a| a==i.post_list_id)
                     {
@@ -186,6 +186,7 @@ impl Post {
                     }
 
                     let list = i.get_list().expect("E.");
+                    let mut posts_json = Vec::new();
                     if i.community_id.is_some() {
                         // если пост сообщества
                         if community_include.iter().any(|&a| a==i.community_id.unwrap()) {
