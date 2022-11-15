@@ -646,7 +646,7 @@ impl PostList {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.lt(11))
+            .filter(schema::posts::types.lt(10))
             .order(schema::posts::created.desc())
             .load::<Post>(&_connection)
             .expect("E.");
@@ -676,21 +676,21 @@ impl PostList {
             ||
             (user_id == 0 && self.is_anon_user_see_el())
             {
-                let items = posts
-                    .filter(schema::posts::post_list_id.eq(self.id))
-                    .filter(schema::posts::content.ilike(&q))
-                    .filter(schema::posts::types.lt(11))
-                    .limit(_limit)
-                    .offset(offset)
-                    .order(schema::posts::created.desc())
-                    .load::<Post>(&_connection)
-                    .expect("E.");
+            let items = posts
+                .filter(schema::posts::post_list_id.eq(self.id))
+                .filter(schema::posts::content.ilike(&q))
+                .filter(schema::posts::types.lt(11))
+                .limit(_limit)
+                .offset(offset)
+                .order(schema::posts::created.desc())
+                .load::<Post>(&_connection)
+                .expect("E.");
 
-                for i in items.iter() {
-                    posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
-                }
+            for i in items.iter() {
+                posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
             }
-        
+        }
+
         return posts_json;
     }
     pub fn get_paginate_items(&self, limit: i64, offset: i64) -> Vec<Post> {
@@ -699,7 +699,7 @@ impl PostList {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
-            .filter(schema::posts::types.lt(11))
+            .filter(schema::posts::types.lt(10))
             .limit(limit)
             .offset(offset)
             .order(schema::posts::created.desc())

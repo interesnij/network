@@ -1,5 +1,8 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
+use crate::utils::{
+    establish_connection,
+    CardPostJson,
+};
 use diesel::{
     Queryable,
     Insertable,
@@ -121,6 +124,85 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_post_lists (
+        &self,
+        limit: i64,
+        offset: i64
+    ) -> Vec<PostList> {
+        use crate::schema::post_lists::dsl::post_lists;
+
+        let _connection = establish_connection();
+        return post_lists
+            .filter(schema::post_lists::user_id.eq(self.id))
+            .filter(schema::post_lists::community_id.is_null())
+            .filter(schema::post_lists::types.lt(31))
+            .order(schema::post_lists::created.desc())
+            .limit(limit)
+            .offset(offset)
+            .load::<PostList>(&_connection)
+            .expect("E.");
+    }
+    pub fn search_posts (
+        &self,
+        q:       &String,
+        user_id: i32,
+        limit:   i64,
+        offset:  i64,
+    ) -> Vec<CardPostJson> {
+        use crate::schema::posts::dsl::posts;
+
+        let _connection = establish_connection();
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+
+        let mut posts_json = Vec::new();
+        if (user_id > 0 && self.is_user_see_el(user_id))
+            ||
+            (user_id == 0 && self.is_anon_user_see_el())
+            {
+            let mut _count = 0;
+
+            for list in self.get_post_lists(20, 0).iter() {
+                if (user_id > 0 && list.is_user_see_el(user_id))
+                    ||
+                    (user_id == 0 && list.is_anon_user_see_el())
+                    {
+                    let __limit = _limit - _count;
+                    let reactions_list = list.get_reactions_list();
+                    let items = posts
+                        .filter(schema::posts::post_list_id.eq(list.id))
+                        .filter(schema::posts::content.ilike(&q))
+                        .filter(schema::posts::types.lt(11))
+                        .limit(__limit)
+                        .offset(offset)
+                        .order(schema::posts::created.desc())
+                        .load::<Post>(&_connection)
+                        .expect("E.");
+
+                    for i in items.iter() {
+                        _count += 1;
+                        if _count < _limit {
+                            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return posts_json;
+        }
+        else {
+            return Vec::new();
+        }
+    }
     pub fn get_fixed_posts_ids(&self) -> Vec<i32> {
         use crate::schema::posts::dsl::posts;
 

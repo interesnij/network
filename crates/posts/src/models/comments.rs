@@ -101,7 +101,7 @@ impl PostComment {
         let mut comments_json = Vec::new();
         let items = post_comments
             .filter(schema::post_comments::content.ilike(&q))
-            .filter(schema::post_comments::types.lt(10))
+            .filter(schema::post_comments::types.lt(5))
             .limit(_limit)
             .offset(offset)
             .order(schema::post_comments::created.desc())
