@@ -141,6 +141,7 @@ impl Post {
             let _connection = establish_connection();
             let mut _count = 0;
             let mut _step = 0;
+            let mut _offset = offset;
 
             let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
             let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
@@ -157,7 +158,7 @@ impl Post {
                     .filter(schema::posts::content.ilike(&q))
                     .filter(schema::posts::types.lt(11))
                     .limit(_step)
-                    .offset(offset)
+                    .offset(_offset)
                     .order(schema::posts::created.desc())
                     .load::<Post>(&_connection)
                     .expect("E.");
@@ -270,7 +271,7 @@ impl Post {
                         }
                     }
                 }
-                offset += limit;
+                _offset += limit;
             }
             return SearchAllPosts {
                 posts:  posts_json,
