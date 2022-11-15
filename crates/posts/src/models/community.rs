@@ -6,6 +6,7 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
+    PgTextExpressionMethods,
 };
 use crate::schema;
 use crate::schema::{

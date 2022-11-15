@@ -9,6 +9,7 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
+    PgTextExpressionMethods,
 };
 use actix_web::web::Json;
 use crate::schema;
@@ -20,7 +21,7 @@ use crate::schema::{
 };
 
 //use crate::errors::Error;
-use crate::models::Post;
+use crate::models::{Post, PostList};
 
 ///// Типы пользоватетеля
     // 1 стандартный тип пользователя
