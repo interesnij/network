@@ -228,6 +228,10 @@ impl Post {
                                     continue;
                                 }
                             }
+                            else {
+                                community_exclude.push(i.community_id.unwrap());
+                                continue;
+                            }
                         }
                     }
                     // если пост пользователя
@@ -268,6 +272,10 @@ impl Post {
                                 list_exclude.push(i.post_list_id);
                                 continue;
                             }
+                        }
+                        else {
+                            creator_include.push(i.user_id);
+                            continue;
                         }
                     }
                 }
