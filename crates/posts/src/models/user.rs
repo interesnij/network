@@ -150,23 +150,15 @@ impl User {
         limit:   i64,
         offset:  i64,
     ) -> Vec<CardPostJson> {
-        use crate::schema::posts::dsl::posts;
-
-        let _connection = establish_connection();
-
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
-
         let mut posts_json = Vec::new();
-        if (user_id > 0 && self.is_user_see_el(user_id))
+        if limit < 101 &&
+            ((user_id > 0 && self.is_user_see_el(user_id))
             ||
-            (user_id == 0 && self.is_anon_user_see_el())
+            (user_id == 0 && self.is_anon_user_see_el()))
             {
+            use crate::schema::posts::dsl::posts;
+
+            let _connection = establish_connection();
             let mut _count = 0;
 
             for list in self.get_post_lists(20, 0).iter() {
@@ -174,13 +166,13 @@ impl User {
                     ||
                     (user_id == 0 && list.is_anon_user_see_el())
                     {
-                    let __limit = _limit - _count;
+                    let _limit = limit - _count;
                     let reactions_list = list.get_reactions_list();
                     let items = posts
                         .filter(schema::posts::post_list_id.eq(list.id))
                         .filter(schema::posts::content.ilike(&q))
                         .filter(schema::posts::types.lt(11))
-                        .limit(__limit)
+                        .limit(_limit)
                         .offset(offset)
                         .order(schema::posts::created.desc())
                         .load::<Post>(&_connection)
@@ -188,7 +180,7 @@ impl User {
 
                     for i in items.iter() {
                         _count += 1;
-                        if _count < _limit {
+                        if _count < limit {
                             posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
                         }
                         else {

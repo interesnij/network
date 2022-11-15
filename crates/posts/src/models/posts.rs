@@ -123,39 +123,170 @@ pub struct EditPostPosition {
     pub position: i16,
 }
 
+pub struct SearchAllPosts {
+    pub posts:  CardPostJson,
+    pub offset: i64,
+}
+
 impl Post {
-    pub fn search_items (
+    pub fn search_posts (
         q:       &String,
         user_id: i32,
         limit:   i64,
         offset:  i64,
-    ) -> Vec<CardPostJson> {
-        use crate::schema::posts::dsl::posts;
-
-        let _connection = establish_connection();
-        let _limit: i64;
+    ) -> SearchAllPosts {
         if limit > 100 {
-            _limit = 20;
+            use crate::schema::posts::dsl::posts;
+
+            let _connection = establish_connection();
+            let mut _count = 0;
+            let mut _step = 0;
+
+            let mut posts_list = Vec::new();
+            let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
+            let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
+            let mut list_include: Vec<i32> = Vec::new();
+            let mut creator_exclude: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых нельзя смотреть посты
+            let mut community_exclude: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно нельзя посты
+            let mut list_exclude: Vec<i32> = Vec::new();      // запишем ids списков, у которых можно нельзя посты
+
+            while _count < limit {
+                _step += limit;
+
+                let items = posts
+                    .filter(schema::posts::content.ilike(&q))
+                    .filter(schema::posts::types.lt(11))
+                    .limit(_step)
+                    .offset(offset)
+                    .order(schema::posts::created.desc())
+                    .load::<Post>(&_connection)
+                    .expect("E.");
+
+                for i in items.iter() {
+                    if _count == limit {
+                        break;
+                    }
+
+                    // проверяем, запрещено ли запрашивающему смотреть
+                    // посты пользователя или сообщества или списка
+                    if creator_exclude.iter().any(|&a| a==i.user_id)
+                        ||
+                        (i.community_id.is_some() && community_exclude.iter().any(|&a| a==community_id.unwrap()))
+                        ||
+                        list_exclude.iter().any(|&a| a==i.post_list_id)
+                    {
+                        continue;
+                    }
+                    else if list_include.iter().any(|&a| a==i.post_list_id) {
+                        _count += 1;
+                        let list = i.get_list().expect("E.");
+                        posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                        continue;
+
+                    }
+
+                    let list = i.get_list().expect("E.");
+                    if i.community_id.is_some() {
+                        // если пост сообщества
+                        if community_include.iter().any(|&a| a==i.community_id.unwrap()) {
+                            // если id сообщества в разрешенных community_include,
+                            if (user_id > 0 && list.is_user_see_el(user_id))
+                                ||
+                                (user_id == 0 && list.is_anon_user_see_el())
+                            {
+                                posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                                _count += 1;
+                                list_include.push(i.post_list_id);
+                                continue;
+                            }
+                            else {
+                                list_exclude.push(i.post_list_id);
+                                continue;
+                            }
+                        }
+                        else {
+                            // если id сообщества нет в разрешенных community_include,
+                            let community = i.get_community().expect("E.");
+                            if (user_id > 0 && community.is_user_see_el(user_id))
+                                ||
+                                (user_id == 0 && community.is_anon_user_see_el())
+                            {
+                                community_include.push(community.id);
+                                if (user_id > 0 && list.is_user_see_el(user_id))
+                                    ||
+                                    (user_id == 0 && list.is_anon_user_see_el())
+                                {
+                                    posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                                    _count += 1;
+                                    list_include.push(i.post_list_id);
+                                    continue;
+                                }
+                                else {
+                                    list_exclude.push(i.post_list_id);
+                                    continue;
+                                }
+                            }
+                        }
+                    }
+                    // если пост пользователя
+                    if creator_include.iter().any(|&a| a==i.user_id) {
+                        // если id пользователя в разрешенных creator_include,
+                        if (user_id > 0 && list.is_user_see_el(user_id))
+                            ||
+                            (user_id == 0 && list.is_anon_user_see_el())
+                        {
+                            posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                            _count += 1;
+                            list_include.push(i.post_list_id);
+                            continue;
+                        }
+                        else {
+                            list_exclude.push(i.post_list_id);
+                            continue;
+                        }
+                    }
+                    else {
+                        // если id пользователя нет в разрешенных creator_include,
+                        let creator = i.get_creator().expect("E.");
+                        if (user_id > 0 && creator.is_user_see_el(user_id))
+                            ||
+                            (user_id == 0 && creator.is_anon_user_see_el())
+                        {
+                            creator_include.push(creator.id);
+                            if (user_id > 0 && list.is_user_see_el(user_id))
+                                ||
+                                (user_id == 0 && list.is_anon_user_see_el())
+                            {
+                                posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                                _count += 1;
+                                list_include.push(i.post_list_id);
+                                continue;
+                            }
+                            else {
+                                list_exclude.push(i.post_list_id);
+                                continue;
+                            }
+                        }
+                    }
+                }
+                offset += limit;
+            }
+            return SearchAllPosts {
+                posts:  posts_json,
+                offset: offset,
+            };
         }
         else {
-            _limit = limit;
+            return SearchAllPosts {
+                posts:  Vec::new(),
+                offset: 0,
+            };
         }
-
-        let mut posts_json = Vec::new();
-        let items = posts
-            .filter(schema::posts::content.ilike(&q))
-            .filter(schema::posts::types.lt(11))
-            .limit(_limit)
-            .offset(offset)
-            .order(schema::posts::created.desc())
-            .load::<Post>(&_connection)
-            .expect("E.");
-
-        for i in items.iter() {
-            posts_json.push ( i.get_post_json(user_id, i.get_list().expect("E.").get_reactions_list()) )
-        }
-        return posts_json;
     }
+
+
+
+
     pub fn item_message_reposts_count (
         item_id: i32,
         types: i16
