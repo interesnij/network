@@ -715,6 +715,7 @@ impl PostList {
             (user_id == 0 && self.is_anon_user_see_el()))
             {
             use crate::schema::post_comments::dsl::post_comments;
+            use crate::models::PostComment;
 
             let _connection = establish_connection();
             let reactions_list = self.get_reactions_list();

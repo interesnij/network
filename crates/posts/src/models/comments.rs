@@ -81,7 +81,7 @@ pub struct EditComment {
 }
 
 pub struct SearchAllComments {
-    pub comments: Vec<CardPostJson>,
+    pub comments: Vec<CardCommentJson>,
     pub offset:   i64,
 }
 impl PostComment {
@@ -235,7 +235,7 @@ impl PostComment {
                 _offset += limit;
             }
             return SearchAllComments {
-                comments: comments_json,
+                comments: list_json,
                 offset:   offset,
             };
         }
