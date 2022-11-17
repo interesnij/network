@@ -506,7 +506,7 @@ impl User {
 
         let _connection = establish_connection();
         return friends
-            .filter(schema::friends::user_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(self.id))
             .filter(schema::friends::target_id.eq(user_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection).is_ok();
@@ -955,7 +955,8 @@ impl User {
     }
     pub fn search_friends (
         &self,
-        limit: i64,
+        &q:     String,
+        limit:  i64,
         offset: i64
     ) -> Vec<CardUserJson> {
         use crate::schema::{
