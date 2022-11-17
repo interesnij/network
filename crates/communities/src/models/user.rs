@@ -433,7 +433,7 @@ impl User {
         };
         if _case != 0 {
             let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
+                .set(schema::users::types.eq(_case))
                 .execute(&_connection);
 
             if o.is_ok() {
@@ -458,7 +458,7 @@ impl User {
         };
         if _case != 0 {
             let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
+                .set(schema::users::types.eq(_case))
                 .execute(&_connection);
 
             if o.is_ok() {
@@ -486,7 +486,7 @@ impl User {
         };
         if _case != 0 {
             let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
+                .set(schema::users::types.eq(_case))
                 .execute(&_connection);
 
             if o.is_ok() {
@@ -514,7 +514,7 @@ impl User {
         };
         if _case != 0 {
             let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
+                .set(schema::users::types.eq(_case))
                 .execute(&_connection);
 
             if o.is_ok() {
