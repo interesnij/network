@@ -1108,7 +1108,7 @@ impl Community {
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
             6 => !self.get_see_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_see_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            7 => self.get_see_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1120,7 +1120,7 @@ impl Community {
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
             6 => !self.get_see_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_see_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            7 => self.get_see_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1132,7 +1132,7 @@ impl Community {
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
             6 => !self.get_create_list_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_create_list_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            7 => self.get_create_list_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1144,7 +1144,7 @@ impl Community {
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
             6 => !self.get_create_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_create_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            7 => self.get_create_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1156,7 +1156,7 @@ impl Community {
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
             6 => !self.get_create_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_create_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            7 => self.get_create_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1168,7 +1168,7 @@ impl Community {
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
             6 => !self.get_copy_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_copy_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            7 => self.get_copy_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
