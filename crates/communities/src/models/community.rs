@@ -87,118 +87,6 @@ impl CommunityCategory {
             .get_result::<CommunitySubcategory>(&_connection)?;
         return Ok(new_cat);
     }
-    pub fn suspend_item(&self) -> i16 {
-        let _connection = establish_connection();
-        let _case = match self.types {
-            1 => 81,
-            2 => 82,
-            3 => 83,
-            7 => 87,
-            8 => 88,
-            9 => 89,
-            13 => 93,
-            14 => 94,
-            15 => 95,
-            _ => 0,
-        };
-        if _case != 0 {
-            let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
-                .execute(&_connection);
-
-            if o.is_ok() {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        return 0;
-    }
-    pub fn unsuspend_item(&self) -> i16 {
-        let _connection = establish_connection();
-        let _case = match self.types {
-            81 => 1,
-            82 => 2,
-            83 => 3,
-            87 => 7,
-            88 => 8,
-            89 => 9,
-            93 => 13,
-            94 => 14,
-            95 => 15,
-            _ => 0,
-        };
-        if _case != 0 {
-            let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
-                .execute(&_connection);
-
-            if o.is_ok() {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        return 0;
-    }
-    pub fn close_item(&self) -> i16 {
-        let _connection = establish_connection();
-        let _case = match self.types {
-            1 => 61,
-            2 => 62,
-            3 => 63,
-            7 => 67,
-            8 => 68,
-            9 => 69,
-            13 => 73,
-            14 => 74,
-            15 => 75,
-            _ => 0,
-        };
-        if _case != 0 {
-            let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
-                .execute(&_connection);
-
-            if o.is_ok() {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        return 0;
-    }
-    pub fn unclose_item(&self) -> i16 {
-        let _connection = establish_connection();
-        let _case = match self.types {
-            61 => 1,
-            62 => 2,
-            63 => 3,
-            67 => 7,
-            68 => 8,
-            69 => 9,
-            73 => 13,
-            74 => 14,
-            75 => 15,
-            _ => 0,
-        };
-        if _case != 0 {
-            let o = diesel::update(self)
-                .set(schema::communitys::types.eq(_case))
-                .execute(&_connection);
-
-            if o.is_ok() {
-                return 1;
-            }
-            else {
-                return 0;
-            }
-        }
-        return 0;
-    }
     pub fn edit_category(&self, name: String, avatar: Option<String>,
         position: i16) -> Result<CommunityCategory, Error> {
         let _connection = establish_connection();
@@ -359,6 +247,118 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn suspend_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let _case = match self.types {
+            1 => 81,
+            2 => 82,
+            3 => 83,
+            7 => 87,
+            8 => 88,
+            9 => 89,
+            13 => 93,
+            14 => 94,
+            15 => 95,
+            _ => 0,
+        };
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
+
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    pub fn unsuspend_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let _case = match self.types {
+            81 => 1,
+            82 => 2,
+            83 => 3,
+            87 => 7,
+            88 => 8,
+            89 => 9,
+            93 => 13,
+            94 => 14,
+            95 => 15,
+            _ => 0,
+        };
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
+
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    pub fn close_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let _case = match self.types {
+            1 => 61,
+            2 => 62,
+            3 => 63,
+            7 => 67,
+            8 => 68,
+            9 => 69,
+            13 => 73,
+            14 => 74,
+            15 => 75,
+            _ => 0,
+        };
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
+
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    pub fn unclose_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let _case = match self.types {
+            61 => 1,
+            62 => 2,
+            63 => 3,
+            67 => 7,
+            68 => 8,
+            69 => 9,
+            73 => 13,
+            74 => 14,
+            75 => 15,
+            _ => 0,
+        };
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
+
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        return 0;
+    }
     pub fn get_longest_penalties(&self) -> String {
         return "".to_string();
     }
