@@ -13,6 +13,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
 };
+use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
 use crate::models::{
