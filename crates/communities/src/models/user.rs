@@ -179,14 +179,12 @@ impl User {
         let _connection = establish_connection();
         if users
             .filter(schema::users::user_id.eq(user.user_id))
-            .limit(1)
             .select(schema::users::id)
-            .load::<i32>(&_connection)
-            .expect("E")
-            .len() > 0 {
+            .first::<i32>(&_connection)
+            .is_ok() {
                 return Ok(users
                     .filter(schema::users::user_id.eq(user.user_id))
-                    .first(&_connection)?);
+                    .first::<User>(&_connection)?);
         }
         let new_form = NewUser {
             user_id:       user.user_id,
