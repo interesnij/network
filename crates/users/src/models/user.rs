@@ -532,6 +532,17 @@ impl User {
             .select(schema::follows::id)
             .first::<i32>(&_connection).is_ok();
     }
+    pub fn is_self_followers_user_with_id(&self, user_id: i32) -> bool {
+        use crate::schema::follows::dsl::follows;
+
+        let _connection = establish_connection();
+        return follows
+            .filter(schema::follows::target_id.eq(user_id))
+            .filter(schema::follows::user_id.eq(self.user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
     pub fn is_followers_user_view(&self, user_id: i32) -> bool {
         use crate::schema::follows::dsl::follows;
 
