@@ -1531,7 +1531,7 @@ impl Community {
               4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
               6 => !self.get_see_member_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-              7 => self.get_see_member_include_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              7 => self.get_see_member_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
               _ => false},
           Err(_) => false,
         };

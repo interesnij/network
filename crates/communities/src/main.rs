@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
         App::new()
-            .app_data(web::JsonConfig::default().limit(4096))
+            .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
     })
