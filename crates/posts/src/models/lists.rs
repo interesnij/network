@@ -1269,7 +1269,7 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
                 3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 4 => creator.is_connected_with_user_with_id(user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
@@ -1307,7 +1307,7 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
                 3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 4 => creator.is_connected_with_user_with_id(user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
@@ -1345,7 +1345,7 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
                 3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 4 => creator.is_connected_with_user_with_id(user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
@@ -1383,7 +1383,7 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
                 3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 4 => creator.is_connected_with_user_with_id(user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
                 5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
