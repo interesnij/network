@@ -16,10 +16,6 @@ use diesel::{
 use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
-use crate::models::{
-    User,
-    //Community,
-};
 
 
 /////// Owner //////
@@ -74,7 +70,7 @@ impl Owner {
         diesel::delete (
             owners
                 .filter(schema::owners::user_id.eq(self.user_id))
-        );
+        )
         return 1;
     }
 }

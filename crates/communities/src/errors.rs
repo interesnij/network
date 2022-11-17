@@ -16,14 +16,14 @@ pub enum AuthError {
     //#[display(fmt = "BadId")]
     //BadId,
 
-    #[display(fmt = "NotFound: {}", _0)]
-    NotFound(String),
+    //#[display(fmt = "NotFound: {}", _0)]
+    //NotFound(String),
 
     //#[display(fmt = "ProcessError: {}", _0)]
     //ProcessError(String),
 
-    #[display(fmt = "AuthenticationError: {}", _0)]
-    AuthenticationError(String),
+    //#[display(fmt = "AuthenticationError: {}", _0)]
+    //AuthenticationError(String),
 
     #[display(fmt = "GenericError: {}", _0)]
     GenericError(String),
