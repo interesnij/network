@@ -58,8 +58,8 @@ impl Owner {
             name:         data.name,
             description:  data.description,
             types:        data.types,
-            secret_key:   Uuid::new_v4() + &Uuid::new_v4(),
-            service_key:  Uuid::new_v4() + &Uuid::new_v4(),
+            secret_key:   Uuid::new_v4().to_string(),
+            service_key:  Uuid::new_v4().to_string() + &Uuid::new_v4().to_string(),
             is_active:    true,
         };
         let new_token = diesel::insert_into(schema::owners::table)
