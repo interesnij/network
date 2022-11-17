@@ -1041,7 +1041,7 @@ impl User {
             .expect("E.");
         return _users;
     }
-    pub fn get_online_friends (
+    pub fn search_online_friends (
         &self,
         q:      &String,
         limit:  i64,
@@ -2037,31 +2037,31 @@ impl User {
         };
     }
 
-    pub fn is_user_see_info(&self, user: &User) -> bool {
-        if self.id == user.id {
+    pub fn is_user_see_info(&self, user_id: i32) -> bool {
+        if self.id == user_id {
             return true;
         }
         let private = self.get_private_model();
         return match private {
           Ok(_ok) => match _ok.see_info {
               1 => true,
-              2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
-              3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-              4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-              5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-              6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-              7 => self.is_connected_with_user_with_id(user.id),
-              8 => user.is_followers_user_with_id(self.id),
-              9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-              10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-              11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
-              12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+              2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+              3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+              4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+              5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+              6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+              7 => self.is_connected_with_user_with_id(user_id),
+              8 => self.is_self_followers_user_with_id(user_id),
+              9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+              10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+              11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+              12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
               _ => false,
           },
           Err(_) => false,
         };
     }
-    pub fn is_user_see_all(&self, user: &User) -> bool {
+    pub fn is_user_see_all(&self, user_id: i32) -> bool {
         if self.id == user_id {
             return true;
         }
@@ -2069,23 +2069,23 @@ impl User {
         return match private {
           Ok(_ok) => match _ok.see_all {
               1 => true,
-              2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
-              3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-              4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-              5 => user.is_followers_user_with_id(self.id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-              6 => user.is_followers_user_with_id(self.id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-              7 => self.is_connected_with_user_with_id(user.id),
-              8 => user.is_followers_user_with_id(self.id),
-              9 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-              10 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-              11 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
-              12 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+              2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+              3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+              4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+              5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+              6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+              7 => self.is_connected_with_user_with_id(user_id),
+              8 => self.is_self_followers_user_with_id(user_id),
+              9 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+              10 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+              11 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+              12 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
               _ => false,
           },
           Err(_) => false,
         };
     }
-    pub fn is_user_see_friend(&self, user: &User) -> bool {
+    pub fn is_user_see_friend(&self, user_id: i32) -> bool {
         if self.id == user_id {
             return true;
         }
@@ -2093,24 +2093,24 @@ impl User {
         return match private {
           Ok(_ok) => match _ok.see_friend {
               1 => true,
-              2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
-              3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-              4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-              5 => user.is_followers_user_with_id(self.id) || (!self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-              6 => user.is_followers_user_with_id(self.id) || (self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-              7 => self.is_connected_with_user_with_id(user.id),
-              8 => user.is_followers_user_with_id(self.id),
-              9 => !self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-              10 => self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-              11 => !self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
-              12 => self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+              2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+              3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+              4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+              5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+              6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+              7 => self.is_connected_with_user_with_id(user_id),
+              8 => self.is_self_followers_user_with_id(user_id),
+              9 => !self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+              10 => self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+              11 => !self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+              12 => self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
               _ => false,
           },
           Err(_) => false,
         };
     }
 
-    pub fn get_profile_all_see(&self, user: &User) -> Vec<bool> {
+    pub fn get_profile_all_see(&self, user_id: i32) -> Vec<bool> {
         if self.id == user_id {
             return vec![true, true, true];
         }
@@ -2119,17 +2119,17 @@ impl User {
           Ok(_ok) => {
               let bool_see_all = match _ok.see_all {
                   1 => true,
-                  2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
-                  3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-                  4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-                  5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-                  6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-                  7 => self.is_connected_with_user_with_id(user.id),
-                  8 => user.is_followers_user_with_id(self.id),
-                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
-                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+                  2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                  3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+                  4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+                  5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+                  6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+                  7 => self.is_connected_with_user_with_id(user_id),
+                  8 => self.is_self_followers_user_with_id(user_id),
+                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
                   _ => false,
               };
               if bool_see_all == false {
@@ -2139,34 +2139,34 @@ impl User {
               bool_stack.push(true);
               let bool_see_info = match _ok.see_info {
                   1 => true,
-                  2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
-                  3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-                  4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-                  5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-                  6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-                  7 => self.is_connected_with_user_with_id(user.id),
-                  8 => user.is_followers_user_with_id(self.id),
-                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
-                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+                  2 => self.is_connected_with_user_with_id(user_id) || self.is_followers_user_with_id(user_id),
+                  3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+                  4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+                  5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+                  6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+                  7 => self.is_connected_with_user_with_id(user_id),
+                  8 => self.is_self_followers_user_with_id(user_id),
+                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
                   _ => false,
               };
               bool_stack.push(bool_see_info);
 
               let bool_see_friend = match _ok.see_friend {
                   1 => true,
-                  2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
-                  3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-                  4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
-                  5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-                  6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
-                  7 => self.is_connected_with_user_with_id(user.id),
-                  8 => user.is_followers_user_with_id(self.id),
-                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
-                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
-                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+                  2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                  3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+                  4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+                  5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+                  6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+                  7 => self.is_connected_with_user_with_id(user_id),
+                  8 => self.is_self_followers_user_with_id(user_id),
+                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_followers_user_with_id(user_id),
+                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.is_followers_user_with_id(user_id),
                   _ => false,
               };
               bool_stack.push(bool_see_friend);
