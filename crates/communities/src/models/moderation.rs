@@ -39,6 +39,35 @@ pub struct Owner {
     pub service_key:  String,
     pub is_active:    bool,
 }
+#[derive(Deserialize)]
+pub struct OwnerData {
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub name:         String,
+    pub description:  Option<String>,
+    pub types:        i16,
+}
+impl Owner {
+    pub fn create (data: OwnerData) -> Result<Owner, Error> {
+        use uuid::Uuid;
+
+        let _connection = establish_connection();
+        let new_form = NewOwner {
+            user_id:      data.user_id,
+            community_id: data.community_id,
+            name:         data.name,
+            description:  data.description,
+            types:        data.types,
+            secret_key:   Uuid::new_v4() + &Uuid::new_v4(),
+            service_key:  Uuid::new_v4() + &Uuid::new_v4(),
+            is_active:    true,
+        };
+        let new_token = diesel::insert_into(schema::owners::table)
+            .values(&new_form)
+            .get_result::<Owner>(&_connection)?;
+        return Ok(new_token);
+    }
+}
 
 #[derive(Deserialize, Insertable)]
 #[table_name="owners"]
