@@ -538,7 +538,7 @@ impl User {
         let _connection = establish_connection();
         return follows
             .filter(schema::follows::target_id.eq(user_id))
-            .filter(schema::follows::user_id.eq(self.user_id))
+            .filter(schema::follows::user_id.eq(self.id))
             .select(schema::follows::id)
             .first::<i32>(&_connection)
             .is_ok();
