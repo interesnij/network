@@ -66,11 +66,12 @@ use crate::models::{
     // 5 Все подписчики и друзья, кроме
     // 6 Все подписчики и некоторые друзья
     // 7 Все друзья
-    // 8 Друзья, кроме
-    // 9 Некоторые друзья
-    // 10 Подписчики, кроме
-    // 11 Некоторые подписчики
-    // 12 Только я
+    // 8 Все подписчики
+    // 9 Друзья, кроме
+    // 10 Некоторые друзья
+    // 11 Подписчики, кроме
+    // 12 Некоторые подписчики
+    // 13 Только я
 
     // 14 Все пользователи
     // 15 Подписчики
@@ -164,6 +165,7 @@ impl PostList {
         let _connection = establish_connection();
         let _reactions = reactions
             .select((
+                schema::reactions::id,
                 schema::reactions::image,
                 schema::reactions::name,
             ))
@@ -219,7 +221,7 @@ impl PostList {
 
             let _user = users
                 .filter(schema::users::id.eq(self.user_id))
-                .filter(schema::users::types.lt(10))
+                .filter(schema::users::types.lt(31))
                 .select((
                     schema::users::user_id,
                     schema::users::first_name,
@@ -756,10 +758,17 @@ impl PostList {
         use crate::schema::posts::dsl::posts;
 
         let _connection = establish_connection();
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         return posts
             .filter(schema::posts::post_list_id.eq(self.id))
             .filter(schema::posts::types.lt(10))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .order(schema::posts::created.desc())
             .load::<Post>(&_connection)
@@ -813,11 +822,18 @@ impl PostList {
     pub fn get_see_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_see_el_exclude_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -834,11 +850,18 @@ impl PostList {
     pub fn get_see_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_see_el_include_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -882,11 +905,18 @@ impl PostList {
     pub fn get_see_comment_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_see_comment_exclude_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -903,11 +933,18 @@ impl PostList {
     pub fn get_see_comment_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_see_comment_include_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -951,11 +988,18 @@ impl PostList {
     pub fn get_create_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_create_el_exclude_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -972,11 +1016,18 @@ impl PostList {
     pub fn get_create_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_create_el_include_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1020,11 +1071,18 @@ impl PostList {
     pub fn get_create_comment_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_create_comment_exclude_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1041,11 +1099,18 @@ impl PostList {
     pub fn get_create_comment_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_create_comment_include_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1089,11 +1154,18 @@ impl PostList {
     pub fn get_copy_el_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_copy_el_exclude_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1110,11 +1182,18 @@ impl PostList {
     pub fn get_copy_el_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = users
             .filter(schema::users::user_id.eq_any(self.get_copy_el_include_users_ids()))
-            .filter(schema::users::types.lt(10))
-            .limit(limit)
+            .filter(schema::users::types.lt(31))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1138,11 +1217,11 @@ impl PostList {
             let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
-                15 => community.get_members_ids().iter().any(|&i| i==user_id),
-                16 => community.get_staff_users_ids().iter().any(|&i| i==user_id),
-                17 => community.get_administrators_ids().iter().any(|&i| i==user_id),
-                18 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
-                19 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
+                15 => community.is_user_member(user_id),
+                16 => community.is_user_staff(user_id),
+                17 => community.is_user_admin(user_id),
+                18 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                19 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1151,17 +1230,17 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
-                3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                6 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
-                8 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                9 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                11 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                12 => creator.user_id == user_id,
+                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                7 => creator.is_connected_with_user_with_id(user_id),
+                8 => creator.is_self_followers_user_with_id(user_id),
+                9 => !self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                10 => self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                11 => !self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                12 => self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
                 _ => false,
             };
         }
@@ -1177,11 +1256,11 @@ impl PostList {
             let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
-                15 => community.get_members_ids().iter().any(|&i| i==user_id),
-                16 => community.get_staff_users_ids().iter().any(|&i| i==user_id),
-                17 => community.get_administrators_ids().iter().any(|&i| i==user_id),
-                18 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
-                19 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
+                15 => community.is_user_member(user_id),
+                16 => community.is_user_staff(user_id),
+                17 => community.is_user_admin(user_id),
+                18 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                19 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1190,17 +1269,17 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
-                3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                6 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
-                8 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                9 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                11 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                12 => creator.user_id == user_id,
+                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                7 => creator.is_connected_with_user_with_id(user_id),
+                8 => creator.is_self_followers_user_with_id(user_id),
+                9 => !self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                10 => self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                11 => !self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                12 => self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
                 _ => false,
             };
         }
@@ -1215,33 +1294,30 @@ impl PostList {
             let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
-                15 => community.get_members_ids().iter().any(|&i| i==user_id),
-                16 => community.get_staff_users_ids().iter().any(|&i| i==user_id),
-                17 => community.get_administrators_ids().iter().any(|&i| i==user_id),
-                18 => !self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
-                19 => self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
+                15 => community.is_user_member(user_id),
+                16 => community.is_user_staff(user_id),
+                17 => community.is_user_admin(user_id),
+                18 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                19 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
                 20 => community.user_id == user_id,
                 _ => false,
             };
         }
         else {
             let creator = self.get_creator().expect("E");
-            if self.user_id == user_id {
-                return true;
-            }
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
-                3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                6 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
-                8 => !self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                9 => self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                11 => self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                12 => creator.user_id == user_id,
+                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                7 => creator.is_connected_with_user_with_id(user_id),
+                8 => creator.is_self_followers_user_with_id(user_id),
+                9 => !self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                10 => self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                11 => !self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                12 => self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
                 _ => false,
             };
         }
@@ -1256,11 +1332,11 @@ impl PostList {
             let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
-                15 => community.get_members_ids().iter().any(|&i| i==user_id),
-                16 => community.get_staff_users_ids().iter().any(|&i| i==user_id),
-                17 => community.get_administrators_ids().iter().any(|&i| i==user_id),
-                18 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
-                19 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
+                15 => community.is_user_member(user_id),
+                16 => community.is_user_staff(user_id),
+                17 => community.is_user_admin(user_id),
+                18 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                19 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1269,17 +1345,17 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
-                3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                6 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
-                8 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                9 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                11 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                12 => creator.user_id == user_id,
+                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                7 => creator.is_connected_with_user_with_id(user_id),
+                8 => creator.is_self_followers_user_with_id(user_id),
+                9 => !self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                10 => self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                11 => !self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                12 => self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
                 _ => false,
             };
         }
@@ -1294,11 +1370,11 @@ impl PostList {
             let community = self.get_community().expect("E");
             return match private_field {
                 14 => true,
-                15 => community.get_members_ids().iter().any(|&i| i==user_id),
-                16 => community.get_staff_users_ids().iter().any(|&i| i==user_id),
-                17 => community.get_administrators_ids().iter().any(|&i| i==user_id),
-                18 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
-                19 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && community.get_members_ids().iter().any(|&i| i==user_id),
+                15 => community.is_user_member(user_id),
+                16 => community.is_user_staff(user_id),
+                17 => community.is_user_admin(user_id),
+                18 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                19 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1307,35 +1383,26 @@ impl PostList {
             let creator = self.get_creator().expect("E");
             return match private_field {
                 1 => true,
-                2 => creator.get_friends_ids().iter().any(|&i| i==user_id) || creator.get_follows_ids().iter().any(|&i| i==user_id),
-                3 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                4 => creator.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id)),
-                5 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                6 => creator.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id)),
-                7 => creator.get_friends_ids().iter().any(|&i| i==user_id),
-                8 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                9 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_friends_ids().iter().any(|&i| i==user_id),
-                10 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                11 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.get_follows_ids().iter().any(|&i| i==user_id),
-                12 => creator.user_id == user_id,
+                2 => creator.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
+                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                7 => creator.is_connected_with_user_with_id(user_id),
+                8 => creator.is_self_followers_user_with_id(user_id),
+                9 => !self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                10 => self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
+                11 => !self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                12 => self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
                 _ => false,
             };
         }
     }
     pub fn is_anon_user_see_el(&self) -> bool {
-        return self.see_el == 1 || self.see_el == 14;
+        return self.see_el == 1 && self.see_el == 14;
     }
     pub fn is_anon_user_see_comment(&self) -> bool {
-        return self.see_comment == 1 || self.see_comment == 14;
-    }
-    pub fn is_anon_user_create_item(&self) -> bool {
-        return self.create_el == 1 || self.create_el == 14;
-    }
-    pub fn is_anon_user_create_comment(&self) -> bool {
-        return self.create_comment == 1 || self.create_comment == 14;
-    }
-    pub fn is_anon_user_copy_el(&self) -> bool {
-        return self.copy_el == 1 || self.copy_el == 14;
+        return self.see_comment == 1 && self.see_comment == 14;
     }
 
     pub fn get_community_selected_post_list_pk(community_id: i32) -> i32 {
@@ -1499,13 +1566,20 @@ impl PostList {
     pub fn get_user_post_lists(user_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         return post_lists
             .filter(schema::post_lists::user_id.eq(user_id))
             .filter(schema::post_lists::community_id.is_null())
             .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<PostList>(&_connection)
             .expect("E.");
@@ -1523,12 +1597,19 @@ impl PostList {
     pub fn get_community_post_lists(community_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         return post_lists
             .filter(schema::post_lists::community_id.eq(community_id))
             .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<PostList>(&_connection)
             .expect("E.");

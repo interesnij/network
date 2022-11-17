@@ -742,12 +742,19 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(12))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -772,12 +779,19 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(2))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -830,16 +844,23 @@ impl Community {
             users::dsl::users,
         };
 
-          let _connection = establish_connection();
-          let items = community_visible_perms
-              .filter(schema::community_visible_perms::community_id.eq(self.id))
-              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-              .filter(schema::community_visible_perms::types.eq(11))
-              .limit(limit)
-              .offset(offset)
-              .select(schema::community_visible_perms::target_id)
-              .load::<i32>(&_connection)
-              .expect("E");
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(11))
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
 
           let _users = users
               .filter(schema::users::id.eq_any(items))
@@ -860,12 +881,19 @@ impl Community {
               users::dsl::users,
           };
 
+          let _limit: i64;
+          if limit > 100 {
+              _limit = 20;
+          }
+          else {
+              _limit = limit;
+          }
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(1))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -918,16 +946,23 @@ impl Community {
             users::dsl::users,
         };
 
-          let _connection = establish_connection();
-          let items = community_visible_perms
-              .filter(schema::community_visible_perms::community_id.eq(self.id))
-              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-              .filter(schema::community_visible_perms::types.eq(13))
-              .limit(limit)
-              .offset(offset)
-              .select(schema::community_visible_perms::target_id)
-              .load::<i32>(&_connection)
-              .expect("E");
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(13))
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
 
           let _users = users
               .filter(schema::users::id.eq_any(items))
@@ -948,12 +983,19 @@ impl Community {
               users::dsl::users,
           };
 
+          let _limit: i64;
+          if limit > 100 {
+              _limit = 20;
+          }
+          else {
+              _limit = limit;
+          }
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(3))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1006,16 +1048,23 @@ impl Community {
             users::dsl::users,
         };
 
-          let _connection = establish_connection();
-          let items = community_visible_perms
-              .filter(schema::community_visible_perms::community_id.eq(self.id))
-              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-              .filter(schema::community_visible_perms::types.eq(14))
-              .limit(limit)
-              .offset(offset)
-              .select(schema::community_visible_perms::target_id)
-              .load::<i32>(&_connection)
-              .expect("E");
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(14))
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
 
           let _users = users
               .filter(schema::users::id.eq_any(items))
@@ -1036,12 +1085,19 @@ impl Community {
               users::dsl::users,
           };
 
+          let _limit: i64;
+          if limit > 100 {
+              _limit = 20;
+          }
+          else {
+              _limit = limit;
+          }
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(4))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1094,16 +1150,23 @@ impl Community {
             users::dsl::users,
         };
 
-          let _connection = establish_connection();
-          let items = community_visible_perms
-              .filter(schema::community_visible_perms::community_id.eq(self.id))
-              .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-              .filter(schema::community_visible_perms::types.eq(15))
-              .limit(limit)
-              .offset(offset)
-              .select(schema::community_visible_perms::target_id)
-              .load::<i32>(&_connection)
-              .expect("E");
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let items = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(15))
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
 
           let _users = users
               .filter(schema::users::id.eq_any(items))
@@ -1124,12 +1187,19 @@ impl Community {
               users::dsl::users,
           };
 
+          let _limit: i64;
+          if limit > 100 {
+              _limit = 20;
+          }
+          else {
+              _limit = limit;
+          }
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(5))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1155,10 +1225,17 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -1209,11 +1286,18 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(5))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -1238,11 +1322,18 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(3))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -1267,11 +1358,18 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(2))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -1296,11 +1394,18 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(4))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -1369,17 +1474,49 @@ impl Community {
         };
     }
 
+    pub fn is_user_member(&self, user_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
+    pub fn is_user_staff(&self, user_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::level.ne(1))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
+    pub fn is_user_admin(&self, user_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::level.eq(5))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
         let private = self.get_private_model();
         return match private {
           Ok(_ok) => match _ok.see_info {
               1 => true,
-              2 => self.get_members_ids().iter().any(|&i| i==user_id),
-              3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-              4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+              2 => self.is_user_member(user_id),
+              3 => self.is_user_staff(user_id),
+              4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
               _ => false},
           Err(_) => false,
         };
@@ -1389,12 +1526,12 @@ impl Community {
         return match private {
           Ok(_ok) => match _ok.see_member {
               1 => true,
-              2 => self.get_members_ids().iter().any(|&i| i==user_id),
-              3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-              4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+              2 => self.is_user_member(user_id),
+              3 => self.is_user_staff(user_id),
+              4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+              6 => !self.get_see_member_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              7 => self.get_see_member_include_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
               _ => false},
           Err(_) => false,
         };
@@ -1404,12 +1541,12 @@ impl Community {
         return match private {
           Ok(_ok) => match _ok.see_settings {
               1 => true,
-              2 => self.get_members_ids().iter().any(|&i| i==user_id),
-              3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-              4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+              2 => self.is_user_member(user_id),
+              3 => self.is_user_staff(user_id),
+              4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+              6 => !self.get_see_settings_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              7 => self.get_see_settings_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
               _ => false},
           Err(_) => false,
         };
@@ -1419,12 +1556,12 @@ impl Community {
         return match private {
           Ok(_ok) => match _ok.see_log {
               1 => true,
-              2 => self.get_members_ids().iter().any(|&i| i==user_id),
-              3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-              4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+              2 => self.is_user_member(user_id),
+              3 => self.is_user_staff(user_id),
+              4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+              6 => !self.get_see_log_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              7 => self.get_see_log_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
               _ => false},
           Err(_) => false,
         };
@@ -1434,12 +1571,12 @@ impl Community {
         return match private {
           Ok(_ok) => match _ok.see_stat {
               1 => true,
-              2 => self.get_members_ids().iter().any(|&i| i==user_id),
-              3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-              4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+              2 => self.is_user_member(user_id),
+              3 => self.is_user_staff(user_id),
+              4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+              6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
               _ => false},
           Err(_) => false,
         };
@@ -1491,54 +1628,54 @@ impl Community {
         return match private {
           Ok(_ok) => {
              let bool_see_info = match _ok.see_info {
-                  1 => true,
-                  2 => self.get_members_ids().iter().any(|&i| i==user_id),
-                  3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-                  4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-                  5 => self.user_id == user_id,
-                  6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                  7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                 1 => true,
+                 2 => self.is_user_member(user_id),
+                 3 => self.is_user_staff(user_id),
+                 4 => self.is_user_admin(user_id),
+                 5 => self.user_id == user_id,
+                 6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                 7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
                   _ => false
              };
              let bool_see_member = match _ok.see_member {
-                  1 => true,
-                  2 => self.get_members_ids().iter().any(|&i| i==user_id),
-                  3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-                  4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
-                  5 => self.user_id == user_id,
-                  6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                  7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                 1 => true,
+                 2 => self.is_user_member(user_id),
+                 3 => self.is_user_staff(user_id),
+                 4 => self.is_user_admin(user_id),
+                 5 => self.user_id == user_id,
+                 6 => !self.get_see_members_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                 7 => self.get_see_members_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
                   _ => false
              };
              let bool_see_settings = match _ok.see_settings {
                  1 => true,
-                 2 => self.get_members_ids().iter().any(|&i| i==user_id),
-                 3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-                 4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                 2 => self.is_user_member(user_id),
+                 3 => self.is_user_staff(user_id),
+                 4 => self.is_user_admin(user_id),
                  5 => self.user_id == user_id,
-                 6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                 7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                 6 => !self.get_see_settings_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                 7 => self.get_see_settings_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
                  _ => false
             };
             let bool_see_log = match _ok.see_log {
                 1 => true,
-                2 => self.get_members_ids().iter().any(|&i| i==user_id),
-                3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-                4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                2 => self.is_user_member(user_id),
+                3 => self.is_user_staff(user_id),
+                4 => self.is_user_admin(user_id),
                 5 => self.user_id == user_id,
-                6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                6 => !self.get_see_log_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                7 => self.get_see_log_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
                  _ => false
             };
 
             let bool_see_stat = match _ok.see_stat {
                 1 => true,
-                2 => self.get_members_ids().iter().any(|&i| i==user_id),
-                3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-                4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+                2 => self.is_user_member(user_id),
+                3 => self.is_user_staff(user_id),
+                4 => self.is_user_admin(user_id),
                 5 => self.user_id == user_id,
-                6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-                7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
+                6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
                 _ => false
             };
             bool_stack.push(bool_see_info);
@@ -1574,10 +1711,17 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = community_follows
             .filter(schema::community_follows::community_id.eq(self.id))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_follows::user_id)
             .load::<i32>(&_connection)
@@ -1601,10 +1745,17 @@ impl Community {
             users::dsl::users,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = community_banned_users
             .filter(schema::community_banned_users::community_id.eq(self.id))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::community_banned_users::user_id)
             .load::<i32>(&_connection)

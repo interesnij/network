@@ -324,12 +324,19 @@ impl Post {
             posts::dsl::posts,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let item_reposts_ids = item_reposts
             .filter(schema::item_reposts::item_id.eq(item_id))
             .filter(schema::item_reposts::item_types.eq(types))
             .order(schema::item_reposts::id.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
@@ -411,7 +418,7 @@ impl Post {
 
             let _user = users
                 .filter(schema::users::id.eq(self.user_id))
-                .filter(schema::users::types.lt(10))
+                .filter(schema::users::types.lt(31))
                 .select((
                     schema::users::user_id,
                     schema::users::first_name,
@@ -438,13 +445,20 @@ impl Post {
     ) -> Vec<CardCommentJson> {
         use crate::schema::post_comments::dsl::post_comments;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let mut json = Vec::new();
         let items = post_comments
             .filter(schema::post_comments::post_id.eq(self.id))
             .filter(schema::post_comments::types.lt(10))
             .filter(schema::post_comments::parent_id.is_null())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<PostComment>(&_connection)
             .expect("E.");
@@ -1498,11 +1512,18 @@ impl Post {
     pub fn get_reposts(&self, limit: i64, offset: i64) -> Vec<Post> {
         use crate::schema::posts::dsl::posts;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::parent_id.eq(self.id))
             .filter(schema::posts::types.lt(40))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<Post>(&_connection)
             .expect("E");

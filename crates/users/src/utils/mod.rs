@@ -66,7 +66,7 @@ pub fn get_users_from_ids(ids: Vec<i32>) -> Vec<User> {
     let _connection = establish_connection();
     return users
         .filter(schema::users::id.eq_any(ids))
-        .filter(schema::users::types.lt(10))
+        .filter(schema::users::types.lt(31))
         .load::<User>(&_connection)
         .expect("E");
 }
@@ -76,7 +76,7 @@ pub fn get_card_users_from_ids(ids: Vec<i32>) -> Vec<CardUserJson> {
     let _connection = establish_connection();
     return users
         .filter(schema::users::id.eq_any(ids))
-        .filter(schema::users::types.lt(10))
+        .filter(schema::users::types.lt(31))
         .select((
             schema::users::id,
             schema::users::first_name,

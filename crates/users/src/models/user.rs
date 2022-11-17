@@ -121,6 +121,21 @@ pub struct GetSessionFields {
 }
 
 impl User {
+    pub fn is_supermanager(&self) -> bool {
+        return self.types == 25;
+    }
+    pub fn is_administrator(&self) -> bool {
+        return self.types > 20 && self.types < 30;
+    }
+    pub fn is_advertiser(&self) -> bool {
+        return self.types > 17 && self.types < 30;
+    }
+    pub fn is_manager(&self) -> bool {
+        return self.types > 13 && self.types < 30;
+    }
+    pub fn is_moderator(&self) -> bool {
+        return self.types > 9 && self.types < 30;
+    }
     pub fn get_user_by_phone(phone: &String) -> Result<User, Error> {
         use crate::schema::users::dsl::users;
 
@@ -446,7 +461,7 @@ impl User {
         return self.types == 6;
     }
     pub fn is_identified(&self) -> bool {
-        return self.types == 7;
+        return self.types > 6 && self.types < 30;
     }
 
     pub fn is_online(&self) -> bool {
@@ -491,8 +506,8 @@ impl User {
 
         let _connection = establish_connection();
         return friends
-            .filter(schema::friends::user_id.eq(user_id))
-            .filter(schema::friends::target_id.eq(self.id))
+            .filter(schema::friends::user_id.eq(self.user_id))
+            .filter(schema::friends::target_id.eq(user_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection).is_ok();
     }
@@ -710,12 +725,18 @@ impl User {
             user_blocks::dsl::user_blocks,
             users::dsl::users,
         };
-
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let all_user_blocks = user_blocks
             .filter(schema::user_blocks::user_id.eq(self.id))
             .order(schema::user_blocks::id.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_blocks::target_id)
             .load::<i32>(&_connection)
@@ -743,7 +764,13 @@ impl User {
             user_blocks::dsl::user_blocks,
             users::dsl::users,
         };
-
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let all_user_blocks = user_blocks
             .filter(schema::user_blocks::user_id.eq(self.id))
@@ -754,8 +781,8 @@ impl User {
         let blocked_users = users
             .filter(schema::users::id.eq_any(all_user_blocks))
             .filter(schema::users::types.lt(30))
-            .filter(schema::posts::first_name.ilike(&q))
-            .or_filter(schema::posts::last_name.ilike(&q))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -763,7 +790,7 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<CardUserJson>(&_connection)?;
         return Ok(blocked_users);
@@ -885,10 +912,18 @@ impl User {
             friends::dsl::friends,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+
         let _connection = establish_connection();
         let friend_ids = friends
             .filter(schema::friends::user_id.eq(self.id))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::friends::target_id)
             .load::<i32>(&_connection)
@@ -903,6 +938,48 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _friends;
+    }
+    pub fn search_friends (
+        &self,
+        limit: i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            friends::dsl::friends,
+        };
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+
+        let _connection = establish_connection();
+        let friend_ids = friends
+            .filter(schema::friends::user_id.eq(self.id))
+            .select(schema::friends::target_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let _friends = users
+            .filter(schema::users::id.eq_any(friend_ids))
+            .filter(schema::users::types.lt(30))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .limit(_limit)
+            .offset(offset)
             .load::<CardUserJson>(&_connection)
             .expect("E.");
         return _friends;
@@ -933,10 +1010,17 @@ impl User {
         };
         use chrono::Duration;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let friend_ids = friends
             .filter(schema::friends::user_id.eq(self.id))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::friends::target_id)
             .load::<i32>(&_connection)
@@ -946,6 +1030,51 @@ impl User {
             .filter(schema::users::id.eq_any(friend_ids))
             .filter(schema::users::types.lt(30))
             .filter(schema::users::last_activity.gt(chrono::Local::now().naive_utc() - Duration::seconds(300)))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
+    }
+    pub fn get_online_friends (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            friends::dsl::friends,
+        };
+        use chrono::Duration;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let friend_ids = friends
+            .filter(schema::friends::user_id.eq(self.id))
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::friends::target_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+
+        let _users = users
+            .filter(schema::users::id.eq_any(friend_ids))
+            .filter(schema::users::types.lt(30))
+            .filter(schema::users::last_activity.gt(chrono::Local::now().naive_utc() - Duration::seconds(300)))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -997,11 +1126,18 @@ impl User {
             follows::dsl::follows,
         };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::target_id.eq(self.id))
             .order(schema::follows::visited.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::follows::user_id)
             .load::<i32>(&_connection)
@@ -1020,6 +1156,50 @@ impl User {
             .expect("E.");
         return _users;
     }
+    pub fn search_followers (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            follows::dsl::follows,
+        };
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let followers = follows
+            .filter(schema::follows::target_id.eq(self.id))
+            .order(schema::follows::visited.desc())
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::follows::user_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let _users = users
+            .filter(schema::users::id.eq_any(followers))
+            .filter(schema::users::types.lt(11))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
+    }
+
     pub fn get_6_followers(&self) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
@@ -1063,10 +1243,17 @@ impl User {
     pub fn get_users(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let _users = users
             .filter(schema::users::types.lt(30))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1079,13 +1266,27 @@ impl User {
             .expect("E.");
         return _users;
     }
-    pub fn get_anon_users(limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn search_users (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let _users = users
             .filter(schema::users::types.lt(30))
-            .limit(limit)
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1097,29 +1298,26 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E.");
         return _users;
-    }
-
-    pub fn get_anon_users_count() -> usize {
-        use crate::schema::users::dsl::users;
-
-        let _connection = establish_connection();
-        return users
-            .filter(schema::users::types.lt(30))
-            .select(schema::users::id)
-            .load::<i32>(&_connection)
-            .expect("E.")
-            .len();
     }
 
     pub fn get_followings(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
-        use crate::schema::follows::dsl::follows;
-        use crate::schema::users::dsl::users;
+        use crate::schema::{
+            follows::dsl::follows,
+            users::dsl::users,
+        };
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::user_id.eq(self.id))
             .order(schema::follows::visited.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::follows::target_id)
             .load::<i32>(&_connection)
@@ -1138,10 +1336,60 @@ impl User {
             .expect("E.");
         return _users;
     }
+    pub fn search_followings (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            follows::dsl::follows,
+            users::dsl::users,
+        };
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let followers = follows
+            .filter(schema::follows::user_id.eq(self.id))
+            .order(schema::follows::visited.desc())
+            .limit(_limit)
+            .offset(offset)
+            .select(schema::follows::target_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let _users = users
+            .filter(schema::users::id.eq_any(followers))
+            .filter(schema::users::types.lt(11))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
+    }
 
     pub fn get_common_friends_of_user(&self, user: &User, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let self_friends = self.get_friends_ids();
         let user_friends = user.get_friends_ids();
@@ -1154,7 +1402,7 @@ impl User {
         let _users = users
             .filter(schema::users::id.eq_any(stack))
             .filter(schema::users::types.lt(11))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select((
                 schema::users::id,
@@ -1167,6 +1415,50 @@ impl User {
             .expect("E.");
         return _users;
     }
+    pub fn search_common_friends_of_user (
+        &self,
+        q:      &String,
+        user:   &User,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::users::dsl::users;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        let self_friends = self.get_friends_ids();
+        let user_friends = user.get_friends_ids();
+        let mut stack = Vec::new();
+        for int in self_friends.iter() {
+            if user_friends.iter().any(|i| i==int) {
+                stack.push(int);
+            }
+        }
+        let _users = users
+            .filter(schema::users::id.eq_any(stack))
+            .filter(schema::users::types.lt(11))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::last_name.ilike(&q))
+            .limit(_limit)
+            .offset(offset)
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
+    }
+
     pub fn get_6_common_friends_of_user(&self, user: &User) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
@@ -1381,12 +1673,19 @@ impl User {
     pub fn get_limit_see_all_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(11))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1396,12 +1695,19 @@ impl User {
     pub fn get_limit_see_all_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(11))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1411,12 +1717,19 @@ impl User {
     pub fn get_limit_see_all_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(1))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1426,12 +1739,19 @@ impl User {
     pub fn get_limit_see_all_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(1))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1442,12 +1762,19 @@ impl User {
     pub fn get_limit_see_info_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(12))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1457,12 +1784,19 @@ impl User {
     pub fn get_limit_see_info_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(12))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1472,12 +1806,19 @@ impl User {
     pub fn get_limit_see_info_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(2))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1487,12 +1828,19 @@ impl User {
     pub fn get_limit_see_info_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(2))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1503,12 +1851,19 @@ impl User {
     pub fn get_limit_see_friend_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(13))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1518,12 +1873,19 @@ impl User {
     pub fn get_limit_see_friend_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(13))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1533,12 +1895,19 @@ impl User {
     pub fn get_limit_see_friend_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(3))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1548,12 +1917,19 @@ impl User {
     pub fn get_limit_see_friend_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(3))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
@@ -1661,30 +2037,31 @@ impl User {
         };
     }
 
-    pub fn is_user_see_info(&self, user_id: i32) -> bool {
-        if self.id == user_id {
+    pub fn is_user_see_info(&self, user: &User) -> bool {
+        if self.id == user.id {
             return true;
         }
         let private = self.get_private_model();
         return match private {
           Ok(_ok) => match _ok.see_info {
               1 => true,
-              2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-              3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-              4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-              5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-              6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-              7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-              8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-              9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-              10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-              11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
+              3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+              4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+              5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+              6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+              7 => self.is_connected_with_user_with_id(user.id),
+              8 => user.is_followers_user_with_id(self.id),
+              9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+              10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+              11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+              12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
               _ => false,
           },
           Err(_) => false,
         };
     }
-    pub fn is_user_see_all(&self, user_id: i32) -> bool {
+    pub fn is_user_see_all(&self, user: &User) -> bool {
         if self.id == user_id {
             return true;
         }
@@ -1692,22 +2069,23 @@ impl User {
         return match private {
           Ok(_ok) => match _ok.see_all {
               1 => true,
-              2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-              3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-              4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-              5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-              6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-              7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-              8 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-              9 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-              10 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-              11 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
+              3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+              4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+              5 => user.is_followers_user_with_id(self.id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+              6 => user.is_followers_user_with_id(self.id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+              7 => self.is_connected_with_user_with_id(user.id),
+              8 => user.is_followers_user_with_id(self.id),
+              9 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+              10 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+              11 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+              12 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
               _ => false,
           },
           Err(_) => false,
         };
     }
-    pub fn is_user_see_friend(&self, user_id: i32) -> bool {
+    pub fn is_user_see_friend(&self, user: &User) -> bool {
         if self.id == user_id {
             return true;
         }
@@ -1715,23 +2093,24 @@ impl User {
         return match private {
           Ok(_ok) => match _ok.see_friend {
               1 => true,
-              2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-              3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-              4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-              5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-              6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-              7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-              8 => !self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-              9 => self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-              10 => !self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-              11 => self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+              2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
+              3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+              4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+              5 => user.is_followers_user_with_id(self.id) || (!self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+              6 => user.is_followers_user_with_id(self.id) || (self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+              7 => self.is_connected_with_user_with_id(user.id),
+              8 => user.is_followers_user_with_id(self.id),
+              9 => !self.get_see_friend_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+              10 => self.get_see_friend_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+              11 => !self.get_see_friend_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+              12 => self.get_see_friend_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
               _ => false,
           },
           Err(_) => false,
         };
     }
 
-    pub fn get_profile_all_see(&self, user_id: i32) -> Vec<bool> {
+    pub fn get_profile_all_see(&self, user: &User) -> Vec<bool> {
         if self.id == user_id {
             return vec![true, true, true];
         }
@@ -1740,16 +2119,17 @@ impl User {
           Ok(_ok) => {
               let bool_see_all = match _ok.see_all {
                   1 => true,
-                  2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-                  3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-                  4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-                  5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-                  6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-                  7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-                  8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-                  9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-                  10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-                  11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
+                  3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+                  4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+                  5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+                  6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+                  7 => self.is_connected_with_user_with_id(user.id),
+                  8 => user.is_followers_user_with_id(self.id),
+                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
                   _ => false,
               };
               if bool_see_all == false {
@@ -1759,32 +2139,34 @@ impl User {
               bool_stack.push(true);
               let bool_see_info = match _ok.see_info {
                   1 => true,
-                  2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-                  3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-                  4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-                  5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-                  6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-                  7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-                  8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-                  9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-                  10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-                  11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
+                  3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+                  4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+                  5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+                  6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+                  7 => self.is_connected_with_user_with_id(user.id),
+                  8 => user.is_followers_user_with_id(self.id),
+                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
                   _ => false,
               };
               bool_stack.push(bool_see_info);
 
               let bool_see_friend = match _ok.see_friend {
                   1 => true,
-                  2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-                  3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-                  4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-                  5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-                  6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-                  7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-                  8 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-                  9 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-                  10 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-                  11 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+                  2 => self.is_connected_with_user_with_id(user.id) || user.is_followers_user_with_id(self.id),
+                  3 => self.is_connected_with_user_with_id(user.id) || (!self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+                  4 => self.is_connected_with_user_with_id(user.id) || (self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id)),
+                  5 => user.is_followers_user_with_id(self.id) || (!self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+                  6 => user.is_followers_user_with_id(self.id) || (self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id)),
+                  7 => self.is_connected_with_user_with_id(user.id),
+                  8 => user.is_followers_user_with_id(self.id),
+                  9 => !self.get_see_info_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+                  10 => self.get_see_info_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user.id),
+                  11 => !self.get_see_info_exclude_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
+                  12 => self.get_see_info_include_follows_ids().iter().any(|&i| i==user_id) && user.is_followers_user_with_id(self.id),
                   _ => false,
               };
               bool_stack.push(bool_see_friend);

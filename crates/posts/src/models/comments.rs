@@ -420,11 +420,18 @@ impl PostComment {
     pub fn get_replies(&self, limit: i64, offset: i64) -> Result<Vec<PostComment>,Error>  {
         use crate::schema::post_comments::dsl::post_comments;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         return Ok(post_comments
             .filter(schema::post_comments::parent_id.eq(self.id))
             .filter(schema::post_comments::types.lt(10))
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<PostComment>(&_connection)?);
     }
@@ -506,7 +513,7 @@ impl PostComment {
 
             let _user = users
                 .filter(schema::users::id.eq(self.user_id))
-                .filter(schema::users::types.lt(10))
+                .filter(schema::users::types.lt(31))
                 .select((
                     schema::users::user_id,
                     schema::users::first_name,

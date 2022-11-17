@@ -150,6 +150,38 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
+    pub fn is_user_member(&self, user_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
+    pub fn is_user_staff(&self, user_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+            .filter(schema::communities_memberships::level.ne(1))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
+    pub fn is_user_admin(&self, user_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+            .filter(schema::communities_memberships::level.eq(5))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection).is_ok();
+    }
     pub fn get_post_lists (
         &self,
         limit: i64,
@@ -157,12 +189,19 @@ impl Community {
     ) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         return post_lists
-            .filter(schema::post_lists::community_id.eq(self.id))
+            .filter(schema::post_lists::community_id.eq(self.community_id))
             .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<PostList>(&_connection)
             .expect("E.");
@@ -392,7 +431,7 @@ impl Community {
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::community_id.eq(self.community_id))
-            .filter(schema::posts::types.eq(2))
+            .filter(schema::posts::types.eq(10))
             .order(schema::posts::created.desc())
             .select(schema::posts::id)
             .load::<i32>(&_connection)
@@ -713,7 +752,7 @@ impl Community {
         }
         let _connection = establish_connection();
         let member = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
@@ -735,7 +774,7 @@ impl Community {
         }
         let _connection = establish_connection();
         let member = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
@@ -757,7 +796,7 @@ impl Community {
         }
         let _connection = establish_connection();
         let member = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
@@ -779,7 +818,7 @@ impl Community {
         }
         let _connection = establish_connection();
         let member = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
@@ -802,7 +841,7 @@ impl Community {
         }
         let _connection = establish_connection();
         let member = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .load::<CommunitiesMembership>(&_connection)
             .expect("E");
@@ -823,7 +862,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items_ids = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -834,7 +873,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items_ids = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .limit(6)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -846,7 +885,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::level.ne(1))
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -858,7 +897,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items_ids = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::level.eq(5))
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -870,7 +909,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items_ids = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::level.eq(2))
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -882,7 +921,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items_ids = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::level.eq(3))
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -894,7 +933,7 @@ impl Community {
 
         let _connection = establish_connection();
         let items_ids = communities_memberships
-            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .filter(schema::communities_memberships::level.eq(4))
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
@@ -1064,73 +1103,73 @@ impl Community {
         // данного сообщества
         return match self.see_el {
             1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            2 => self.is_user_member(user_id),
+            3 => self.is_user_staff(user_id),
+            4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_see_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_el_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+            6 => !self.get_see_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            7 => self.get_see_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            _ => false
         };
     }
     pub fn is_user_see_comment(&self, user_id: i32) -> bool {
         return match self.see_comment {
             1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            2 => self.is_user_member(user_id),
+            3 => self.is_user_staff(user_id),
+            4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_see_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_see_comment_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+            6 => !self.get_see_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            7 => self.get_see_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            _ => false
         };
     }
     pub fn is_user_create_list(&self, user_id: i32) -> bool {
         return match self.create_el {
             1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            2 => self.is_user_member(user_id),
+            3 => self.is_user_staff(user_id),
+            4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_create_list_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_create_list_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+            6 => !self.get_create_list_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            7 => self.get_create_list_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            _ => false
         };
     }
     pub fn is_user_create_el(&self, user_id: i32) -> bool {
         return match self.create_el {
             1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            2 => self.is_user_member(user_id),
+            3 => self.is_user_staff(user_id),
+            4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_create_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_create_el_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+            6 => !self.get_create_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            7 => self.get_create_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            _ => false
         };
     }
     pub fn is_user_create_comment(&self, user_id: i32) -> bool {
         return match self.create_comment {
             1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            2 => self.is_user_member(user_id),
+            3 => self.is_user_staff(user_id),
+            4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_create_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_create_comment_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+            6 => !self.get_create_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            7 => self.get_create_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            _ => false
         };
     }
     pub fn is_user_copy_el(&self, user_id: i32) -> bool {
         return match self.copy_el {
             1 => true,
-            2 => self.get_members_ids().iter().any(|&i| i==user_id),
-            3 => self.get_staff_users_ids().iter().any(|&i| i==user_id),
-            4 => self.get_administrators_ids().iter().any(|&i| i==user_id),
+            2 => self.is_user_member(user_id),
+            3 => self.is_user_staff(user_id),
+            4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_copy_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            7 => self.get_copy_el_include_members_ids().iter().any(|&i| i==user_id) && self.get_members_ids().iter().any(|&i| i==user_id),
-            _ => false,
+            6 => !self.get_copy_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            7 => self.get_copy_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id)),
+            _ => false
         };
     }
 

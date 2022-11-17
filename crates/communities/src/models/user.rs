@@ -43,6 +43,20 @@ use crate::errors::Error;
 // сервиса сообществ с пользователями сервиса пользователей.
 // Эти объекты копируются при надобности с объектов
 // пользователей сервиса пользователей
+// 1 Все пользователи
+// 2 Все друзья и все подписчики
+// 3 Все друзья и подписчики, кроме
+// 4 Все друзья и некоторые подписчики
+// 5 Все подписчики и друзья, кроме
+// 6 Все подписчики и некоторые друзья
+// 7 Все друзья
+
+// 8 Все подписчики
+// 9 Друзья, кроме
+// 10 Некоторые друзья
+// 11 Подписчики, кроме
+// 12 Некоторые подписчики
+// 13 Только я
 #[derive(Serialize, Identifiable, Queryable)]
 pub struct User {
     pub id:            i32,
@@ -86,33 +100,24 @@ pub struct NewUserJson {
 }
 
 impl User {
-    pub fn is_member_of_community(&self, community_id: i32) -> bool {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
-        use crate::models::CommunitiesMembership;
-
-        let _connection = establish_connection();
-        return communities_memberships
-            .filter(schema::communities_memberships::user_id.eq(self.id))
-            .filter(schema::communities_memberships::community_id.eq(community_id))
-            .select(schema::communities_memberships::id)
-            .first::<i32>(&_connection).is_ok();
+    pub fn is_supermanager(&self) -> bool {
+        return self.types == 25;
     }
-
+    pub fn is_administrator(&self) -> bool {
+        return self.types > 20 && self.types < 30;
+    }
+    pub fn is_advertiser(&self) -> bool {
+        return self.types > 17 && self.types < 30;
+    }
+    pub fn is_manager(&self) -> bool {
+        return self.types > 13 && self.types < 30;
+    }
+    pub fn is_moderator(&self) -> bool {
+        return self.types > 9 && self.types < 30;
+    }
     pub fn get_longest_penalties(&self) -> String {
         return "".to_string();
     }
-    pub fn is_banned_from_community(&self, community_id: i32) -> bool {
-        use crate::schema::community_banned_users::dsl::community_banned_users;
-
-        let _connection = establish_connection();
-
-        return community_banned_users
-            .filter(schema::community_banned_users::community_id.eq(community_id))
-            .filter(schema::community_banned_users::user_id.eq(self.id))
-            .select(schema::community_banned_users::id)
-            .load::<i32>(&_connection).is_ok();
-    }
-
 
     pub fn count_communities(&self) -> i32 {
         return self.communities;
@@ -204,15 +209,15 @@ impl User {
         if new_user_id > 0 && user.friends.is_some() {
             use crate::schema::friends::dsl::friends;
 
+            // user_id кто дружит
+            // target_id с кем дружит
             for user_id in user.friends.unwrap() {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
                     .filter(schema::friends::target_id.eq(user_id))
-                    .limit(1)
                     .select(schema::friends::id)
-                    .load::<i32>(&_connection)
-                    .expect("E")
-                    .len() == 0 {
+                    .first::<i32>(&_connection)
+                    .is_err() {
                         let new_form = NewFriend {
                             user_id:   new_user_id,
                             target_id: user_id,
@@ -226,16 +231,15 @@ impl User {
         }
         if new_user_id > 0 && user.follows.is_some() {
             use crate::schema::follows::dsl::follows;
-
+            // user_id на кого подписан
+            // target_id кто подписан
             for user_id in user.follows.unwrap() {
                 if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
-                    .limit(1)
                     .select(schema::follows::id)
-                    .load::<i32>(&_connection)
-                    .expect("E")
-                    .len() == 0 {
+                    .first::<i32>(&_connection)
+                    .is_err() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
                             target_id: user_id,
@@ -327,16 +331,17 @@ impl User {
         }
         return match self.see_community {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_community_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_community_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_community_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_community_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_community_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_community_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_community_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_community_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_community_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_community_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_community_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_community_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_see_community_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_see_community_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_see_community_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_see_community_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -552,7 +557,7 @@ impl User {
         return self.types == 6;
     }
     pub fn is_identified(&self) -> bool {
-        return self.types == 7;
+        return self.types > 6 && self.types < 30;
     }
 
     pub fn is_online(&self) -> bool {
@@ -598,8 +603,8 @@ impl User {
 
         let _connection = establish_connection();
         return friends
-            .filter(schema::friends::user_id.eq(user_id))
-            .filter(schema::friends::target_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(self.user_id))
+            .filter(schema::friends::target_id.eq(user_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection).is_ok();
     }
@@ -614,12 +619,24 @@ impl User {
             .first::<i32>(&_connection).is_ok();
     }
     pub fn is_followers_user_with_id(&self, user_id: i32) -> bool {
+        // подписан ли user_id на self
         use crate::schema::follows::dsl::follows;
 
         let _connection = establish_connection();
         return follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection).is_ok();
+    }
+    pub fn is_self_followers_user_with_id(&self, user_id: i32) -> bool {
+        // подписан ли self на user_id
+        use crate::schema::follows::dsl::follows;
+
+        let _connection = establish_connection();
+        return follows
+            .filter(schema::follows::target_id.eq(user_id))
+            .filter(schema::follows::user_id.eq(self.user_id))
             .select(schema::follows::id)
             .first::<i32>(&_connection).is_ok();
     }
@@ -830,8 +847,8 @@ impl User {
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct Friend {
     pub id:        i32,
-    pub user_id:   i32,
-    pub target_id: i32,
+    pub user_id:   i32, // кто
+    pub target_id: i32, // на кого
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="friends"]
@@ -846,8 +863,8 @@ pub struct NewFriend {
 #[derive(Debug, Queryable, Serialize, Identifiable, Associations)]
 pub struct Follow {
     pub id:        i32,
-    pub user_id:   i32,
-    pub target_id: i32,
+    pub user_id:   i32, // кто
+    pub target_id: i32, // на кого
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="follows"]

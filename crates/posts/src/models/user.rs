@@ -60,6 +60,21 @@ use crate::models::{Post, PostList};
     // 66 закрытый баннером пославший запрос на идентификацию
     // 67 закрытый баннером идентифицированный
 
+    // приватность
+    // 1 Все пользователи
+    // 2 Все друзья и все подписчики
+    // 3 Все друзья и подписчики, кроме
+    // 4 Все друзья и некоторые подписчики
+    // 5 Все подписчики и друзья, кроме
+    // 6 Все подписчики и некоторые друзья
+    // 7 Все друзья
+
+    // 8 Все подписчики
+    // 9 Друзья, кроме
+    // 10 Некоторые друзья
+    // 11 Подписчики, кроме
+    // 12 Некоторые подписчики
+    // 13 Только я
 
 #[derive(Serialize, Identifiable, Queryable)]
 pub struct User {
@@ -132,13 +147,20 @@ impl User {
     ) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
         let _connection = establish_connection();
         return post_lists
-            .filter(schema::post_lists::user_id.eq(self.id))
+            .filter(schema::post_lists::user_id.eq(self.user_id))
             .filter(schema::post_lists::community_id.is_null())
             .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
-            .limit(limit)
+            .limit(_limit)
             .offset(offset)
             .load::<PostList>(&_connection)
             .expect("E.");
@@ -203,7 +225,7 @@ impl User {
         return posts
             .filter(schema::posts::user_id.eq(self.user_id))
             .filter(schema::posts::community_id.is_null())
-            .filter(schema::posts::types.eq(2))
+            .filter(schema::posts::types.eq(10))
             .order(schema::posts::created.desc())
             .select(schema::posts::id)
             .load::<i32>(&_connection)
@@ -251,7 +273,7 @@ impl User {
             see_all:        user.see_all,
             see_el:         1,
             see_comment:    1,
-            create_el:      12,
+            create_el:      13,
             create_comment: 12,
             copy_el:        1,
             lists:          0,
@@ -273,7 +295,7 @@ impl User {
                     .filter(schema::friends::user_id.eq(new_user_id))
                     .filter(schema::friends::target_id.eq(user_id))
                     .select(schema::friends::id)
-                    .first::<i32>(&_connection).is_ok() {
+                    .first::<i32>(&_connection).is_err() {
                         let new_form = NewFriend {
                             user_id:   new_user_id,
                             target_id: *user_id,
@@ -293,7 +315,8 @@ impl User {
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(user_id))
                     .select(schema::follows::id)
-                    .first::<i32>(&_connection).is_ok() {
+                    .first::<i32>(&_connection)
+                    .is_err() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
                             target_id: *user_id,
@@ -648,16 +671,17 @@ impl User {
         }
         return match self.see_all {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -667,16 +691,17 @@ impl User {
         }
         return match self.see_el {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -684,18 +709,19 @@ impl User {
         if self.user_id == user_id {
             return true;
         }
-        return match self.see_el {
+        return match self.see_comment {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -704,18 +730,19 @@ impl User {
         if self.user_id == user_id {
             return true;
         }
-        return match self.see_el {
+        return match self.create_el {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -723,18 +750,19 @@ impl User {
         if self.user_id == user_id {
             return true;
         }
-        return match self.see_el {
+        return match self.create_comment {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -742,18 +770,19 @@ impl User {
         if self.user_id == user_id {
             return true;
         }
-        return match self.see_el {
+        return match self.copy_el {
             1 => true,
-            2 => self.get_friends_ids().iter().any(|&i| i==user_id) || self.get_friends_ids().iter().any(|&i| i==user_id),
-            3 => self.get_friends_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            4 => self.get_friends_ids().iter().any(|&i| i==user_id) || (self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id)),
-            5 => self.get_follows_ids().iter().any(|&i| i==user_id) || (!self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            6 => self.get_follows_ids().iter().any(|&i| i==user_id) || (self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id)),
-            7 => self.get_friends_ids().iter().any(|&i| i==user_id),
-            8 => !self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            9 => self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && self.get_friends_ids().iter().any(|&i| i==user_id),
-            10 => !self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
-            11 => self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && self.get_follows_ids().iter().any(|&i| i==user_id),
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -1053,12 +1082,12 @@ impl User {
 
         let _connection = establish_connection();
         if news_user_communities
-            .filter(schema::news_user_communities::owner.eq(self.id))
+            .filter(schema::news_user_communities::owner.eq(self.user_id))
             .filter(schema::news_user_communities::community_id.eq(community_id))
             .select(schema::news_user_communities::id)
             .first::<i32>(&_connection).is_ok() {
                 let _new = NewNewsUserCommunitie {
-                    owner:        self.id,
+                    owner:        self.user_id,
                     list_id:      None,
                     user_id:      None,
                     community_id: Some(community_id),
@@ -1078,12 +1107,12 @@ impl User {
 
         let _connection = establish_connection();
         if notify_user_communities
-            .filter(schema::notify_user_communities::owner.eq(self.id))
+            .filter(schema::notify_user_communities::owner.eq(self.user_id))
             .filter(schema::notify_user_communities::community_id.eq(community_id))
             .select(schema::notify_user_communities::id)
             .first::<i32>(&_connection).is_ok() {
                 let _new = NewNotifyUserCommunitie {
-                    owner: self.id,
+                    owner: self.user_id,
                     list_id: None,
                     user_id: None,
                     community_id: Some(community_id),
@@ -1102,12 +1131,12 @@ impl User {
 
         let _connection = establish_connection();
         if news_user_communities
-            .filter(schema::news_user_communities::owner.eq(self.id))
+            .filter(schema::news_user_communities::owner.eq(self.user_id))
             .filter(schema::news_user_communities::user_id.eq(user_id))
             .select(schema::news_user_communities::id)
             .first::<i32>(&_connection).is_ok() {
                 let _new = NewNewsUserCommunitie {
-                    owner: self.id,
+                    owner: self.user_id,
                     list_id: None,
                     user_id: Some(user_id),
                     community_id: None,
@@ -1135,7 +1164,7 @@ impl User {
             .load::<ListUserCommunitiesKey>(&_connection)
             .expect("E");
 
-        if _new.len() > 0 && _new[0].owner == self.id && _list.len() > 0 && _list[0].owner == self.id {
+        if _new.len() > 0 && _new[0].owner == self.user_id && _list.len() > 0 && _list[0].owner == self.user_id {
             diesel::update(news_user_communities.filter(schema::news_user_communities::id.eq(new_id)))
                 .set(schema::news_user_communities::list_id.eq(list_id))
                 .execute(&_connection)
@@ -1153,7 +1182,7 @@ impl User {
             .filter(schema::news_user_communities::id.eq(new_id))
             .first::<NewsUserCommunitie>(&_connection)
             .expect("E");
-        if _new.owner == self.id {
+        if _new.owner == self.user_id {
             diesel::delete(
                 news_user_communities
                     .filter(schema::news_user_communities::id.eq(new_id))
@@ -1175,7 +1204,7 @@ impl User {
             .expect("E");
         let null_value: Option<i32> = None;
 
-        if _new.owner == self.id {
+        if _new.owner == self.user_id {
             diesel::update(news_user_communities.filter(schema::news_user_communities::id.eq(new_id)))
                 .set(schema::news_user_communities::list_id.eq(null_value))
                 .execute(&_connection)
@@ -1190,12 +1219,12 @@ impl User {
 
         let _connection = establish_connection();
         if notify_user_communities
-            .filter(schema::notify_user_communities::owner.eq(self.id))
+            .filter(schema::notify_user_communities::owner.eq(self.user_id))
             .filter(schema::notify_user_communities::user_id.eq(user.id))
             .select(schema::notify_user_communities::id)
             .first::<i32>(&_connection).is_ok() {
                 let _new = NewNotifyUserCommunitie {
-                    owner: self.id,
+                    owner: self.user_id,
                     list_id: None,
                     user_id: Some(user.id),
                     community_id: None,
@@ -1223,7 +1252,7 @@ impl User {
             .first::<ListUserCommunitiesKey>(&_connection)
             .expect("E");
 
-        if _notify.owner == self.id && _list.owner == self.id {
+        if _notify.owner == self.user_id && _list.owner == self.user_id {
             diesel::update(notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)))
                 .set(schema::notify_user_communities::list_id.eq(_list.id))
                 .execute(&_connection)
@@ -1239,7 +1268,7 @@ impl User {
             .filter(schema::notify_user_communities::id.eq(notify_id))
             .first::<NotifyUserCommunitie>(&_connection)
             .expect("E");
-        if _notify.owner == self.id {
+        if _notify.owner == self.user_id {
             let del = diesel::delete (
                 notify_user_communities
                     .filter(schema::notify_user_communities::id.eq(notify_id))
@@ -1264,7 +1293,7 @@ impl User {
             .first::<NotifyUserCommunitie>(&_connection)
             .expect("E");
         let null_value: Option<i32> = None;
-        if _notify.owner == self.id {
+        if _notify.owner == self.user_id {
             diesel::update(notify_user_communities.filter(schema::notify_user_communities::id.eq(notify_id)))
                 .set(schema::notify_user_communities::list_id.eq(null_value))
                 .execute(&_connection)
@@ -1409,7 +1438,7 @@ impl User {
 
         let _connection = establish_connection();
         let news = featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
+            .filter(schema::featured_user_communities::owner.eq(self.user_id))
             .filter(schema::featured_user_communities::mute.eq(false))
             .filter(schema::featured_user_communities::sleep.lt(chrono::Local::now().naive_utc()))
             .load::<FeaturedUserCommunitie>(&_connection)
@@ -1432,7 +1461,7 @@ impl User {
 
         let _connection = establish_connection();
         let news = news_user_communities
-            .filter(schema::news_user_communities::owner.eq(self.id))
+            .filter(schema::news_user_communities::owner.eq(self.user_id))
             .filter(schema::news_user_communities::mute.eq(false))
             .filter(schema::news_user_communities::sleep.lt(chrono::Local::now().naive_utc()))
             .load::<NewsUserCommunitie>(&_connection)
@@ -1528,8 +1557,8 @@ impl User {
 
         let _connection = establish_connection();
         return friends
-            .filter(schema::friends::user_id.eq(user_id))
-            .filter(schema::friends::target_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(self.user_id))
+            .filter(schema::friends::target_id.eq(user_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection)
             .is_ok();
@@ -1556,6 +1585,17 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
+    pub fn is_self_followers_user_with_id(&self, user_id: i32) -> bool {
+        use crate::schema::follows::dsl::follows;
+
+        let _connection = establish_connection();
+        return follows
+            .filter(schema::follows::target_id.eq(user_id))
+            .filter(schema::follows::user_id.eq(self.user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn get_or_create_featured_objects (
         &self,
@@ -1569,13 +1609,13 @@ impl User {
         if friends_ids.is_some() {
             for friend_id in friends_ids.unwrap() {
                 if !self.is_connected_with_user_with_id(friend_id) && !featured_user_communities
-                    .filter(schema::featured_user_communities::owner.eq(self.id))
+                    .filter(schema::featured_user_communities::owner.eq(self.user_id))
                     .filter(schema::featured_user_communities::user_id.eq(friend_id))
                     .select(schema::featured_user_communities::id)
                     .load::<i32>(&_connection).is_ok() {
 
                     let new_featured = NewFeaturedUserCommunitie {
-                        owner: self.id,
+                        owner: self.user_id,
                         list_id: None,
                         user_id: Some(friend_id),
                         community_id: None,
@@ -1592,13 +1632,13 @@ impl User {
         if communities_ids.is_some() {
             for community_id in communities_ids.unwrap() {
                 if !self.is_member_of_community(community_id) && !featured_user_communities
-                    .filter(schema::featured_user_communities::owner.eq(self.id))
+                    .filter(schema::featured_user_communities::owner.eq(self.user_id))
                     .filter(schema::featured_user_communities::community_id.eq(community_id))
                     .select(schema::featured_user_communities::id)
                     .load::<i32>(&_connection).is_ok() {
 
                     let new_featured = NewFeaturedUserCommunitie {
-                        owner: self.id,
+                        owner: self.user_id,
                         list_id: None,
                         user_id: None,
                         community_id: Some(community_id),
@@ -1623,7 +1663,7 @@ impl User {
         let _connection = establish_connection();
         let del = diesel::delete (
             featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
+            .filter(schema::featured_user_communities::owner.eq(self.user_id))
             .filter(schema::featured_user_communities::user_id.eq(user_id))
         )
         .execute(&_connection);
@@ -1643,7 +1683,7 @@ impl User {
         let _connection = establish_connection();
         let del = diesel::delete (
             featured_user_communities
-            .filter(schema::featured_user_communities::owner.eq(self.id))
+            .filter(schema::featured_user_communities::owner.eq(self.user_id))
             .filter(schema::featured_user_communities::community_id.eq(community_id))
         )
         .execute(&_connection);
@@ -1659,7 +1699,7 @@ impl User {
 
         let _connection = establish_connection();
         return communities_memberships
-            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .filter(schema::communities_memberships::user_id.eq(self.user_id))
             .filter(schema::communities_memberships::community_id.eq(community_id))
             .select(schema::communities_memberships::id)
             .first::<i32>(&_connection).is_ok();
@@ -1915,7 +1955,7 @@ impl User {
         }
         let _connection = establish_connection();
         let new_member = NewCommunitiesMembership {
-            user_id: self.id,
+            user_id: self.user_id,
             community_id: community_id,
             level: 1,
         };
@@ -1936,7 +1976,7 @@ impl User {
         self.delete_new_subscriber(community_id);
         diesel::delete (
             communities_memberships
-                .filter(schema::communities_memberships::user_id.eq(self.id))
+                .filter(schema::communities_memberships::user_id.eq(self.user_id))
                 .filter(schema::communities_memberships::community_id.eq(community_id))
             )
             .execute(&_connection)
