@@ -60,7 +60,7 @@ impl Owner {
             description:  data.description,
             types:        data.types,
             secret_key:   Uuid::new_v4().to_string(),
-            service_key:  Uuid::new_v4().to_string() + &Uuid::new_v4().to_string(),
+            service_key:  Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
             is_active:    true,
         };
         let new_token = diesel::insert_into(schema::owners::table)
@@ -69,6 +69,7 @@ impl Owner {
         return Ok(new_token);
     }
     pub fn delete_item(&self) -> i16 {
+        use crate::models::moderation::owners::dsl::owners;
         let _connection = establish_connection();
         diesel::delete (
             owners
