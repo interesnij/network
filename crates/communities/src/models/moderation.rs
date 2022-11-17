@@ -170,19 +170,9 @@ impl Moderated {
             .expect("Error.");
 
         return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.suspend_item()
-            },
             2 => {
                 use crate::utils::get_community;
                 let item = get_community(self.object_id).expect("E.");
-                item.suspend_item()
-            },
-            3 => {
-                use crate::utils::get_post_list;
-                let item = get_post_list(self.object_id).expect("E.");
                 item.suspend_item()
             },
             _ => 1,
@@ -223,29 +213,9 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
         return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.close_item()
-            },
             2 => {
                 use crate::utils::get_community;
                 let item = get_community(self.object_id).expect("E.");
-                item.close_item()
-            },
-            3 => {
-                use crate::utils::get_post_list;
-                let item = get_post_list(self.object_id).expect("E.");
-                item.close_item()
-            },
-            4 => {
-                use crate::utils::get_post;
-                let item = get_post(self.object_id).expect("E.");
-                item.close_item()
-            },
-            5 => {
-                use crate::utils::get_post_comment;
-                let item = get_post_comment(self.object_id).expect("E.");
                 item.close_item()
             },
             _ => 1,
@@ -299,29 +269,9 @@ impl Moderated {
         .expect("E");
 
         return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.unclose_item()
-            },
             2 => {
                 use crate::utils::get_community;
                 let item = get_community(self.object_id).expect("E.");
-                item.unclose_item()
-            },
-            3 => {
-                use crate::utils::get_post_list;
-                let item = get_post_list(self.object_id).expect("E.");
-                item.unclose_item()
-            },
-            4 => {
-                use crate::utils::get_post;
-                let item = get_post(self.object_id).expect("E.");
-                item.unclose_item()
-            },
-            5 => {
-                use crate::utils::get_post_comment;
-                let item = get_post_comment(self.object_id).expect("E.");
                 item.unclose_item()
             },
             _ => 1,
@@ -375,19 +325,9 @@ impl Moderated {
         .expect("E");
 
         return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.unsuspend_item()
-            },
             2 => {
                 use crate::utils::get_community;
                 let item = get_community(self.object_id).expect("E.");
-                item.unsuspend_item()
-            },
-            3 => {
-                use crate::utils::get_post_list;
-                let item = get_post_list(self.object_id).expect("E.");
                 item.unsuspend_item()
             },
             _ => 1,
@@ -502,11 +442,11 @@ impl Moderated {
             .expect("E");
 
     }
-    pub fn get_report_users(&self) -> Vec<User> {
-        use crate::utils::get_users_from_ids;
+    //pub fn get_report_users(&self) -> Vec<User> {
+    //    use crate::utils::get_users_from_ids;
 
-        return get_users_from_ids(self.get_reporters_ids());
-    }
+    //    return get_users_from_ids(self.get_reporters_ids());
+    //}
 
 }
 

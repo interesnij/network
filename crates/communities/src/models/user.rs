@@ -97,7 +97,7 @@ pub struct NewUserJson {
     pub is_man:     bool,
     pub link:       String,
     pub s_avatar:   Option<String>,
-    pub see_all:    bool,
+    pub see_all:    i16,
     pub friends:    Option<Vec<i32>>,  // список id друзей пользователя
     pub follows:    Option<Vec<i32>>,  // список id подписчтков пользователя
 }
