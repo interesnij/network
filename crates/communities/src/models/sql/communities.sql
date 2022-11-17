@@ -1,3 +1,20 @@
+-- ключи доступа / токены к записям -------
+CREATE TABLE owners (
+    id           SERIAL PRIMARY KEY,     -- id
+    user_id      INT NOT NULL,           -- id создателя или владельца
+    community_id INT,                    -- id сообщества-владельца (если есть)
+    name         VARCHAR(100) NOT NULL,  -- название
+    description  VARCHAR(500),           -- описание
+    types        SMALLINT NOT NULL,      -- тип владельца: приложение, пользователь, сообщество
+    secret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
+    service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ
+    is_active    BOOLEAN NOT NULL,       -- активно
+
+    UNIQUE(service_key)
+);
+CREATE INDEX item_service_key_index ON owners (service_key);
+
+
 -- пользователи -------
 -- see_community
 -- 1 Все пользователи
@@ -23,9 +40,9 @@ CREATE TABLE users (
     link          VARCHAR(100) NOT NULL,
     s_avatar      VARCHAR(500),
     last_activity TIMESTAMP NOT NULL,
-
-    see_community SMALLINT NOT NULL, -- кто может видеть сообщества
-    communities   INT NOT NULL       -- кол-во сообществ
+    see_all        SMALLINT NOT NULL,   -- кто может видеть открытый профиль
+    see_community SMALLINT NOT NULL,    -- кто может видеть сообщества
+    communities   INT NOT NULL          -- кол-во сообществ
 );
 
 -- Категории сообществ -------
@@ -169,7 +186,9 @@ CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (targ
 
 -- включения и исключения для пользователей касательно конкретного пользоватетеля
 -- приватность
+-- 0 может видеть профиль
 -- 1 может видеть сообщества
+-- 10 не может видеть профиль
 -- 11 не может видеть сообщества
 -- 20 пользователь заблокирован у владельца блока сообществ
 
@@ -205,3 +224,53 @@ CREATE TABLE featured_communities (
     hidden       BOOLEAN NOT NULL DEFAULT FALSE
 );
 CREATE UNIQUE INDEX featured_communities_unq ON featured_communities (community_id, user_id);
+
+
+CREATE TABLE moderateds (
+    id          SERIAL PRIMARY KEY,
+    description VARCHAR(500),
+    verified    BOOLEAN NOT NULL DEFAULT false,
+    status      SMALLINT NOT NULL,
+    types       SMALLINT NOT NULL,
+    object_id   INT NOT NULL,
+    created     TIMESTAMP NOT NULL,
+    count       INT NOT NULL
+);
+
+CREATE TABLE moderated_reports (
+    id           SERIAL PRIMARY KEY,
+    user_id      INT NOT NULL,
+    moderated_id INT NOT NULL,
+    description  VARCHAR(500),
+    types        SMALLINT NOT NULL,
+    created      TIMESTAMP NOT NULL
+);
+CREATE UNIQUE INDEX moderated_reports_unq ON moderated_reports (user_id, moderated_id);
+
+CREATE TABLE moderated_penalties (
+    id           SERIAL PRIMARY KEY,
+    user_id      INT NOT NULL,
+    moderated_id INT NOT NULL,
+    expiration   TIMESTAMP,
+    types        SMALLINT NOT NULL,
+    object_id    INT NOT NULL,
+    status       SMALLINT NOT NULL,
+    created      TIMESTAMP NOT NULL
+);
+CREATE UNIQUE INDEX moderated_penalties_unq ON moderated_penalties (user_id, moderated_id);
+
+CREATE TABLE moderated_logs (
+    id              SERIAL PRIMARY KEY,
+    user_id         INT NOT NULL,
+    object_id       INT NOT NULL,
+    action          SMALLINT NOT NULL,
+    description     VARCHAR(500),
+    types           SMALLINT NOT NULL,
+    created         TIMESTAMP NOT NULL,
+    time_to_suspend TIMESTAMP,
+
+    CONSTRAINT fk_moderated_logs_manager
+        FOREIGN KEY(user_id)
+            REFERENCES users(id)
+);
+CREATE INDEX moderated_logs_id_idx ON moderated_logs (user_id);

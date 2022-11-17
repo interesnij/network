@@ -747,7 +747,7 @@ impl Community {
     pub fn create_administrator(&self, user_id: i32) -> bool {
         // нужно создавать объект уведомлений для сообщества для нового админа
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
+        if !self.is_user_member(user_id) {
             return false;
         }
         let _connection = establish_connection();
@@ -769,7 +769,7 @@ impl Community {
     }
     pub fn create_editor(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
+        if !self.is_user_member(user_id) {
             return false;
         }
         let _connection = establish_connection();
@@ -791,7 +791,7 @@ impl Community {
     }
     pub fn create_moderator(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
+        if !self.is_user_member(user_id) {
             return false;
         }
         let _connection = establish_connection();
@@ -813,7 +813,7 @@ impl Community {
     }
     pub fn create_advertisor(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
+        if !self.is_user_member(user_id) {
             return false;
         }
         let _connection = establish_connection();
@@ -836,7 +836,7 @@ impl Community {
     pub fn delete_staff_member(&self, user_id: i32) -> bool {
         // нужно удалять объект уведомлений для сообщества
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
+        if !self.is_user_staff(user_id) {
             return false;
         }
         let _connection = establish_connection();
@@ -940,6 +940,30 @@ impl Community {
             .expect("E");
         return items_ids;
     }
+    pub fn is_user_see_el_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(11))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_el_include(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(1))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn get_see_el_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
@@ -967,6 +991,7 @@ impl Community {
             .expect("E");
         return items;
     }
+
     pub fn get_see_comment_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
@@ -993,6 +1018,31 @@ impl Community {
             .expect("E");
         return items;
     }
+    pub fn is_user_see_comment_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(12))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_comment_include(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(2))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
     pub fn get_create_list_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
@@ -1019,6 +1069,31 @@ impl Community {
             .expect("E");
         return items;
     }
+    pub fn is_user_create_list_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(16))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_create_list_include(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(6))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
     pub fn get_create_el_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
@@ -1045,6 +1120,31 @@ impl Community {
             .expect("E");
         return items;
     }
+    pub fn is_user_create_el_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(13))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_create_el_include(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(3))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
     pub fn get_create_comment_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
@@ -1071,6 +1171,31 @@ impl Community {
             .expect("E");
         return items;
     }
+    pub fn is_user_create_comment_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(14))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_create_comment_include(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(4))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
     pub fn get_copy_el_exclude_members_ids(&self) -> Vec<i32> {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
@@ -1097,6 +1222,30 @@ impl Community {
             .expect("E");
         return items;
     }
+    pub fn is_user_copy_el_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(15))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_copy_el_include(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.community_id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(5))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn is_user_see_el(&self, user_id: i32) -> bool {
         // может ли пользователь просматривать все списки и посты
@@ -1107,8 +1256,8 @@ impl Community {
             3 => self.is_user_staff(user_id),
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_see_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_see_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            6 => !self.is_user_see_el_exclude(user_id) && self.is_user_member(user_id),
+            7 => self.is_user_see_el_include(user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1119,8 +1268,8 @@ impl Community {
             3 => self.is_user_staff(user_id),
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_see_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_see_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            6 => !self.is_user_see_comment_exclude(user_id) && self.is_user_member(user_id),
+            7 => self.is_user_see_comment_include(user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1131,8 +1280,8 @@ impl Community {
             3 => self.is_user_staff(user_id),
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_create_list_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_create_list_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            6 => !self.is_user_create_list_exclude(user_id) && self.is_user_member(user_id),
+            7 => self.is_user_create_list_include(user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1143,8 +1292,8 @@ impl Community {
             3 => self.is_user_staff(user_id),
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_create_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_create_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            6 => !self.is_user_create_el_exclude(user_id) && self.is_user_member(user_id),
+            7 => self.is_user_create_el_include(user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1155,8 +1304,8 @@ impl Community {
             3 => self.is_user_staff(user_id),
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_create_comment_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_create_comment_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            6 => !self.is_user_create_comment_exclude(user_id) && self.is_user_member(user_id),
+            7 => self.is_user_create_comment_include(user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1167,8 +1316,8 @@ impl Community {
             3 => self.is_user_staff(user_id),
             4 => self.is_user_admin(user_id),
             5 => self.user_id == user_id,
-            6 => !self.get_copy_el_exclude_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-            7 => self.get_copy_el_include_members_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+            6 => !self.is_user_copy_el_exclude(user_id) && self.is_user_member(user_id),
+            7 => self.is_user_copy_el_include(user_id) && self.is_user_member(user_id),
             _ => false
         };
     }
@@ -1178,15 +1327,6 @@ impl Community {
     }
     pub fn is_anon_user_see_comment(&self) -> bool {
         return self.see_comment == 1;
-    }
-    pub fn is_anon_user_create_el(&self) -> bool {
-        return self.create_el == 1;
-    }
-    pub fn is_anon_user_create_comment(&self) -> bool {
-        return self.create_comment == 1;
-    }
-    pub fn is_anon_user_copy_el(&self) -> bool {
-        return self.copy_el == 1;
     }
 
     pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {

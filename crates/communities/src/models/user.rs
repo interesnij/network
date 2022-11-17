@@ -68,6 +68,7 @@ pub struct User {
     pub link:          String,
     pub s_avatar:      Option<String>,
     pub last_activity: chrono::NaiveDateTime,
+    pub see_all:       i16,
     pub see_community: i16,
     pub communities:   i32,
 }
@@ -83,6 +84,7 @@ pub struct NewUser {
     pub link:          String,
     pub s_avatar:      Option<String>,
     pub last_activity: chrono::NaiveDateTime,
+    pub see_all:       i16,
     pub see_community: i16,
     pub communities:   i32,
 }
@@ -95,6 +97,7 @@ pub struct NewUserJson {
     pub is_man:     bool,
     pub link:       String,
     pub s_avatar:   Option<String>,
+    pub see_all:    bool,
     pub friends:    Option<Vec<i32>>,  // список id друзей пользователя
     pub follows:    Option<Vec<i32>>,  // список id подписчтков пользователя
 }
@@ -194,6 +197,7 @@ impl User {
             link:          user.link.clone(),
             s_avatar:      user.s_avatar.clone(),
             last_activity: chrono::Local::now().naive_utc(),
+            see_all:       user.see_all,
             see_community: 1,
             communities:   0,
         };
@@ -321,6 +325,107 @@ impl User {
             .expect("E");
         return items;
     }
+    pub fn is_user_see_community_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(11))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_community_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(1))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
+    pub fn get_see_all_exclude_friends_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(10))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_see_all_include_friends_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(0))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_see_all_exclude_follows_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(10))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn get_see_all_include_follows_ids(&self) -> Vec<i32> {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        let items = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(0))
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+        return items;
+    }
+    pub fn is_user_see_all_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(10))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_all_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(0))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn is_user_see_community(&self, user_id: i32) -> bool {
         // все запросы происходят от id пользователя основного,
@@ -342,6 +447,30 @@ impl User {
             10 => self.get_see_community_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
             11 => !self.get_see_community_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             12 => self.get_see_community_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            _ => false,
+        };
+    }
+
+    pub fn is_user_see_all(&self, user_id: i32) -> bool {
+        // все запросы происходят от id пользователя основного,
+        // с сервиса пользователей, и сравниваются потому с user_id
+        // местной таблицы пользователей. Потому сравниваем с self.user_id
+        if self.user_id == user_id {
+            return true;
+        }
+        return match self.see_all {
+            1 => true,
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -879,7 +1008,9 @@ pub struct NewFollow {
 // ведь запрос передается либо для анонима, либо с id основного
 // пользоваетля.
 
+// 0 может видеть профиль
 // 1 может видеть сообщества
+// 10 не может видеть профиль
 // 11 не может видеть сообщества
 // 20 пользователь заблокирован у владельца блока сообществ
 

@@ -735,6 +735,18 @@ impl Community {
             .expect("E");
         return items_ids;
     }
+    pub fn is_user_see_info_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::community_visible_perms::dsl::community_visible_perms;
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(2))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn get_see_info_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::{

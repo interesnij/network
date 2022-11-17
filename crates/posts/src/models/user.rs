@@ -399,6 +399,30 @@ impl User {
             .expect("E");
         return items;
     }
+    pub fn is_user_see_all_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(10))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_all_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(0))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn get_see_el_exclude_friends_ids(&self) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
@@ -451,6 +475,30 @@ impl User {
             .load::<i32>(&_connection)
             .expect("E");
         return items;
+    }
+    pub fn is_user_see_el_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(11))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_el_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(1))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
     }
 
     pub fn get_see_comment_exclude_friends_ids(&self) -> Vec<i32> {
@@ -505,6 +553,30 @@ impl User {
             .expect("E");
         return items;
     }
+    pub fn is_user_see_comment_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(12))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_see_comment_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(2))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn get_create_el_exclude_friends_ids(&self) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
@@ -557,6 +629,30 @@ impl User {
             .load::<i32>(&_connection)
             .expect("E");
         return items;
+    }
+    pub fn is_user_create_el_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(13))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_create_el_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(3))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
     }
 
     pub fn get_create_comment_exclude_friends_ids(&self) -> Vec<i32> {
@@ -611,6 +707,30 @@ impl User {
             .expect("E");
         return items;
     }
+    pub fn is_user_create_comment_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(14))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_create_comment_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(4))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn get_copy_el_exclude_friends_ids(&self) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
@@ -664,6 +784,30 @@ impl User {
             .expect("E");
         return items;
     }
+    pub fn is_user_copy_el_exclude(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(15))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_copy_el_include(&self, user_id: i32) -> bool {
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+        let _connection = establish_connection();
+        return user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::types.eq(5))
+            .select(schema::user_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
 
     pub fn is_user_see_all(&self, user_id: i32) -> bool {
         if self.user_id == user_id {
@@ -672,16 +816,16 @@ impl User {
         return match self.see_all {
             1 => true,
             2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
-            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
-            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.is_user_see_all_exclude(user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.is_user_see_all_include(user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.is_user_see_all_exclude(user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.is_user_see_all_include(user_id) && self.is_connected_with_user_with_id(user_id)),
             7 => self.is_connected_with_user_with_id(user_id),
             8 => self.is_self_followers_user_with_id(user_id),
-            9 => !self.get_see_all_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            10 => self.get_see_all_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            11 => !self.get_see_all_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
-            12 => self.get_see_all_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_user_see_all_exclude(user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.is_user_see_all_include(user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.is_user_see_all_exclude(user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.is_user_see_all_include(user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -692,16 +836,16 @@ impl User {
         return match self.see_el {
             1 => true,
             2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
-            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
-            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.is_user_see_el_exclude(user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.is_user_see_el_include(user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.is_user_see_el_exclude(user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.is_user_see_el_include(user_id) && self.is_connected_with_user_with_id(user_id)),
             7 => self.is_connected_with_user_with_id(user_id),
             8 => self.is_self_followers_user_with_id(user_id),
-            9 => !self.get_see_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            10 => self.get_see_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            11 => !self.get_see_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
-            12 => self.get_see_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_user_see_el_exclude(user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.is_user_see_el_include(user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.is_user_see_el_exclude(user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.is_user_see_el_include(user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -712,16 +856,16 @@ impl User {
         return match self.see_comment {
             1 => true,
             2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
-            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            4 => self.is_connected_with_user_with_id(user_id) || (self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
-            6 => self.is_self_followers_user_with_id(user_id) || (self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.is_user_see_comment_exclude(user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.is_user_see_comment_include(user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.is_user_see_comment_exclude(user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.is_user_see_comment_include(user_id) && self.is_connected_with_user_with_id(user_id)),
             7 => self.is_connected_with_user_with_id(user_id),
             8 => self.is_self_followers_user_with_id(user_id),
-            9 => !self.get_see_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            10 => self.get_see_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            11 => !self.get_see_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
-            12 => self.get_see_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_user_see_comment_exclude(user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.is_user_see_comment_include(user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.is_user_see_comment_exclude(user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.is_user_see_comment_include(user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -733,16 +877,16 @@ impl User {
         return match self.create_el {
             1 => true,
             2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
-            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            4 => self.is_connected_with_user_with_id(user_id) || (self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
-            6 => self.is_self_followers_user_with_id(user_id) || (self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.is_user_create_el_exclude(user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.is_user_create_el_include(user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.is_user_create_el_exclude(user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.is_user_create_el_include(user_id) && self.is_connected_with_user_with_id(user_id)),
             7 => self.is_connected_with_user_with_id(user_id),
             8 => self.is_self_followers_user_with_id(user_id),
-            9 => !self.get_create_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            10 => self.get_create_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            11 => !self.get_create_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
-            12 => self.get_create_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_user_create_el_exclude(user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.is_user_create_el_include(user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.is_user_create_el_exclude(user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.is_user_create_el_include(user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -753,16 +897,16 @@ impl User {
         return match self.create_comment {
             1 => true,
             2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
-            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            4 => self.is_connected_with_user_with_id(user_id) || (self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
-            6 => self.is_self_followers_user_with_id(user_id) || (self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.is_user_create_comment_exclude(user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.is_user_create_comment_include(user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.is_user_create_comment_exclude(user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.is_user_create_comment_include(user_id) && self.is_connected_with_user_with_id(user_id)),
             7 => self.is_connected_with_user_with_id(user_id),
             8 => self.is_self_followers_user_with_id(user_id),
-            9 => !self.get_create_comment_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            10 => self.get_create_comment_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            11 => !self.get_create_comment_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
-            12 => self.get_create_comment_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_user_create_comment_exclude(user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.is_user_create_comment_include(user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.is_user_create_comment_exclude(user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.is_user_create_comment_include(user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
@@ -773,16 +917,16 @@ impl User {
         return match self.copy_el {
             1 => true,
             2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
-            3 => self.is_connected_with_user_with_id(user_id) || (!self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            4 => self.is_connected_with_user_with_id(user_id) || (self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id)),
-            5 => self.is_self_followers_user_with_id(user_id) || (!self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
-            6 => self.is_self_followers_user_with_id(user_id) || (self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id)),
+            3 => self.is_connected_with_user_with_id(user_id) || (!self.is_user_copy_el_exclude(user_id) && self.is_self_followers_user_with_id(user_id)),
+            4 => self.is_connected_with_user_with_id(user_id) || (self.is_user_copy_el_include(user_id) && self.is_self_followers_user_with_id(user_id)),
+            5 => self.is_self_followers_user_with_id(user_id) || (!self.is_user_copy_el_exclude(user_id) && self.is_connected_with_user_with_id(user_id)),
+            6 => self.is_self_followers_user_with_id(user_id) || (self.is_user_copy_el_include(user_id) && self.is_connected_with_user_with_id(user_id)),
             7 => self.is_connected_with_user_with_id(user_id),
             8 => self.is_self_followers_user_with_id(user_id),
-            9 => !self.get_copy_el_exclude_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            10 => self.get_copy_el_include_friends_ids().iter().any(|&i| i==user_id) && self.is_connected_with_user_with_id(user_id),
-            11 => !self.get_copy_el_exclude_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
-            12 => self.get_copy_el_include_follows_ids().iter().any(|&i| i==user_id) && self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_user_copy_el_exclude(user_id) && self.is_connected_with_user_with_id(user_id),
+            10 => self.is_user_copy_el_include(user_id) && self.is_connected_with_user_with_id(user_id),
+            11 => !self.is_user_copy_el_exclude(user_id) && self.is_self_followers_user_with_id(user_id),
+            12 => self.is_user_copy_el_include(user_id) && self.is_self_followers_user_with_id(user_id),
             _ => false,
         };
     }
