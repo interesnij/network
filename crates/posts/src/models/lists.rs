@@ -1708,8 +1708,8 @@ impl PostList {
                 .get_result::<UserPostListPosition>(&_connection)
                 .expect("Error.");
         }
-        let exclude_vec = vec![3, 5, 8, 10, 18];
-        let include_vec = vec![4, 6, 9, 11, 19];
+        let exclude_vec = vec![3, 5, 9, 11, 18];
+        let include_vec = vec![4, 6, 10, 12, 19];
 
         if exclude_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
@@ -1919,8 +1919,8 @@ impl PostList {
             .set(edit_post_list)
             .get_result::<PostList>(&_connection)
             .expect("Error.");
-        let exclude_vec = vec![3, 5, 8, 10, 18];
-        let include_vec = vec![4, 6, 9, 11, 19];
+            let exclude_vec = vec![3, 5, 9, 11, 18];
+            let include_vec = vec![4, 6, 10, 12, 19];
 
         // если отредактированный список стал видимым всем,
         // мы всем записям списка, которые опубликованы,
