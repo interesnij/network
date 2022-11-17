@@ -955,7 +955,7 @@ impl User {
     }
     pub fn search_friends (
         &self,
-        &q:     String,
+        q:      &String,
         limit:  i64,
         offset: i64
     ) -> Vec<CardUserJson> {
