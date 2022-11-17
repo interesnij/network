@@ -68,6 +68,14 @@ impl Owner {
             .get_result::<Owner>(&_connection)?;
         return Ok(new_token);
     }
+    pub fn delete_item(&self) -> i16 {
+        let _connection = establish_connection();
+        diesel::delete (
+            owners
+                .filter(schema::owners::user_id.eq(self.user_id))
+        );
+        return 1;
+    }
 }
 
 #[derive(Deserialize, Insertable)]
