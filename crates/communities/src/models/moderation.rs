@@ -70,7 +70,7 @@ impl Owner {
         diesel::delete (
             owners
                 .filter(schema::owners::user_id.eq(self.user_id))
-        )
+        );
         return 1;
     }
 }
