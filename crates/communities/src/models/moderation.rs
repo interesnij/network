@@ -86,7 +86,7 @@ impl Owner {
     }
     pub fn edit_comment (
         &self,
-        name:        Option<String>,
+        name:        String,
         description: Option<String>
     ) -> Result<EditedOwnerData, Error> {
         let _connection = establish_connection();
