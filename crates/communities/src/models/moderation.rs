@@ -44,17 +44,28 @@ pub struct OwnerData {
     pub description:  Option<String>,
     pub types:        i16,
 }
+#[derive(Serialize)]
+pub struct EditedOwnerData {
+    pub name:        String,
+    pub description: Option<String>,
+}
 impl Owner {
-    pub fn create (data: OwnerData) -> Result<Owner, Error> {
+    pub fn create (
+        user_id: i32,
+        community_id: Option<i32>,
+        name:         String,
+        description:  Option<String>,
+        types:        i16,
+    ) -> Result<Owner, Error> {
         use uuid::Uuid;
 
         let _connection = establish_connection();
         let new_form = NewOwner {
-            user_id:      data.user_id,
-            community_id: data.community_id,
-            name:         data.name,
-            description:  data.description,
-            types:        data.types,
+            user_id:      user_id,
+            community_id: community_id,
+            name:         name,
+            description:  description,
+            types:        types,
             secret_key:   Uuid::new_v4().to_string(),
             service_key:  Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
             is_active:    true,
@@ -72,6 +83,23 @@ impl Owner {
                 .filter(schema::owners::user_id.eq(self.user_id))
         );
         return 1;
+    }
+    pub fn edit_comment (
+        &self,
+        name:        Option<String>,
+        description: Option<String>
+    ) -> Result<EditedOwnerData, Error> {
+        let _connection = establish_connection();
+        diesel::update(self)
+            .set((
+                schema::owners::name.eq(name.clone()),
+                schema::owners::description.eq(description.clone()),
+            ))
+            .execute(&_connection);
+        return Ok(EditedOwnerData {
+            name:        name,
+            description: description,
+        });
     }
 }
 
