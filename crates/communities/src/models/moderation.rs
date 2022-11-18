@@ -81,7 +81,8 @@ impl Owner {
         diesel::delete (
             owners
                 .filter(schema::owners::user_id.eq(self.user_id))
-        );
+        )
+        .execute(&_connection);
         return 1;
     }
     pub fn edit_comment (
