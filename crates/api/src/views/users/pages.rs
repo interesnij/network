@@ -32,7 +32,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
             Json(_ok.text().await.expect("E."))
         },
         Err(_error) => {
-            get_error_response(_error)
+            Json(get_error_response(_error))
         },
     }
 }

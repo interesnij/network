@@ -10,23 +10,23 @@ use diesel::{
 pub fn get_error_response(_error: reqwest::Error) -> String {
     //if _error.is_status() {
     //    println!("Нет соединения");
-    //    Json("Нет соединения".to_string())
+    //    "Нет соединения".to_string()
     //}
     if _error.is_timeout() {
         println!("Время запроса вышло");
-        Json("Время запроса вышло".to_string())
+        "Время запроса вышло".to_string()
     }
     else if _error.is_connect() {
         println!("Нет подключения к серверу");
-        Json("Нет подключения к серверу".to_string())
+        "Нет подключения к серверу".to_string()
     }
     else if _error.is_body() {
         println!("Получен неожиданный ответ");
-        Json("Получен неожиданный ответ".to_string())
+        "Получен неожиданный ответ".to_string()
     }
     else {
         println!("Неизвестная ошибка");
-        Json("Неизвестная ошибка".to_string())
+        "Неизвестная ошибка".to_string()
     }
 }
 pub fn establish_connection() -> PgConnection {
