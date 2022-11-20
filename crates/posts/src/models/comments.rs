@@ -88,7 +88,7 @@ pub struct SearchAllComments {
     pub offset:   i64,
 }
 impl PostComment {
-    pub fn get_comments_for_attach(&self, ids: Vec<i32>) -> Vec<AttachCommentResp> {
+    pub fn get_comments_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostCommentResp> {
         // выдача инфы для прикрепления комментов
         // по запросу API
         use crate::schema::post_comments::dsl::post_comments;
@@ -99,7 +99,7 @@ impl PostComment {
             AttachPermList
         };
 
-        let stack: Vec<AttachCommentResp> = Vec::new();
+        let stack: Vec<AttachPostCommentResp> = Vec::new();
         let _connection = establish_connection();
         let comments = post_comments
             .filter(schema::post_comments::id.eq_any(ids))
@@ -155,7 +155,7 @@ impl PostComment {
                 repost:         i.repost,
                 reactions:      i.reactions,
             };
-            stack.push (AttachCommentResp{
+            stack.push (AttachPostRespCommentResp {
                 owner:     u_resp,
                 community: c_resp,
                 list:      list_data,
