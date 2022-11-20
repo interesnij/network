@@ -142,7 +142,7 @@ pub fn get_user_owner_data (
             }
         }
         // test case!!!
-        else if token.as_deref().unwrap() == "11".to_string() {
+        else if token.clone() == "11".to_string() {
             return (None, 0);
         }
         else {
