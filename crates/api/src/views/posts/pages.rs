@@ -1,14 +1,16 @@
 use actix_web::{
-    //HttpRequest,
+    HttpRequest,
     HttpResponse,
     Responder,
     web,
+    web::Json,
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     RegListData,
     CardPostListJson,
 };
+use crate::errors::Error;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
@@ -20,15 +22,15 @@ pub async fn all_postlists_page(req: HttpRequest) -> Result<Json<Vec<CardPostLis
     //let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //if params_some.is_ok() {
     //    let params = params_some.unwrap();
-        let users: Vec<CardPostListJson> = reqwest::Client::new()
+        let postlists: Vec<CardPostListJson> = reqwest::Client::new()
             .get("http:194.58.90.123:9003/all-postlists")
             .send()
             .await?
             .json()
             .await?;
 
-        println!("{:#?}", todos);
-        Ok(users)
+        println!("{:#?}", postlists);
+        Ok(postlists)
     //}
     //else {
     //    let body = serde_json::to_string(&ErrorParams {

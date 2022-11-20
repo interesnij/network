@@ -1,14 +1,16 @@
 use actix_web::{
-    //HttpRequest,
+    HttpRequest,
     HttpResponse,
     Responder,
     web,
+    web::Json,
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     RegListData,
     CardUserJson,
 };
+use crate::errors::Error;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
@@ -31,7 +33,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
             .json()
             .await?;
 
-        println!("{:#?}", todos);
+        println!("{:#?}", users);
         Ok(users)
     }
     else {
