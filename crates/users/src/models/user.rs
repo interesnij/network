@@ -4,7 +4,6 @@ use diesel::{
     Queryable,
     Insertable,
     RunQueryDsl,
-    ExpressionMethods,
     QueryDsl,
     NullableExpressionMethods,
     PgTextExpressionMethods,
@@ -14,19 +13,14 @@ use crate::models::{
     UserLocation,
     UserInfo,
     UserPrivate,
-    UserBlock,
 };
 use crate::utils::{
     UserPrivateJson,
     CardUserJson,
-    UserPopulateStickerJson,
-    UserPopulateSmileJson,
     LocationJson,
     UserDetailJson,
-
 };
 use crate::schema::users;
-use actix_web::web::Json;
 use crate::errors::Error;
 
 
@@ -447,30 +441,6 @@ impl User {
             .select(schema::follows::id)
             .first::<i32>(&_connection).is_ok();
     }
-    pub fn get_buttons_profile(&self, user_id: i32) -> String {
-        let mut suffix: String = "".to_string();
-        if self.is_user_in_block(user_id) {
-            return "desctop/users/button/".to_owned() + &suffix + &"blocked_user.stpl".to_string();
-        }
-        else if self.is_self_user_in_block(user_id) {
-            return "desctop/users/button/".to_owned() + &suffix + &"blocker_user.stpl".to_string();
-        }
-        else if self.is_connected_with_user_with_id(user_id){
-            return "desctop/users/button/".to_owned() + &suffix + &"frend_user.stpl".to_string();
-        }
-        else if self.is_followers_user_view(user_id){
-            return "desctop/users/button/".to_owned() + &suffix + &"follow_user.stpl".to_string();
-        }
-        else if self.is_following_user_with_id(user_id){
-            return "desctop/users/button/".to_owned() + &suffix + &"following_user.stpl".to_string();
-        }
-        else if self.is_followers_user_with_id(user_id){
-            return "desctop/users/button/".to_owned() + &suffix + &"follow_view_user.stpl".to_string();
-        }
-        else {
-            return "desctop/users/button/".to_owned() + &suffix + &"default_user.stpl".to_string();
-        }
-    }
     pub fn get_info_model(&self) -> Result<UserInfo, Error> {
         let profile = self.find_info_model();
         if profile.is_ok() {
@@ -490,8 +460,6 @@ impl User {
         return Ok(info);
     }
     pub fn create_info_model(&self) -> Result<UserInfo, Error> {
-        use crate::schema::user_infos::dsl::user_infos;
-
         let _connection = establish_connection();
         use crate::models::NewUserInfo;
 
@@ -2118,9 +2086,8 @@ impl User {
         }
     }
     pub fn set_user_visible_perms(&self, users: String, types: i16) -> i16 {
-        use crate::models::{UserVisiblePerm, NewUserVisiblePerm};
+        use crate::models::NewUserVisiblePerm;
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
-        use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
         let mut users_ids = Vec::new();

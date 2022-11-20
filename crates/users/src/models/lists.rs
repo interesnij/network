@@ -14,7 +14,6 @@ use crate::schema::{
     user_colleagues_ones,
     user_blocks,
     list_user_communities_keys,
-    user_populate_smiles,
     user_infos,
     friends,
     follows,
@@ -23,7 +22,7 @@ use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};
 //use crate::utils::establish_connection;
 //use actix_web::web::Json;
-use crate::errors::Error;
+//use crate::errors::Error;
 
 /////// Friend //////
 #[derive(Debug, Queryable, Serialize, Identifiable)]
