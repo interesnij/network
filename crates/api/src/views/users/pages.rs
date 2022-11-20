@@ -29,5 +29,8 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .expect("E.")
         .text()
         .await;
-    Json(users.expect("Eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"))
+    match users {
+        Ok(_ok) => Json(_ok),
+        Err(_error) => Json(_error),
+    }
 }
