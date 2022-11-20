@@ -29,17 +29,7 @@ pub async fn all_postlists_page(req: HttpRequest) -> Json<String> {
             .text()
             .await;
 
-        if postlists.is_ok() {
-            Json(postlists)
-        }
-        else {
-            let body = serde_json::to_string(&ErrorParams {
-                    error: "parametrs not found!".to_string(),
-                }).unwrap();
-            Err(Error::BadRequest(body))
-        }
-
-        Json(postlists)
+        Json(postlists.expect("E."))
     //}
     //else {
     //    let body = serde_json::to_string(&ErrorParams {
