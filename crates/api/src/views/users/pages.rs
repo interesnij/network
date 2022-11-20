@@ -38,8 +38,8 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
     //println!("is_timeout {:?}", users.is_timeout());
     match users {
         Ok(_ok) => {
-            println!("status {}", _ok.status().unwrap().as_str());
-            Json(_ok.text())
+            println!("status {}", _ok.status().as_str());
+            Json(_ok.text().await)
         },
         Err(_error) => {
             println!("status {}", _error.status().unwrap().as_str());
