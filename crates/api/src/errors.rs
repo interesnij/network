@@ -39,7 +39,7 @@ impl ResponseError for AuthError {
 
             //AuthError::ProcessError(ref message) => HttpResponse::InternalServerError().json(message),
 
-            AuthError::AuthenticationError(ref message) => HttpResponse::Unauthorized().json(message),
+            //AuthError::AuthenticationError(ref message) => HttpResponse::Unauthorized().json(message),
 
             AuthError::DuplicateValue(ref message) => HttpResponse::BadRequest().json(message),
 
