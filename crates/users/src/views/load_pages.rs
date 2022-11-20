@@ -8,19 +8,9 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 use crate::utils::{
-    establish_connection, get_user,
-    get_user_owner_data,
+    get_user, get_user_owner_data,
     ErrorParams, CardUserJson, RegListData,
 };
-use diesel::{
-    Queryable,
-    Insertable,
-    RunQueryDsl,
-    ExpressionMethods,
-    QueryDsl,
-};
-use crate::schema;
-use crate::models::{User, NewUser};
 use crate::errors::Error;
 
 

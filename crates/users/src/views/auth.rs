@@ -1,12 +1,9 @@
 use actix_web::{
     HttpRequest,
-    Responder,
     HttpResponse,
     web,
     web::block,
     web::Json,
-    cookie::time::{Duration, OffsetDateTime},
-    http::{header::HeaderName, header::HeaderValue, header},
 };
 use crate::AppState;
 use serde::{Deserialize, Serialize};
@@ -17,8 +14,6 @@ use crate::utils::{
 };
 use bcrypt::{hash, verify};
 use diesel::{
-    Queryable,
-    Insertable,
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
@@ -126,7 +121,7 @@ pub struct NewUserDetailJson {
 
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
     use crate::models::{
-        NewUserLocation, NewUserInfo, NewIpUser,
+        NewUserLocation, NewIpUser,
         NewUserPrivate, NewUserNotification,
     };
     use crate::schema::verified_phones::dsl::verified_phones;
