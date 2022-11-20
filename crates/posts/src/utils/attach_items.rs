@@ -72,13 +72,13 @@ pub struct AttachList {
 
 #[derive(Serialize)]
 pub struct AttachPostComment {
-    pub id:         i32,
-    pub content:    Option<String>,
-    pub attachment: Option<AttachmentsJson>,
-    pub types:      i16,
-    pub created:    chrono::NaiveDateTime,
-    pub repost:     i32,
-    pub reactions:  i32,
+    pub id:          i32,
+    pub content:     Option<String>,
+    pub attachments: Option<AttachmentsJson>,
+    pub types:       i16,
+    pub created:     chrono::NaiveDateTime,
+    pub repost:      i32,
+    pub reactions:   i32,
 }
 
 ////////////////////////////////////////////

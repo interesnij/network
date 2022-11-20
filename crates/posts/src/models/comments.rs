@@ -124,7 +124,7 @@ impl PostComment {
             }
             else {
                 let creator = list.get_creator().expect("E.");
-                c_resp = Some(AttachOwner {
+                u_resp = Some(AttachOwner {
                     id:         creator.id,
                     first_name: creator.first_name,
                     last_name:  creator.last_name,
@@ -149,8 +149,8 @@ impl PostComment {
                 id:             i.id,
                 content:        i.content.clone(),
                 attachments:    i.get_attach(),
-                types:          i.get_code(),
-                created:        i.created.format("%d-%m-%Y в %H:%M").to_string(),
+                types:          i.types,
+                created:        i.created,
                 repost:         i.repost,
                 reactions:      i.reactions,
             }

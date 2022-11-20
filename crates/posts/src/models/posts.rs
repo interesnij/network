@@ -165,7 +165,7 @@ impl Post {
             }
             else {
                 let creator = i.get_creator().expect("E.");
-                c_resp = Some(AttachOwner {
+                u_resp = Some(AttachOwner {
                     id:         creator.id,
                     first_name: creator.first_name,
                     last_name:  creator.last_name,
