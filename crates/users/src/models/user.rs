@@ -1145,7 +1145,7 @@ impl User {
             .len();
     }
 
-    pub fn get_users(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_users(limit: i64, offset: i64) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
         let _limit: i64;
