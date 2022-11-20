@@ -23,7 +23,7 @@ pub async fn all_communities_page(req: HttpRequest) -> Result<Json<Vec<CardCommu
     //let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //if params_some.is_ok() {
     //    let params = params_some.unwrap();
-        let users: Vec<CardCommunityJson> = reqwest::Client::new()
+        let users = reqwest::Client::new()
             .get("http:194.58.90.123:9002/all-communities")
             .send()
             //.await?

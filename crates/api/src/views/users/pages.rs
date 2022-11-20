@@ -15,7 +15,7 @@ use crate::errors::Error;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
-    config.route("/", web::get().to(index_page));
+    //config.route("/", web::get().to(index_page));
     //config.route("/friends/", web::get().to(user_friends_page));
     //config.route("/friends-online/", web::get().to(user_friends_online_page));
     //config.route("/friends-common/", web::get().to(user_friends_common_page));
@@ -27,7 +27,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let users: Vec<CardUserJson> = reqwest::Client::new()
+        let users = reqwest::Client::new()
             .get("http:194.58.90.123:9001/all-users")
             .send()
             //.await?

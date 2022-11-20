@@ -256,7 +256,7 @@ pub struct NewSmile {
 pub struct Reaction {
     pub id:        i32,
     pub image:     String,
-    pub gif:       gif,
+    pub gif:       String,
     pub name:      String,
     pub is_active: bool,
     pub position:  i16,
