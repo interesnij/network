@@ -19,6 +19,7 @@ pub struct CardUserJson {
     pub link:       String,
     pub image:      Option<String>,
 }
+
 #[derive(Deserialize, Serialize, Queryable)]
 // это объект сообщества
 pub struct CardCommunityJson {
@@ -26,6 +27,18 @@ pub struct CardCommunityJson {
     pub name:  String,
     pub link:  String,
     pub image: Option<String>,
+}
+
+#[derive(Serialize)]
+// это объект списка записей
+pub struct CardPostListJson {
+    pub name:        String,
+    pub owner_name:  String,
+    pub owner_link:  String,
+    pub owner_image: Option<String>,
+    pub image:       Option<String>,
+    pub types:       String,
+    pub count:       i32,
 }
 
 #[derive(Deserialize, Serialize)]
