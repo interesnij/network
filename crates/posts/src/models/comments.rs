@@ -19,6 +19,8 @@ use crate::utils::{
     ReactionBlockJson,
     SmallReactionBlockJson,
     RespComment,
+    AttachmentsJson,
+    AttachPostComment,
 };
 
 use crate::models::{
@@ -122,7 +124,7 @@ impl PostComment {
             }
             else {
                 let creator = list.get_creator().expect("E.");
-                c_resp = AttachOwner {
+                c_resp = Some(AttachOwner {
                     id:         creator.id,
                     first_name: creator.first_name,
                     last_name:  creator.last_name,
@@ -131,10 +133,10 @@ impl PostComment {
                     s_avatar:   creator.s_avatar,
                     see_all:    creator.see_all,
                     see_friend: creator.see_friend,
-                }
+                })
             }
 
-            let list_data = AttachPermList {
+            let list_data = Some(AttachPermList {
                 user_id:      list.user_id,
                 community_id: list.community_id,
                 list_id:      list.id,
@@ -142,13 +144,13 @@ impl PostComment {
                 types:        list.types,
                 see_el:       list.see_el,
                 copy_el:      list.copy_el,
-            }
+            })
             let data = AttachPostComment {
                 id:             i.id,
                 content:        i.content.clone(),
                 attachments:    i.get_attach(),
                 types:          i.get_code(),
-                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                created:        i.created.format("%d-%m-%Y в %H:%M").to_string(),
                 repost:         i.repost,
                 reactions:      i.reactions,
             }

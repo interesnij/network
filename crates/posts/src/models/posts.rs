@@ -154,18 +154,18 @@ impl Post {
             let mut u_resp: Option<AttachOwner> = None;
             if i.community_id.is_some() {
                 let community = i.get_community().expect("E.");
-                c_resp = AttachCommunity {
+                c_resp = Some(AttachCommunity {
                     id:         community.id,
                     name:       community.name,
                     types:      community.types,
                     link:       community.link,
                     s_avatar:   community.s_avatar,
                     see_member: community.see_member,
-                }
+                })
             }
             else {
                 let creator = i.get_creator().expect("E.");
-                c_resp = AttachOwner {
+                c_resp = Some(AttachOwner {
                     id:         creator.id,
                     first_name: creator.first_name,
                     last_name:  creator.last_name,
@@ -174,7 +174,7 @@ impl Post {
                     s_avatar:   creator.s_avatar,
                     see_all:    creator.see_all,
                     see_friend: creator.see_friend,
-                }
+                })
             }
             let list = i.get_list().expect("E.");
             let list_data = AttachPermList {

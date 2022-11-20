@@ -15,7 +15,7 @@ CREATE TABLE item_users (
     link       VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
     s_avatar   VARCHAR(500),          -- миниатюра
     see_all    SMALLINT NOT NULL,     -- кто может видеть открытый профиль
-    see_friend SMALLINT NOT NULL      -- Кто видит друзей
+    see_friend SMALLINT NOT NULL,     -- Кто видит друзей
 
     UNIQUE(link)
 );
@@ -66,9 +66,9 @@ CREATE TABLE item_lists (
     list_types   SMALLINT NOT NULL,     -- тип списка (выше)
     types        SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
     image        VARCHAR(500),          -- миниатюра
-    count        INT NOT NULL           -- кол-во элементов
+    count        INT NOT NULL,          -- кол-во элементов
     see_el       SMALLINT NOT NULL,     -- кто может видеть список
-    copy_el      SMALLINT NOT NULL,     -- кто может копировать список
+    copy_el      SMALLINT NOT NULL      -- кто может копировать список
 );
 
 -- основняк приватности элементов и комментов. Если владелец
