@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(app_state.to_owned()))
             .app_data(web::JsonConfig::default().limit(4096))
-            .app_data(guard::Header("content-type", "application/json"))
+            .guard(guard::Header("content-type", "application/json"))
             .wrap(cors)
             .configure(routes)
 
