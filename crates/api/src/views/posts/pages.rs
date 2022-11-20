@@ -9,6 +9,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     RegListData,
     CardPostListJson,
+    ErrorParams,
 };
 use crate::errors::Error;
 
@@ -25,12 +26,12 @@ pub async fn all_postlists_page(req: HttpRequest) -> Result<Json<Vec<CardPostLis
         let postlists: Vec<CardPostListJson> = reqwest::Client::new()
             .get("http:194.58.90.123:9003/all-postlists")
             .send()
-            .await?
-            .json()
-            .await?;
+            .await
+            //.json()
+            //.await;
 
         println!("{:#?}", postlists);
-        Ok(postlists)
+        Ok(Json(postlists))
     //}
     //else {
     //    let body = serde_json::to_string(&ErrorParams {

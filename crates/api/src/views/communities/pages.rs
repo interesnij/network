@@ -9,6 +9,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     RegListData,
     CardCommunityJson,
+    ErrorParams,
 };
 use crate::errors::Error;
 
@@ -25,12 +26,12 @@ pub async fn all_communities_page(req: HttpRequest) -> Result<Json<Vec<CardCommu
         let users: Vec<CardCommunityJson> = reqwest::Client::new()
             .get("http:194.58.90.123:9002/all-communities")
             .send()
-            .await?
-            .json()
-            .await?;
+            //.await?
+            //.json()
+            .await;
 
         println!("{:#?}", users);
-        Ok(users)
+        Ok(Json(users))
     //}
     //else {
     //    let body = serde_json::to_string(&ErrorParams {
