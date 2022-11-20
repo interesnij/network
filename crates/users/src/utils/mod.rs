@@ -114,7 +114,7 @@ pub fn get_user_owner_data (
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
         let _token = token.as_deref().unwrap();
-        let tok = _token.clone();
+        let _tok = _token.clone();
         let owner_res = owners
             .filter(schema::owners::service_key.eq(_token))
             .first::<Owner>(&_connection);
