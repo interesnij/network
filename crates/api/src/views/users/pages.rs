@@ -26,7 +26,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 pub async fn all_users_page(req: HttpRequest) -> Json<String> {
     let users = reqwest::get("http://194.58.90.123:9001/all-users?".to_owned() + &req.query_string()).await;
-    println!("url {}", "http://194.58.90.123:9001/all-users?".to_owned() + &req.query_string());
+    //println!("url {}", "http://194.58.90.123:9001/all-users?".to_owned() + &req.query_string());
     match users {
         Ok(_ok) => {
             println!("status {}", _ok.status().as_str());
