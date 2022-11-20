@@ -39,7 +39,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
     match users {
         Ok(_ok) => {
             println!("status {}", _ok.status().as_str());
-            Json(_ok.text().await)
+            Json(_ok.text().await.expect("E."))
         },
         Err(_error) => {
             println!("status {}", _error.status().unwrap().as_str());
