@@ -141,7 +141,7 @@ pub fn get_user_owner_data (
                 return (Some("owner not found!".to_string()), 0);
             }
         }
-        else if token.unwrap() == 11 {
+        else if token.unwrap() == "11".to_string() {
             return (None, 0);
         }
         else {
