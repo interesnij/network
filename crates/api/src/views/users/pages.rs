@@ -30,7 +30,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         Json(e.status().unwrap().to_string())
     }
     else {
-        Json(users.expect("E.").to_string())
+        Json(users.expect("E.").token)
     }
 
     //println!("status {:?}", users.status());
