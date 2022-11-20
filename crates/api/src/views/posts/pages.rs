@@ -19,7 +19,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/all-postlists/", web::get().to(all_postlists_page));
 }
 
-pub async fn all_postlists_page(req: HttpRequest) -> Result<Json<String>, Error> {
+pub async fn all_postlists_page(req: HttpRequest) -> Result<Json<String>, std::convert::From<reqwest::Error>> {
     //let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //if params_some.is_ok() {
     //    let params = params_some.unwrap();
