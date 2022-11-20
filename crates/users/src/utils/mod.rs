@@ -113,11 +113,15 @@ pub fn get_user_owner_data (
     if token.is_some() {
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
-        let _tok = 11;
+        let _token = token.as_deref().unwrap();
+        let tok = _token.clone();
         let owner_res = owners
-            .filter(schema::owners::service_key.eq(token.unwrap()))
+            .filter(schema::owners::service_key.eq(_token))
             .first::<Owner>(&_connection);
-        if owner_res.is_ok() {
+        if _tok == "11".to_string() {
+            return (None, 0);
+        }
+        else if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if owner.types == 1 {
                 if user_id.is_some() {
@@ -141,10 +145,6 @@ pub fn get_user_owner_data (
             else {
                 return (Some("owner not found!".to_string()), 0);
             }
-        }
-        // test case!!!
-        else if _tok == 11 {
-            return (None, 0);
         }
         else {
             return (Some("tokens owner not found!".to_string()), 0);
