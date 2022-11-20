@@ -28,7 +28,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .await
         .expect("E.")
         .text()
-    .await;
+        .await;
 
     println!("status {:?}", users.status());
     println!("is_status {:?}", users.is_status());
@@ -39,9 +39,8 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
             Json(_ok)
         },
         Err(_error) => {
-                println!("is_status {:?}", _error.status());
-                Json(_error.status().to_string())
-            }
+            println!("is_status {:?}", _error.status());
+            Json(_error.status().to_string())
         },
     }
 }
