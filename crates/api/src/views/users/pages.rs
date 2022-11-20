@@ -24,7 +24,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/all-users", web::get().to(all_users_page));
 }
 
-pub async fn all_users_page(req: HttpRequest) -> Json<String> {
+pub async fn all_users_page(req: HttpRequest) -> Result<Json<String>, Error> {
     let users = reqwest::get("http://194.58.90.123:9001/all-users?".to_owned() + &req.query_string()).await;
     //println!("url {}", "http://194.58.90.123:9001/all-users?".to_owned() + &req.query_string());
     match users {
@@ -33,6 +33,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
             Json(_ok.text().await.expect("E."))
         },
         Err(_error) => {
+            
             Json(get_error_response(_error))
         },
     }
