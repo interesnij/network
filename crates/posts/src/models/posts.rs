@@ -27,6 +27,7 @@ use crate::utils::{
     RespPost,
     RespComment,
     AttachPostResp,
+    AttachmentsJson,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -192,7 +193,7 @@ impl Post {
                 id:             i.id,
                 content:        i.content.clone(),
                 comments_on:    i.comments_on,
-                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                created:        i.created.format("%d-%m-%Y в %H:%M").to_string(),
                 comment:        i.comment,
                 view:           i.view,
                 repost:         i.repost,
@@ -202,7 +203,7 @@ impl Post {
                 parent:         i.get_parent_post_json(),     // пост родитель
                 reactions_list: self.get_reactions_json(0, list.get_reactions_list()),
                 attachments:    i.get_attach(),
-            }
+            };
             stack.push (AttachPostResp {
                 owner:     u_resp,
                 community: c_resp,

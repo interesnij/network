@@ -21,7 +21,7 @@ use crate::utils::{
     RespComment,
     AttachmentsJson,
     AttachPostComment,
-    AttachCommentResp,
+    AttachPostCommentResp,
 };
 
 use crate::models::{
@@ -154,7 +154,7 @@ impl PostComment {
                 created:        i.created,
                 repost:         i.repost,
                 reactions:      i.reactions,
-            }
+            };
             stack.push (AttachCommentResp{
                 owner:     u_resp,
                 community: c_resp,
