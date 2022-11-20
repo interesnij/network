@@ -7,6 +7,7 @@ use actix_web::{
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{
+    get_error_response,
     RegListData,
     CardUserJson,
     ErrorParams,
@@ -31,8 +32,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
             Json(_ok.text().await.expect("E."))
         },
         Err(_error) => {
-            println!("status {}", _error.is_status());
-            Json("нет соединения".to_string())
+            get_error_response(_error)
         },
     }
 }
