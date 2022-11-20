@@ -7,6 +7,7 @@ use std::env;
 use actix_web::{
     middleware::Logger,
     web,
+    guard,
     App,
     HttpRequest,
     HttpServer,
@@ -42,6 +43,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(app_state.to_owned()))
             .app_data(web::JsonConfig::default().limit(4096))
+            .guard(guard::Header("content-type", "application/json"))
             .wrap(cors)
             .configure(routes)
 
