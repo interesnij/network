@@ -25,6 +25,7 @@ pub async fn all_postlists_page(req: HttpRequest) -> Json<String> {
     //    let params = params_some.unwrap();
         let postlists = reqwest::get("http:194.58.90.123:9003/all-postlists")
             .await
+            .expect("E.")
             .text()
             .await;
 
