@@ -143,7 +143,7 @@ pub fn get_user_owner_data (
             }
         }
         // test case!!!
-        else if &_tok == &Some("11".to_string()) {
+        else if _tok == Some("11".to_string()) {
             return (None, 0);
         }
         else {
