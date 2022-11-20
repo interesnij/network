@@ -113,7 +113,7 @@ pub fn get_user_owner_data (
     if token.is_some() {
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
-        let _tok = &token;
+        let _tok = 11;
         let owner_res = owners
             .filter(schema::owners::service_key.eq(token.unwrap()))
             .first::<Owner>(&_connection);
@@ -143,7 +143,7 @@ pub fn get_user_owner_data (
             }
         }
         // test case!!!
-        else if _tok == &Some("11".to_string()) {
+        else if _tok == 11 {
             return (None, 0);
         }
         else {
