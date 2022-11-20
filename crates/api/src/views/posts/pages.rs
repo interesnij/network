@@ -24,7 +24,6 @@ pub async fn all_postlists_page(req: HttpRequest) -> Result<Json<Vec<CardPostLis
     //if params_some.is_ok() {
     //    let params = params_some.unwrap();
         let postlists = reqwest::get("http:194.58.90.123:9003/all-postlists")
-            .send()
             .await?
             .text()
             .await?;
