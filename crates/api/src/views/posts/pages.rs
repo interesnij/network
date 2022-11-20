@@ -28,7 +28,7 @@ pub async fn all_postlists_page(req: HttpRequest) -> Json<String> {
             .text()
             .await?;
 
-        Ok(Json(postlists))
+        Json(postlists)
     //}
     //else {
     //    let body = serde_json::to_string(&ErrorParams {
