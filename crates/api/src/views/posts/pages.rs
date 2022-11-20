@@ -19,7 +19,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/all-postlists/", web::get().to(all_postlists_page));
 }
 
-pub async fn all_postlists_page(req: HttpRequest) -> Result<(), reqwest::Error> {
+pub async fn all_postlists_page(req: HttpRequest) -> Result<Json<Vec<CardPostListJson>>, Error> {
     //let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //if params_some.is_ok() {
     //    let params = params_some.unwrap();
@@ -29,9 +29,17 @@ pub async fn all_postlists_page(req: HttpRequest) -> Result<(), reqwest::Error> 
             .await?;
             //.json()
             //.await;
+        if postlists.is_ok() {
+            println!("{:#?}", postlists);
+            Ok(Json(postlists.expect("E.")))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                    error: "parametrs not found!".to_string(),
+                }).unwrap();
+            Err(Error::BadRequest(body))
 
-        println!("{:#?}", postlists);
-        Ok(Json(postlists))
+    }
     //}
     //else {
     //    let body = serde_json::to_string(&ErrorParams {
