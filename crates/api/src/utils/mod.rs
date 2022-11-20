@@ -4,7 +4,7 @@ use diesel::{
     //ExpressionMethods,
     //QueryDsl,
     PgConnection,
-    //Connection,
+    Connection,
 };
 
 pub fn establish_connection() -> PgConnection {
