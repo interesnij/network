@@ -31,6 +31,6 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .await;
     match users {
         Ok(_ok) => Json(_ok),
-        Err(_error) => Json(_error),
+        Err(_error) => Json(_error.to_string()),
     }
 }
