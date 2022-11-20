@@ -29,18 +29,25 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .expect("E.")
         .text()
         .await;
-
-    println!("status {:?}", users.status());
-    println!("is_status {:?}", users.is_status());
-    println!("is_timeout {:?}", users.is_timeout());
-    match users {
-        Ok(_ok) => {
-            println!("is_status {:?}", _ok.status().expect("E."));
-            Json(_ok)
-        },
-        Err(_error) => {
-            //println!("is_status {:?}", _error.status());
-            Json(_error.status().expect("E.").to_string())
-        },
+    if let Err(e) = users {
+        println!("status {}", e.status());
+        Json(e.status().to_string())
     }
+    else {
+        Json(users.expect("E."))
+    }
+
+    //println!("status {:?}", users.status());
+    //println!("is_status {:?}", users.is_status());
+    //println!("is_timeout {:?}", users.is_timeout());
+    //match users {
+    //    Ok(_ok) => {
+            //println!("is_status {:?}", _ok.status().expect("E."));
+    //        Json(_ok)
+    //    },
+    //    Err(_error) => {
+            //println!("is_status {:?}", _error.status());
+    //        Json(_error.status().expect("E.").to_string())
+    //    },
+    //}
 }
