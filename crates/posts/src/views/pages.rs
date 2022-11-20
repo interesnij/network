@@ -67,7 +67,7 @@ pub struct LoadListParams {
 }
 
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
-    let params_some = web::Query::<LoadListParams>::from_query(&req.query_string());
+    let params_some = web::Query::<LoadListParams>::from_query(req.query_string());
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
         let params = params_some.unwrap();
