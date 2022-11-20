@@ -22,8 +22,8 @@ pub enum AuthError {
     //#[display(fmt = "ProcessError: {}", _0)]
     //ProcessError(String),
 
-    //#[display(fmt = "AuthenticationError: {}", _0)]
-    //AuthenticationError(String),
+    #[display(fmt = "AuthenticationError: {}", _0)]
+    AuthenticationError(String),
 
     #[display(fmt = "GenericError: {}", _0)]
     GenericError(String),
