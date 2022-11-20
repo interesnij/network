@@ -8,7 +8,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     RegListData,
     CardCommunityJson,
-}
+};
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {

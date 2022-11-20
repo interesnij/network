@@ -1,6 +1,6 @@
-mod lists;
+mod list;
 pub use self::{
-    lists::*,
+    list::*,
 };
 
 use diesel::{
