@@ -44,6 +44,6 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         Err(_error) => {
             println!("status {}", _error.status().unwrap().as_str());
             Json(_error.status().unwrap().to_string())
-    //    },
-    //}
+        },
+    }
 }
