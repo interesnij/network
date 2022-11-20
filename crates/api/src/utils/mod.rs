@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 pub struct ReactionsJson {
     pub reactions: Vec<ReactionJson>,
 }
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Queryable)]
 pub struct ReactionJson {
     pub id:    i32,
     pub image: String,
