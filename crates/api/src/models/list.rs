@@ -283,7 +283,7 @@ impl Reaction {
 #[table_name="reactions"]
 pub struct NewReaction {
     pub image:     String,
-    pub gif:       gif,
+    pub gif:       String,
     pub name:      String,
     pub is_active: bool,
     pub position:  i16,
