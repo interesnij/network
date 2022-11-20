@@ -20,21 +20,10 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn all_postlists_page(req: HttpRequest) -> Json<String> {
-    //let params_some = web::Query::<RegListData>::from_query(&req.query_string());
-    //if params_some.is_ok() {
-    //    let params = params_some.unwrap();
-        let postlists = reqwest::get("http:194.58.90.123:9003/all-postlists")
-            .await
-            .expect("E.")
-            .text()
-            .await;
-
-        Json(postlists.expect("E."))
-    //}
-    //else {
-    //    let body = serde_json::to_string(&ErrorParams {
-    //        error: "parametrs not found!".to_string(),
-    //    }).unwrap();
-    //    Err(Error::BadRequest(body))
-    //}
+    let postlists = reqwest::get("http:194.58.90.123:9003/all-postlists")
+        .await
+        .expect("E.")
+        .text()
+        .await;
+    Json(postlists.expect("E."))
 }
