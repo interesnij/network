@@ -9,11 +9,11 @@ use actix_web::{
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
-    config.route("/friends/", web::get().to(user_friends_page));
-    config.route("/friends-online/", web::get().to(user_friends_online_page));
-    config.route("/friends-common/", web::get().to(user_friends_common_page));
-    config.route("/follows/", web::get().to(user_follows_page));
-    config.route("/all-users/", web::get().to(all_users_page));
+    config.route("/friends", web::get().to(user_friends_page));
+    config.route("/friends-online", web::get().to(user_friends_online_page));
+    config.route("/friends-common", web::get().to(user_friends_common_page));
+    config.route("/follows", web::get().to(user_follows_page));
+    config.route("/all-users", web::get().to(all_users_page));
 }
 
 pub async fn index_page() -> impl Responder {
