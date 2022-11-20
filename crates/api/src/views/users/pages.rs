@@ -31,7 +31,7 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .await;
     if let Err(e) = users {
         println!("status {}", e.status());
-        Json(e.status().to_string())
+        Json(e.status().unwrap().to_string())
     }
     else {
         Json(users.expect("E."))
