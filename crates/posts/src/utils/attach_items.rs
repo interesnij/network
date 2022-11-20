@@ -1,4 +1,87 @@
 use serde::{Serialize, Deserialize};
+use crate::utils::AttachPost;
+
+//////////////// Выдача прикрепов /////////
+// Список записей
+#[derive(Serialize)]
+pub struct AttachPostListResp {
+    pub owner:     Option<AttachOwner>,     // данные владельца
+    pub community: Option<AttachCommunity>, // данные сообщества
+    pub data:      AttachList,              // данные самого списка
+}
+
+// Запись
+#[derive(Serialize)]
+pub struct AttachPostResp {
+    pub owner:     Option<AttachOwner>,    // данные владельца
+    pub community: Option<AttachCommunity>,// данные сообщества
+    pub list:      AttachPermList,         // данные приватности для элемента
+    pub data:      AttachPost,             // данные записи
+}
+
+// Комментарий к записи
+#[derive(Serialize)]
+pub struct AttachPostCommentResp {
+    pub owner:     Option<AttachOwner>,    // данные владельца
+    pub community: Option<AttachCommunity>,// данные сообщества
+    pub list:      Option<AttachPermList>, // данные приватности для элемента
+    pub data:      AttachPostComment,      // данные коммента
+}
+
+#[derive(Serialize)]
+pub struct AttachOwner {
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub types:      i16,
+    pub link:       String,
+    pub s_avatar:   Option<String>,
+    pub see_all:    i16,
+    pub see_friend: i16,
+}
+#[derive(Serialize)]
+pub struct AttachCommunity {
+    pub id:         i32,
+    pub name:       String,
+    pub types:      i16,
+    pub link:       String,
+    pub s_avatar:   Option<String>,
+    pub see_member: i16,
+}
+#[derive(Serialize)]
+pub struct AttachPermList {
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub list_id:      i32,
+    pub list_types:   i16,
+    pub types:        i16,
+    pub see_el:       i16,
+    pub copy_el:      i16,
+}
+
+#[derive(Serialize)]
+pub struct AttachList {
+    pub id:      i32,
+    pub name:    String,
+    pub types:   i16,
+    pub image:   Option<String>,
+    pub count:   i32,
+    pub see_el:  i16,
+    pub copy_el: i16,
+}
+
+#[derive(Serialize)]
+pub struct AttachPostComment {
+    pub id:         i32,
+    pub content:    Option<String>,
+    pub attachment: Option<AttachmentsJson>,
+    pub types:      i16,
+    pub created:    chrono::NaiveDateTime,
+    pub repost:     i32,
+    pub reactions:  i32,
+}
+
+////////////////////////////////////////////
 
 #[derive(Serialize, Deserialize)]
 pub struct AttachListJson {

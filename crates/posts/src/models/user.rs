@@ -89,6 +89,7 @@ pub struct User {
     pub last_activity:  chrono::NaiveDateTime,
 
     pub see_all:        i16,
+    pub see_friend:     i16,
     pub see_el:         i16,
     pub see_comment:    i16,
     pub create_el:      i16,
@@ -113,6 +114,7 @@ pub struct NewUser {
     pub last_activity:  chrono::NaiveDateTime,
 
     pub see_all:        i16,
+    pub see_friend:     i16,
     pub see_el:         i16,
     pub see_comment:    i16,
     pub create_el:      i16,
@@ -132,6 +134,7 @@ pub struct NewUserJson {
     pub last_name:  String,
     pub types:      i16,
     pub see_all:    i16,
+    pub see_friend: i16,
     pub is_man:     bool,
     pub link:       String,
     pub s_avatar:   Option<String>,
@@ -159,6 +162,34 @@ impl User {
             .filter(schema::post_lists::user_id.eq(self.user_id))
             .filter(schema::post_lists::community_id.is_null())
             .filter(schema::post_lists::types.lt(31))
+            .order(schema::post_lists::created.desc())
+            .limit(_limit)
+            .offset(offset)
+            .load::<PostList>(&_connection)
+            .expect("E.");
+    }
+    pub fn search_post_lists (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<PostList> {
+        use crate::schema::post_lists::dsl::post_lists;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        return post_lists
+            .filter(schema::post_lists::user_id.eq(self.user_id))
+            .filter(schema::post_lists::community_id.is_null())
+            .filter(schema::post_lists::types.lt(31))
+            .filter(schema::post_lists::name.ilike(&q))
+            .or_filter(schema::post_lists::description.ilike(&q))
             .order(schema::post_lists::created.desc())
             .limit(_limit)
             .offset(offset)
@@ -271,6 +302,7 @@ impl User {
             s_avatar:       user.s_avatar.clone(),
             last_activity:  chrono::Local::now().naive_utc(),
             see_all:        user.see_all,
+            see_friend:     user.see_friend,
             see_el:         1,
             see_comment:    1,
             create_el:      13,

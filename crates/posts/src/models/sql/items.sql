@@ -4,14 +4,18 @@
 -- пользователи - владельцы прикрепленных объектов -------
 -- таблица нужна для ассоциации прикрепленных объектов с их создателями,
 -- а также для самостоятельности сервиса.
+-- see_all - кто видит открытый пройиль и следоватенльно всю
+-- информацию.
 CREATE TABLE item_users (
-    id         SERIAL PRIMARY KEY,           -- id записи
-    user_id    INT NOT NULL,                 -- id пользователя (ссылка на основную таблицу)
-    first_name VARCHAR(100) NOT NULL,        -- имя пользователя
-    last_name  VARCHAR(100) NOT NULL,        -- фамилия пользователя
-    types      SMALLINT NOT NULL DEFAULT 1,  -- тип (активен, удален, закрыт...)
-    link       VARCHAR(100) NOT NULL,        -- ссылка и связь с основной таблицей
-    s_avatar   VARCHAR(500),                 -- миниатюра
+    id         SERIAL PRIMARY KEY,    -- id записи
+    user_id    INT NOT NULL,          -- id пользователя (ссылка на основную таблицу)
+    first_name VARCHAR(100) NOT NULL, -- имя пользователя
+    last_name  VARCHAR(100) NOT NULL, -- фамилия пользователя
+    types      SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
+    link       VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
+    s_avatar   VARCHAR(500),          -- миниатюра
+    see_all    SMALLINT NOT NULL,     -- кто может видеть открытый профиль
+    see_friend SMALLINT NOT NULL      -- Кто видит друзей
 
     UNIQUE(link)
 );
@@ -27,11 +31,11 @@ CREATE TABLE item_communitys (
     types        SMALLINT NOT NULL,     -- тип
     link         VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
     s_avatar     VARCHAR(500),          -- миниатюра
+    see_member   SMALLINT NOT NULL,     -- Кто видит сообщества
 
     UNIQUE(link)
 );
 CREATE INDEX item_communitys_id_idx ON item_communitys (community_id);
-
 
 -- объекты списков объектов универсальные -------
 -- аватар, фио, ссылку легко получить из объекта владельца.
@@ -51,17 +55,42 @@ CREATE INDEX item_communitys_id_idx ON item_communitys (community_id);
 -- 29 Список статей
 -- 30 Папка
 -- 31 Список стикеров
+-- добавим поля приватности
 
 CREATE TABLE item_lists (
-    id             SERIAL PRIMARY KEY,    -- id списка записей
-    name           VARCHAR(100) NOT NULL, -- название
-    user_id        INT NOT NULL,          -- id пользователя (ссылка на таблицу выше)
-    community_id   INT,                   -- id сообщества (ссылка на таблицу выше)
-    list_id        INT NOT NULL,          -- id списка
-    list_types     SMALLINT NOT NULL,     -- тип списка (выше)
-    types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
-    image          VARCHAR(500),          -- миниатюра
-    count          INT NOT NULL           -- кол-во элементов
+    id           SERIAL PRIMARY KEY,    -- id списка записей
+    name         VARCHAR(100) NOT NULL, -- название
+    user_id      INT NOT NULL,          -- id пользователя (ссылка на таблицу выше)
+    community_id INT,                   -- id сообщества (ссылка на таблицу выше)
+    list_id      INT NOT NULL,          -- id списка
+    list_types   SMALLINT NOT NULL,     -- тип списка (выше)
+    types        SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
+    image        VARCHAR(500),          -- миниатюра
+    count        INT NOT NULL           -- кол-во элементов
+    see_el       SMALLINT NOT NULL,     -- кто может видеть список
+    copy_el      SMALLINT NOT NULL,     -- кто может копировать список
+);
+
+-- основняк приватности элементов и комментов. Если владелец
+-- меняет приватность списка или целого сервиса,
+-- эта таблица хранит расчет приватности для прикрепленного объекта.
+-- например, изменилась приватность стены пользователя: смотрим по всем сервисам
+-- есть ли такие записи с id пользователя, то меняем цифру приватности
+-- на соразмерную всей стене. Если меняем список записей, то
+-- ищем одну запись с list_id == list.id и типом "записи".
+
+-- вообще, при изменении стены нужно проверять и таблицу perms_lists,
+-- и запись item_lists. При изменении приватности списка - также две эти таблицы
+
+CREATE TABLE perms_lists (
+    id           SERIAL PRIMARY KEY, -- id списка записей
+    user_id      INT NOT NULL,       -- id пользователя-владельца (ссылка на таблицу выше)
+    community_id INT,                -- id сообщества-владельца (ссылка на таблицу выше)
+    list_id      INT NOT NULL,       -- id списка
+    list_types   SMALLINT NOT NULL,  -- тип списка (выше)
+    types        SMALLINT NOT NULL,  -- тип (активен, удален, закрыт...)
+    see_el       SMALLINT NOT NULL,  -- кто может видеть элементы списка
+    copy_el      SMALLINT NOT NULL   -- кто может копировать элементы списка
 );
 
 -- объекты комментарий универсальные -------

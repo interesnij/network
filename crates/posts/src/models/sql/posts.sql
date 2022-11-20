@@ -42,6 +42,7 @@ CREATE TABLE users (
     last_activity  TIMESTAMP NOT NULL,    -- когда был в сети
 
     see_all        SMALLINT NOT NULL,     -- кто может видеть открытый профиль
+    see_friend     SMALLINT NOT NULL,     -- кто может видеть друзей
     see_el         SMALLINT NOT NULL,     -- кто может видеть записи
     see_comment    SMALLINT NOT NULL,     -- кто может видеть комменты
     create_el      SMALLINT NOT NULL,     -- кто может создавать записи
@@ -67,6 +68,7 @@ CREATE TABLE communitys (
     link           VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
     s_avatar       VARCHAR(500),          -- миниатюра
 
+    see_member     SMALLINT NOT NULL,     -- кто может видеть подписчиков
     see_el         SMALLINT NOT NULL,     -- кто может видеть записи
     see_comment    SMALLINT NOT NULL,     -- кто может видеть комменты
     create_list    SMALLINT NOT NULL,     -- кто может создавать списки
@@ -259,17 +261,6 @@ CREATE TABLE post_list_perms (
     types           SMALLINT NOT NULL       -- статус доступа
 );
 CREATE UNIQUE INDEX post_list_perms_unq ON post_list_perms (user_id, post_list_id);
-
--------
--- все реакции сервиса записей -------
-CREATE TABLE reactions (
-  id        SERIAL PRIMARY KEY,            -- id записи
-  image     VARCHAR(500) NOT NULL,         -- изображение
-  gif       VARCHAR(500) NOT NULL,         -- гифка
-  name      VARCHAR(100) NOT NULL,         -- название
-  is_active BOOLEAN NOT NULL DEFAULT true, -- активная реакция?
-  position  SMALLINT NOT NULL              -- позиция
-);
 
 -- Уведомления записей пользователя -------
 CREATE TABLE user_post_notifications (

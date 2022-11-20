@@ -300,65 +300,6 @@ impl User {
         }
     }
 
-    pub fn get_plus_or_create_populate_smile(&self, smile_id: i32, image: String) {
-        use crate::schema::user_populate_smiles::dsl::user_populate_smiles;
-        use crate::models::{UserPopulateSmile, NewUserPopulateSmile};
-
-        let _connection = establish_connection();
-
-        let populate_smile = user_populate_smiles
-            .filter(schema::user_populate_smiles::user_id.eq(self.id))
-            .filter(schema::user_populate_smiles::smile_id.eq(smile_id))
-            .first::<UserPopulateSmile>(&_connection);
-        if populate_smile.is_ok() {
-            let _smile = populate_smile.expect("E.");
-            diesel::update(&_smile)
-                .set(schema::user_populate_smiles::count.eq(_smile.count + 1))
-                .execute(&_connection)
-                .expect("Error.");
-        } else {
-            let new_smile = NewUserPopulateSmile {
-                user_id:  self.id,
-                smile_id: smile_id,
-                count:    1,
-                image:    image,
-            };
-            diesel::insert_into(schema::user_populate_smiles::table)
-                .values(&new_smile)
-                .execute(&_connection)
-                .expect("Error.");
-        }
-    }
-    pub fn get_plus_or_create_populate_sticker(&self, sticker_id: i32, image: String) {
-        use crate::schema::user_populate_stickers::dsl::user_populate_stickers;
-        use crate::models::{UserPopulateSticker, NewUserPopulateSticker};
-
-        let _connection = establish_connection();
-
-        let populate_sticker = user_populate_stickers
-            .filter(schema::user_populate_stickers::user_id.eq(self.id))
-            .filter(schema::user_populate_stickers::sticker_id.eq(sticker_id))
-            .first::<UserPopulateSticker>(&_connection);
-        if populate_sticker.is_ok() {
-            let _sticker = populate_sticker.expect("E.");
-            diesel::update(&_sticker)
-                .set(schema::user_populate_stickers::count.eq(_sticker.count + 1))
-                .execute(&_connection)
-                .expect("Error.");
-        } else {
-            let new_sticker = NewUserPopulateSticker {
-                user_id:    self.id,
-                sticker_id: sticker_id,
-                count:      1,
-                image:      image,
-            };
-            diesel::insert_into(schema::user_populate_stickers::table)
-                .values(&new_sticker)
-                .execute(&_connection)
-                .expect("Error.");
-        }
-    }
-
     pub fn get_last_location_json(&self) -> Result<LocationJson, Error> {
         use crate::schema::user_locations::dsl::user_locations;
 
@@ -389,54 +330,6 @@ impl User {
         else {
             return str.to_string();
         }
-    }
-
-    pub fn get_populate_smiles_json(&self) -> Vec<UserPopulateSmileJson> {
-        use crate::schema::user_populate_smiles::dsl::user_populate_smiles;
-
-        let _connection = establish_connection();
-        let all_populate_smiles = user_populate_smiles
-            .filter(schema::user_populate_smiles::user_id.eq(self.id))
-            .order(schema::user_populate_smiles::count.desc())
-            .limit(20)
-            .select((
-                schema::user_populate_smiles::smile_id,
-                schema::user_populate_smiles::image
-            ))
-            .load::<(i32, String)>(&_connection)
-            .expect("E");
-        let mut smiles_json = Vec::new();
-        for smile in all_populate_smiles.iter() {
-            smiles_json.push(UserPopulateSmileJson {
-                smile_id: smile.0,
-                image:    smile.1.clone(),
-            });
-        }
-        return smiles_json;
-    }
-
-    pub fn get_populate_stickers_json(&self) -> Vec<UserPopulateStickerJson> {
-        use crate::schema::user_populate_stickers::dsl::user_populate_stickers;
-
-        let _connection = establish_connection();
-        let all_populate_stickers = user_populate_stickers
-            .filter(schema::user_populate_stickers::user_id.eq(self.id))
-            .order(schema::user_populate_stickers::count.desc())
-            .limit(20)
-            .select((
-                schema::user_populate_stickers::sticker_id,
-                schema::user_populate_stickers::image
-            ))
-            .load::<(i32, String)>(&_connection)
-            .expect("E");
-        let mut stickers_json = Vec::new();
-        for sticker in all_populate_stickers.iter() {
-            stickers_json.push(UserPopulateStickerJson {
-                sticker_id: sticker.0,
-                image:    sticker.1.clone(),
-            });
-        }
-        return stickers_json;
     }
 
     pub fn is_women(&self) -> bool {

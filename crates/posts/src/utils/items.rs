@@ -175,17 +175,6 @@ pub struct RespListJson {
     pub reactions:      Option<String>,
 }
 
-#[derive(Debug, Serialize)]
-pub struct ReactionsJson {
-    pub reactions: Vec<ReactionJson>,
-}
-#[derive(Debug, Serialize, Queryable)]
-pub struct ReactionJson {
-    pub id:    i32,
-    pub image: String,
-    pub name:  String,
-}
-
 #[derive(Deserialize)]
 pub struct JsonPosition {
     pub key:   i32,
@@ -299,6 +288,24 @@ pub struct RepostsPostListJson {
 // это объект записи
 pub struct PostsJson {
     pub posts: Vec<CardPostJson>,
+}
+
+#[derive(Serialize)]
+// это запись для API, выдавать для создания прикрепов в других сервисах
+pub struct AttachPost {
+    pub id:             i32,
+    pub content:        Option<String>,
+    pub comments_on:    bool,
+    pub created:        String,
+    pub comment:        i32,
+    pub view:           i32,
+    pub repost:         i32,
+    pub is_signature:   bool,
+    pub reactions:      i32,
+    pub types:          String,                          // например pos1
+    pub parent:         Option<CardParentPostJson>,     // пост родитель
+    pub reactions_list: Option<Vec<SmallReactionBlockJson>>,
+    pub attachments:    Option<AttachmentsJson>,
 }
 
 #[derive(Serialize)]

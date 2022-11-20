@@ -6,7 +6,6 @@ use actix_web::{
 };
 use crate::utils::{
     get_community,
-    //get_user,
     get_post_list,
     get_post,
     get_post_comment,
@@ -16,6 +15,9 @@ use crate::utils::{
     get_anon_community_permission,
     get_owner_data,
     ErrorParams,
+    AttachPostListResp,
+    AttachPostResp,
+    AttachPostCommentResp,
 };
 use crate::models::{
     PostList,
@@ -29,7 +31,6 @@ use crate::errors::Error;
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
-    config.route("/add_user_list/", web::get().to(add_user_list_page));
     config.route("/edit_user_list/", web::get().to(edit_user_list_page));
     config.route("/add_community_list/", web::get().to(add_community_list_page));
     config.route("/edit_community_list/", web::get().to(edit_community_list_page));

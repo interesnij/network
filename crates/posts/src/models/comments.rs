@@ -85,7 +85,88 @@ pub struct SearchAllComments {
     pub offset:   i64,
 }
 impl PostComment {
-    pub fn search_posts (
+    pub fn get_comments_for_attach(&self, ids: Vec<i32>) -> Vec<AttachCommentResp> {
+        // выдача инфы для прикрепления комментов
+        // по запросу API
+        use crate::schema::post_comments::dsl::post_comments;
+        use crate::utils::{
+            AttachOwner,
+            AttachCommunity,
+            AttachList,
+            AttachPermList
+        };
+
+        let stack: Vec<AttachCommentResp> = Vec::new();
+        let _connection = establish_connection();
+        let comments = post_comments
+            .filter(schema::post_comments::id.eq_any(ids))
+            .filter(schema::post_comments::types.lt(10))
+            .load::<PostComment>(&_connection)
+            .expect("E.");
+
+        for i in comments.iter() {
+            let mut c_resp: Option<AttachCommunity> = None;
+            let mut u_resp: Option<AttachOwner> = None;
+
+            let list = i.get_list();
+            if list.community_id.is_some() {
+                let community = list.get_community().expect("E.");
+                c_resp = AttachCommunity {
+                    id:         community.id,
+                    name:       community.name,
+                    types:      community.types,
+                    link:       community.link,
+                    s_avatar:   community.s_avatar,
+                    see_member: community.see_member,
+                }
+            }
+            else {
+                let creator = list.get_creator().expect("E.");
+                c_resp = AttachOwner {
+                    id:         creator.id,
+                    first_name: creator.first_name,
+                    last_name:  creator.last_name,
+                    types:      creator.types,
+                    link:       creator.link,
+                    s_avatar:   creator.s_avatar,
+                    see_all:    creator.see_all,
+                    see_friend: creator.see_friend,
+                }
+            }
+
+            let list_data = AttachPermList {
+                user_id:      list.user_id,
+                community_id: list.community_id,
+                list_id:      list.id,
+                list_types:   20,
+                types:        list.types,
+                see_el:       list.see_el,
+                copy_el:      list.copy_el,
+            }
+            let data = AttachPostComment {
+                id:             i.id,
+                content:        i.content.clone(),
+                attachments:    i.get_attach(),
+                types:          i.get_code(),
+                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                repost:         i.repost,
+                reactions:      i.reactions,
+            }
+            stack.push {
+                owner:     u_resp,
+                community: c_resp,
+                list:      list_data,
+                data:      data,
+            }
+        }
+        return stack;
+    }
+
+    pub fn get_attach(&self) -> Option<AttachmentsJson> {
+        return None;
+    }
+
+    pub fn search_comments (
         q:       &String,
         user_id: i32,
         limit:   i64,

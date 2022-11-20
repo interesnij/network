@@ -15,7 +15,6 @@ use crate::schema::{
     user_blocks,
     list_user_communities_keys,
     user_populate_smiles,
-    user_populate_stickers,
     user_infos,
     friends,
     follows,
@@ -362,40 +361,4 @@ pub struct NewUserPrivate {
     pub see_all:    i16,
     pub see_info:   i16,
     pub see_friend: i16,
-}
-
-/////// UserPopulateSmiles //////
-#[derive(Queryable, Serialize, Deserialize, Identifiable)]
-pub struct UserPopulateSmile {
-    pub id:       i32,
-    pub user_id:  i32,
-    pub smile_id: i32,
-    pub count:    i32,
-    pub image:    String,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="user_populate_smiles"]
-pub struct NewUserPopulateSmile {
-    pub user_id:  i32,
-    pub smile_id: i32,
-    pub count:    i32,
-    pub image:    String,
-}
-
-/////// UserPopulateStickers //////
-#[derive(Queryable, Serialize, Deserialize, Identifiable)]
-pub struct UserPopulateSticker {
-    pub id:         i32,
-    pub user_id:    i32,
-    pub sticker_id: i32,
-    pub count:      i32,
-    pub image:      String,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="user_populate_stickers"]
-pub struct NewUserPopulateSticker {
-    pub user_id:    i32,
-    pub sticker_id: i32,
-    pub count:      i32,
-    pub image:      String,
 }

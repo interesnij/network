@@ -1,5 +1,5 @@
 [package]
-name = "posts"
+name = "communities"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,11 +13,4 @@ chrono = { version = "0.4", features = ["serde"] }
 futures = "0.3.21"
 actix-cors = "0.6.1"
 derive_more = "0.99.5"
-
-[dependencies.uuid]
-version = "1.2.2"
-features = [
-    "v4",                # Lets you generate random UUIDs
-    "fast-rng",          # Use a faster (but still sufficiently random) RNG
-    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
-]
+reqwest = "0.11.13"

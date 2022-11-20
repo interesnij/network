@@ -20,8 +20,15 @@ actix-cors = "0.6.1"
 actix-web-httpauth = "0.6.0"
 bcrypt = "0.12.1"
 jsonwebtoken = "8.1.0"
-reqwest = "*"
+reqwest = "0.11.13"
 derive_more = "0.99.5"
 #concat-string = "1.0.1"
 cookie = "*"
-uuid = "1.2.2"
+
+[dependencies.uuid]
+version = "1.2.2"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]

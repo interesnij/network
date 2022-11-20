@@ -19,6 +19,7 @@ use crate::utils::{
     ReactionsJson, CardCommentJson,
     EditListJson, RespListJson, DataListJson,
     DataNewPost, RespPost, CardPostJson,
+    AttachPostListResp,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -158,22 +159,7 @@ impl PostList {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
-    pub fn get_add_list_json() -> Result<ReactionsJson, Error> {
-        use crate::schema::reactions::dsl::reactions;
-        use crate::utils::ReactionJson;
 
-        let _connection = establish_connection();
-        let _reactions = reactions
-            .select((
-                schema::reactions::id,
-                schema::reactions::image,
-                schema::reactions::name,
-            ))
-            .load::<ReactionJson>(&_connection)?;
-        return Ok(ReactionsJson {
-            reactions: _reactions,
-        });
-    }
     pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
         return Ok(EditListJson {
             id:                   self.id,
@@ -641,6 +627,69 @@ impl PostList {
             return "".to_string()
         }
     }
+    pub fn get_lists_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostListResp> {
+        // выдача инфы для прикрепления списков записей
+        // по запросу API
+        use crate::schema::post_lists::dsl::post_lists;
+        use crate::utils::{
+            AttachOwner,
+            AttachCommunity,
+            AttachList
+        };
+
+        let stack: Vec<AttachPostListResp> = Vec::new();
+        let _connection = establish_connection();
+        let lists = post_lists
+            .filter(schema::post_lists::id.eq_any(ids))
+            .filter(schema::post_lists::types.lt(31))
+            .load::<PostList>(&_connection)
+            .expect("E.");
+
+        for list in lists.iter() {
+            let mut c_resp: Option<AttachCommunity> = None;
+            let mut u_resp: Option<AttachOwner> = None;
+            if list.community_id.is_some() {
+                let community = list.get_community().expect("E.");
+                c_resp = AttachCommunity {
+                    id:         community.id,
+                    name:       community.name,
+                    types:      community.types,
+                    link:       community.link,
+                    s_avatar:   community.s_avatar,
+                    see_member: community.see_member,
+                }
+            }
+            else {
+                let creator = list.get_creator().expect("E.");
+                c_resp = AttachOwner {
+                    id:         creator.id,
+                    first_name: creator.first_name,
+                    last_name:  creator.last_name,
+                    types:      creator.types,
+                    link:       creator.link,
+                    s_avatar:   creator.s_avatar,
+                    see_all:    creator.see_all,
+                    see_friend: creator.see_friend,
+                }
+            }
+            let data = AttachList {
+                id:      list.id,
+                name:    list.name,
+                types:   list.types,
+                image:   list.image,
+                count:   list.count,
+                see_el:  list.see_el,
+                copy_el: list.copy_el,
+            }
+            stack.push {
+                owner:     u_resp,
+                community: c_resp,
+                data:      data,
+            }
+        }
+        return stack;
+    }
+
     pub fn get_items(&self) -> Vec<Post> {
         use crate::schema::posts::dsl::posts;
 
@@ -1584,6 +1633,35 @@ impl PostList {
             .load::<PostList>(&_connection)
             .expect("E.");
     }
+    pub fn search_user_post_lists (
+        q:       &String,
+        user_id: i32,
+        limit:   i64,
+        offset:  i64
+    ) -> Vec<PostList> {
+        use crate::schema::post_lists::dsl::post_lists;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        return post_lists
+            .filter(schema::post_lists::user_id.eq(user_id))
+            .filter(schema::post_lists::community_id.is_null())
+            .filter(schema::post_lists::types.lt(31))
+            .filter(schema::post_lists::name.ilike(&q))
+            .or_filter(schema::post_lists::description.ilike(&q))
+            .order(schema::post_lists::created.desc())
+            .limit(_limit)
+            .offset(offset)
+            .load::<PostList>(&_connection)
+            .expect("E.");
+    }
+
     pub fn count_user_post_lists(user_id: i32) -> i16 {
         use crate::utils::get_user;
 
@@ -1594,6 +1672,33 @@ impl PostList {
             .unwrap();
     }
 
+    pub fn search_community_post_lists (
+        q:            &String,
+        community_id: i32,
+        limit:        i64,
+        offset:       i64
+    ) -> Vec<PostList> {
+        use crate::schema::post_lists::dsl::post_lists;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        return post_lists
+            .filter(schema::post_lists::community_id.eq(community_id))
+            .filter(schema::post_lists::types.lt(31))
+            .filter(schema::post_lists::name.ilike(&q))
+            .or_filter(schema::post_lists::description.ilike(&q))
+            .order(schema::post_lists::created.desc())
+            .limit(_limit)
+            .offset(offset)
+            .load::<PostList>(&_connection)
+            .expect("E.");
+    }
     pub fn get_community_post_lists(community_id: i32, limit: i64, offset: i64) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 

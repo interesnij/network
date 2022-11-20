@@ -26,6 +26,7 @@ use crate::utils::{
     DataEditPost,
     RespPost,
     RespComment,
+    AttachPostResp,
 };
 use actix_web::web::Json;
 use crate::models::{
@@ -129,6 +130,89 @@ pub struct SearchAllPosts {
 }
 
 impl Post {
+    pub fn get_posts_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostResp> {
+        // выдача инфы для прикрепления записей
+        // по запросу API
+        use crate::schema::posts::dsl::posts;
+        use crate::utils::{
+            AttachOwner,
+            AttachCommunity,
+            AttachList,
+            AttachPermList
+        };
+
+        let stack: Vec<AttachPostResp> = Vec::new();
+        let _connection = establish_connection();
+        let post_list = posts
+            .filter(schema::posts::id.eq_any(ids))
+            .filter(schema::posts::types.lt(10))
+            .load::<Post>(&_connection)
+            .expect("E.");
+
+        for i in post_list.iter() {
+            let mut c_resp: Option<AttachCommunity> = None;
+            let mut u_resp: Option<AttachOwner> = None;
+            if i.community_id.is_some() {
+                let community = i.get_community().expect("E.");
+                c_resp = AttachCommunity {
+                    id:         community.id,
+                    name:       community.name,
+                    types:      community.types,
+                    link:       community.link,
+                    s_avatar:   community.s_avatar,
+                    see_member: community.see_member,
+                }
+            }
+            else {
+                let creator = i.get_creator().expect("E.");
+                c_resp = AttachOwner {
+                    id:         creator.id,
+                    first_name: creator.first_name,
+                    last_name:  creator.last_name,
+                    types:      creator.types,
+                    link:       creator.link,
+                    s_avatar:   creator.s_avatar,
+                    see_all:    creator.see_all,
+                    see_friend: creator.see_friend,
+                }
+            }
+            let list = i.get_list().expect("E.");
+            let list_data = AttachPermList {
+                user_id:      list.user_id,
+                community_id: list.community_id,
+                list_id:      list.id,
+                list_types:   20,
+                types:        list.types,
+                see_el:       list.see_el,
+                copy_el:      list.copy_el,
+            }
+            let data = AttachPost {
+                id:             i.id,
+                content:        i.content.clone(),
+                comments_on:    i.comments_on,
+                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                comment:        i.comment,
+                view:           i.view,
+                repost:         i.repost,
+                is_signature:   i.is_signature,
+                reactions:      i.reactions,
+                types:          i.get_code(),                         // например pos1
+                parent:         i.get_parent_post_json(),     // пост родитель
+                reactions_list: self.get_reactions_json(user_id, list.get_reactions_list()),
+                attachments:    i.get_attach(),
+            }
+            stack.push {
+                owner:     u_resp,
+                community: c_resp,
+                list:      list_data,
+                data:      data,
+            }
+        }
+        return stack;
+    }
+    pub fn get_attach(&self) -> Option<AttachmentsJson> {
+        return None;
+    }
     pub fn search_posts (
         q:       &String,
         user_id: i32,

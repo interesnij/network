@@ -104,6 +104,7 @@ pub struct Community {
     pub link:           String,
     pub s_avatar:       Option<String>,
 
+    pub see_member:     i16,
     pub see_el:         i16,
     pub see_comment:    i16,
     pub create_list:    i16,
@@ -125,6 +126,7 @@ pub struct NewCommunity {
     pub link:           String,
     pub s_avatar:       Option<String>,
 
+    pub see_member:     i16,
     pub see_el:         i16,
     pub see_comment:    i16,
     pub create_list:    i16,
@@ -146,6 +148,7 @@ pub struct NewCommunityJson {
     pub types:        i16,
     pub link:         String,
     pub s_avatar:     Option<String>,
+    pub see_member:   i16,
     pub follows:      Option<Vec<(i32, i16)>>,  // список id подписчтков сообщества (1) и их права (2)
 }
 
@@ -206,6 +209,34 @@ impl Community {
             .load::<PostList>(&_connection)
             .expect("E.");
     }
+    pub fn search_post_lists (
+        &self,
+        q:      &String,
+        limit:  i64,
+        offset: i64
+    ) -> Vec<PostList> {
+        use crate::schema::post_lists::dsl::post_lists;
+
+        let _limit: i64;
+        if limit > 100 {
+            _limit = 20;
+        }
+        else {
+            _limit = limit;
+        }
+        let _connection = establish_connection();
+        return post_lists
+            .filter(schema::post_lists::community_id.eq(self.community_id))
+            .filter(schema::post_lists::types.lt(31))
+            .filter(schema::post_lists::name.ilike(&q))
+            .or_filter(schema::post_lists::description.ilike(&q))
+            .order(schema::post_lists::created.desc())
+            .limit(_limit)
+            .offset(offset)
+            .load::<PostList>(&_connection)
+            .expect("E.");
+    }
+
     pub fn search_posts (
         &self,
         q:       &String,
@@ -471,6 +502,7 @@ impl Community {
             link:           community.link.clone(),
             s_avatar:       community.s_avatar.clone(),
 
+            see_member:     community.see_member,
             see_el:         1,
             see_comment:    1,
             create_list:    4,

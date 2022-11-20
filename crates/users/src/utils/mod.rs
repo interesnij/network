@@ -20,7 +20,6 @@ use crate::models::{
     User, Owner, Moderated,
 };
 
-
 pub fn establish_connection() -> PgConnection {
     use dotenv::dotenv;
 
