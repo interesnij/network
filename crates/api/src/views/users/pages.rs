@@ -30,5 +30,4 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .text()
         .await;
     Json(users.expect("E."))
-    }
 }
