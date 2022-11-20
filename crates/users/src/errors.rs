@@ -16,8 +16,8 @@ pub enum AuthError {
     //#[display(fmt = "BadId")]
     //BadId,
 
-    //#[display(fmt = "NotFound: {}", _0)]
-    //NotFound(String),
+    #[display(fmt = "NotFound: {}", _0)]
+    NotFound(String),
 
     //#[display(fmt = "ProcessError: {}", _0)]
     //ProcessError(String),
