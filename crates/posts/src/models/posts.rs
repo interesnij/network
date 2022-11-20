@@ -138,7 +138,9 @@ impl Post {
             AttachOwner,
             AttachCommunity,
             AttachList,
-            AttachPermList
+            AttachPermList,
+            AttachmentsJson,
+            AttachPost,
         };
 
         let stack: Vec<AttachPostResp> = Vec::new();
@@ -185,7 +187,7 @@ impl Post {
                 types:        list.types,
                 see_el:       list.see_el,
                 copy_el:      list.copy_el,
-            }
+            };
             let data = AttachPost {
                 id:             i.id,
                 content:        i.content.clone(),
@@ -198,15 +200,15 @@ impl Post {
                 reactions:      i.reactions,
                 types:          i.get_code(),                         // например pos1
                 parent:         i.get_parent_post_json(),     // пост родитель
-                reactions_list: self.get_reactions_json(user_id, list.get_reactions_list()),
+                reactions_list: self.get_reactions_json(0, list.get_reactions_list()),
                 attachments:    i.get_attach(),
             }
-            stack.push {
+            stack.push (AttachPostResp {
                 owner:     u_resp,
                 community: c_resp,
                 list:      list_data,
                 data:      data,
-            }
+            })
         }
         return stack;
     }

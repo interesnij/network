@@ -21,6 +21,7 @@ use crate::utils::{
     RespComment,
     AttachmentsJson,
     AttachPostComment,
+    AttachCommentResp,
 };
 
 use crate::models::{
@@ -113,14 +114,14 @@ impl PostComment {
             let list = i.get_list();
             if list.community_id.is_some() {
                 let community = list.get_community().expect("E.");
-                c_resp = AttachCommunity {
+                c_resp = Some(AttachCommunity {
                     id:         community.id,
                     name:       community.name,
                     types:      community.types,
                     link:       community.link,
                     s_avatar:   community.s_avatar,
                     see_member: community.see_member,
-                }
+                })
             }
             else {
                 let creator = list.get_creator().expect("E.");
@@ -144,7 +145,7 @@ impl PostComment {
                 types:        list.types,
                 see_el:       list.see_el,
                 copy_el:      list.copy_el,
-            })
+            });
             let data = AttachPostComment {
                 id:             i.id,
                 content:        i.content.clone(),
@@ -154,12 +155,12 @@ impl PostComment {
                 repost:         i.repost,
                 reactions:      i.reactions,
             }
-            stack.push {
+            stack.push (AttachCommentResp{
                 owner:     u_resp,
                 community: c_resp,
                 list:      list_data,
                 data:      data,
-            }
+            })
         }
         return stack;
     }

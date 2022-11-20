@@ -32,7 +32,6 @@ use crate::errors::Error;
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
     config.route("/edit_user_list/", web::get().to(edit_user_list_page));
-    config.route("/add_community_list/", web::get().to(add_community_list_page));
     config.route("/edit_community_list/", web::get().to(edit_community_list_page));
     config.route("/edit_post/", web::get().to(edit_post_page));
 
@@ -321,67 +320,6 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
                     error: "Permission Denied.".to_string(),
                 }).unwrap();
                 HttpResponse::Ok().body(body)
-            }
-        }
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        HttpResponse::Ok().body(body)
-    }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct AddCommunityListParams {
-    pub token:        Option<String>,
-    pub user_id:      Option<i32>,    // кто запрашивает
-    pub community_id: Option<i32>,
-}
-pub async fn add_community_list_page(req: HttpRequest) -> impl Responder {
-    let params_some = web::Query::<AddCommunityListParams>::from_query(&req.query_string());
-    if params_some.is_ok() {
-        let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
-        if err.is_some() || (user_id == 0 && community_id == 0) {
-            // если проверка токена не удалась...
-            let body = serde_json::to_string(&ErrorParams {
-                error: err.unwrap(),
-            }).unwrap();
-            return HttpResponse::Ok().body(body);
-        }
-        else if params.community_id.is_none() && community_id == 0 {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'community_id' not found!".to_string(),
-            }).unwrap();
-            HttpResponse::Ok().body(body)
-        }
-        else {
-            let community_ok: Result<Community, Error>;
-            if community_id > 0 {
-                community_ok = get_community(community_id);
-            }
-            else {
-                community_ok = get_community(params.community_id.unwrap());
-            }
-            if community_ok.is_err() {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "community not found!".to_string(),
-                }).unwrap();
-                HttpResponse::Ok().body(body)
-            }
-            else {
-                let community = community_ok.expect("E.");
-                if !community.is_user_create_list(user_id) {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: "Permission Denied".to_string(),
-                    }).unwrap();
-                    HttpResponse::Ok().body(body)
-                }
-                else {
-                    let body = serde_json::to_string(&PostList::get_add_list_json().expect("E.")).unwrap();
-                    HttpResponse::Ok().body(body)
-                }
             }
         }
     }

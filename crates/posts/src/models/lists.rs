@@ -16,7 +16,7 @@ use crate::utils::{
     get_post_list,
     PostListDetailJson, PostListPageJson,
     CardUserJson, CardOwnerJson,
-    ReactionsJson, CardCommentJson,
+    CardCommentJson,
     EditListJson, RespListJson, DataListJson,
     DataNewPost, RespPost, CardPostJson,
     AttachPostListResp,
@@ -680,12 +680,12 @@ impl PostList {
                 count:   list.count,
                 see_el:  list.see_el,
                 copy_el: list.copy_el,
-            }
-            stack.push {
+            };
+            stack.push (AttachPostListResp {
                 owner:     u_resp,
                 community: c_resp,
                 data:      data,
-            }
+            })
         }
         return stack;
     }
