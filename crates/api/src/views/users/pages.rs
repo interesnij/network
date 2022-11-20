@@ -20,11 +20,11 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     //config.route("/friends-online/", web::get().to(user_friends_online_page));
     //config.route("/friends-common/", web::get().to(user_friends_common_page));
     //config.route("/follows/", web::get().to(user_follows_page));
-    config.route("/all-users/", web::get().to(all_users_page));
+    config.route("/all-users", web::get().to(all_users_page));
 }
 
 pub async fn all_users_page(req: HttpRequest) -> Json<String> {
-    let users = reqwest::get("http:194.58.90.123:9001")
+    let users = reqwest::get("http:194.58.90.123:9001/all-users")
         .await
         .expect("E.")
         .text()
