@@ -24,7 +24,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn all_users_page(req: HttpRequest) -> Json<String> {
-    let users = reqwest::get("http:194.58.90.123:9001/all-users")
+    let users = reqwest::get("http:194.58.90.123:9001")
         .await
         .expect("E.")
         .text()
