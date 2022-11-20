@@ -30,13 +30,6 @@ pub async fn all_users_page(req: HttpRequest) -> Json<String> {
         .text()
     .await;
 
-    if let Err(e) = users {
-        if e.is_timeout() {
-            println!("e.is_timeout()");
-            Json("e.is_timeout()".to_string()
-        }
-    }
-    else if
     println!("status {:?}", users.status());
     println!("is_status {:?}", users.is_status());
     println!("is_timeout {:?}", users.is_timeout());
