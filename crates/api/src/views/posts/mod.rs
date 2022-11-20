@@ -9,7 +9,7 @@ pub use self::{
 
 pub fn post_routes(cfg: &mut ServiceConfig) {
     cfg
-    .configure(pages_urls)
-    //.configure(progs_urls)
+    .configure(pages::pages_urls)
+    //.configure(pages::progs_urls)
     ;
 }

@@ -17,10 +17,10 @@ pub use self::{
 
 pub fn user_routes(cfg: &mut ServiceConfig) {
     cfg
-    //.configure(profile_urls)
-    .configure(pages_urls)
-    //.configure(progs_urls)
-    //.configure(load_urls)
-    //.configure(settings_urls)
+    //.configure(pages::profile_urls)
+    .configure(pages::pages_urls)
+    //.configure(pages::progs_urls)
+    //.configure(pages::load_urls)
+    //.configure(pages::settings_urls)
     ;
 }

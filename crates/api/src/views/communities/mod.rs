@@ -11,8 +11,8 @@ pub use self::{
 
 pub fn community_routes(cfg: &mut ServiceConfig) {
     cfg
-    .configure(community_urls)
-    //.configure(progs_urls)
-    //.configure(manage_urls)
+    .configure(pages::community_urls)
+    //.configure(pages::progs_urls)
+    //.configure(pages::manage_urls)
     ;
 }
