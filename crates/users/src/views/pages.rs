@@ -275,10 +275,16 @@ pub async fn user_followings_page(req: HttpRequest) -> Result<Json<Vec<CardUserJ
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
-        if err.is_some() || user_id == 0 {
+        if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
