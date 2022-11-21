@@ -80,7 +80,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametr 'target_id' not found!".to_string(),
             }).unwrap();
-            Ok(Json(body))
+            Err(Error::BadRequest(body))
         }
         else {
             let owner: User;
@@ -93,7 +93,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                 let body = serde_json::to_string(&ErrorParams {
                     error: "owner not found!".to_string(),
                 }).unwrap();
-                Ok(Json(body))
+                Err(Error::BadRequest(body))
             }
             if user_id > 0 {
                 let _tuple = get_user_permission(&owner, user_id);
@@ -102,7 +102,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                     let body = serde_json::to_string(&ErrorParams {
                         error: _tuple.1.to_string(),
                     }).unwrap();
-                    Ok(Json(body))
+                    Err(Error::BadRequest(body))
                 }
                 else {
                     let body = block(move || owner.get_friends(params.limit, params.offset)).await?;
@@ -116,7 +116,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                     let body = serde_json::to_string(&ErrorParams {
                         error: _tuple.1.to_string(),
                     }).unwrap();
-                    Ok(Json(body))
+                    Err(Error::BadRequest(body))
                 }
                 else {
                     let body = block(move || owner.get_friends(params.limit, params.offset)).await?;
