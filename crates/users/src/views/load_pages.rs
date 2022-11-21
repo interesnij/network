@@ -162,49 +162,18 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResp
             Err(Error::BadRequest(body))
         }
         else {
-            let _users_limit: i64;
-            let _users_offset: i64;
-            let _friends_limit: i64;
-            let _friends_offset: i64;
-
-            if params.users_limit.is_some() {
-                _users_limit = params.users_limit.unwrap();
-            }
-            else {
-                _users_limit = 20;
-            }
-            if params.users_offset.is_some() {
-                _users_offset = params.users_offset.unwrap();
-            }
-            else {
-                _users_offset = 0;
-            }
-
-            if params.friends_limit.is_some() {
-                _friends_limit = params.friends_limit.unwrap();
-            }
-            else {
-                _friends_limit = 20;
-            }
-            if params.friends_offset.is_some() {
-                _friends_offset = params.friends_offset.unwrap();
-            }
-            else {
-                _friends_offset = 0;
-            }
-
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
 
                 let _users = match params.types.unwrap() {
-                    1 => _user.get_limit_see_all_include_friends(_users_limit, _users_offset),
-                    2 => _user.get_limit_see_info_include_friends(_users_limit, _users_offset),
-                    3 => _user.get_limit_see_friend_include_friends(_users_limit, _users_offset),
+                    1 => _user.get_limit_see_all_include_friends(params.users_limit, params.users_offset),
+                    2 => _user.get_limit_see_info_include_friends(params.users_limit, params.users_offset),
+                    3 => _user.get_limit_see_friend_include_friends(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
                 IEFriendsResponse {
                     users:   _users,
-                    friends: _user.get_friends(_friends_limit, _friends_offset),
+                    friends: _user.get_friends(params.friends_limit, params.friends_offset),
                 }
             }).await?;
             Ok(Json(_res))
@@ -237,49 +206,18 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResp
             Err(Error::BadRequest(body))
         }
         else {
-            let _users_limit: i64;
-            let _users_offset: i64;
-            let _friends_limit: i64;
-            let _friends_offset: i64;
-
-            if params.users_limit.is_some() {
-                _users_limit = params.users_limit.unwrap();
-            }
-            else {
-                _users_limit = 20;
-            }
-            if params.users_offset.is_some() {
-                _users_offset = params.users_offset.unwrap();
-            }
-            else {
-                _users_offset = 0;
-            }
-
-            if params.friends_limit.is_some() {
-                _friends_limit = params.friends_limit.unwrap();
-            }
-            else {
-                _friends_limit = 20;
-            }
-            if params.friends_offset.is_some() {
-                _friends_offset = params.friends_offset.unwrap();
-            }
-            else {
-                _friends_offset = 0;
-            }
-
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
 
                 let _users = match params.types.unwrap() {
-                    11 => _user.get_limit_see_all_exclude_friends(_users_limit, _users_offset),
-                    12 => _user.get_limit_see_info_exclude_friends(_users_limit, _users_offset),
-                    13 => _user.get_limit_see_friend_exclude_friends(_users_limit, _users_offset),
+                    11 => _user.get_limit_see_all_exclude_friends(params.users_limit, params.users_offset),
+                    12 => _user.get_limit_see_info_exclude_friends(params.users_limit, params.users_offset),
+                    13 => _user.get_limit_see_friend_exclude_friends(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
                 IEFriendsResponse {
                     users:   _users,
-                    friends: _user.get_friends(_friends_limit, _friends_offset),
+                    friends: _user.get_friends(params.friends_limit, params.friends_offset),
                 }
             }).await?;
             Ok(Json(_res))
@@ -313,49 +251,18 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResp
             Err(Error::BadRequest(body))
         }
         else {
-            let _users_limit: i64;
-            let _users_offset: i64;
-            let _follows_limit: i64;
-            let _follows_offset: i64;
-
-            if params.users_limit.is_some() {
-                _users_limit = params.users_limit.unwrap();
-            }
-            else {
-                _users_limit = 20;
-            }
-            if params.users_offset.is_some() {
-                _users_offset = params.users_offset.unwrap();
-            }
-            else {
-                _users_offset = 0;
-            }
-
-            if params.follows_limit.is_some() {
-                _follows_limit = params.follows_limit.unwrap();
-            }
-            else {
-                _follows_limit = 20;
-            }
-            if params.follows_offset.is_some() {
-                _follows_offset = params.follows_offset.unwrap();
-            }
-            else {
-                _follows_offset = 0;
-            }
-
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
 
                 let _users = match params.types.unwrap() {
-                    1 => _user.get_limit_see_all_include_follows(_users_limit, _users_offset),
-                    2 => _user.get_limit_see_info_include_follows(_users_limit, _users_offset),
-                    3 => _user.get_limit_see_friend_include_follows(_users_limit, _users_offset),
+                    1 => _user.get_limit_see_all_include_follows(params.users_limit, params.users_offset),
+                    2 => _user.get_limit_see_info_include_follows(params.users_limit, params.users_offset),
+                    3 => _user.get_limit_see_friend_include_follows(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
                 IEFollowsResponse {
                     users:   _users,
-                    follows: _user.get_followers(_follows_limit, _follows_offset),
+                    follows: _user.get_followers(params.follows_limit, params.follows_offset),
                 }
             }).await?;
             Ok(Json(_res))
@@ -388,49 +295,18 @@ pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResp
             Err(Error::BadRequest(body))
         }
         else {
-            let _users_limit: i64;
-            let _users_offset: i64;
-            let _follows_limit: i64;
-            let _follows_offset: i64;
-
-            if params.users_limit.is_some() {
-                _users_limit = params.users_limit.unwrap();
-            }
-            else {
-                _users_limit = 20;
-            }
-            if params.users_offset.is_some() {
-                _users_offset = params.users_offset.unwrap();
-            }
-            else {
-                _users_offset = 0;
-            }
-
-            if params.follows_limit.is_some() {
-                _follows_limit = params.follows_limit.unwrap();
-            }
-            else {
-                _follows_limit = 20;
-            }
-            if params.follows_offset.is_some() {
-                _follows_offset = params.follows_offset.unwrap();
-            }
-            else {
-                _follows_offset = 0;
-            }
-
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
 
                 let _users = match params.types.unwrap() {
-                    11 => _user.get_limit_see_all_exclude_follows(_users_limit, _users_offset),
-                    12 => _user.get_limit_see_info_exclude_follows(_users_limit, _users_offset),
-                    13 => _user.get_limit_see_friend_exclude_follows(_users_limit, _users_offset),
+                    11 => _user.get_limit_see_all_exclude_follows(params.users_limit, params.users_offset),
+                    12 => _user.get_limit_see_info_exclude_follows(params.users_limit, params.users_offset),
+                    13 => _user.get_limit_see_friend_exclude_follows(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
                 IEFollowsResponse {
                     users:   _users,
-                    follows: _user.get_followers(_follows_limit, _follows_offset),
+                    follows: _user.get_followers(params.follows_limit, params.follows_offset),
                 }
             }).await?;
             Ok(Json(_res))

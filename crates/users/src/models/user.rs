@@ -925,7 +925,7 @@ impl User {
         return _users;
     }
     pub fn get_online_friends_count(&self) -> usize {
-        return self.get_online_friends(500, 0).len();
+        return self.get_online_friends(Some(500), Some(0)).len();
     }
     pub fn get_6_online_friends(&self) -> Vec<CardUserJson> {
         use crate::schema::{
