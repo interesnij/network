@@ -806,7 +806,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_followers(&params.q.unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_followers(&params.q.unwrap().clone(), params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
