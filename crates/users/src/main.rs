@@ -5,12 +5,12 @@ use std::sync::Arc;
 use dotenv::dotenv;
 use std::env;
 use actix_web::{
-    middleware::Logger,
+    //middleware::Logger,
     web,
     App,
-    HttpRequest,
+    //HttpRequest,
     HttpServer,
-    Result
+    //Result
 };
 use actix_cors::Cors;
 
