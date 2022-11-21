@@ -210,7 +210,7 @@ pub async fn user_friends_common_page(req: HttpRequest) -> Result<Json<Vec<CardU
         if err.is_some() || user_id == 0 {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
-                error: err.to_string(),
+                error: err.expect("E").to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
