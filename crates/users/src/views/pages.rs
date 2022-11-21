@@ -770,8 +770,16 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
             Err(Error::BadRequest(body))
         }
         else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "parametr 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
             let owner: User;
             let owner_res = get_user(params.target_id.unwrap());
+
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
@@ -792,7 +800,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_followers(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_followers(&q, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -806,7 +814,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_followers(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_followers(&q, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
