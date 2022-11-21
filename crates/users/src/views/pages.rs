@@ -106,7 +106,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                 }
                 else {
                     let body = block(move || owner.get_friends(params.limit, params.offset)).await?;
-                    Ok(body)
+                    Ok(Json(body))
                 }
             }
             else {
@@ -120,7 +120,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                 }
                 else {
                     let body = block(move || owner.get_friends(params.limit, params.offset)).await?;
-                    Ok(body)
+                    Ok(Json(body))
                 }
             }
         }

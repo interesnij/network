@@ -39,22 +39,7 @@ pub async fn friends_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
         else {
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
-
-                let _limit: i64;
-                let _offset: i64;
-                if params.limit.is_some() {
-                    _limit = params.limit.unwrap();
-                }
-                else {
-                    _limit = 20;
-                }
-                if params.offset.is_some() {
-                    _offset = params.offset.unwrap();
-                }
-                else {
-                    _offset = 0;
-                }
-                _user.get_friends(_limit, _offset)
+                _user.get_friends(params.limit, params.offset)
             }).await?;
             Ok(Json(_res))
         }
@@ -82,22 +67,7 @@ pub async fn follows_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
         else {
             let _res = block(move || {
                 let _user = get_user(user_id).expect("E.");
-
-                let _limit: i64;
-                let _offset: i64;
-                if params.limit.is_some() {
-                    _limit = params.limit.unwrap();
-                }
-                else {
-                    _limit = 20;
-                }
-                if params.offset.is_some() {
-                    _offset = params.offset.unwrap();
-                }
-                else {
-                    _offset = 0;
-                }
-                _user.get_followers(_limit, _offset)
+                _user.get_followers(params.limit, params.offset)
             }).await?;
             Ok(Json(_res))
         }
