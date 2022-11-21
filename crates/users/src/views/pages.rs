@@ -93,7 +93,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                 let body = serde_json::to_string(&ErrorParams {
                     error: "owner not found!".to_string(),
                 }).unwrap();
-                Err(Error::BadRequest(body))
+                return Err(Error::BadRequest(body));
             }
             if user_id > 0 {
                 let _tuple = get_user_permission(&owner, user_id);
