@@ -9,6 +9,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_user_owner_data,
+    get_limit_offset,
     ErrorParams, CardUserJson, RegListData,
 };
 use crate::models::User;
@@ -21,6 +22,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     //config.route("/friends-online", web::get().to(user_friends_online_page));
     //config.route("/friends-common", web::get().to(user_friends_common_page));
     //config.route("/follows", web::get().to(user_follows_page));
+    //config.route("/friends-featured", web::get().to(user_featured_page));
     config.route("/all-users", web::get().to(all_users_page));
 }
 
@@ -47,20 +49,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
         }
         else {
             let _res = block(move || {
-                let _limit: i64;
-                let _offset: i64;
-                if params.limit.is_some() {
-                    _limit = params.limit.unwrap();
-                }
-                else {
-                    _limit = 20;
-                }
-                if params.offset.is_some() {
-                    _offset = params.offset.unwrap();
-                }
-                else {
-                    _offset = 0;
-                }
+                let (_limit, _offset) = get_limit_offset(params.limit, params.offset, 20);
                 User::get_users(_limit, _offset)
             }).await?;
             Ok(Json(_res))
