@@ -203,3 +203,52 @@ pub fn get_user_owner_data (
         return (Some("parametr 'token' not found!".to_string()), 0);
     }
 }
+
+pub fn get_user_permission(user: &User, user_id: i32)
+    -> (bool, String) {
+
+    if user.types > 10 {
+        if user.is_closed() {
+            return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
+        }
+        else if user.is_deleted() {
+            return (false, user.get_full_name() + &": cтраница удалена".to_string())
+        }
+        else if user.is_suspended() {
+            return (false, user.get_full_name() + &": cтраница будет разморожена ".to_string() + &user.get_longest_penalties())
+        }
+        else { return (false, "Закрыто".to_string())}
+    }
+
+    else if user.is_user_in_block(user_id) {
+        return (false, user.get_full_name() + &": заблокировал Вас".to_string())
+    }
+    else if !user.is_user_see_all(user_id) {
+        return (false, user.get_full_name() + &": профиль закрыт, информация недоступна".to_string())
+    }
+    else {
+        return (true, "Открыто".to_string())
+    }
+}
+
+pub fn get_anon_user_permission(user: &User)
+    -> (bool, String) {
+    if user.types > 10 {
+        if user.is_closed() {
+            return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
+        }
+        else if user.is_deleted() {
+            return (false, user.get_full_name() + &": cтраница удалена".to_string())
+        }
+        else if user.is_suspended() {
+            return (false, user.get_full_name() + &": cтраница будет разморожена ".to_string() + &user.get_longest_penalties())
+        }
+        else { return (false, "Закрыто".to_string());}
+    }
+    else if !user.is_anon_user_see_all() && !user.is_anon_user_see_el() {
+        return (false, user.get_full_name() + &": Ошибка доступа".to_string())
+    }
+    else {
+        return (true, "Открыто".to_string())
+    }
+}
