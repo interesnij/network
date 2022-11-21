@@ -244,7 +244,7 @@ pub async fn user_friends_common_page(req: HttpRequest) -> Result<Json<Vec<CardU
                 }
                 else {
                     let user = get_user(user_id).expect("E");
-                    let body = block(move || owner.get_common_friends_of_user(user, params.limit, params.offset)).await?;
+                    let body = block(move || owner.get_common_friends_of_user(&user, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
