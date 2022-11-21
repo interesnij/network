@@ -767,6 +767,38 @@ impl User {
         return _friends;
     }
 
+    pub fn get_featured_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            featured_friends::dsl::featured_friends,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+
+        let _connection = establish_connection();
+        let friend_ids = featured_friends
+            .filter(schema::featured_friends::target_id.eq(self.id))
+            .filter(schema::featured_friends::hidden.eq(false))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::featured_friends::user_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let _friends = users
+            .filter(schema::users::id.eq_any(friend_ids))
+            .filter(schema::users::types.lt(30))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _friends;
+    }
+
     pub fn get_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
@@ -2013,6 +2045,66 @@ impl User {
         }
     }
 
+    pub fn get_or_create_featured_friends(&self, user: User) -> () {
+        use crate::schema::featured_friends::dsl::featured_friends;
+        use crate::models::NewFeaturedFriend;
+
+        let _connection = establish_connection();
+        for _user in user.get_6_friends().iter() {
+            if _user.id != self.id && !featured_friends
+                .filter(schema::featured_friends::target_id.eq(self.id))
+                .filter(schema::featured_friends::user_id.eq(_user.id))
+                .select(schema::featured_friends::id)
+                .first::<i32>(&_connection)
+                .is_ok() {
+
+                let _new_friend = NewFeaturedFriend {
+                    user_id:   _user.id,
+                    target_id: self.id,
+                    hidden:    false,
+                };
+                diesel::insert_into(schema::featured_friends::table)
+                    .values(&_new_friend)
+                    .execute(&_connection);
+            }
+        }
+    }
+    pub fn get_or_create_featured_friend(&self, user_id: i32) -> () {
+        use crate::schema::featured_friends::dsl::featured_friends;
+        use crate::models::NewFeaturedFriend;
+
+        let _connection = establish_connection();
+        if !featured_friends
+            .filter(schema::featured_friends::target_id.eq(self.id))
+            .filter(schema::featured_friends::user_id.eq(user_id))
+            .select(schema::featured_friends::id)
+            .first::<i32>(&_connection)
+            .is_ok() {
+
+            let _new_friend = NewFeaturedFriend {
+                user_id:   user_id,
+                target_id: self.id,
+                hidden:    false,
+            };
+            diesel::insert_into(schema::featured_friends::table)
+                .values(&_new_friend)
+                .execute(&_connection);
+        }
+    }
+
+    pub fn delete_featured_friend(&self, user_id: i32) -> () {
+        use crate::schema::featured_friends::dsl::featured_friends;
+
+        let _connection = establish_connection();
+        diesel::delete (
+            featured_friends
+            .filter(schema::featured_friends::target_id.eq(self.id))
+            .filter(schema::featured_friends::user_id.eq(user_id))
+        )
+        .execute(&_connection)
+        .expect("E");
+    }
+
     pub fn follow_user(&self, user: User) -> i16 {
         if self.id == user.id || self.is_self_user_in_block(user.id) || self.is_followers_user_with_id(user.id) || self.is_following_user_with_id(user.id) {
             return 0;
@@ -2031,10 +2123,10 @@ impl User {
             .get_result::<Follow>(&_connection);
         if new_follow.is_ok() {
             user.plus_follows(1);
-            //if user.is_user_see_all(self.id) {
-            //    self.add_new_user_subscriber(&user);
-            //    self.get_or_create_featured_objects(user);
-            //}
+            if user.is_user_see_all(self.id) {
+                //self.add_new_user_subscriber(&user);
+                self.get_or_create_featured_friends(user);
+            }
             return 1;
         }
         else {
@@ -2133,10 +2225,9 @@ impl User {
             user.plus_friends(1);
             self.plus_friends(1);
             self.minus_follows(1);
-            //if !user.is_user_see_all(self.id) {
-            //    self.add_new_user_subscriber(&user);
-            //    self.get_or_create_featured_objects(user);
-            //}
+            if !user.is_user_see_all(self.id) {
+                self.get_or_create_featured_friends(user);
+            }
             return 1;
         }
         return 0;
@@ -2244,7 +2335,7 @@ impl User {
             .values(&_user_block)
             .execute(&_connection)
             .expect("Error.");
-        //self.delete_new_subscriber(user.id);
+        self.delete_featured_friend(user.id);
         //self.delete_notification_subscriber(user.id);
         return 1;
     }

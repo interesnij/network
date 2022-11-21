@@ -74,9 +74,9 @@ pub struct FeaturedFriend {
 #[derive(Deserialize, Insertable)]
 #[table_name="featured_friends"]
 pub struct NewFeaturedFriend {
-    pub user_id:   i32,
-    pub target_id: i32,
-    pub hidden:    bool,
+    pub user_id:   i32,  // рекомандованный друг
+    pub target_id: i32,  // кому рекомендован
+    pub hidden:    bool, // пользователь скрыт
 }
 
 
