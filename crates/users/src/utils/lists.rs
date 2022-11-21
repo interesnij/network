@@ -36,3 +36,22 @@ pub struct TargetListData {
     pub limit:     Option<i64>,
     pub offset:    Option<i64>,
 }
+
+#[derive(Deserialize)]
+pub struct SearchRegListData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub q:       Option<String>,
+    pub limit:   Option<i64>,
+    pub offset:  Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct SearchTargetListData {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub q:         Option<String>,
+    pub target_id: Option<i32>,
+    pub limit:     Option<i64>,
+    pub offset:    Option<i64>,
+}
