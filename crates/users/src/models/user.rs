@@ -1119,7 +1119,6 @@ impl User {
         return _users;
     }
     pub fn search_users (
-        &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
