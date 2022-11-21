@@ -593,7 +593,7 @@ impl User {
             .len();
     }
 
-    pub fn get_blocked_users(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_blocked_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_blocks::dsl::user_blocks,
             users::dsl::users,
@@ -618,15 +618,16 @@ impl User {
                 schema::users::link,
                 schema::users::s_avatar,
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(blocked_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
+        return blocked_users;
     }
     pub fn search_blocked_users (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             user_blocks::dsl::user_blocks,
             users::dsl::users,
@@ -653,8 +654,9 @@ impl User {
             ))
             .limit(_limit)
             .offset(_offset)
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(blocked_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
+        return blocked_users;
     }
 
     pub fn count_friends(&self) -> i32 {
