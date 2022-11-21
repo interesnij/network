@@ -21,6 +21,26 @@ use crate::models::{
 };
 
 
+pub fn get_limit (
+    limit: Option<i64>,
+    default_limit: i64
+) -> i64 {
+    let _limit: i64;
+    if limit.is_some() {
+        let l_unwrap = limit.unwrap();
+        if l_unwrap > 100 {
+            _limit = default_limit;
+        }
+        else {
+            _limit = l_unwrap;
+        }
+    }
+    else {
+        _limit = default_limit;
+    }
+    _limit
+}
+
 pub fn get_limit_offset (
     limit: Option<i64>,
     offset: Option<i64>,
@@ -29,7 +49,13 @@ pub fn get_limit_offset (
     let _limit: i64;
     let _offset: i64;
     if limit.is_some() {
-        _limit = limit.unwrap();
+        let l_unwrap = limit.unwrap();
+        if l_unwrap > 100 {
+            _limit = default_limit;
+        }
+        else {
+            _limit = l_unwrap;
+        }
     }
     else {
         _limit = default_limit;

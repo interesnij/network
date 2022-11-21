@@ -21,13 +21,11 @@ use diesel::{
     NullableExpressionMethods,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
 use crate::utils::{
-    //CommunitySubcategoryJson,
+    establish_connection,
+    get_limit_offset,
     CommunityCategoryJson,
     CardUserJson,
-    //CommunityInfoJson,
-    //CommunityDetailJson,
     CommunityPrivateJson,
     NewCommunityJson,
 };
@@ -860,26 +858,20 @@ impl Community {
             .is_ok();
     }
 
-    pub fn get_see_info_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_see_info_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_visible_perms::dsl::community_visible_perms,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(12))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -897,26 +889,20 @@ impl Community {
             .expect("E");
         return _users;
     }
-    pub fn get_see_info_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_see_info_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_visible_perms::dsl::community_visible_perms,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(2))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -962,26 +948,20 @@ impl Community {
         return items_ids;
     }
 
-    pub fn get_see_member_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_see_member_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_visible_perms::dsl::community_visible_perms,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(11))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -999,26 +979,20 @@ impl Community {
               .expect("E");
           return _users;
       }
-      pub fn get_see_member_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+      pub fn get_see_member_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
           use crate::schema::{
               community_visible_perms::dsl::community_visible_perms,
               users::dsl::users,
           };
 
-          let _limit: i64;
-          if limit > 100 {
-              _limit = 20;
-          }
-          else {
-              _limit = limit;
-          }
+          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(1))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1064,26 +1038,20 @@ impl Community {
         return items_ids;
     }
 
-    pub fn get_see_settings_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_see_settings_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_visible_perms::dsl::community_visible_perms,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(13))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1101,26 +1069,20 @@ impl Community {
               .expect("E");
           return _users;
       }
-      pub fn get_see_settings_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+      pub fn get_see_settings_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
           use crate::schema::{
               community_visible_perms::dsl::community_visible_perms,
               users::dsl::users,
           };
 
-          let _limit: i64;
-          if limit > 100 {
-              _limit = 20;
-          }
-          else {
-              _limit = limit;
-          }
+          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(3))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1166,26 +1128,20 @@ impl Community {
         return items_ids;
     }
 
-    pub fn get_see_log_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_see_log_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_visible_perms::dsl::community_visible_perms,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(14))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1203,26 +1159,20 @@ impl Community {
               .expect("E");
           return _users;
       }
-      pub fn get_see_log_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+      pub fn get_see_log_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
           use crate::schema::{
               community_visible_perms::dsl::community_visible_perms,
               users::dsl::users,
           };
 
-          let _limit: i64;
-          if limit > 100 {
-              _limit = 20;
-          }
-          else {
-              _limit = limit;
-          }
+          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(4))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1268,26 +1218,20 @@ impl Community {
         return items_ids;
     }
 
-    pub fn get_see_stat_exclude(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_see_stat_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_visible_perms::dsl::community_visible_perms,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(15))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1305,26 +1249,20 @@ impl Community {
               .expect("E");
           return _users;
       }
-      pub fn get_see_stat_include(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+      pub fn get_see_stat_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
           use crate::schema::{
               community_visible_perms::dsl::community_visible_perms,
               users::dsl::users,
           };
 
-          let _limit: i64;
-          if limit > 100 {
-              _limit = 20;
-          }
-          else {
-              _limit = limit;
-          }
+          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
           let _connection = establish_connection();
           let items = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(5))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1343,24 +1281,18 @@ impl Community {
           return _users;
     }
 
-    pub fn get_members(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_members(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1380,21 +1312,15 @@ impl Community {
     pub fn search_members (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -1407,7 +1333,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -1446,25 +1372,19 @@ impl Community {
         return Ok(_users);
     }
 
-    pub fn get_administrators(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_administrators(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(5))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1484,21 +1404,15 @@ impl Community {
     pub fn search_administrators (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -1512,7 +1426,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -1524,25 +1438,19 @@ impl Community {
         return Ok(_users);
     }
 
-    pub fn get_editors(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_editors(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(3))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1562,21 +1470,15 @@ impl Community {
     pub fn search_editors (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit: Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -1590,7 +1492,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -1602,25 +1504,19 @@ impl Community {
         return Ok(_users);
     }
 
-    pub fn get_moderators(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_moderators(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(2))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1640,21 +1536,15 @@ impl Community {
     pub fn search_moderators (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -1668,7 +1558,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -1680,25 +1570,19 @@ impl Community {
         return Ok(_users);
     }
 
-    pub fn get_advertisers(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_advertisers(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(4))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1718,21 +1602,15 @@ impl Community {
     pub fn search_avertisers (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -1746,7 +1624,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -2039,24 +1917,18 @@ impl Community {
         }
     }
 
-    pub fn get_follows_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_follows_users(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             community_follows::dsl::community_follows,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_follows
             .filter(schema::community_follows::community_id.eq(self.id))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_follows::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -2076,21 +1948,15 @@ impl Community {
     pub fn search_follows_users (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             community_follows::dsl::community_follows,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_follows
             .filter(schema::community_follows::community_id.eq(self.id))
@@ -2103,7 +1969,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
@@ -2115,24 +1981,18 @@ impl Community {
         return Ok(_users);
     }
 
-    pub fn get_banned_user(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_banned_user(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             community_banned_users::dsl::community_banned_users,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_banned_users
             .filter(schema::community_banned_users::community_id.eq(self.id))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::community_banned_users::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -2152,21 +2012,15 @@ impl Community {
     pub fn search_banned_user (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             community_banned_users::dsl::community_banned_users,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = community_banned_users
             .filter(schema::community_banned_users::community_id.eq(self.id))
@@ -2179,7 +2033,7 @@ impl Community {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::user_id,
                 schema::users::first_name,

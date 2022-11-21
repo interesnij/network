@@ -1,11 +1,9 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
 use diesel::{
     Queryable,
     Insertable,
     RunQueryDsl,
     QueryDsl,
-    NullableExpressionMethods,
     PgTextExpressionMethods,
     ExpressionMethods,
 };
@@ -16,6 +14,8 @@ use crate::models::{
     UserPrivate,
 };
 use crate::utils::{
+    establish_connection,
+    get_limit_offset,
     UserPrivateJson,
     CardUserJson,
     LocationJson,
@@ -593,25 +593,19 @@ impl User {
             .len();
     }
 
-    pub fn get_blocked_users(&self, limit: i64, offset: i64) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_blocked_users(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             user_blocks::dsl::user_blocks,
             users::dsl::users,
         };
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let all_user_blocks = user_blocks
             .filter(schema::user_blocks::user_id.eq(self.id))
             .order(schema::user_blocks::id.desc())
             .limit(_limit)
             .offset(offset)
-            .select(schema::user_blocks::target_id)
+            .select(_schema::user_blocks::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         let blocked_users = users
@@ -630,20 +624,14 @@ impl User {
     pub fn search_blocked_users (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Result<Vec<CardUserJson>, Error> {
         use crate::schema::{
             user_blocks::dsl::user_blocks,
             users::dsl::users,
         };
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let all_user_blocks = user_blocks
             .filter(schema::user_blocks::user_id.eq(self.id))
@@ -664,7 +652,7 @@ impl User {
                 schema::users::s_avatar,
             ))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .load::<CardUserJson>(&_connection)?;
         return Ok(blocked_users);
     }
@@ -779,25 +767,19 @@ impl User {
         return _friends;
     }
 
-    pub fn get_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
 
         let _connection = establish_connection();
         let friend_ids = friends
             .filter(schema::friends::user_id.eq(self.id))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::friends::target_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -818,21 +800,15 @@ impl User {
     pub fn search_friends (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
 
         let _connection = establish_connection();
         let friend_ids = friends
@@ -853,7 +829,7 @@ impl User {
                 schema::users::s_avatar,
             ))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .load::<CardUserJson>(&_connection)
             .expect("E.");
         return _friends;
@@ -877,25 +853,19 @@ impl User {
         return _friends;
     }
 
-    pub fn get_online_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_online_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             friends::dsl::friends,
         };
         use chrono::Duration;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let friend_ids = friends
             .filter(schema::friends::user_id.eq(self.id))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::friends::target_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -918,8 +888,8 @@ impl User {
     pub fn search_online_friends (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
@@ -927,18 +897,12 @@ impl User {
         };
         use chrono::Duration;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let friend_ids = friends
             .filter(schema::friends::user_id.eq(self.id))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::friends::target_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -994,25 +958,19 @@ impl User {
         return _users;
     }
 
-    pub fn get_followers(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_followers(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             follows::dsl::follows,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::target_id.eq(self.id))
             .order(schema::follows::visited.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::follows::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -1033,27 +991,21 @@ impl User {
     pub fn search_followers (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
             follows::dsl::follows,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::target_id.eq(self.id))
             .order(schema::follows::visited.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::follows::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -1114,21 +1066,15 @@ impl User {
             .len();
     }
 
-    pub fn get_users(limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_users(limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let _users = users
             .filter(schema::users::types.lt(30))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1143,25 +1089,19 @@ impl User {
     pub fn search_users (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let _users = users
             .filter(schema::users::types.lt(30))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1174,25 +1114,19 @@ impl User {
         return _users;
     }
 
-    pub fn get_followings(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_followings(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             follows::dsl::follows,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::user_id.eq(self.id))
             .order(schema::follows::visited.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::follows::target_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -1213,27 +1147,21 @@ impl User {
     pub fn search_followings (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::{
             follows::dsl::follows,
             users::dsl::users,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::user_id.eq(self.id))
             .order(schema::follows::visited.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::follows::target_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -1254,16 +1182,10 @@ impl User {
         return _users;
     }
 
-    pub fn get_common_friends_of_user(&self, user: &User, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_common_friends_of_user(&self, user: &User, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let self_friends = self.get_friends_ids();
         let user_friends = user.get_friends_ids();
@@ -1277,7 +1199,7 @@ impl User {
             .filter(schema::users::id.eq_any(stack))
             .filter(schema::users::types.lt(11))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1293,18 +1215,12 @@ impl User {
         &self,
         q:      &String,
         user:   &User,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::users::dsl::users;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let self_friends = self.get_friends_ids();
         let user_friends = user.get_friends_ids();
@@ -1320,7 +1236,7 @@ impl User {
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1544,267 +1460,195 @@ impl User {
         return items;
     }
 
-    pub fn get_limit_see_all_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_all_exclude_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(11))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_all_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_all_exclude_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(11))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_all_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_all_include_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(1))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_all_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_all_include_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(1))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
 
-    pub fn get_limit_see_info_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_info_exclude_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(12))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_info_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_info_exclude_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(12))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_info_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_info_include_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(2))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_info_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_info_include_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(2))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
 
-    pub fn get_limit_see_friend_exclude_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_friend_exclude_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(13))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_friend_exclude_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_friend_exclude_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(13))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_friend_include_friends_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_friend_include_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(3))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         return items;
     }
-    pub fn get_limit_see_friend_include_follows_ids(&self, limit: i64, offset: i64) -> Vec<i32> {
+    pub fn get_limit_see_friend_include_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let items = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(3))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::user_visible_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1812,53 +1656,53 @@ impl User {
     }
 
     ///////////////////////////////
-    pub fn get_limit_see_all_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_all_exclude_friends_ids(limit, offset));
     }
-    pub fn get_limit_see_all_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_all_include_friends_ids(limit, offset));
     }
-    pub fn get_limit_see_all_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_all_exclude_follows_ids(limit, offset));
     }
-    pub fn get_limit_see_all_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_all_include_follows_ids(limit, offset));
     }
 
-    pub fn get_limit_see_info_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_info_exclude_friends_ids(limit, offset));
     }
-    pub fn get_limit_see_info_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_info_include_friends_ids(limit, offset));
     }
-    pub fn get_limit_see_info_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_info_exclude_follows_ids(limit, offset));
     }
-    pub fn get_limit_see_info_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_info_include_follows_ids(limit, offset));
     }
 
-    pub fn get_limit_see_friend_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_friend_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_friend_exclude_friends_ids(limit, offset));
     }
-    pub fn get_limit_see_friend_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_friend_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_friend_include_friends_ids(limit, offset));
     }
-    pub fn get_limit_see_friend_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_friend_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_friend_exclude_follows_ids(limit, offset));
     }
-    pub fn get_limit_see_friend_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_friend_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::utils::get_card_users_from_ids;
         return get_card_users_from_ids(self.get_limit_see_friend_include_follows_ids(limit, offset));
     }

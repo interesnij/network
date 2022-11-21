@@ -86,9 +86,6 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         }
         else {
             // если какой то токен совпал...
-
-            let _limit: i64;
-            let _offset: i64;
             let list: PostList;
             let list_res = get_post_list(params.list_id.unwrap());
             if list_res.is_ok() {
@@ -100,19 +97,6 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                     error: "list not found!".to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
-            }
-
-            if params.limit.is_some() {
-                _limit = params.limit.unwrap();
-            }
-            else {
-                _limit = 20;
-            }
-            if params.offset.is_some() {
-                _offset = params.offset.unwrap();
-            }
-            else {
-                _offset = 0;
             }
 
             if user_id > 0 {
@@ -145,8 +129,8 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                                 user_id,
                                 list,
                                 lists,
-                                _limit,
-                                _offset
+                                params.limit,
+                                params.offset
                             )).unwrap();
                             HttpResponse::Ok().body(body)
                         }
@@ -170,8 +154,8 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                             user_id,
                             list,
                             lists,
-                            _limit,
-                            _offset
+                            params.limit,
+                            params.offset
                         )).unwrap();
                         HttpResponse::Ok().body(body)
                     }
@@ -390,8 +374,6 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
         }
         else {
             // если какой то токен совпал...
-            let _limit: i64;
-            let _offset: i64;
             let item: Post;
             let item_res = get_post(params.item_id.unwrap());
             if item_res.is_ok() {
@@ -403,19 +385,6 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                     error: "post not found!".to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
-            }
-
-            if params.limit.is_some() {
-                _limit = params.limit.unwrap();
-            }
-            else {
-                _limit = 20;
-            }
-            if params.offset.is_some() {
-                _offset = params.offset.unwrap();
-            }
-            else {
-                _offset = 0;
             }
 
             if user_id > 0 {
@@ -444,8 +413,8 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                         else {
                             let body = serde_json::to_string(&item.get_detail_post_json (
                                 user_id,
-                                _limit,
-                                _offset
+                                params.limit,
+                                params.offset
                             )).unwrap();
                             HttpResponse::Ok().body(body)
                         }
@@ -465,8 +434,8 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                     else {
                         let body = serde_json::to_string(&item.get_detail_post_json (
                             user_id,
-                            _limit,
-                            _offset
+                            params.limit,
+                            params.offset
                         )).unwrap();
                         HttpResponse::Ok().body(body)
                     }
@@ -495,8 +464,8 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                         else {
                             let body = serde_json::to_string(&item.get_detail_post_json (
                                 user_id,
-                                _limit,
-                                _offset
+                                params.limit,
+                                params.offset
                             )).unwrap();
                             HttpResponse::Ok().body(body)
                         }
@@ -514,8 +483,8 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
                     else {
                         let body = serde_json::to_string(&item.get_detail_post_json (
                             user_id,
-                            _limit,
-                            _offset
+                            params.limit,
+                            params.offset
                         )).unwrap();
                         HttpResponse::Ok().body(body)
                     }
@@ -552,8 +521,6 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
         }
         else {
             // если какой то токен совпал...
-            let _limit: i64;
-            let _offset: i64;
             let item: Post;
             let list: PostList;
             let reactions_list: Vec<i32>;
@@ -579,18 +546,6 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                     error: "list not found!".to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
-            }
-            if params.limit.is_some() {
-                _limit = params.limit.unwrap();
-            }
-            else {
-                _limit = 20;
-            }
-            if params.offset.is_some() {
-                _offset = params.offset.unwrap();
-            }
-            else {
-                _offset = 0;
             }
 
             if user_id > 0 {
@@ -620,8 +575,8 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                             let body = serde_json::to_string(&item.get_comments (
                                 user_id,
                                 reactions_list.clone(),
-                                _limit,
-                                _offset
+                                params.limit,
+                                params.offset
                             )).unwrap();
                             HttpResponse::Ok().body(body)
                         }
@@ -642,8 +597,8 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                         let body = serde_json::to_string(&item.get_comments (
                             user_id,
                             reactions_list.clone(),
-                            _limit,
-                            _offset
+                            params.limit,
+                            params.offset
                         )).unwrap();
                         HttpResponse::Ok().body(body)
                     }
@@ -673,8 +628,8 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                             let body = serde_json::to_string(&item.get_comments (
                                 user_id,
                                 reactions_list.clone(),
-                                _limit,
-                                _offset
+                                params.limit,
+                                params.offset
                             )).unwrap();
                             HttpResponse::Ok().body(body)
                         }
@@ -693,8 +648,8 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
                         let body = serde_json::to_string(&item.get_comments (
                             user_id,
                             reactions_list.clone(),
-                            _limit,
-                            _offset
+                            params.limit,
+                            params.offset
                         )).unwrap();
                         HttpResponse::Ok().body(body)
                     }

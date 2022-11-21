@@ -145,18 +145,12 @@ pub struct NewUserJson {
 impl User {
     pub fn get_post_lists (
         &self,
-        limit: i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         return post_lists
             .filter(schema::post_lists::user_id.eq(self.user_id))
@@ -164,25 +158,19 @@ impl User {
             .filter(schema::post_lists::types.lt(31))
             .order(schema::post_lists::created.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .load::<PostList>(&_connection)
             .expect("E.");
     }
     pub fn search_post_lists (
         &self,
         q:      &String,
-        limit:  i64,
-        offset: i64
+        limit:  Option<i64>,
+        offset: Option<i64>
     ) -> Vec<PostList> {
         use crate::schema::post_lists::dsl::post_lists;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         return post_lists
             .filter(schema::post_lists::user_id.eq(self.user_id))
@@ -192,7 +180,7 @@ impl User {
             .or_filter(schema::post_lists::description.ilike(&q))
             .order(schema::post_lists::created.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .load::<PostList>(&_connection)
             .expect("E.");
     }
@@ -200,14 +188,14 @@ impl User {
         &self,
         q:       &String,
         user_id: i32,
-        limit:   i64,
-        offset:  i64,
+        limit:   Option<i64>,
+        offset:  Option<i64>
     ) -> Vec<CardPostJson> {
         let mut posts_json = Vec::new();
-        if limit < 101 &&
-            ((user_id > 0 && self.is_user_see_el(user_id))
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        if (user_id > 0 && self.is_user_see_el(user_id))
             ||
-            (user_id == 0 && self.is_anon_user_see_el()))
+            (user_id == 0 && self.is_anon_user_see_el())
             {
             use crate::schema::posts::dsl::posts;
 
@@ -219,21 +207,21 @@ impl User {
                     ||
                     (user_id == 0 && list.is_anon_user_see_el())
                     {
-                    let _limit = limit - _count;
+                    let __limit = _limit - _count;
                     let reactions_list = list.get_reactions_list();
                     let items = posts
                         .filter(schema::posts::post_list_id.eq(list.id))
                         .filter(schema::posts::content.ilike(&q))
                         .filter(schema::posts::types.lt(11))
-                        .limit(_limit)
-                        .offset(offset)
+                        .limit(__limit)
+                        .offset(_offset)
                         .order(schema::posts::created.desc())
                         .load::<Post>(&_connection)
                         .expect("E.");
 
                     for i in items.iter() {
                         _count += 1;
-                        if _count < limit {
+                        if _count < _limit {
                             posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
                         }
                         else {

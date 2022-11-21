@@ -11,6 +11,8 @@ use diesel::{
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
+    get_limit_offset,
+    get_limit,
     JsonPosition,
     JsonItemReactions,
     CardParentPostJson,
@@ -219,111 +221,64 @@ impl Post {
     pub fn search_posts (
         q:       &String,
         user_id: i32,
-        limit:   i64,
-        offset:  i64,
+        limit:   Option<i64>,
+        offset:  Option<i64>
     ) -> SearchAllPosts {
-        if limit > 100 {
-            use crate::schema::posts::dsl::posts;
+        use crate::schema::posts::dsl::posts;
 
-            let _connection = establish_connection();
-            let mut _count = 0;
-            let mut _step = 0;
-            let mut _offset = offset;
+        let _connection = establish_connection();
+        let mut _count = 0;
+        let mut _step = 0;
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
 
-            let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
-            let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
-            let mut list_include: Vec<i32> = Vec::new();
-            let mut creator_exclude: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых нельзя смотреть посты
-            let mut community_exclude: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно нельзя посты
-            let mut list_exclude: Vec<i32> = Vec::new();      // запишем ids списков, у которых можно нельзя посты
-            let mut posts_json = Vec::new();
+        let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
+        let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
+        let mut list_include: Vec<i32> = Vec::new();
+        let mut creator_exclude: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых нельзя смотреть посты
+        let mut community_exclude: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно нельзя посты
+        let mut list_exclude: Vec<i32> = Vec::new();      // запишем ids списков, у которых можно нельзя посты
+        let mut posts_json = Vec::new();
 
-            while _count < limit {
-                _step += limit;
+        while _count < _limit {
+            _step += _limit;
 
-                let items = posts
-                    .filter(schema::posts::content.ilike(&q))
-                    .filter(schema::posts::types.lt(11))
-                    .limit(_step)
-                    .offset(_offset)
-                    .order(schema::posts::created.desc())
-                    .load::<Post>(&_connection)
-                    .expect("E.");
+            let items = posts
+                .filter(schema::posts::content.ilike(&q))
+                .filter(schema::posts::types.lt(11))
+                .limit(_step)
+                .offset(_offset)
+                .order(schema::posts::created.desc())
+                .load::<Post>(&_connection)
+                .expect("E.");
 
-                for i in items.iter() {
-                    if _count == limit {
-                        break;
-                    }
+            for i in items.iter() {
+                if _count == _limit {
+                    break;
+                }
 
-                    // проверяем, запрещено ли запрашивающему смотреть
-                    // посты пользователя или сообщества или списка
-                    if creator_exclude.iter().any(|&a| a==i.user_id)
-                        ||
-                        (i.community_id.is_some() && community_exclude.iter().any(|&a| a==i.community_id.unwrap()))
-                        ||
-                        list_exclude.iter().any(|&a| a==i.post_list_id)
-                    {
-                        continue;
-                    }
-                    else if list_include.iter().any(|&a| a==i.post_list_id) {
-                        _count += 1;
-                        let list = i.get_list().expect("E.");
-                        posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
-                        continue;
-
-                    }
-
+                // проверяем, запрещено ли запрашивающему смотреть
+                // посты пользователя или сообщества или списка
+                if creator_exclude.iter().any(|&a| a==i.user_id)
+                    ||
+                    (i.community_id.is_some() && community_exclude.iter().any(|&a| a==i.community_id.unwrap()))
+                    ||
+                    list_exclude.iter().any(|&a| a==i.post_list_id)
+                {
+                    continue;
+                }
+                else if list_include.iter().any(|&a| a==i.post_list_id) {
+                    _count += 1;
                     let list = i.get_list().expect("E.");
+                    posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                    continue;
+                }
 
-                    if i.community_id.is_some() {
-                        // если пост сообщества
-                        if community_include.iter().any(|&a| a==i.community_id.unwrap()) {
-                            // если id сообщества в разрешенных community_include,
-                            if (user_id > 0 && list.is_user_see_el(user_id))
-                                ||
-                                (user_id == 0 && list.is_anon_user_see_el())
-                            {
-                                posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
-                                _count += 1;
-                                list_include.push(i.post_list_id);
-                                continue;
-                            }
-                            else {
-                                list_exclude.push(i.post_list_id);
-                                continue;
-                            }
-                        }
-                        else {
-                            // если id сообщества нет в разрешенных community_include,
-                            let community = i.get_community().expect("E.");
-                            if (user_id > 0 && community.is_user_see_el(user_id))
-                                ||
-                                (user_id == 0 && community.is_anon_user_see_el())
-                            {
-                                community_include.push(community.id);
-                                if (user_id > 0 && list.is_user_see_el(user_id))
-                                    ||
-                                    (user_id == 0 && list.is_anon_user_see_el())
-                                {
-                                    posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
-                                    _count += 1;
-                                    list_include.push(i.post_list_id);
-                                    continue;
-                                }
-                                else {
-                                    list_exclude.push(i.post_list_id);
-                                    continue;
-                                }
-                            }
-                            else {
-                                community_exclude.push(i.community_id.unwrap());
-                                continue;
-                            }
-                        }
-                    }
-                    // если пост пользователя
-                    if creator_include.iter().any(|&a| a==i.user_id) {
-                        // если id пользователя в разрешенных creator_include,
+                let list = i.get_list().expect("E.");
+
+                if i.community_id.is_some() {
+                    // если пост сообщества
+                    if community_include.iter().any(|&a| a==i.community_id.unwrap()) {
+                        // если id сообщества в разрешенных community_include,
                         if (user_id > 0 && list.is_user_see_el(user_id))
                             ||
                             (user_id == 0 && list.is_anon_user_see_el())
@@ -339,13 +294,13 @@ impl Post {
                         }
                     }
                     else {
-                        // если id пользователя нет в разрешенных creator_include,
-                        let creator = i.get_creator().expect("E.");
-                        if (user_id > 0 && creator.is_user_see_el(user_id))
+                        // если id сообщества нет в разрешенных community_include,
+                        let community = i.get_community().expect("E.");
+                        if (user_id > 0 && community.is_user_see_el(user_id))
                             ||
-                            (user_id == 0 && creator.is_anon_user_see_el())
+                            (user_id == 0 && community.is_anon_user_see_el())
                         {
-                            creator_include.push(creator.id);
+                            community_include.push(community.id);
                             if (user_id > 0 && list.is_user_see_el(user_id))
                                 ||
                                 (user_id == 0 && list.is_anon_user_see_el())
@@ -361,24 +316,62 @@ impl Post {
                             }
                         }
                         else {
-                            creator_exclude.push(i.user_id);
+                            community_exclude.push(i.community_id.unwrap());
                             continue;
                         }
                     }
                 }
-                _offset += limit;
+                // если пост пользователя
+                if creator_include.iter().any(|&a| a==i.user_id) {
+                    // если id пользователя в разрешенных creator_include,
+                    if (user_id > 0 && list.is_user_see_el(user_id))
+                        ||
+                        (user_id == 0 && list.is_anon_user_see_el())
+                    {
+                        posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                        _count += 1;
+                        list_include.push(i.post_list_id);
+                        continue;
+                    }
+                    else {
+                        list_exclude.push(i.post_list_id);
+                        continue;
+                    }
+                }
+                else {
+                    // если id пользователя нет в разрешенных creator_include,
+                    let creator = i.get_creator().expect("E.");
+                    if (user_id > 0 && creator.is_user_see_el(user_id))
+                        ||
+                        (user_id == 0 && creator.is_anon_user_see_el())
+                    {
+                        creator_include.push(creator.id);
+                        if (user_id > 0 && list.is_user_see_el(user_id))
+                            ||
+                            (user_id == 0 && list.is_anon_user_see_el())
+                        {
+                            posts_json.push ( i.get_post_json(user_id, list.get_reactions_list()) );
+                            _count += 1;
+                            list_include.push(i.post_list_id);
+                            continue;
+                        }
+                        else {
+                            list_exclude.push(i.post_list_id);
+                            continue;
+                        }
+                    }
+                    else {
+                        creator_exclude.push(i.user_id);
+                        continue;
+                    }
+                }
             }
-            return SearchAllPosts {
-                posts:  posts_json,
-                offset: offset,
-            };
+            _offset += _limit;
         }
-        else {
-            return SearchAllPosts {
-                posts:  Vec::new(),
-                offset: 0,
-            };
-        }
+        return SearchAllPosts {
+            posts:  posts_json,
+            offset: offset,
+        };
     }
 
     pub fn item_message_reposts_count (
@@ -402,29 +395,23 @@ impl Post {
 
     pub fn get_item_reposts (
         item_id: i32,
-        types: i16,
-        limit: i64,
-        offset: i64
+        types:   i16,
+        limit:   Option<i64>,
+        offset:  Option<i64>
     ) -> Vec<Post> {
         use crate::schema::{
             item_reposts::dsl::item_reposts,
             posts::dsl::posts,
         };
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let item_reposts_ids = item_reposts
             .filter(schema::item_reposts::item_id.eq(item_id))
             .filter(schema::item_reposts::item_types.eq(types))
             .order(schema::item_reposts::id.desc())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
             .expect("E.");
@@ -441,8 +428,8 @@ impl Post {
 
     pub fn get_item_reposts_with_limit (
         item_id: i32,
-        types: i16,
-        limit: i64,
+        types:   i16,
+        limit:   Option<i64>,
     ) -> Vec<Post> {
         use crate::schema::{
             item_reposts::dsl::item_reposts,
@@ -450,11 +437,12 @@ impl Post {
         };
 
         let _connection = establish_connection();
+        let _limit = get_limit(limit, 20);
         let item_reposts_ids = item_reposts
             .filter(schema::item_reposts::item_id.eq(item_id))
             .filter(schema::item_reposts::item_types.eq(types))
             .order(schema::item_reposts::id.desc())
-            .limit(limit)
+            .limit(_limit)
             .select(schema::item_reposts::post_id)
             .load::<Option<i32>>(&_connection)
             .expect("E.");
@@ -525,20 +513,14 @@ impl Post {
     }
     pub fn get_comments (
         &self,
-        user_id: i32,
+        user_id:        i32,
         reactions_list: Vec<i32>,
-        limit: i64,
-        offset: i64,
+        limit:          Option<i64>,
+        offset:         Option<i64>
     ) -> Vec<CardCommentJson> {
         use crate::schema::post_comments::dsl::post_comments;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let mut json = Vec::new();
         let items = post_comments
@@ -546,7 +528,7 @@ impl Post {
             .filter(schema::post_comments::types.lt(10))
             .filter(schema::post_comments::parent_id.is_null())
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .load::<PostComment>(&_connection)
             .expect("E.");
 
@@ -592,7 +574,7 @@ impl Post {
     pub fn get_item_reposts_with_limit_json (
         item_id: i32,
         types: i16,
-        limit: i64,
+        limit: Option<i64>,
     ) -> RepostsPostJson {
         // получаем репосты объекта, если есть
 
@@ -616,7 +598,7 @@ impl Post {
     }
     pub fn get_reposts_with_limit_json (
         &self,
-        limit: i64,
+        limit: Option<i64>,
     ) -> RepostsPostJson {
         // получаем репосты записи, если есть
 
@@ -642,8 +624,8 @@ impl Post {
     pub fn get_item_reposts_json (
         item_id: i32,
         types: i16,
-        limit: i64,
-        offset: i64
+        limit: Option<i64>,
+        offset: Option<i64>
     ) -> RepostsPostJson {
         // получаем репосты записи, если есть
         let mut reposts_json = Vec::new();
@@ -668,8 +650,8 @@ impl Post {
 
     pub fn get_reposts_json (
         &self,
-        limit: i64,
-        offset: i64
+        limit: Option<i64>,
+        offset: Option<i64>
     ) -> RepostsPostJson {
         // получаем репосты записи, если есть
 
@@ -734,8 +716,8 @@ impl Post {
     pub fn get_detail_post_json (
         &self,
         user_id: i32,
-        limit: i64,
-        offset: i64,
+        limit: Option<i64>,
+        offset: Option<i64>,
     ) -> PostDetailJson {
         let list = self.get_list().expect("E");
         let creator = self.get_owner_meta().expect("E");
@@ -880,8 +862,8 @@ impl Post {
         &self,
         user_id:     i32,
         reaction_id: i32,
-        limit:       i64,
-        offset:      i64,
+        limit:       Option<i64>,
+        offset:      Option<i64>,
     ) -> ReactionBlockJson {
         use crate::schema::{
             post_reactions::dsl::post_reactions,
@@ -889,6 +871,7 @@ impl Post {
         };
         use crate::utils::CardReactionPostJson;
 
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let mut user_reaction: Option<i32> = None;
         if self.is_have_user_reaction(user_id) {
             user_reaction = Some(self.get_user_reaction(user_id).expect("E."));
@@ -898,8 +881,8 @@ impl Post {
         let user_ids = post_reactions
             .filter(schema::post_reactions::post_id.eq(self.id))
             .filter(schema::post_reactions::reaction_id.eq(reaction_id))
-            .limit(limit)
-            .offset(offset)
+            .limit(_limit)
+            .offset(_offset)
             .select(schema::post_reactions::user_id)
             .load::<i32>(&_connection)
             .expect("E");
@@ -1596,33 +1579,28 @@ impl Post {
         return "files_0".to_string();
     }
 
-    pub fn get_reposts(&self, limit: i64, offset: i64) -> Vec<Post> {
+    pub fn get_reposts(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<Post> {
         use crate::schema::posts::dsl::posts;
 
-        let _limit: i64;
-        if limit > 100 {
-            _limit = 20;
-        }
-        else {
-            _limit = limit;
-        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         return posts
             .filter(schema::posts::parent_id.eq(self.id))
             .filter(schema::posts::types.lt(40))
             .limit(_limit)
-            .offset(offset)
+            .offset(_offset)
             .load::<Post>(&_connection)
             .expect("E");
     }
-    pub fn get_reposts_with_limit(&self, limit: i64) -> Vec<Post> {
+    pub fn get_reposts_with_limit(&self, limit: Option<i64>) -> Vec<Post> {
         use crate::schema::posts::dsl::posts;
 
         let _connection = establish_connection();
+        let _limit = get_limit(limit, 20);
         return posts
             .filter(schema::posts::parent_id.eq(self.id))
             .filter(schema::posts::types.lt(40))
-            .limit(limit)
+            .limit(_limit)
             .load::<Post>(&_connection)
             .expect("E");
     }

@@ -24,6 +24,55 @@ use crate::models::{
 };
 use crate::errors::Error;
 
+
+pub fn get_limit (
+    limit: Option<i64>,
+    default_limit: i64
+) -> i64 {
+    let _limit: i64;
+    if limit.is_some() {
+        let l_unwrap = limit.unwrap();
+        if l_unwrap > 100 {
+            _limit = default_limit;
+        }
+        else {
+            _limit = l_unwrap;
+        }
+    }
+    else {
+        _limit = default_limit;
+    }
+    _limit
+}
+
+pub fn get_limit_offset (
+    limit: Option<i64>,
+    offset: Option<i64>,
+    default_limit: i64
+) -> (i64, i64) {
+    let _limit: i64;
+    let _offset: i64;
+    if limit.is_some() {
+        let l_unwrap = limit.unwrap();
+        if l_unwrap > 100 {
+            _limit = default_limit;
+        }
+        else {
+            _limit = l_unwrap;
+        }
+    }
+    else {
+        _limit = default_limit;
+    }
+    if offset.is_some() {
+        _offset = offset.unwrap();
+    }
+    else {
+        _offset = 0;
+    }
+    (_limit, _offset)
+}
+
 pub fn establish_connection() -> PgConnection {
     use dotenv::dotenv;
 
