@@ -10,6 +10,9 @@ use actix_web::{
 use crate::utils::{
     get_user_owner_data,
     get_limit_offset,
+    get_user,
+    get_user_permission,
+    get_anon_user_permission,
     ErrorParams, CardUserJson, RegListData,
     TargetListData,
 };
@@ -65,7 +68,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -77,7 +80,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametr 'target_id' not found!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            Ok(body)
         }
         else {
             let owner: User;
@@ -90,7 +93,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                 let body = serde_json::to_string(&ErrorParams {
                     error: "owner not found!".to_string(),
                 }).unwrap();
-                return HttpResponse::Ok().body(body);
+                Ok(body)
             }
             if user_id > 0 {
                 let _tuple = get_user_permission(&owner, user_id);
@@ -99,11 +102,11 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                     let body = serde_json::to_string(&ErrorParams {
                         error: _tuple.1.to_string(),
                     }).unwrap();
-                    HttpResponse::Ok().body(body)
+                    Ok(body)
                 }
                 else {
-                    let _res = block(move || owner.get_friends(params.limit, params.offset)).await?;
-                    HttpResponse::Ok().body(_res)
+                    let body = block(move || owner.get_friends(params.limit, params.offset)).await?;
+                    Ok(body)
                 }
             }
             else {
@@ -113,11 +116,11 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
                     let body = serde_json::to_string(&ErrorParams {
                         error: _tuple.1.to_string(),
                     }).unwrap();
-                    HttpResponse::Ok().body(body)
+                    Ok(body)
                 }
                 else {
-                    let _res = block(move || owner.get_friends(params.limit, params.offset)).await?;
-                    HttpResponse::Ok().body(_res)
+                    let body = block(move || owner.get_friends(params.limit, params.offset)).await?;
+                    Ok(body)
                 }
             }
         }

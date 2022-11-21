@@ -604,8 +604,8 @@ impl User {
             .filter(schema::user_blocks::user_id.eq(self.id))
             .order(schema::user_blocks::id.desc())
             .limit(_limit)
-            .offset(offset)
-            .select(_schema::user_blocks::target_id)
+            .offset(_offset)
+            .select(schema::user_blocks::target_id)
             .load::<i32>(&_connection)
             .expect("E");
         let blocked_users = users
