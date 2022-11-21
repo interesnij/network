@@ -155,7 +155,7 @@ impl PostComment {
                 repost:         i.repost,
                 reactions:      i.reactions,
             };
-            stack.push (AttachPostRespCommentResp {
+            stack.push (AttachPostCommentResp {
                 owner:     u_resp,
                 community: c_resp,
                 list:      list_data,
