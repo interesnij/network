@@ -25,6 +25,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/friends-online", web::get().to(user_friends_online_page));
     config.route("/friends-common", web::get().to(user_friends_common_page));
     config.route("/followings", web::get().to(user_followings_page));
+    config.route("/blacklist", web::get().to(user_blacklist_page));
     config.route("/follows", web::get().to(user_follows_page));
     config.route("/friends-featured", web::get().to(user_featured_page));
     config.route("/all-users", web::get().to(all_users_page));
@@ -33,6 +34,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/search-friends-online", web::get().to(search_user_friends_online_page));
     config.route("/search-friends-common", web::get().to(search_user_friends_common_page));
     config.route("/search-followings", web::get().to(search_user_followings_page));
+    config.route("/search-blacklist", web::get().to(search_user_blacklist_page));
     config.route("/search-follows", web::get().to(search_user_follows_page));
     config.route("/search-all-users", web::get().to(search_all_users_page));
 }
@@ -432,6 +434,49 @@ pub async fn user_featured_page(req: HttpRequest) -> Result<Json<Vec<CardUserJso
     }
 }
 
+pub async fn user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+    let params_some = web::Query::<RegListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            // если проверка токена не удалась...
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: User;
+            let owner_res = get_user(user_id);
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                // если список по id не найден...
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let body = block(move || owner.get_blocked_users(params.limit, params.offset)).await?;
+            Ok(Json(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
 pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
@@ -760,6 +805,62 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
                 return Err(Error::BadRequest(body));
             }
             let body = block(move || owner.search_followings(&q, params.limit, params.offset)).await?;
+            Ok(Json(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            // если проверка токена не удалась...
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'q' not found!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "parametr 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: User;
+            let owner_res = get_user(user_id);
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                // если список по id не найден...
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let body = block(move || owner.search_blocked_users(&q, params.limit, params.offset)).await?;
             Ok(Json(body))
         }
     }
