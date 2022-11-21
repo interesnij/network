@@ -460,7 +460,7 @@ pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUser
             Err(Error::BadRequest(body))
         }
         else {
-            let _res = block(move || User::search_users(&params.q.unwrap(), params.limit, params.offset)).await?;
+            let _res = block(move || User::search_users(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
             Ok(Json(_res))
         }
     }
@@ -519,7 +519,7 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_friends(&params.q.unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_friends(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -533,7 +533,7 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_friends(&params.q.unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_friends(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -594,7 +594,7 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_online_friends(&params.q.unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_online_friends(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -608,7 +608,7 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_online_friends(&params.q.unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_online_friends(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -676,7 +676,7 @@ pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Ve
                 }
                 else {
                     let user = get_user(user_id).expect("E");
-                    let body = block(move || owner.search_common_friends_of_user(&params.q.unwrap(), &user, params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_common_friends_of_user(&params.q.clone().unwrap(), &user, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -733,7 +733,7 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            let body = block(move || owner.search_followings(&params.q.unwrap(), params.limit, params.offset)).await?;
+            let body = block(move || owner.search_followings(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
             Ok(Json(body))
         }
     }
@@ -792,7 +792,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_followers(&params.q.unwrap(), params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_followers(&params.q.clone().unwrap(), params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
