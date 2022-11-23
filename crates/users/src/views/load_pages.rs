@@ -28,7 +28,7 @@ pub async fn friends_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -62,7 +62,7 @@ pub async fn follows_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -129,7 +129,7 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResp
     let params_some = web::Query::<IEFriendsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -179,7 +179,7 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResp
     let params_some = web::Query::<IEFriendsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -230,7 +230,7 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResp
     let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -280,7 +280,7 @@ pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResp
     let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {

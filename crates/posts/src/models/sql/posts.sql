@@ -4,7 +4,6 @@ CREATE TABLE owners (
     user_id      INT NOT NULL,           -- id создателя или владельца
     community_id INT,                    -- id сообщества-владельца (если есть)
     name         VARCHAR(100) NOT NULL,  -- название
-    description  VARCHAR(500),           -- описание
     types        SMALLINT NOT NULL,      -- тип владельца: приложение, пользователь, сообщество
     secret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
     service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ

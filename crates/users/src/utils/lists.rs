@@ -11,6 +11,7 @@ pub struct CardUserJson {
     pub image:      Option<String>,
 }
 
+
 #[derive(Serialize)]
 pub struct ErrorParams {
     pub error: String,

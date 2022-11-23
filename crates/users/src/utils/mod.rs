@@ -153,8 +153,9 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
 }
 
 pub fn get_user_owner_data (
-    token: Option<String>,
-    user_id: Option<i32>
+    token:         Option<String>,  // токен
+    user_id:       Option<i32>,     // возможный id request_user'а,
+    service_types: i16              // тип сервиса и роли в нем
 ) -> (Option<String>, i32) {
     // проверка токена на допуск к объектам пользователя
     // нам нужно узнать по токену тип владельца.
@@ -189,7 +190,13 @@ pub fn get_user_owner_data (
                 }
             }
             else if owner.types == 2 {
-                return (None, owner.user_id);
+                // это токен пользователя
+                if service_types > 0 && owner.is_service_types_ok(service_types) {
+                    // проверим, есть ли запрашиваемый сервис и роль в нем
+                    // у этого токена
+                    return (None, owner.user_id);
+                }
+                return (Some("This role is not allowed in this service!".to_string()), 0);
             }
             else {
                 return (Some("owner not found!".to_string()), 0);

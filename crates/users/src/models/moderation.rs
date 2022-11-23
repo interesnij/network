@@ -4,7 +4,9 @@ use crate::schema::{
     moderated_reports,
     moderated_penalties,
     moderated_logs,
+    owner_services,
     owners,
+    owner_services_items,
 };
 use diesel::{
     Queryable,
@@ -14,9 +16,61 @@ use diesel::{
     QueryDsl,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
+use crate::utils::{
+    establish_connection,
+    InfoParams,
+};
 use crate::models::User;
 
+
+
+/////// OwnerService //////
+// сервисы токенов и их разрешения. Работа с данными
+// только для владельцев токенов
+    //types:
+    // 1 Профиль
+    // 2 Сайты
+    // 3 Почта
+    // 4 Записи
+    // 5 Аудиозаписи
+    // 6 Документы
+    // 7 Опросы
+    // 8 Фотографии
+    // 9 Видиозаписи
+    // 10 Товары
+    // 11 Обсуждения
+    // 12 Википедия
+    // 13 Статьи
+    // 14 Сообщения
+    // 15 Планировщик
+
+    // 31 Профиль
+    // 32 Сайты
+    // 33 Почта
+    // 34 Записи
+    // 35 Аудиозаписи
+    // 37 Опросы
+    // 38 Фотографии
+    // 39 Видиозаписи
+    // 40 Товары
+    // 41 Обсуждения
+    // 42 Википедия
+    // 43 Статьи
+    // 44 Сообщения
+    // 45 Планировщик
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct OwnerService {
+    pub id:    i32,
+    pub types: i16,
+    pub name:  String,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owner_services"]
+pub struct NewOwnerService {
+    pub types: i16,
+    pub name:  String,
+}
 
 /////// Owner //////
 ////////// Тип владельца
@@ -27,26 +81,302 @@ use crate::models::User;
 
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct Owner {
-    pub id:           i32,
-    pub user_id:      i32,
-    pub name:         String,
-    pub description:  Option<String>,
-    pub types:        i16,
-    pub secret_key:   String,
-    pub service_key:  String,
-    pub is_active:    bool,
+    pub id:          i32,
+    pub user_id:     i32,
+    pub name:        String,
+    pub description: Option<String>,
+    pub types:       i16,
+    pub secret_key:  String,
+    pub service_key: String,
+    pub is_active:   bool,
+}
+
+#[derive(Serialize)]
+pub struct TokenServiceJson {
+    pub id:   i32,
+    pub name: String,
+}
+
+#[derive(Serialize)]
+pub struct TokenDetailJson {
+    pub id:          i32,
+    pub name:        String,
+    pub description: Option<String>,
+    pub is_active:   bool,
+    pub services:    Vec<TokenServiceJson>,
+}
+#[derive(Serialize)]
+pub struct TokenJson {
+    pub id:        i32,
+    pub name:      String,
+    pub is_active: bool,
+    pub services:  Vec<TokenServiceJson>,
+}
+
+impl Owner {
+    pub fn is_service_types_ok(&self, types: i16) -> bool {
+        use crate::schema::{
+            owner_services::dsl::owner_services,
+            owner_services_items::dsl::owner_services_items,
+        };
+
+        let _connection = establish_connection();
+        let items_ids = owner_services_items
+            .filter(schema::owner_services_items::owner_id.eq(self.id))
+            .select(schema::owner_services_items::id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let types_vec = owner_services
+            .filter(schema::owner_services::id.eq_any(items_ids))
+            .select(schema::owner_services_items::types)
+            .load::<i16>(&_connection)
+            .expect("E.")
+        return items_types.iter().any(|&i| i==types);
+    }
+    pub fn get_services(&self) -> Vec<OwnerService> {
+        use crate::schema::{
+            owner_services::dsl::owner_services,
+            owner_services_items::dsl::owner_services_items,
+        };
+
+        let _connection = establish_connection();
+        let items_ids = owner_services_items
+            .filter(schema::owner_services_items::owner_id.eq(self.id))
+            .select(schema::owner_services_items::id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+
+        return owner_services
+            .filter(schema::owner_services::id.eq_any(items_ids))
+            .load::<OwnerService>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_token_detail(&self) -> TokenDetailJson {
+        use crate::schema::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        let mut services = Vec::new();
+        for s in self.get_services().iter() {
+            services.push (TokenServiceJson {
+                id:   s.id,
+                name: s.name.clone(),
+            });
+        }
+
+        return TokenDetailJson {
+            id:          self.id,
+            name:        self.name.clone(),
+            description: self.description.clone(),
+            is_active:   self.is_active,
+            services:    services,
+        }
+    }
+    pub fn get_user_tokens(&self, user_id: i32) -> Vec<TokenJson> {
+        //Токены пользователя
+        use crate::schema::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        let mut list = Vec::new();
+
+        let _tokens = owners
+            .filter(schema::owners::user_id.eq(self.user_id))
+            .filter(schema::owners::types.eq(2))
+            .load::<Owner>(&_connection)
+            .expect("E.");
+
+        for i in _tokens.iter() {
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.description.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
+    }
+    pub fn get_app_tokens(&self, user_id: i32) -> Vec<TokenJson> {
+        //Токены приложений
+        use crate::schema::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        let mut list = Vec::new();
+
+        let _tokens = owners
+            .filter(schema::owners::user_id.eq(self.user_id))
+            .filter(schema::owners::types.eq(1))
+            .load::<Owner>(&_connection)
+            .expect("E.");
+
+        for i in _tokens.iter() {
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.description.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
+    }
+
+    pub fn get_service_key(&self) -> String {
+        use crate::schema::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        return owners
+            .filter(schema::owners::id.eq(self.id))
+            .select(schema::owners::service_key)
+            .first::<String>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_secret_key(&self) -> String {
+        use crate::schema::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        return owners
+            .filter(schema::owners::id.eq(self.id))
+            .select(schema::owners::secret_key)
+            .first::<String>(&_connection)
+            .expect("E.");
+    }
+    pub fn create (
+        user_id:      i32,
+        name:         String,
+        description:  Option<String>,
+        types:        i16,
+        services_ids: Vec<i32>
+    ) -> Result<Owner, Error> {
+        use uuid::Uuid;
+
+        if services_ids.is_empty() {
+            return Err("services_ids is empty!".to_string());
+        }
+
+        let _connection = establish_connection();
+        let new_form = NewOwner {
+            user_id:     user_id,
+            name:        name,
+            description: description,
+            types:       types,
+            secret_key:  Uuid::new_v4().to_string(),
+            service_key: Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
+            is_active:   true,
+        };
+        let new_token = diesel::insert_into(schema::owners::table)
+            .values(&new_form)
+            .get_result::<Owner>(&_connection)?;
+
+        for id in services_ids.iter() {
+            let new_item = NewOwnerServicesItem {
+                owner_id:   self.id,
+                service_id: id,
+            };
+            diesel::insert_into(schema::owner_services_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
+
+        return Ok(new_token);
+    }
+    pub fn delete_item(&self) -> i16 {
+        use crate::models::moderation::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        diesel::delete (
+            owners
+                .filter(schema::owners::user_id.eq(self.user_id))
+        )
+        .execute(&_connection);
+        return 1;
+    }
+    pub fn edit (
+        &self,
+        name:         String,
+        description:  Option<String>,
+        services_ids: Vec<i32>
+    ) -> Result<EditedOwnerData, Error> {
+        use crate::schema::owner_services_items::dsl::owner_services_items;
+
+        if services_ids.is_empty() {
+            return Err("services_ids is empty!".to_string());
+        }
+
+        let _connection = establish_connection();
+        diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(services_ids)))
+            .execute(&_connection)
+            .expect("E");
+
+        diesel::update(self)
+            .set((
+                schema::owners::name.eq(name.clone()),
+                schema::owners::description.eq(description.clone()),
+            ))
+            .execute(&_connection);
+
+        for id in services_ids.iter() {
+            let new_item = NewOwnerServicesItem {
+                owner_id:   self.id,
+                service_id: id,
+            };
+            diesel::insert_into(schema::owner_services_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
+        return Ok(EditedOwnerData {
+            name:        name,
+            description: description,
+        });
+    }
 }
 
 #[derive(Deserialize, Insertable)]
 #[table_name="owners"]
 pub struct NewOwner {
-    pub user_id:      i32,
-    pub name:         String,
-    pub description:  Option<String>,
-    pub types:        i16,
-    pub secret_key:   String,
-    pub service_key:  String,
-    pub is_active:    bool,
+    pub user_id:     i32,
+    pub name:        String,
+    pub description: Option<String>,
+    pub types:       i16,
+    pub secret_key:  String,
+    pub service_key: String,
+    pub is_active:   bool,
+}
+
+/////// OwnerServicesItem //////
+// связь сервисов токенов с токенами
+
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct OwnerServicesItem {
+    pub id:         i32,
+    pub owner_id:   i32,
+    pub service_id: i32,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owner_services_items"]
+pub struct NewOwnerServicesItem {
+    pub owner_id:   i32,
+    pub service_id: i32,
 }
 
 /////// Moderated //////

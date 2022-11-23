@@ -14,12 +14,10 @@ use crate::models::{
     UserPrivate,
 };
 use crate::utils::{
-    establish_connection,
-    get_limit_offset,
-    UserPrivateJson,
-    CardUserJson,
-    LocationJson,
-    UserDetailJson,
+    establish_connection, get_limit_offset,
+    UserPrivateJson, LocationJson,
+    CardUserJson, UserDetailJson,
+    TokenDetailJson, TokenJson,
 };
 use crate::schema::users;
 use crate::errors::Error;
@@ -2387,6 +2385,164 @@ impl User {
             return "Мужской".to_string();
         }
         return "Женский".to_string();
+    }
+    pub fn get_token_detail(&self, token_id: i32) -> TokenDetailJson {
+        use crate::schema::owners::dsl::owners;
+        use crate::utils::TokenServiceJson;
+        use crate::models::Owner;
+
+        let _connection = establish_connection();
+        let _token = owners
+            .filter(schema::owners::id.eq(token_id))
+            .filter(schema::owners::types.eq(2))
+            .first::<Owner>(&_connection)
+            .expect("E.");
+
+        let mut services = Vec::new();
+        for s in _token.get_services().iter() {
+            services.push (TokenServiceJson {
+                id:   s.id,
+                name: s.name.clone(),
+            });
+        }
+
+        return TokenDetailJson {
+            id:          _token.id,
+            name:        _token.name.clone(),
+            description: _token.description.clone(),
+            is_active:   _token.is_active,
+            services:    services,
+        }
+    }
+    pub fn get_app_token_detail(&self, token_id: i32) -> TokenDetailJson {
+        use crate::schema::owners::dsl::owners;
+        use crate::utils::TokenServiceJson;
+        use crate::models::Owner;
+
+        let _connection = establish_connection();
+        let _token = owners
+            .filter(schema::owners::id.eq(token_id))
+            .filter(schema::owners::types.eq(1))
+            .first::<Owner>(&_connection)
+            .expect("E.");
+
+        let mut services = Vec::new();
+        for s in _token.get_services().iter() {
+            services.push (TokenServiceJson {
+                id:   s.id,
+                name: s.name.clone(),
+            });
+        }
+
+        return TokenDetailJson {
+            id:          _token.id,
+            name:        _token.name.clone(),
+            description: _token.description.clone(),
+            is_active:   _token.is_active,
+            services:    services,
+        }
+    }
+
+    pub fn get_tokens(&self) -> Vec<TokenJson> {
+        use crate::schema::owners::dsl::owners;
+        use crate::utils::TokenServiceJson;
+        use crate::models::Owner;
+
+        let _connection = establish_connection();
+        let mut list = Vec::new();
+
+        let _tokens = owners
+            .filter(schema::owners::user_id.eq(self.id))
+            .filter(schema::owners::types.eq(2))
+            .load::<Owner>(&_connection)
+            .expect("E.");
+
+        for i in _tokens.iter() {
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.description.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
+    }
+    pub fn get_app_tokens(&self) -> Vec<TokenJson> {
+        use crate::schema::owners::dsl::owners;
+        use crate::utils::TokenServiceJson;
+        use crate::models::Owner;
+
+        let _connection = establish_connection();
+        let mut list = Vec::new();
+
+        let _tokens = owners
+            .filter(schema::owners::user_id.eq(self.id))
+            .filter(schema::owners::types.eq(1))
+            .load::<Owner>(&_connection)
+            .expect("E.");
+
+        for i in _tokens.iter() {
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.description.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
+    }
+    pub fn get_all_tokens(&self) -> Vec<TokenJson> {
+        use crate::schema::owners::dsl::owners;
+        use crate::utils::TokenServiceJson;
+        use crate::models::Owner;
+
+        let _connection = establish_connection();
+        let mut list = Vec::new();
+
+        let _tokens = owners
+            .filter(schema::owners::user_id.eq(self.id))
+            .load::<Owner>(&_connection)
+            .expect("E.");
+
+        for i in _tokens.iter() {
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.description.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
     }
 }
 

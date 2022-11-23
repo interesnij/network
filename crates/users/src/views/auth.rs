@@ -127,7 +127,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     use crate::schema::verified_phones::dsl::verified_phones;
 
     let _connection = establish_connection();
-    let (err, _) = get_user_owner_data(data.token.clone(), None);
+    let (err, _) = get_user_owner_data(data.token.clone(), None, 0);
     if err.is_some() {
         // если проверка токена не удалась...
         Err(Error::BadRequest(err.unwrap()))

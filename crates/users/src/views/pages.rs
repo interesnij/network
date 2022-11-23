@@ -52,7 +52,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -77,7 +77,7 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -146,7 +146,7 @@ pub async fn user_friends_online_page(req: HttpRequest) -> Result<Json<Vec<CardU
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -215,7 +215,7 @@ pub async fn user_friends_common_page(req: HttpRequest) -> Result<Json<Vec<CardU
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -283,7 +283,7 @@ pub async fn user_followings_page(req: HttpRequest) -> Result<Json<Vec<CardUserJ
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -326,7 +326,7 @@ pub async fn user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -395,7 +395,7 @@ pub async fn user_featured_page(req: HttpRequest) -> Result<Json<Vec<CardUserJso
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -438,7 +438,7 @@ pub async fn user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<CardUserJs
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -481,7 +481,7 @@ pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUser
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -519,7 +519,7 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -601,7 +601,7 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -683,7 +683,7 @@ pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Ve
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -764,7 +764,7 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -820,7 +820,7 @@ pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<Car
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -876,7 +876,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {

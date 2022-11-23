@@ -4,7 +4,9 @@ use crate::schema::{
     moderated_reports,
     moderated_penalties,
     moderated_logs,
+    owner_services,
     owners,
+    owner_services_items,
 };
 use diesel::{
     Queryable,
@@ -17,105 +19,6 @@ use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::establish_connection;
 
-
-/////// Owner //////
-////////// Тип владельца
-    // 1 Приложение
-    // 2 Пользователь
-    // 2 Сообщество
-
-#[derive(Debug, Queryable, Serialize, Identifiable)]
-pub struct Owner {
-    pub id:           i32,
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
-    pub name:         String,
-    pub description:  Option<String>,
-    pub types:        i16,
-    pub secret_key:   String,
-    pub service_key:  String,
-    pub is_active:    bool,
-}
-#[derive(Deserialize)]
-pub struct OwnerData {
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
-    pub name:         String,
-    pub description:  Option<String>,
-    pub types:        i16,
-}
-#[derive(Serialize)]
-pub struct EditedOwnerData {
-    pub name:        String,
-    pub description: Option<String>,
-}
-impl Owner {
-    pub fn create (
-        user_id: i32,
-        community_id: Option<i32>,
-        name:         String,
-        description:  Option<String>,
-        types:        i16,
-    ) -> Result<Owner, Error> {
-        use uuid::Uuid;
-
-        let _connection = establish_connection();
-        let new_form = NewOwner {
-            user_id:      user_id,
-            community_id: community_id,
-            name:         name,
-            description:  description,
-            types:        types,
-            secret_key:   Uuid::new_v4().to_string(),
-            service_key:  Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
-            is_active:    true,
-        };
-        let new_token = diesel::insert_into(schema::owners::table)
-            .values(&new_form)
-            .get_result::<Owner>(&_connection)?;
-        return Ok(new_token);
-    }
-    pub fn delete_item(&self) -> i16 {
-        use crate::models::moderation::owners::dsl::owners;
-        let _connection = establish_connection();
-        diesel::delete (
-            owners
-                .filter(schema::owners::user_id.eq(self.user_id))
-        )
-        .execute(&_connection);
-        return 1;
-    }
-    pub fn edit_comment (
-        &self,
-        name:        String,
-        description: Option<String>
-    ) -> Result<EditedOwnerData, Error> {
-        let _connection = establish_connection();
-        diesel::update(self)
-            .set((
-                schema::owners::name.eq(name.clone()),
-                schema::owners::description.eq(description.clone()),
-            ))
-            .execute(&_connection);
-        return Ok(EditedOwnerData {
-            name:        name,
-            description: description,
-        });
-    }
-}
-
-#[derive(Deserialize, Insertable)]
-#[table_name="owners"]
-pub struct NewOwner {
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
-    pub name:         String,
-    pub description:  Option<String>,
-    pub types:        i16,
-    pub secret_key:   String,
-    pub service_key:  String,
-    pub is_active:    bool,
-}
 
 /////// Moderated //////
 ////////// Тип модерируемого объекта
@@ -732,4 +635,186 @@ pub struct NewModeratedLog {
     pub types:           i16,                 // описан в самом начале, одно и то же - объект.
     pub created:         chrono::NaiveDateTime,
     pub time_to_suspend: Option<chrono::NaiveDateTime>,
+}
+
+
+
+/////// OwnerService //////
+// сервисы токенов и их разрешения. Работа с данными
+// только для владельцев токенов
+    //types:
+    // 1 Профиль
+    // 2 Сайты
+    // 3 Почта
+    // 4 Записи
+    // 5 Аудиозаписи
+    // 6 Документы
+    // 7 Опросы
+    // 8 Фотографии
+    // 9 Видиозаписи
+    // 10 Товары
+    // 11 Обсуждения
+    // 12 Википедия
+    // 13 Статьи
+    // 14 Сообщения
+    // 15 Планировщик
+
+    // 31 Профиль
+    // 32 Сайты
+    // 33 Почта
+    // 34 Записи
+    // 35 Аудиозаписи
+    // 37 Опросы
+    // 38 Фотографии
+    // 39 Видиозаписи
+    // 40 Товары
+    // 41 Обсуждения
+    // 42 Википедия
+    // 43 Статьи
+    // 44 Сообщения
+    // 45 Планировщик
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct OwnerService {
+    pub id:    i32,
+    pub types: i16,
+    pub name:  String,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owner_services"]
+pub struct NewOwnerService {
+    pub types: i16,
+    pub name:  String,
+}
+
+/////// Owner //////
+////////// Тип владельца
+    // 1 Приложение
+    // 2 Пользователь
+    // 2 Сообщество
+
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct Owner {
+    pub id:           i32,
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub name:         String,
+    pub description:  Option<String>,
+    pub types:        i16,
+    pub secret_key:   String,
+    pub service_key:  String,
+    pub is_active:    bool,
+}
+#[derive(Deserialize)]
+pub struct OwnerData {
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub name:         String,
+    pub description:  Option<String>,
+    pub types:        i16,
+}
+#[derive(Serialize)]
+pub struct EditedOwnerData {
+    pub name:        String,
+    pub description: Option<String>,
+}
+impl Owner {
+    pub fn create (
+        user_id:      i32,
+        community_id: Option<i32>,
+        name:         String,
+        description:  Option<String>,
+        types:        i16,
+    ) -> Result<Owner, Error> {
+        use uuid::Uuid;
+
+        let _connection = establish_connection();
+        let new_form = NewOwner {
+            user_id:      user_id,
+            community_id: community_id,
+            name:         name,
+            description:  description,
+            types:        types,
+            secret_key:   Uuid::new_v4().to_string(),
+            service_key:  Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
+            is_active:    true,
+        };
+        let new_token = diesel::insert_into(schema::owners::table)
+            .values(&new_form)
+            .get_result::<Owner>(&_connection)?;
+        return Ok(new_token);
+    }
+    pub fn delete_item(&self) -> i16 {
+        use crate::models::moderation::owners::dsl::owners;
+        let _connection = establish_connection();
+        diesel::delete (
+            owners
+                .filter(schema::owners::user_id.eq(self.user_id))
+        )
+        .execute(&_connection);
+        return 1;
+    }
+    pub fn edit (
+        &self,
+        name:        String,
+        description: Option<String>
+    ) -> Result<EditedOwnerData, Error> {
+        let _connection = establish_connection();
+        diesel::update(self)
+            .set((
+                schema::owners::name.eq(name.clone()),
+                schema::owners::description.eq(description.clone()),
+            ))
+            .execute(&_connection);
+        return Ok(EditedOwnerData {
+            name:        name,
+            description: description,
+        });
+    }
+    pub fn get_services(&self) -> Vec<OwnerService> {
+        use crate::schema::{
+            owner_services::dsl::owner_services,
+            owner_services_items::dsl::owner_services_items,
+        };
+        let items_ids = owner_services_items
+            .filter(schema::owner_services_items::owner_id.eq(self.id))
+            .select(schema::owner_services_items::id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+
+        return owner_services
+            .filter(schema::owner_services::id.eq_any(items_ids))
+            .load::<OwnerService>(&_connection)
+            .expect("E.");
+    }
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owners"]
+pub struct NewOwner {
+    pub user_id:      i32,
+    pub community_id: Option<i32>,
+    pub name:         String,
+    pub description:  Option<String>,
+    pub types:        i16,
+    pub secret_key:   String,
+    pub service_key:  String,
+    pub is_active:    bool,
+}
+
+/////// OwnerServicesItem //////
+// связь сервисов токенов с токенами
+
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct OwnerServicesItem {
+    pub id:         i32,
+    pub owner_id:   i32,
+    pub service_id: i32,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owner_services_items"]
+pub struct NewOwnerServicesItem {
+    pub owner_id:   i32,
+    pub service_id: i32,
 }

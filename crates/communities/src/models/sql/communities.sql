@@ -1,20 +1,3 @@
--- ключи доступа / токены к записям -------
-CREATE TABLE owners (
-    id           SERIAL PRIMARY KEY,     -- id
-    user_id      INT NOT NULL,           -- id создателя или владельца
-    community_id INT,                    -- id сообщества-владельца (если есть)
-    name         VARCHAR(100) NOT NULL,  -- название
-    description  VARCHAR(500),           -- описание
-    types        SMALLINT NOT NULL,      -- тип владельца: приложение, пользователь, сообщество
-    secret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
-    service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ
-    is_active    BOOLEAN NOT NULL,       -- активно
-
-    UNIQUE(service_key)
-);
-CREATE INDEX item_service_key_index ON owners (service_key);
-
-
 -- пользователи -------
 -- see_community
 -- 1 Все пользователи
@@ -274,3 +257,102 @@ CREATE TABLE moderated_logs (
             REFERENCES users(id)
 );
 CREATE INDEX moderated_logs_id_idx ON moderated_logs (user_id);
+
+
+-- сервисы токенов и их разрешения. Работа с данными -------
+-- только для сообществ-владельцев токенов
+CREATE TABLE owner_services (
+    id    SERIAL PRIMARY KEY,   -- id
+    types SMALLINT NOT NULL,    -- определитель сервиса и доступа
+    name  VARCHAR(100) NOT NULL -- название сервиса
+);
+CREATE INDEX owner_serivices_index ON owner_services (owner_id);
+
+-- создадим варианты для токенов, чтобы сто раз не добавлять
+INSERT INTO owner_services (id, types, name) 
+VALUES (1, 1, 'Сообщество') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (2, 2, 'Сайты') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (3, 3, 'Почта') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (4, 4, 'Записи') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name)
+VALUES (5, 5, 'Аудиозаписи') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (6, 6, 'Документы') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (7, 7, 'Опросы') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (8, 8, 'Фотографии') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (9, 9, 'Видиозаписи') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (10, 10, 'Товары') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (11, 11, 'Обсуждения') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (12, 12, 'Википедия') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (13, 13, 'Статьи') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (14, 14, 'Сообщения') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (15, 15, 'Планировщик') ON CONFLICT DO NOTHING;
+
+-- дальше только для сообществ-владельцев токена - работа с управлением
+
+INSERT INTO owner_services (id, types, name) 
+VALUES (16, 31, 'Управление сообществом') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (17, 32, 'Управление сайтами') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (18, 33, 'Управление почтой') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (19, 34, 'Управление записями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name)
+VALUES (20, 35, 'Управление аудиозаписями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (21, 36, 'Управление документами') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (22, 37, 'Управление опросами') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (23, 38, 'Управление фотографиями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (24, 39, 'Управление видиозаписями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (25, 40, 'Управление товарами') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (26, 41, 'Управление обсуждениями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (27, 42, 'Управление википедией') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (28, 43, 'Управление статьями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (29, 44, 'Управление сообщениями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services (id, types, name) 
+VALUES (30, 45, 'Управление планировщиком') ON CONFLICT DO NOTHING;
+
+-- ключи доступа / токены к записям -------
+CREATE TABLE owners (
+    id           SERIAL PRIMARY KEY,     -- id
+    user_id      INT NOT NULL,           -- id создателя или владельца
+    community_id INT,                    -- id сообщества-владельца (если есть)
+    name         VARCHAR(100) NOT NULL,  -- название
+    description  VARCHAR(500),           -- описание
+    types        SMALLINT NOT NULL,      -- тип владельца: приложение, пользователь, сообщество
+    secret_key   VARCHAR(200) NOT NULL,  -- секретный ключ
+    service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ
+    is_active    BOOLEAN NOT NULL,       -- активно
+
+    UNIQUE(service_key)
+);
+CREATE INDEX item_service_key_index ON owners (service_key);
+
+-- связь сервисов токенов с токенами -------
+CREATE TABLE owner_services_items (
+    id          SERIAL PRIMARY KEY, -- id
+    owner_id    INT NOT NULL,       -- id токена-владельца
+    service_id  INT NOT NULL        -- id токена-сервиса
+);
+CREATE UNIQUE INDEX owner_services_items_unq ON owner_services_items (owner_id, service_id);
