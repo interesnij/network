@@ -227,7 +227,7 @@ pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJso
         if owner.user_id == user_id {
                 let _res = block(move || owner.edit (
                     data.name.as_deref().unwrap().to_string(),
-                    data.description.as_deref(),
+                    data.description.clone(),
                     data.services_ids.as_deref().unwrap().to_vec()
                 )).await?;
             Ok(Json(_res))
