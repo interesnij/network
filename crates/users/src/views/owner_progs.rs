@@ -8,7 +8,6 @@ use crate::models::{
     User, Community,
     NewUserJson, NewCommunityJson,
 };
-use crate::errors::Error;
 use crate::utils::{
     get_user_owner_data, get_user,
     TokenDetailJson, TokenJson,
@@ -49,7 +48,7 @@ pub struct TokensData {
     pub user_id: Option<i32>,
 }
 
-pub async fn get_token(data: Json<TokenData>) -> Result<Json<TokenDetailJson>, Error> {
+pub async fn get_token(req: HttpRequest) -> Result<Json<TokenDetailJson>, Error> {
     let params_some = web::Query::<TokenData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -98,7 +97,7 @@ pub async fn get_token(data: Json<TokenData>) -> Result<Json<TokenDetailJson>, E
     }
 }
 
-pub async fn get_tokens(data: Json<TokensData>) -> Result<Json<Vec<TokenJson>>, Error> {
+pub async fn get_tokens(req: HttpRequest) -> Result<Json<Vec<TokenJson>>, Error> {
     let params_some = web::Query::<TokensData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();

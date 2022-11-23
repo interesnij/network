@@ -17,8 +17,8 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     UserPrivateJson, LocationJson,
     CardUserJson, UserDetailJson,
-    TokenDetailJson, TokenJson,
 };
+use crate::views::{TokenDetailJson, TokenJson,}
 use crate::schema::users;
 use crate::errors::Error;
 

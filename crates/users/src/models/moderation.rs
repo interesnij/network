@@ -273,7 +273,7 @@ impl Owner {
         use uuid::Uuid;
 
         if services_ids.is_empty() {
-            return Err("services_ids is empty!".to_string());
+            return Err(Error::BadRequest("services_ids is empty!".to_string()));
         }
 
         let _connection = establish_connection();
@@ -323,7 +323,7 @@ impl Owner {
         use crate::schema::owner_services_items::dsl::owner_services_items;
 
         if services_ids.is_empty() {
-            return Err("services_ids is empty!".to_string());
+            return Err(Error::BadRequest("services_ids is empty!".to_string()));
         }
 
         let _connection = establish_connection();
