@@ -322,7 +322,7 @@ impl Owner {
     ) -> Result<EditedOwnerData, Error> {
         use crate::schema::owner_services_items::dsl::owner_services_items;
 
-        if services_ids.is_empty() {
+        if &services_ids.is_empty() {
             return Err(Error::BadRequest("services_ids is empty!".to_string()));
         }
 
