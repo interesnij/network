@@ -97,7 +97,7 @@ pub async fn edit_token_page(req: HttpRequest) -> Result<Json<EditTokenPageResp>
         }
         else if params.id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: error: "parametr 'id' is required!".to_string(),,
+                error: "parametr 'id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }

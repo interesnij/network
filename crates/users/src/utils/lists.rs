@@ -69,7 +69,7 @@ pub struct SearchTargetListData {
     pub offset:    Option<i64>,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct EditTokenPageResp {
     pub id:            i32,
     pub name:          String,
