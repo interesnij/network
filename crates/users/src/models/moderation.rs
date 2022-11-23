@@ -58,7 +58,7 @@ use crate::errors::Error;
     // 43 Статьи
     // 44 Сообщения
     // 45 Планировщик
-#[derive(Debug, Queryable, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct OwnerService {
     pub id:    i32,
     pub types: i16,
