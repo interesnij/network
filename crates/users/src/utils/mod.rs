@@ -144,6 +144,14 @@ pub fn get_user(pk: i32) -> Result<User, Error> {
         .first::<User>(&_connection)?);
 }
 
+pub fn get_owner(pk: i32) -> Result<Owner, Error> {
+    use crate::schema::owners::dsl::owners;
+    let _connection = establish_connection();
+    return Ok(owners
+        .filter(schema::owners::id.eq(pk))
+        .first::<Owner>(&_connection)?);
+}
+
 pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
     use crate::schema::moderateds::dsl::moderateds;
     let _connection = establish_connection();

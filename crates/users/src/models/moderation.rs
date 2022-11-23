@@ -269,7 +269,7 @@ impl Owner {
         description:  Option<String>,
         types:        i16,
         services_ids: Vec<i32>
-    ) -> Result<Owner, Error> {
+    ) -> Result<TokenDetailJson, Error> {
         use uuid::Uuid;
 
         if services_ids.is_empty() {
@@ -301,9 +301,9 @@ impl Owner {
                 .expect("Error.");
         }
 
-        return Ok(new_token);
+        return Ok(new_token.get_token_detail());
     }
-    pub fn delete_item(&self) -> i16 {
+    pub fn delete(&self) -> i16 {
         use crate::models::moderation::owners::dsl::owners;
 
         let _connection = establish_connection();
@@ -319,7 +319,7 @@ impl Owner {
         name:         String,
         description:  Option<String>,
         services_ids: Vec<i32>
-    ) -> Result<EditedOwnerData, Error> {
+    ) -> Result<TokenDetailJson, Error> {
         use crate::schema::owner_services_items::dsl::owner_services_items;
         let services_ids_clone = services_ids.clone();
         if services_ids_clone.is_empty() {
@@ -348,10 +348,7 @@ impl Owner {
                 .execute(&_connection)
                 .expect("Error.");
         }
-        return Ok(EditedOwnerData {
-            name:        name,
-            description: description,
-        });
+        return Ok(self.get_token_detail());
     }
 }
 

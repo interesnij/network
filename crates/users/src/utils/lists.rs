@@ -39,6 +39,13 @@ pub struct TargetListData {
 }
 
 #[derive(Deserialize)]
+pub struct ObjectData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub id:      Option<i32>,
+}
+
+#[derive(Deserialize)]
 pub struct SearchRegListData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
