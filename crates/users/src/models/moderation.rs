@@ -132,8 +132,8 @@ impl Owner {
     pub fn get_edit_data(&self) -> EditTokenPageResp {
         return EditTokenPageResp {
             id:            self.id,
-            name:          self.name,
-            description:   self.description,
+            name:          self.name.clone(),
+            description:   self.description.clone(),
             is_active:     self.is_active,
             item_services: self.get_services(),
             all_services:  OwnerService::get_all(),
