@@ -73,8 +73,8 @@ pub struct SearchTargetListData {
 pub struct EditTokenPageResp {
     pub id:            i32,
     pub name:          String,
-    pub description:   String,
+    pub description:   Option<String>,
     pub is_active:     bool,
-    pub item_services: Vec<i32>,
-    pub all_services:  Vec<i32>,
+    pub item_services: Vec<OwnerService>,
+    pub all_services:  Vec<OwnerService>,
 }
