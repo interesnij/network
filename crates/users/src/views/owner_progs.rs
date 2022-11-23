@@ -174,7 +174,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJs
             data.name.as_deref().unwrap(),
             data.description.as_deref(),
             data.types.unwrap(),
-            data.services_ids.as_deref().unwrap(),
+            data.services_ids.as_deref().unwrap().to_vec(),
         )).await?;
         Ok(Json(_res))
     }
@@ -226,9 +226,9 @@ pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJso
         }
         if owner.user_id == user_id {
                 let _res = block(move || owner.edit (
-                    data.name.as_deref().unwrap(),
+                    data.name.clone(),
                     data.description.as_deref(),
-                    data.services_ids.as_deref().unwrap()
+                    data.services_ids.as_deref().unwrap().to_vec()
                 )).await?;
             Ok(Json(_res))
         }
