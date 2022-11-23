@@ -109,7 +109,7 @@ pub async fn edit_token_page(req: HttpRequest) -> Result<Json<EditTokenPageResp>
         }
         else {
             let owner: Owner;
-            let owner_res = get_owner(data.id.unwrap());
+            let owner_res = get_owner(params.id.unwrap());
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }

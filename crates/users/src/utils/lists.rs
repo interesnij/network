@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use crate::models::OwnerService;
 
 
 #[derive(Serialize, Queryable)]
