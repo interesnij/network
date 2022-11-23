@@ -321,8 +321,8 @@ impl Owner {
         services_ids: Vec<i32>
     ) -> Result<EditedOwnerData, Error> {
         use crate::schema::owner_services_items::dsl::owner_services_items;
-
-        if services_ids.clone().is_empty() {
+        let services_ids_clone = services_ids.clone();
+        if services_ids_clone.is_empty() {
             return Err(Error::BadRequest("services_ids is empty!".to_string()));
         }
 
