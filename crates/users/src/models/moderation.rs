@@ -272,10 +272,6 @@ impl Owner {
     ) -> TokenDetailJson {
         use uuid::Uuid;
 
-        if services_ids.is_empty() {
-            return Err(Error::BadRequest("services_ids is empty!".to_string()));
-        }
-
         let _connection = establish_connection();
         let new_form = NewOwner {
             user_id:     user_id,
@@ -321,10 +317,6 @@ impl Owner {
         services_ids: Vec<i32>
     ) -> TokenDetailJson {
         use crate::schema::owner_services_items::dsl::owner_services_items;
-        let services_ids_clone = services_ids.clone();
-        if services_ids_clone.is_empty() {
-            return Err(Error::BadRequest("services_ids is empty!".to_string()));
-        }
 
         let _connection = establish_connection();
         diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(&services_ids)))
