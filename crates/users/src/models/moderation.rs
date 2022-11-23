@@ -269,7 +269,7 @@ impl Owner {
         description:  Option<String>,
         types:        i16,
         services_ids: Vec<i32>
-    ) -> Result<TokenDetailJson, Error> {
+    ) -> TokenDetailJson {
         use uuid::Uuid;
 
         if services_ids.is_empty() {
@@ -319,7 +319,7 @@ impl Owner {
         name:         String,
         description:  Option<String>,
         services_ids: Vec<i32>
-    ) -> Result<TokenDetailJson, Error> {
+    ) -> TokenDetailJson {
         use crate::schema::owner_services_items::dsl::owner_services_items;
         let services_ids_clone = services_ids.clone();
         if services_ids_clone.is_empty() {
