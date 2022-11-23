@@ -21,7 +21,7 @@ use crate::utils::{
     InfoParams,
 };
 use crate::models::User;
-
+use crate::errors::Error;
 
 
 /////// OwnerService //////
@@ -112,6 +112,11 @@ pub struct TokenJson {
     pub is_active: bool,
     pub services:  Vec<TokenServiceJson>,
 }
+#[derive(Serialize)]
+pub struct EditedOwnerData {
+    pub name:        String,
+    pub description: Option<String>,
+}
 
 impl Owner {
     pub fn is_service_types_ok(&self, types: i16) -> bool {
@@ -128,10 +133,10 @@ impl Owner {
             .expect("E.");
         let types_vec = owner_services
             .filter(schema::owner_services::id.eq_any(items_ids))
-            .select(schema::owner_services_items::types)
+            .select(schema::owner_services::types)
             .load::<i16>(&_connection)
-            .expect("E.")
-        return items_types.iter().any(|&i| i==types);
+            .expect("E.");
+        return types_vec.iter().any(|&i| i==types);
     }
     pub fn get_services(&self) -> Vec<OwnerService> {
         use crate::schema::{
@@ -287,7 +292,7 @@ impl Owner {
 
         for id in services_ids.iter() {
             let new_item = NewOwnerServicesItem {
-                owner_id:   self.id,
+                owner_id:   new_token.id,
                 service_id: *id,
             };
             diesel::insert_into(schema::owner_services_items::table)

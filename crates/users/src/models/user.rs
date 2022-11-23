@@ -2437,7 +2437,7 @@ impl User {
         return TokenDetailJson {
             id:          _token.id,
             name:        _token.name.clone(),
-            description: _token.clone(),
+            description: _token.description.clone(),
             is_active:   _token.is_active,
             services:    services,
         }
