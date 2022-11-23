@@ -6,19 +6,23 @@ use actix_web::{
 };
 use serde::{Serialize, Deserialize};
 use crate::models::{
-    User, Owner,
+    User, Owner, OwnerService
 };
 use crate::utils::{
     get_user_owner_data, get_user, get_owner,
-    InfoParams, ErrorParams, ObjectData,
+    InfoParams, ErrorParams, ObjectData, SmallData,
+    EditTokenPageResp,
 };
-use crate::models::{TokenDetailJson, TokenJson};
+use crate::models::{TokenDetailJson, TokenJson, };
 use crate::errors::Error;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
+    config.route("/create_token/", web::get().to(create_token_page));
+    config.route("/edit_token/", web::get().to(edit_token_page));
     config.route("/get_token/", web::get().to(get_token));
     config.route("/get_tokens/", web::get().to(get_tokens));
+
     config.route("/create_token/", web::post().to(create_token));
     config.route("/edit_token/", web::post().to(edit_token));
     config.route("/delete_token/", web::post().to(delete_token));
@@ -46,6 +50,90 @@ pub struct TokenData {
 pub struct TokensData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
+}
+
+pub async fn create_token_page(req: HttpRequest) -> Result<Json<Vec<OwnerService>>, Error> {
+    let params_some = web::Query::<SmallData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        if err.is_some() {
+            // если проверка токена не удалась...
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let body = block(move || OwnerService::get_all()).await?;
+            Ok(Json(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn edit_token_page(req: HttpRequest) -> Result<Json<EditTokenPageResp>, Error> {
+    let params_some = web::Query::<ObjectData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        if err.is_some() {
+            // если проверка токена не удалась...
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: error: "parametr 'id' is required!".to_string(),,
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: Owner;
+            let owner_res = get_owner(data.id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if owner.user_id == user_id {
+                    let _res = block(move || owner.get_edit_data()).await?;
+                Ok(Json(_res))
+            }
+            else {
+                Err(Error::BadRequest("Permission Denied".to_string()))
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
 }
 
 pub async fn get_token(req: HttpRequest) -> Result<Json<TokenDetailJson>, Error> {

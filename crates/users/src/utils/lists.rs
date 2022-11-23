@@ -11,7 +11,6 @@ pub struct CardUserJson {
     pub image:      Option<String>,
 }
 
-
 #[derive(Serialize)]
 pub struct ErrorParams {
     pub error: String,
@@ -46,6 +45,12 @@ pub struct ObjectData {
 }
 
 #[derive(Deserialize)]
+pub struct SmallData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+}
+
+#[derive(Deserialize)]
 pub struct SearchRegListData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
@@ -62,4 +67,14 @@ pub struct SearchTargetListData {
     pub target_id: Option<i32>,
     pub limit:     Option<i64>,
     pub offset:    Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct EditTokenPageResp {
+    pub id:            i32,
+    pub name:          String,
+    pub description:   String,
+    pub is_active:     bool,
+    pub item_services: Vec<i32>,
+    pub all_services:  Vec<i32>,
 }

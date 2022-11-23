@@ -18,7 +18,7 @@ use diesel::{
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
-    InfoParams,
+    InfoParams, EditTokenPageResp,
 };
 use crate::models::User;
 use crate::errors::Error;
@@ -63,6 +63,16 @@ pub struct OwnerService {
     pub id:    i32,
     pub types: i16,
     pub name:  String,
+}
+impl OwnerService {
+    pub fn get_all() -> Vec<OwnerService> {
+        use crate::schema::owner_services::dsl::owner_services;
+
+        let _connection = establish_connection();
+        return owner_services
+            .load::<OwnerService>(&_connection)
+            .expect("E.");
+    }
 }
 
 #[derive(Deserialize, Insertable)]
@@ -119,6 +129,16 @@ pub struct EditedOwnerData {
 }
 
 impl Owner {
+    pub fn get_edit_data(&self, types: i16) -> EditTokenPageResp {
+        return EditTokenPageResp {
+            id:            self.id,
+            name:          self.name,
+            description:   self.description,
+            is_active:     self.is_active,
+            item_services: self.get_services(),
+            all_services:  OwnerService::get_all(),
+        }
+    }
     pub fn is_service_types_ok(&self, types: i16) -> bool {
         use crate::schema::{
             owner_services::dsl::owner_services,
@@ -138,6 +158,7 @@ impl Owner {
             .expect("E.");
         return types_vec.iter().any(|&i| i==types);
     }
+
     pub fn get_services(&self) -> Vec<OwnerService> {
         use crate::schema::{
             owner_services::dsl::owner_services,
