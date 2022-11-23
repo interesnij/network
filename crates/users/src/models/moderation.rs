@@ -129,7 +129,7 @@ pub struct EditedOwnerData {
 }
 
 impl Owner {
-    pub fn get_edit_data(&self, types: i16) -> EditTokenPageResp {
+    pub fn get_edit_data(&self) -> EditTokenPageResp {
         return EditTokenPageResp {
             id:            self.id,
             name:          self.name,
