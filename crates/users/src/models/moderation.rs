@@ -284,7 +284,8 @@ impl Owner {
         };
         let new_token = diesel::insert_into(schema::owners::table)
             .values(&new_form)
-            .get_result::<Owner>(&_connection)?;
+            .get_result::<Owner>(&_connection)
+            .expect("E.");
 
         for id in services_ids.iter() {
             let new_item = NewOwnerServicesItem {
@@ -297,7 +298,7 @@ impl Owner {
                 .expect("Error.");
         }
 
-        return Ok(new_token.get_token_detail());
+        return new_token.get_token_detail();
     }
     pub fn delete(&self) -> i16 {
         use crate::models::moderation::owners::dsl::owners;
@@ -340,7 +341,7 @@ impl Owner {
                 .execute(&_connection)
                 .expect("Error.");
         }
-        return Ok(self.get_token_detail());
+        return self.get_token_detail();
     }
 }
 
