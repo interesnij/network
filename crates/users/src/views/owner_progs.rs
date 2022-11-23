@@ -147,7 +147,7 @@ pub struct AddTokenData {
     name:         Option<String>,
     description:  Option<String>,
     types:        Option<i16>,
-    services_ids: Vec<i32>
+    services_ids: Option<Vec<i32>>,
 }
 
 pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJson>, Error> {
@@ -171,10 +171,10 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJs
     else {
         let _res = block(move || Owner::create (
             user_id,
-            name,
-            description,
-            types,
-            services_ids,
+            data.name.clone(),
+            data.description.clone(),
+            data.types,
+            data.services_ids.clone(),
         )).await?;
         Ok(Json(_res))
     }
@@ -188,7 +188,7 @@ pub struct EditTokenData {
     name:         Option<String>,
     description:  Option<String>,
     types:        Option<i16>,
-    services_ids: Vec<i32>
+    services_ids: Option<Vec<i32>>,
 }
 pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJson>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
@@ -226,9 +226,9 @@ pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJso
         }
         if owner.user_id == user_id {
                 let _res = block(move || owner.edit (
-                    name,
-                    description,
-                    services_ids
+                    data.name.clone(),
+                    data.description.clone(),
+                    data.services_ids.clone()
                 )).await?;
             Ok(Json(_res))
         }
