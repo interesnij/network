@@ -195,7 +195,7 @@ impl Owner {
             list.push (
                 TokenJson {
                     id:        i.id,
-                    name:      i.name.description.clone(),
+                    name:      i.name.clone(),
                     is_active: i.is_active,
                     services:  services,
                 }
@@ -228,7 +228,7 @@ impl Owner {
             list.push (
                 TokenJson {
                     id:        i.id,
-                    name:      i.name.description.clone(),
+                    name:      i.name.clone(),
                     is_active: i.is_active,
                     services:  services,
                 }
@@ -288,7 +288,7 @@ impl Owner {
         for id in services_ids.iter() {
             let new_item = NewOwnerServicesItem {
                 owner_id:   self.id,
-                service_id: id,
+                service_id: *id,
             };
             diesel::insert_into(schema::owner_services_items::table)
                 .values(&new_item)
@@ -336,7 +336,7 @@ impl Owner {
         for id in services_ids.iter() {
             let new_item = NewOwnerServicesItem {
                 owner_id:   self.id,
-                service_id: id,
+                service_id: *id,
             };
             diesel::insert_into(schema::owner_services_items::table)
                 .values(&new_item)

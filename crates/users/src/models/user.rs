@@ -2437,7 +2437,7 @@ impl User {
         return TokenDetailJson {
             id:          _token.id,
             name:        _token.name.clone(),
-            description: _token.description.clone(),
+            description: _token.clone(),
             is_active:   _token.is_active,
             services:    services,
         }
@@ -2468,7 +2468,7 @@ impl User {
             list.push (
                 TokenJson {
                     id:        i.id,
-                    name:      i.name.description.clone(),
+                    name:      i.name.clone(),
                     is_active: i.is_active,
                     services:  services,
                 }
@@ -2502,7 +2502,7 @@ impl User {
             list.push (
                 TokenJson {
                     id:        i.id,
-                    name:      i.name.description.clone(),
+                    name:      i.name.clone(),
                     is_active: i.is_active,
                     services:  services,
                 }
@@ -2535,7 +2535,7 @@ impl User {
             list.push (
                 TokenJson {
                     id:        i.id,
-                    name:      i.name.description.clone(),
+                    name:      i.name.clone(),
                     is_active: i.is_active,
                     services:  services,
                 }

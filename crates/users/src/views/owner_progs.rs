@@ -3,7 +3,7 @@ use actix_web::{
     web::block,
     web::Json,
 };
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use crate::models::{
     User, Community,
     NewUserJson, NewCommunityJson,
@@ -85,7 +85,7 @@ pub async fn get_token(data: Json<TokenData>) -> Result<Json<TokenDetailJson>, E
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            let body = block(move || owner.get_token(params.id.unwrap())).await?;
+            let body = block(move || owner.get_token_detail(params.id.unwrap())).await?;
             Ok(Json(body))
         }
     }
@@ -98,7 +98,7 @@ pub async fn get_token(data: Json<TokenData>) -> Result<Json<TokenDetailJson>, E
 }
 
 pub async fn get_tokens(data: Json<TokensData>) -> Result<Json<Vec<TokenJson>>, Error> {
-    let params_some = web::Query::<TokenData>::from_query(&req.query_string());
+    let params_some = web::Query::<TokensData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
