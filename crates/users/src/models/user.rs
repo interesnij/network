@@ -2388,7 +2388,7 @@ impl User {
     }
     pub fn get_token_detail(&self, token_id: i32) -> TokenDetailJson {
         use crate::schema::owners::dsl::owners;
-        use crate::utils::TokenServiceJson;
+        use crate::views::TokenServiceJson;
         use crate::models::Owner;
 
         let _connection = establish_connection();
@@ -2416,7 +2416,7 @@ impl User {
     }
     pub fn get_app_token_detail(&self, token_id: i32) -> TokenDetailJson {
         use crate::schema::owners::dsl::owners;
-        use crate::utils::TokenServiceJson;
+        use crate::views::TokenServiceJson;
         use crate::models::Owner;
 
         let _connection = establish_connection();
@@ -2445,7 +2445,7 @@ impl User {
 
     pub fn get_tokens(&self) -> Vec<TokenJson> {
         use crate::schema::owners::dsl::owners;
-        use crate::utils::TokenServiceJson;
+        use crate::views::TokenServiceJson;
         use crate::models::Owner;
 
         let _connection = establish_connection();
@@ -2479,7 +2479,7 @@ impl User {
     }
     pub fn get_app_tokens(&self) -> Vec<TokenJson> {
         use crate::schema::owners::dsl::owners;
-        use crate::utils::TokenServiceJson;
+        use crate::views::TokenServiceJson;
         use crate::models::Owner;
 
         let _connection = establish_connection();
@@ -2513,7 +2513,7 @@ impl User {
     }
     pub fn get_all_tokens(&self) -> Vec<TokenJson> {
         use crate::schema::owners::dsl::owners;
-        use crate::utils::TokenServiceJson;
+        use crate::views::TokenServiceJson;
         use crate::models::Owner;
 
         let _connection = establish_connection();

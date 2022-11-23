@@ -6,8 +6,7 @@ use actix_web::{
 };
 use serde::{Serialize, Deserialize};
 use crate::models::{
-    User, Community,
-    NewUserJson, NewCommunityJson,
+    User,
 };
 use crate::utils::{
     get_user_owner_data, get_user,
