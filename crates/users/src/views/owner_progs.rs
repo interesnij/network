@@ -171,10 +171,10 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJs
     else {
         let _res = block(move || Owner::create (
             user_id,
-            data.name.clone(),
-            data.description.clone(),
-            data.types,
-            data.services_ids.clone(),
+            data.name.unwrap(),
+            data.description.unwrap(),
+            data.types.unwrap(),
+            data.services_ids.unwrap(),
         )).await?;
         Ok(Json(_res))
     }
@@ -226,9 +226,9 @@ pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJso
         }
         if owner.user_id == user_id {
                 let _res = block(move || owner.edit (
-                    data.name.clone(),
-                    data.description.clone(),
-                    data.services_ids.clone()
+                    data.name.unwrap(),
+                    data.description.unwrap(),
+                    data.services_ids.unwrap()
                 )).await?;
             Ok(Json(_res))
         }
