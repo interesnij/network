@@ -18,7 +18,7 @@ use crate::utils::{
     UserPrivateJson, LocationJson,
     CardUserJson, UserDetailJson,
 };
-use crate::views::{TokenDetailJson, TokenJson,}
+use crate::views::{TokenDetailJson, TokenJson,};
 use crate::schema::users;
 use crate::errors::Error;
 

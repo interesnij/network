@@ -2,6 +2,7 @@ use actix_web::{
     web,
     web::block,
     web::Json,
+    HttpRequest,
 };
 use serde::{Serialize, Deserialize};
 use crate::models::{
@@ -10,7 +11,6 @@ use crate::models::{
 };
 use crate::utils::{
     get_user_owner_data, get_user,
-    TokenDetailJson, TokenJson,
     InfoParams, ErrorParams,
 };
 use crate::errors::Error;
