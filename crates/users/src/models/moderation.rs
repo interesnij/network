@@ -322,12 +322,12 @@ impl Owner {
     ) -> Result<EditedOwnerData, Error> {
         use crate::schema::owner_services_items::dsl::owner_services_items;
         let services_ids_clone = services_ids.clone();
-        if services_ids_clone.is_empty() {
+        if &services_ids.is_empty() {
             return Err(Error::BadRequest("services_ids is empty!".to_string()));
         }
 
         let _connection = establish_connection();
-        diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(services_ids_clone)))
+        diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(&services_ids)))
             .execute(&_connection)
             .expect("E");
 
