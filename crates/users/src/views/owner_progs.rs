@@ -12,6 +12,7 @@ use crate::utils::{
     get_user_owner_data, get_user,
     InfoParams, ErrorParams,
 };
+use crate::models::{TokenDetailJson, TokenJson};
 use crate::errors::Error;
 
 

@@ -12,13 +12,13 @@ use crate::models::{
     UserLocation,
     UserInfo,
     UserPrivate,
+    TokenDetailJson, TokenJson,
 };
 use crate::utils::{
     establish_connection, get_limit_offset,
     UserPrivateJson, LocationJson,
     CardUserJson, UserDetailJson,
 };
-use crate::views::{TokenDetailJson, TokenJson,};
 use crate::schema::users;
 use crate::errors::Error;
 
@@ -2388,8 +2388,7 @@ impl User {
     }
     pub fn get_token_detail(&self, token_id: i32) -> TokenDetailJson {
         use crate::schema::owners::dsl::owners;
-        use crate::views::TokenServiceJson;
-        use crate::models::Owner;
+        use crate::models::{Owner, TokenServiceJson};
 
         let _connection = establish_connection();
         let _token = owners
@@ -2416,8 +2415,7 @@ impl User {
     }
     pub fn get_app_token_detail(&self, token_id: i32) -> TokenDetailJson {
         use crate::schema::owners::dsl::owners;
-        use crate::views::TokenServiceJson;
-        use crate::models::Owner;
+        use crate::models::{Owner, TokenServiceJson};
 
         let _connection = establish_connection();
         let _token = owners
@@ -2445,8 +2443,7 @@ impl User {
 
     pub fn get_tokens(&self) -> Vec<TokenJson> {
         use crate::schema::owners::dsl::owners;
-        use crate::views::TokenServiceJson;
-        use crate::models::Owner;
+        use crate::models::{Owner, TokenServiceJson};
 
         let _connection = establish_connection();
         let mut list = Vec::new();
@@ -2479,8 +2476,7 @@ impl User {
     }
     pub fn get_app_tokens(&self) -> Vec<TokenJson> {
         use crate::schema::owners::dsl::owners;
-        use crate::views::TokenServiceJson;
-        use crate::models::Owner;
+        use crate::models::{Owner, TokenServiceJson};
 
         let _connection = establish_connection();
         let mut list = Vec::new();
@@ -2513,8 +2509,7 @@ impl User {
     }
     pub fn get_all_tokens(&self) -> Vec<TokenJson> {
         use crate::schema::owners::dsl::owners;
-        use crate::views::TokenServiceJson;
-        use crate::models::Owner;
+        use crate::models::{Owner, TokenServiceJson};
 
         let _connection = establish_connection();
         let mut list = Vec::new();
