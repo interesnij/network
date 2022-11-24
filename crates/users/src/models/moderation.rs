@@ -336,7 +336,7 @@ impl Owner {
                 owner_id:   new_token.id,
                 service_id: *id,
             };
-            diesel::insert_into(schema::owner_services_items::table)
+            let _new_item = diesel::insert_into(schema::owner_services_items::table)
                 .values(&new_item)
                 .execute(&_connection)
                 .expect("Error.");
@@ -348,7 +348,7 @@ impl Owner {
         use crate::models::moderation::owners::dsl::owners;
 
         let _connection = establish_connection();
-        diesel::delete (
+        let _delete_item = diesel::delete (
             owners
                 .filter(schema::owners::user_id.eq(self.user_id))
         )

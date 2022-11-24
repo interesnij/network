@@ -2062,7 +2062,7 @@ impl User {
                     target_id: self.id,
                     hidden:    false,
                 };
-                diesel::insert_into(schema::featured_friends::table)
+                let _new_item = diesel::insert_into(schema::featured_friends::table)
                     .values(&_new_friend)
                     .execute(&_connection);
             }
@@ -2085,7 +2085,7 @@ impl User {
                 target_id: self.id,
                 hidden:    false,
             };
-            diesel::insert_into(schema::featured_friends::table)
+            let _new_item = diesel::insert_into(schema::featured_friends::table)
                 .values(&_new_friend)
                 .execute(&_connection);
         }
