@@ -4,13 +4,13 @@ use actix_web::{
     web::Json,
     HttpRequest,
 };
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 use crate::models::{
     User, Owner, OwnerService
 };
 use crate::utils::{
     get_user_owner_data, get_user, get_owner,
-    InfoParams, ErrorParams, ObjectData, SmallData,
+    ErrorParams, ObjectData, SmallData,
     EditTokenPageResp,
 };
 use crate::models::{TokenDetailJson, TokenJson, };

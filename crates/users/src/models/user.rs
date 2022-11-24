@@ -1864,7 +1864,7 @@ impl User {
             return vec![true, true, true];
         }
         let private = self.get_private_model();
-        return match private {
+        let bool_vec = match private {
           Ok(_ok) => {
               let bool_see_all = match _ok.see_all {
                   1 => true,
@@ -1924,6 +1924,7 @@ impl User {
           },
           Err(_) => return vec![false, false, false],
         };
+        return bool_vec;
     }
     pub fn is_anon_user_see_all(&self) -> bool {
         let private = self.get_private_model();

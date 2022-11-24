@@ -1,26 +1,15 @@
 use actix_web::{
-    HttpRequest,
-    Responder,
-    HttpResponse,
     web,
     web::block,
     web::Json,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use crate::utils::{
-    establish_connection, get_user,
+    get_user,
     get_user_owner_data,
     ErrorParams, 
 };
-use diesel::{
-    Queryable,
-    Insertable,
-    RunQueryDsl,
-    ExpressionMethods,
-    QueryDsl,
-};
-use crate::schema;
-use crate::models::{User, NewUser};
+use crate::models::User;
 use crate::errors::Error;
 
 

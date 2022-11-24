@@ -18,10 +18,9 @@ use diesel::{
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
-    InfoParams, EditTokenPageResp,
+    EditTokenPageResp,
 };
 use crate::models::User;
-use crate::errors::Error;
 
 
 /////// OwnerService //////
@@ -178,8 +177,6 @@ impl Owner {
             .expect("E.");
     }
     pub fn get_token_detail(&self) -> TokenDetailJson {
-        use crate::schema::owners::dsl::owners;
-
         let _connection = establish_connection();
         let mut services = Vec::new();
         for s in self.get_services().iter() {
