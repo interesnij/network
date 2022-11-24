@@ -46,6 +46,13 @@ pub struct EditPhoneData {
 }
 
 #[derive(Deserialize)]
+pub struct EditPasswordData {
+    pub token:    Option<String>,
+    pub user_id:  Option<i32>,
+    pub password: Option<String>,
+}
+
+#[derive(Deserialize)]
 pub struct EditLinkData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
