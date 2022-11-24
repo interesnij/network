@@ -56,19 +56,19 @@ pub async fn create_token_page(req: HttpRequest) -> Result<Json<Vec<OwnerService
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
-        if err.is_some() {
+        if err.is_some() { 
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        //else if user_id == 0 {
-        //    let body = serde_json::to_string(&ErrorParams {
-       //         error: "Permission Denied!".to_string(),
-        //    }).unwrap();
-       //     Err(Error::BadRequest(body))
-       // }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
         else {
             let body = block(move || OwnerService::get_all()).await?;
             Ok(Json(body))
@@ -375,7 +375,7 @@ pub async fn create_user_token(data: Json<AddTokenData>) -> Result<Json<TokenDet
     if err.is_some() {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
+    } 
     else if user_id == 0 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }

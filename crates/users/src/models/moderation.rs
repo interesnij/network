@@ -197,72 +197,6 @@ impl Owner {
             services:    services,
         }
     }
-    pub fn get_user_tokens(&self, user_id: i32) -> Vec<TokenJson> {
-        //Токены пользователя
-        use crate::schema::owners::dsl::owners;
-
-        let _connection = establish_connection();
-        let mut list = Vec::new();
-
-        let _tokens = owners
-            .filter(schema::owners::user_id.eq(self.user_id))
-            .filter(schema::owners::types.eq(2))
-            .load::<Owner>(&_connection)
-            .expect("E.");
-
-        for i in _tokens.iter() {
-            let mut services = Vec::new();
-            for s in i.get_services().iter() {
-                services.push (TokenServiceJson {
-                    id:   s.id,
-                    name: s.name.clone(),
-                });
-            }
-            list.push (
-                TokenJson {
-                    id:        i.id,
-                    name:      i.name.clone(),
-                    is_active: i.is_active,
-                    services:  services,
-                }
-            );
-        }
-
-        return list;
-    }
-    pub fn get_app_tokens(&self, user_id: i32) -> Vec<TokenJson> {
-        //Токены приложений
-        use crate::schema::owners::dsl::owners;
-
-        let _connection = establish_connection();
-        let mut list = Vec::new();
-
-        let _tokens = owners
-            .filter(schema::owners::user_id.eq(self.user_id))
-            .filter(schema::owners::types.eq(1))
-            .load::<Owner>(&_connection)
-            .expect("E.");
-
-        for i in _tokens.iter() {
-            let mut services = Vec::new();
-            for s in i.get_services().iter() {
-                services.push (TokenServiceJson {
-                    id:   s.id,
-                    name: s.name.clone(),
-                });
-            }
-            list.push (
-                TokenJson {
-                    id:        i.id,
-                    name:      i.name.clone(),
-                    is_active: i.is_active,
-                    services:  services,
-                }
-            );
-        }
-
-        return list;
-    }
 
     pub fn get_service_key(&self) -> String {
         use crate::schema::owners::dsl::owners;
@@ -278,7 +212,7 @@ impl Owner {
         use crate::schema::owners::dsl::owners;
 
         let _connection = establish_connection();
-        return owners
+        return owners 
             .filter(schema::owners::id.eq(self.id))
             .select(schema::owners::secret_key)
             .first::<String>(&_connection)
@@ -306,6 +240,17 @@ impl Owner {
             .values(&new_form)
             .get_result::<Owner>(&_connection)
             .expect("E.");
+
+        for id in services_ids.iter() {
+            let new_item = NewOwnerServicesItem {
+                owner_id:   new_token.id,
+                service_id: *id,
+            };
+            let _new_item = diesel::insert_into(schema::owner_services_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
         return new_token.get_token_detail();
     }
     pub fn create_user_token (
