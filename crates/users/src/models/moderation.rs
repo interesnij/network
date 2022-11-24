@@ -284,11 +284,10 @@ impl Owner {
             .first::<String>(&_connection)
             .expect("E.");
     }
-    pub fn create (
+    pub fn create_app_token (
         user_id:      i32,
         name:         String,
         description:  Option<String>,
-        types:        i16,
         services_ids: Vec<i32>
     ) -> TokenDetailJson {
         use uuid::Uuid;
@@ -298,7 +297,29 @@ impl Owner {
             user_id:     user_id,
             name:        name,
             description: description,
-            types:       types,
+            types:       1,
+            secret_key:  Uuid::new_v4().to_string(),
+            service_key: Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
+            is_active:   true,
+        };
+        let new_token = diesel::insert_into(schema::owners::table)
+            .values(&new_form)
+            .get_result::<Owner>(&_connection)
+            .expect("E.");
+    pub fn create_user_token (
+        user_id:      i32,
+        name:         String,
+        description:  Option<String>,
+        services_ids: Vec<i32>
+    ) -> TokenDetailJson {
+        use uuid::Uuid;
+
+        let _connection = establish_connection();
+        let new_form = NewOwner {
+            user_id:     user_id,
+            name:        name,
+            description: description,
+            types:       2,
             secret_key:  Uuid::new_v4().to_string(),
             service_key: Uuid::new_v4().to_string() + &"-".to_string() + &Uuid::new_v4().to_string(),
             is_active:   true,
