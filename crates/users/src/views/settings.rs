@@ -216,6 +216,6 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_link(data.link.unwrap())))
+        Ok(Json(owner.edit_link(data.link.as_deref().unwrap())))
     }
 }
