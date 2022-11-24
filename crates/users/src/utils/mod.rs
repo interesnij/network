@@ -183,11 +183,7 @@ pub fn get_user_owner_data (
                     let _user = get_user(_id);
                     if _user.is_ok() {
                         return (None, _id);
-                    }
-                    // пока добавим для тестов
-                    else if _id == 1 {
-                        return (None, 0); 
-                    }
+                    } 
                     else {
                         return (Some("user not found!".to_string()), 0);
                     }
