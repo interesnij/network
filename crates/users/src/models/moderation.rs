@@ -364,11 +364,11 @@ impl Owner {
         use crate::schema::owner_services_items::dsl::owner_services_items;
 
         let _connection = establish_connection();
-        diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(&services_ids)))
+        let _delete_items = diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(&services_ids)))
             .execute(&_connection)
             .expect("E");
 
-        diesel::update(self)
+            let _update_owner = diesel::update(self)
             .set((
                 schema::owners::name.eq(name.clone()),
                 schema::owners::description.eq(description.clone()),
