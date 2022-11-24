@@ -12,7 +12,7 @@ use crate::utils::{
     get_user_owner_data, get_user, get_owner,
     ErrorParams, ObjectData, SmallData,
     EditTokenPageResp,
-};
+}; 
 use crate::models::{TokenDetailJson, TokenJson, };
 use crate::errors::Error;
 
@@ -31,6 +31,9 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/get_app_token", web::get().to(get_app_token));
     config.route("/get_app_tokens", web::get().to(get_app_tokens));
     config.route("/get_all_tokens", web::get().to(get_all_tokens));
+
+    config.route("/get_secret_key", web::get().to(get_secret_key));
+    config.route("/get_service_key", web::get().to(get_service_key));
 }
 
  /*
@@ -503,6 +506,73 @@ pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
         if owner.user_id == user_id {
             let _res = block(move || owner.delete ()).await?;
             Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+pub async fn get_secret_key(data: Json<ObjectData>) -> Result<Json<String>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+    if err.is_some() {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if user_id == 0 {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        let owner: Owner;
+        let owner_res = get_owner(data.id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            // если список по id не найден...
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            Ok(Json(owner.secret_key))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+pub async fn get_service_key(data: Json<ObjectData>) -> Result<Json<String>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+    if err.is_some() {
+        // если проверка токена не удалась или запрос анонимный...
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if user_id == 0 {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        let owner: Owner;
+        let owner_res = get_owner(data.id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            // если список по id не найден...
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            Ok(Json(owner.service_key))
         }
         else {
             Err(Error::BadRequest("Permission Denied".to_string()))

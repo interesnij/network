@@ -1864,7 +1864,7 @@ impl User {
             return vec![true, true, true];
         }
         let private = self.get_private_model();
-        let _bool_vec = match private {
+        match private {
           Ok(_ok) => {
               let bool_see_all = match _ok.see_all {
                   1 => true,
@@ -1924,7 +1924,6 @@ impl User {
           },
           Err(_) => return vec![false, false, false],
         };
-        return _bool_vec;
     }
     pub fn is_anon_user_see_all(&self) -> bool {
         let private = self.get_private_model();
@@ -2138,7 +2137,7 @@ impl User {
             return 0;
         }
         use crate::schema::follows::dsl::follows;
-        use crate::models::Follow;
+        use crate::models::Follow; 
 
         let _connection = establish_connection();
 

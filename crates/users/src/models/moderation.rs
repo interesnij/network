@@ -195,26 +195,6 @@ impl Owner {
         }
     }
 
-    pub fn get_service_key(&self) -> String {
-        use crate::schema::owners::dsl::owners;
-
-        let _connection = establish_connection();
-        return owners
-            .filter(schema::owners::id.eq(self.id))
-            .select(schema::owners::service_key)
-            .first::<String>(&_connection)
-            .expect("E.");
-    }
-    pub fn get_secret_key(&self) -> String {
-        use crate::schema::owners::dsl::owners;
-
-        let _connection = establish_connection();
-        return owners 
-            .filter(schema::owners::id.eq(self.id))
-            .select(schema::owners::secret_key)
-            .first::<String>(&_connection)
-            .expect("E.");
-    }
     pub fn create_app_token (
         user_id:      i32,
         name:         String,
