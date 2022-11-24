@@ -18,19 +18,19 @@ use crate::errors::Error;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
-    config.route("/create_token/", web::get().to(create_token_page));
-    config.route("/edit_token/", web::get().to(edit_token_page));
-    config.route("/get_token/", web::get().to(get_token));
-    config.route("/get_tokens/", web::get().to(get_tokens));
+    config.route("/create_token", web::get().to(create_token_page));
+    config.route("/edit_token", web::get().to(edit_token_page));
+    config.route("/get_token", web::get().to(get_token));
+    config.route("/get_tokens", web::get().to(get_tokens));
 
-    config.route("/create_user_token/", web::post().to(create_user_token));
-    config.route("/create_app_token/", web::post().to(create_app_token));
-    config.route("/edit_token/", web::post().to(edit_token));
-    config.route("/delete_token/", web::post().to(delete_token));
+    config.route("/create_user_token", web::post().to(create_user_token));
+    config.route("/create_app_token", web::post().to(create_app_token));
+    config.route("/edit_token", web::post().to(edit_token));
+    config.route("/delete_token", web::post().to(delete_token));
 
-    config.route("/get_app_token/", web::get().to(get_app_token));
-    config.route("/get_app_tokens/", web::get().to(get_app_tokens));
-    config.route("/get_all_tokens/", web::get().to(get_all_tokens));
+    config.route("/get_app_token", web::get().to(get_app_token));
+    config.route("/get_app_tokens", web::get().to(get_app_tokens));
+    config.route("/get_all_tokens", web::get().to(get_all_tokens));
 }
 
  /*
@@ -63,12 +63,12 @@ pub async fn create_token_page(req: HttpRequest) -> Result<Json<Vec<OwnerService
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if user_id == 0 {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Permission Denied!".to_string(),
-            }).unwrap();
-            Err(Error::BadRequest(body))
-        }
+        //else if user_id == 0 {
+        //    let body = serde_json::to_string(&ErrorParams {
+       //         error: "Permission Denied!".to_string(),
+        //    }).unwrap();
+       //     Err(Error::BadRequest(body))
+       // }
         else {
             let body = block(move || OwnerService::get_all()).await?;
             Ok(Json(body))
