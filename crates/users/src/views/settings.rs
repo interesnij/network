@@ -23,9 +23,9 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     //config.route("/settings/change_phone_send", web::post().to(change_phone_send));
     //config.route("/settings/change_phone_verify", web::post().to(change_phone_verify));
     config.route("/settings/edit_link", web::post().to(edit_link));
-    //config.route("/settings/edit_name", web::post().to(edit_name));
-    //config.route("/settings/edit_password", web::post().to(edit_password));
-    //config.route("/settings/edit_phone", web::post().to(edit_phone));
+    config.route("/settings/edit_name", web::post().to(edit_name));
+    config.route("/settings/edit_password", web::post().to(edit_password));
+    config.route("/settings/edit_phone", web::post().to(edit_phone));
     //config.route("/settings/remove_profile", web::post().to(remove_profile));
 } 
 
@@ -217,5 +217,88 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
             return Err(Error::BadRequest(body));
         }
         Ok(Json(owner.edit_link(data.link.as_deref().unwrap())))
+    }
+}
+
+pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id == 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.phone.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'phone' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: User;
+        let owner_res = get_user(user_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            // если список по id не найден...
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        Ok(Json(owner.edit_phone(data.phone.as_deref().unwrap())))
+    }
+}
+
+pub async fn edit_name(data: Json<EditPasswordData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id == 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.first_name.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'first_name' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.last_name.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'last_name' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: User;
+        let owner_res = get_user(user_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            // если список по id не найден...
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        Ok(Json(owner.edit_phone(
+            data.first_name.as_deref().unwrap(),
+            data.last_name.as_deref().unwrap()
+        )))
     }
 }
