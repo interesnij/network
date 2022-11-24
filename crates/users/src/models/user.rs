@@ -139,16 +139,14 @@ impl User {
             .first::<User>(&_connection)?);
     }
     pub fn get_user_detail_json(&self) -> UserDetailJson {
-        let language: String;
         let city: Option<String>;
-        let status: Option<String>;
+        let status: Option<String>; 
         let image: Option<String>;
         let mut _b = "".to_string();
 
         let info = self.get_info_model();
         match info {
           Ok(_ok) => {
-              language = _ok.language;
               city = _ok.city;
               status = _ok.status;
               image = _ok.b_avatar;
@@ -157,20 +155,16 @@ impl User {
               }
           },
           Err(_error) => {
-              language = "".to_string();
               city = None;
               status = None;
               image = None;
           },
         };
         let user_json = UserDetailJson {
-             id:            self.id,
+             id:            self.id, 
              first_name:    self.first_name.clone(),
              last_name:     self.last_name.clone(),
-             types:         self.types,
              is_man:        self.is_man.clone(),
-             language:      language,
-             link:          self.get_slug(), // community.get_link()
              city:          city,
              status:        status,
              image:         image,
