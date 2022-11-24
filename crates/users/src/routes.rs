@@ -5,7 +5,7 @@ use crate::views::{
     //profile,
     progs,
     //manager_progs,
-    //settings,
+    settings,
     auth,
     owner_progs,
 };
@@ -20,6 +20,6 @@ pub fn routes(cfg: &mut web::ServiceConfig) {
     .configure(progs::progs_urls)
     //.configure(manager_progs::manager_urls)
     .configure(auth::auth_urls)
-    //.configure(settings::settings_urls)
+    .configure(settings::settings_urls)
     ;
 }

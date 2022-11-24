@@ -18,7 +18,6 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     UserPrivateJson, LocationJson,
     CardUserJson, UserDetailJson,
-    EditNameResp, EditPhoneResp, EditLinkResp,
 };
 use crate::schema::users;
 use crate::errors::Error;
