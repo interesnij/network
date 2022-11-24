@@ -25,7 +25,7 @@ use crate::errors::Error;
 
 
 #[derive(Deserialize)]
-struct UsersData {
+pub struct UsersData {
     pub token:     Option<String>,
     pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
