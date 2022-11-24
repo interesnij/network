@@ -257,7 +257,7 @@ pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn edit_name(data: Json<EditPasswordData>) -> Result<Json<i16>, Error> {
+pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
@@ -296,9 +296,46 @@ pub async fn edit_name(data: Json<EditPasswordData>) -> Result<Json<i16>, Error>
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_phone(
+        Ok(Json(owner.edit_name(
             data.first_name.as_deref().unwrap(),
             data.last_name.as_deref().unwrap()
         )))
+    }
+}
+
+pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id == 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.password.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'password' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: User;
+        let owner_res = get_user(user_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            // если список по id не найден...
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        Ok(Json(owner.edit_password(data.password.as_deref().unwrap())))
     }
 }
