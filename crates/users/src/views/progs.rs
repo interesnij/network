@@ -43,7 +43,7 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
