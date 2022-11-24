@@ -160,7 +160,7 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
         .first::<Moderated>(&_connection)?);
 }
 
-pub fn get_user_owner_data (
+pub fn get_user_owner_data ( 
     token:         Option<String>,  // токен
     user_id:       Option<i32>,     // возможный id request_user'а,
     service_types: i16              // тип сервиса и роли в нем
@@ -172,14 +172,10 @@ pub fn get_user_owner_data (
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
         let _token = token.as_deref().unwrap();
-        let _tok = _token.clone();
         let owner_res = owners
             .filter(schema::owners::service_key.eq(_token))
             .first::<Owner>(&_connection);
-        if _tok == "11".to_string() {
-            return (None, 0);
-        }
-        else if owner_res.is_ok() {
+        if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if owner.types == 1 {
                 if user_id.is_some() {
@@ -187,6 +183,10 @@ pub fn get_user_owner_data (
                     let _user = get_user(_id);
                     if _user.is_ok() {
                         return (None, _id);
+                    }
+                    // пока добавим для тестов
+                    else if _id == 1 {
+                        return (None, 0); 
                     }
                     else {
                         return (Some("user not found!".to_string()), 0);

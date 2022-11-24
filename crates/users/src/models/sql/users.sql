@@ -419,7 +419,7 @@ VALUES (7, 0, 7) ON CONFLICT DO NOTHING;
 INSERT INTO owner_services_items (id, owner_id, service_id)
 VALUES (8, 0, 8) ON CONFLICT DO NOTHING;
 INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (9, 9) ON CONFLICT DO NOTHING;
+VALUES (9, 0, 9) ON CONFLICT DO NOTHING;
 INSERT INTO owner_services_items (id, owner_id, service_id)
 VALUES (10, 0, 10) ON CONFLICT DO NOTHING;
 INSERT INTO owner_services_items (id, owner_id, service_id)

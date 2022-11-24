@@ -24,11 +24,11 @@ use crate::errors::Error;
 
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
-    config.route("/phone_send/", web::post().to(phone_send));
-    config.route("/phone_verify/", web::post().to(phone_verify));
-    config.route("/signup/", web::post().to(process_signup));
-    config.route("/login/", web::post().to(login));
-    config.route("/logout/", web::get().to(logout));
+    config.route("/phone_send", web::post().to(phone_send));
+    config.route("/phone_verify", web::post().to(phone_verify));
+    config.route("/signup", web::post().to(process_signup));
+    config.route("/login", web::post().to(login));
+    config.route("/logout", web::get().to(logout));
 }
 
 pub async fn logout() -> HttpResponse {
