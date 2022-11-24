@@ -134,7 +134,7 @@ impl User {
             .expect("E.");
         return 1;
     } 
-    pub fn edit_link(&self, link: String) -> i16 {
+    pub fn edit_link(&self, link: &str) -> i16 {
         let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(schema::users::link.eq(link))
