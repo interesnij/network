@@ -1864,7 +1864,7 @@ impl User {
             return vec![true, true, true];
         }
         let private = self.get_private_model();
-        let bool_vec = match private {
+        let _bool_vec = match private {
           Ok(_ok) => {
               let bool_see_all = match _ok.see_all {
                   1 => true,
@@ -1924,7 +1924,7 @@ impl User {
           },
           Err(_) => return vec![false, false, false],
         };
-        return bool_vec;
+        return _bool_vec;
     }
     pub fn is_anon_user_see_all(&self) -> bool {
         let private = self.get_private_model();
@@ -2133,8 +2133,8 @@ impl User {
             return 0;
         }
     }
-    pub fn follow_view_user(&self, user: User) -> i16 {
-        if self.id == user.id || !self.is_followers_user_with_id(user.id) {
+    pub fn follow_view_user(&self, user_id: i32) -> i16 {
+        if self.id == user_id || !self.is_followers_user_with_id(user_id) {
             return 0;
         }
         use crate::schema::follows::dsl::follows;
@@ -2144,7 +2144,7 @@ impl User {
 
         let _follow = follows
             .filter(schema::follows::user_id.eq(self.id))
-            .filter(schema::follows::target_id.eq(user.id))
+            .filter(schema::follows::target_id.eq(user_id))
             .first::<Follow>(&_connection)
             .expect("E");
         let u = diesel::update(&_follow)
