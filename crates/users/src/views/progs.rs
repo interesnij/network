@@ -28,7 +28,7 @@ use crate::errors::Error;
 struct UsersData {
     pub token:     Option<String>,
     pub user_id:   Option<i32>,
-    pub target_id: Option<i64>,
+    pub target_id: Option<i32>,
 }
 
 
