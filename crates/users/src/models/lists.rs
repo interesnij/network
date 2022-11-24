@@ -149,6 +149,7 @@ pub struct UserDeleteAnketa {
     pub other:   Option<String>,
     pub created: chrono::NaiveDateTime,
 }
+
 #[derive(Deserialize, Insertable)]
 #[table_name="user_delete_anketas"]
 pub struct NewUserDeleteAnketa {

@@ -3,7 +3,6 @@ use actix_web::{
     web::block,
     web::Json,
 };
-use serde::Deserialize;
 use crate::utils::{
     get_user,
     get_user_owner_data,
