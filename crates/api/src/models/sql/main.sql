@@ -75,3 +75,10 @@ CREATE TABLE reactions (
   is_active BOOLEAN NOT NULL DEFAULT true, -- активная реакция?
   position  SMALLINT NOT NULL              -- позиция
 );
+
+CREATE TABLE custom_links (
+    id   SERIAL PRIMARY KEY,
+    link VARCHAR(100) NOT NULL,
+    owner SMALLINT NOT NULL DEFAULT 0
+);
+CREATE UNIQUE INDEX custom_links_unq ON custom_links (link);

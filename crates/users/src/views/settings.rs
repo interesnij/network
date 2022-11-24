@@ -7,11 +7,12 @@ use actix_web::{
 use crate::utils::{
     get_user,
     get_user_owner_data,
-    ErrorParams, InfoParams, SmallData, EditNameData,
+    ErrorParams, SmallData,
+    EditNameResp, EditPhoneResp, EditLinkResp,
 };
 use crate::models::{User, };
 use crate::errors::Error;
-use serde::{Serialize, Deserialize};
+use serde::Deserialize;
 
 
 pub fn settings_urls(config: &mut web::ServiceConfig) {
@@ -21,12 +22,12 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
 
     //config.route("/settings/change_phone_send", web::post().to(change_phone_send));
     //config.route("/settings/change_phone_verify", web::post().to(change_phone_verify));
-    //config.route("/settings/edit_link", web::post().to(edit_link));
+    config.route("/settings/edit_link", web::post().to(edit_link));
     //config.route("/settings/edit_name", web::post().to(edit_name));
     //config.route("/settings/edit_password", web::post().to(edit_password));
     //config.route("/settings/edit_phone", web::post().to(edit_phone));
     //config.route("/settings/remove_profile", web::post().to(remove_profile));
-}
+} 
 
 
 #[derive(Deserialize)]
@@ -36,11 +37,6 @@ pub struct EditNameData {
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
 }
-#[derive(Serialize)]
-pub struct EditNameResp {
-    pub first_name: String,
-    pub last_name:  String,
-}
 
 #[derive(Deserialize)]
 pub struct EditPhoneData {
@@ -48,20 +44,12 @@ pub struct EditPhoneData {
     pub user_id: Option<i32>,
     pub phone:   Option<String>,
 }
-#[derive(Serialize)]
-pub struct EditPhoneResp {
-    pub phone: String,
-}
 
 #[derive(Deserialize)]
 pub struct EditLinkData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
     pub link:    Option<String>,
-}
-#[derive(Serialize)]
-pub struct EditLinkResp {
-    pub link: String,
 }
 
 
@@ -169,6 +157,7 @@ pub async fn edit_phone_page(req: HttpRequest) -> Result<Json<EditPhoneResp>, Er
             }).unwrap();
             Err(Error::BadRequest(body))
         }
+        
         else {
             let owner: User;
             let owner_res = get_user(user_id);
@@ -190,5 +179,43 @@ pub async fn edit_phone_page(req: HttpRequest) -> Result<Json<EditPhoneResp>, Er
             error: "parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+     if err.is_some() {
+        // если проверка токена не удалась...
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id == 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.link.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'link' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: User;
+        let owner_res = get_user(user_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            // если список по id не найден...
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        Ok(Json(owner.edit_link(data.link)))
     }
 }

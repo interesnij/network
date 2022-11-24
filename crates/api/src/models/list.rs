@@ -19,6 +19,7 @@ use crate::schema::{
     stickers,
     smile_categories,
     smiles,
+    custom_links,
 };
 use crate::errors::Error;
 
@@ -287,4 +288,20 @@ pub struct NewReaction {
     pub name:      String,
     pub is_active: bool,
     pub position:  i16,
+}
+
+/////// CustomLink //////
+// таблица проверки уникальности пользовательских ссылок.
+// чтобы также идентифицировать владельца и показывать страницу его.
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct CustomLink {
+    pub id:    i32,
+    pub link:  String, // ссылка
+    pub owner: i16,    // 1 - пользователь, 2 - сообщество
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="custom_links"]
+pub struct NewCustomLink {
+    pub link:  String,
+    pub owner: i16,
 }

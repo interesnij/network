@@ -86,3 +86,21 @@ pub struct UsersData {
     pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
 }
+
+#[derive(Serialize)]
+pub struct EditPhoneResp {
+    pub phone: String,
+}
+#[derive(Serialize)]
+pub struct EditPasswordResp {
+    pub password: String,
+}
+#[derive(Serialize)]
+pub struct EditNameResp {
+    pub first_name: String,
+    pub last_name:  String,
+}
+#[derive(Serialize)]
+pub struct EditLinkResp {
+    pub link: String,
+}
