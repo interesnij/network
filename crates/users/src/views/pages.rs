@@ -13,8 +13,8 @@ use crate::utils::{
     get_anon_user_permission,
     ErrorParams, CardUserJson,
     RegListData, SearchRegListData,
-    TargetListData, SearchTargetListData
-    UsersData,
+    TargetListData, SearchTargetListData,
+    UsersData, UserDetailJson, 
 };
 use crate::models::User;
 use crate::errors::Error;
