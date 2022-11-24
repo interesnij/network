@@ -306,6 +306,7 @@ impl Owner {
             .values(&new_form)
             .get_result::<Owner>(&_connection)
             .expect("E.");
+        return new_token.get_token_detail();
     }
     pub fn create_user_token (
         user_id:      i32,
