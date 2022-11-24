@@ -8,17 +8,11 @@ use crate::utils::{
     get_user,
     get_user_owner_data,
     ErrorParams, 
+    UsersData,
 };
 use crate::models::User;
 use crate::errors::Error;
 
-
-#[derive(Deserialize)]
-pub struct UsersData {
-    pub token:     Option<String>,
-    pub user_id:   Option<i32>,
-    pub target_id: Option<i32>,
-}
 
 
 pub fn progs_urls(config: &mut web::ServiceConfig) {

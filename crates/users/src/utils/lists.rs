@@ -79,3 +79,10 @@ pub struct EditTokenPageResp {
     pub item_services: Vec<OwnerService>,
     pub all_services:  Vec<OwnerService>,
 }
+
+#[derive(Deserialize)]
+pub struct UsersData {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub target_id: Option<i32>,
+}
