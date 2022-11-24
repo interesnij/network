@@ -2,6 +2,7 @@ use actix_web::{
     web,
     web::block,
     web::Json,
+    HttpRequest,
 };
 use crate::utils::{
     get_user,
@@ -10,6 +11,7 @@ use crate::utils::{
 };
 use crate::models::{User, };
 use crate::errors::Error;
+use serde::{Serialize, Deserialize};
 
 
 pub fn settings_urls(config: &mut web::ServiceConfig) {
@@ -136,7 +138,7 @@ pub async fn edit_name_page(req: HttpRequest) -> Result<Json<EditNameResp>, Erro
                 return Err(Error::BadRequest(body));
             }
             Ok(Json(
-                EditLinkResp{
+                EditNameResp {
                     first_name: owner.first_name,
                     last_name: owner.last_name
                 }))
