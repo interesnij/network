@@ -116,6 +116,7 @@ pub struct GetSessionFields {
 
 impl User { 
     pub fn edit_name(&self, first_name: String, last_name: String) -> i16 {
+        let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(( 
                 schema::users::first_name.eq(first_name),
@@ -126,6 +127,7 @@ impl User {
         return 1;
     }
     pub fn edit_phone(&self, phone: String) -> i16 {
+        let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(schema::users::phone.eq(phone))
             .execute(&_connection)
@@ -133,6 +135,7 @@ impl User {
         return 1;
     } 
     pub fn edit_link(&self, link: String) -> i16 {
+        let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(schema::users::link.eq(link))
             .execute(&_connection)
@@ -140,6 +143,7 @@ impl User {
         return 1;
     }
     pub fn edit_password(&self, password: String) -> i16 {
+        let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(schema::users::password.eq(password))
             .execute(&_connection)

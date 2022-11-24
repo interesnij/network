@@ -183,7 +183,7 @@ pub async fn edit_phone_page(req: HttpRequest) -> Result<Json<EditPhoneResp>, Er
 }
 
 pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
      if err.is_some() {
         // если проверка токена не удалась...
         let body = serde_json::to_string(&ErrorParams {
@@ -216,6 +216,6 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_link(data.link)))
+        Ok(Json(owner.edit_link(data.link.as_deref().unwrap().to_string())))
     }
 }
