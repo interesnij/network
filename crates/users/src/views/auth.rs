@@ -385,14 +385,13 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
             .unwrap()
             .parse()
             .unwrap();
-    
-        let _res = block(move || {
-            if phone_codes
-                .filter(schema::phone_codes::phone.eq(_phone.clone()))
-                .filter(schema::phone_codes::code.eq(_code))
-                .select(schema::phone_codes::id)
-                .first::<i32>(&_connection)
-                .is_ok() {
+        if phone_codes
+            .filter(schema::phone_codes::phone.eq(_phone.clone()))
+            .filter(schema::phone_codes::code.eq(_code))
+            .select(schema::phone_codes::id)
+            .first::<i32>(&_connection)
+            .is_ok() {
+            let _res = block(move || {
                 let new_phone_v = NewVerifiedPhone {
                     phone: _phone.to_string(),
                 };
@@ -409,11 +408,10 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
                 .execute(&_connection)
                 .expect("E");
                 1
-            }
-            else {
-                0
-            }
-        }).await?;
-        Ok(Json(_res))
+            }).await?;
+             Ok(Json(_res))
+        else {
+             0
+        }
     }
 }
