@@ -18,6 +18,29 @@ pub struct CardUserJson {
     pub image:      Option<String>,
 }
 
+#[derive(Deserialize, Serialize)]
+pub struct EditTokenPageResp {
+    pub id:            i32,
+    pub name:          String,
+    pub description:   Option<String>,
+    pub is_active:     bool,
+    pub item_services: Vec<OwnerService>,
+    pub all_services:  Vec<OwnerService>,
+}
+
+#[derive(Deserialize)]
+pub struct ObjectData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub id:      Option<i32>,
+}
+
+#[derive(Deserialize)]
+pub struct SmallData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+}
+
 ////////
 #[derive(Serialize, Queryable)]
 pub struct CommunityCategoryJson {

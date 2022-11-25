@@ -473,10 +473,9 @@ pub async fn send_reaction_post(data: Json<ReactionData>) -> Result<Json<JsonIte
             else {
                 let owner = get_user(list.user_id).expect("E.");
                 let _tuple = get_user_permission(&owner, user_id);
-                if _tuple.0 == false {
+                if _tuple.0 == false || !list.is_user_see_comment(user_id) {
                     Err(Error::BadRequest(_tuple.1))
                 }
-
                 else if !list.is_user_see_comment(user_id) || !owner.is_user_see_comment(user_id) {
                     Err(Error::BadRequest("Permission Denied".to_string()))
                 }

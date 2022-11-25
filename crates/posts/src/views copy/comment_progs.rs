@@ -31,7 +31,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id < 1 {
+    else if user_id < 1 || community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.content.is_none() && data.attachments.is_none() {
@@ -98,7 +98,7 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id < 1 {
+    else if user_id < 1 || community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.content.is_none() && data.attachments.is_none() {
@@ -142,7 +142,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id < 1 {
+    else if user_id < 1 || community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else {
@@ -181,7 +181,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id < 1 {
+    else if user_id < 1 || community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else {
@@ -221,18 +221,18 @@ pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<Json
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id < 1 {
+    else if user_id < 1 || community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "Field 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.reaction_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'reaction_id' is required!".to_string(),
+            error: "Field 'reaction_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }

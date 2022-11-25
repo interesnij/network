@@ -68,9 +68,11 @@ pub struct LoadListParams {
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<LoadListParams>::from_query(req.query_string());
     if params_some.is_ok() {
+        // если параметры строки запроса правильные...
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
+            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -78,7 +80,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'list_id' is required!".to_string(),
+                error: "parametr 'list_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -218,7 +220,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -242,7 +244,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if user_id < 1 {
+        else if user_id == 0 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -250,7 +252,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
         }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'list_id' is required!".to_string(),
+                error: "parametr 'list_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -282,7 +284,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -300,12 +302,13 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
+            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if (user_id == 0 && community_id == 0) {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -313,7 +316,7 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
         }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'list_id' is required!".to_string(),
+                error: "parametr 'list_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -347,7 +350,7 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -377,7 +380,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
         }
         else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "parametr 'item_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -503,7 +506,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -524,7 +527,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
         }
         else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "parametr 'item_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -540,7 +543,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
             else {
                 // если список по id не найден...
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "posts list not found!".to_string(),
+                    error: "post not found!".to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
             }
@@ -668,7 +671,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -694,7 +697,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if (user_id == 0 && community_id == 0) {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -702,7 +705,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
         }
         else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "parametr 'item_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -738,7 +741,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -765,7 +768,7 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if (user_id == 0 && community_id == 0) {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -774,17 +777,35 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
 
         if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "parametr 'item_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
         else if params.reaction_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'reaction_id' is required!".to_string(),
+                error: "parametr 'reaction_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
         else {
+            let mut limit: i64 = 0;
+            let offset: i64;
+            if params.limit.is_some() {
+                let _limit = params.limit.unwrap();
+                if _limit > 100 {
+                    limit = 20;
+                }
+                else {
+                    limit = _limit;
+                }
+            }
+            if params.offset.is_some() {
+                offset = params.offset.unwrap();
+            }
+            else {
+                offset = 0;
+            }
+
             let item: Post;
             let item_res = get_post(params.item_id.unwrap());
             if item_res.is_ok() {
@@ -811,8 +832,8 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
                         &item.get_users_of_reaction (
                             user_id,
                             params.reaction_id.unwrap(),
-                            params.limit,
-                            params.offset,
+                            limit,
+                            offset,
                         )
                     )
                     .unwrap();
@@ -833,8 +854,8 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
                         &item.get_users_of_reaction (
                             user_id,
                             params.reaction_id.unwrap(),
-                            params.limit,
-                            params.offset,
+                            limit,
+                            offset,
                         )
                     )
                         .unwrap();
@@ -845,7 +866,7 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }
@@ -863,13 +884,13 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if (user_id == 0 && community_id == 0) {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if user_id < 1 {
+        else if user_id == 0 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -878,19 +899,37 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
 
         if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "parametr 'comment_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
         else if params.reaction_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'reaction_id' is required!".to_string(),
+                error: "parametr 'reaction_id' not found!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
         else {
+            let mut limit: i64 = 0;
+            let offset: i64;
+            if params.limit.is_some() {
+                let _limit = params.limit.unwrap();
+                if _limit > 100 {
+                    limit = 20;
+                }
+                else {
+                    limit = _limit;
+                }
+            }
+            if params.offset.is_some() {
+                offset = params.offset.unwrap();
+            }
+            else {
+                offset = 0;
+            }
+
             let comment: PostComment;
-            let item: Post; 
+            let item: Post;
             let comment_res = get_post_comment(params.item_id.unwrap());
             if comment_res.is_ok() {
                 comment = comment_res.expect("E");
@@ -917,8 +956,8 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
                         &comment.get_users_of_reaction (
                             user_id,
                             params.reaction_id.unwrap(),
-                            params.limit,
-                            params.offset,
+                            limit,
+                            offset,
                         )
                     )
                     .unwrap();
@@ -939,8 +978,8 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
                         &comment.get_users_of_reaction (
                             user_id,
                             params.reaction_id.unwrap(),
-                            params.limit,
-                            params.offset,
+                            limit,
+                            offset,
                         )
                     )
                     .unwrap();
@@ -951,7 +990,7 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Parametrs not found!".to_string(),
+            error: "parametrs not found!".to_string(),
         }).unwrap();
         HttpResponse::Ok().body(body)
     }

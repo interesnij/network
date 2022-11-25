@@ -2,7 +2,10 @@ mod community;
 //use serde::Serialize;
 use diesel::prelude::*;
 use crate::schema;
-use crate::models::Community;
+use crate::models::{
+    Community, User, 
+    Owner, Moderation,
+};
 use crate::errors::Error;
 pub use self::{
     community::*,
@@ -108,5 +111,26 @@ pub fn get_community_with_link(link: String) -> Result<Community, Error> {
     let connection = establish_connection();
     return Ok(communitys
         .filter(schema::communitys::link.eq("/".to_owned() + &link + &"/".to_string()))
+        .first(&connection)?);
+}
+pub fn get_user(id: i32) -> Result<User, Error> {
+    use crate::schema::users::dsl::users;
+    let connection = establish_connection();
+    return Ok(users
+        .filter(schema::users::id.eq(id))
+        .first(&connection)?);
+}
+pub fn get_owner(id: i32) -> Result<Owner, Error> {
+    use crate::schema::owners::dsl::owners;
+    let connection = establish_connection();
+    return Ok(owners
+        .filter(schema::owners::id.eq(id))
+        .first(&connection)?);
+}
+pub fn get_moderation(id: i32) -> Result<Moderation, Error> {
+    use crate::schema::moderations::dsl::moderations;
+    let connection = establish_connection();
+    return Ok(moderations
+        .filter(schema::moderations::id.eq(id))
         .first(&connection)?);
 }

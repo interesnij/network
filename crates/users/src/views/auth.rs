@@ -267,107 +267,147 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     }
 }
 
-#[derive(Deserialize, Serialize)]
-pub struct PhoneCodeJson {
-    pub phone: String,
-    pub code:  String,
+#[derive(Deserialize)]
+pub struct PhoneJson {
+    pub token: Option<String>,
+    pub phone: Option<String>,
 }
-pub async fn phone_send(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, Error> {
-    let req_phone = data.phone.clone();
-    if req_phone.len() > 8 {
-        use crate::models::NewPhoneCode;
-        use crate::schema::{
-            users::dsl::users,
-            verified_phones::dsl::verified_phones,
-        };
-
-        let _connection = establish_connection();
-        if users
-            .filter(schema::users::phone.eq(&req_phone))
-            .first::<User>(&_connection)
-            .is_ok() {
+#[derive(Deserialize)]
+pub struct PhoneCodeJson {
+    pub token: Option<String>,
+    pub phone: Option<String>,
+    pub code:  Option<String>,
+}
+pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
+    if err.is_some() || (user_id != 0) {
+        Err(Error::BadRequest(err.unwrap()))
+    } 
+    else if data.phone.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'phone' is required!".to_string(),
+        }).unwrap(); 
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let req_phone = data.phone.as_deref().unwrap();
+        if req_phone.len() > 8 {
+            use crate::models::NewPhoneCode;
+            use crate::schema::{
+                users::dsl::users,
+                verified_phones::dsl::verified_phones,
+            };
+    
+            let _connection = establish_connection();
+            if users
+                .filter(schema::users::phone.eq(req_phone))
+                .select(schema::users::id)
+                .first::<i32>(&_connection)
+                .is_ok() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
+                }).unwrap();
+                Err(Error::BadRequest(body))
+            }
+            else if verified_phones
+                .filter(schema::verified_phones::phone.eq(data.phone.clone()))
+                .select(schema::verified_phones::id)
+                .first::<i32>(&_connection)
+                .is_ok() {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "phone already verified!".to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+            }
+            else {
+                let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
+                let __request = reqwest::get(_url).await.expect("E.");
+                let new_request = __request.text().await.unwrap();
+                println!("{:?}", new_request);
+    
+                let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
+                let code_i32: i32 = phone200.code.parse().unwrap();
+                let new_phone_code = NewPhoneCode {
+                    phone: req_phone.to_string(),
+                    code:  code_i32,
+                };
+                let c = diesel::insert_into(schema::phone_codes::table)
+                    .values(&new_phone_code)
+                    .execute(&_connection);
+                if c.is_ok() {
+                    Ok(Json(1))
+                }
+                else {
+                    Ok(Json(0))
+                }
+            }
+        }
+        else {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
+                error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if verified_phones
-            .filter(schema::verified_phones::phone.eq(data.phone.clone()))
-            .select(schema::verified_phones::id)
-            .first::<i32>(&_connection)
-            .is_ok() {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "phone already verified!".to_string(),
-                }).unwrap();
-                Err(Error::BadRequest(body))
-        }
-        else {
-            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
-            let __request = reqwest::get(_url).await.expect("E.");
-            let new_request = __request.text().await.unwrap();
-            println!("{:?}", new_request);
-
-            let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
-            let code_i32: i32 = phone200.code.parse().unwrap();
-            let new_phone_code = NewPhoneCode {
-                phone: req_phone.to_string(),
-                code:  code_i32,
-            };
-            let c = diesel::insert_into(schema::phone_codes::table)
-                .values(&new_phone_code)
-                .execute(&_connection);
-            if c.is_ok() {
-                Ok(Json(1))
-            }
-            else {
-                Ok(Json(0))
-            }
-        }
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
     }
 }
 
 pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, Error> {
-    use crate::schema::phone_codes::dsl::phone_codes;
-    use crate::models::NewVerifiedPhone;
+    let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
+    if err.is_some() || (user_id != 0) {
+        Err(Error::BadRequest(err.unwrap()))
+    } 
+    else if data.phone.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'phone' is required!".to_string(),
+        }).unwrap(); 
+        Err(Error::BadRequest(body))
+    }
+    else if data.code.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'code' is required!".to_string(),
+        }).unwrap(); 
+        Err(Error::BadRequest(body))
+    }
+    else {
+        use crate::schema::phone_codes::dsl::phone_codes;
+        use crate::models::NewVerifiedPhone;
 
-    let _connection = establish_connection();
-    let _phone = data.phone.clone();
-    let _code: i32 = data.code.parse().unwrap();
-
-    let _res = block(move || {
-        if phone_codes
-            .filter(schema::phone_codes::phone.eq(&_phone))
-            .filter(schema::phone_codes::code.eq(&_code))
-            .select(schema::phone_codes::id)
-            .first::<i32>(&_connection)
-            .is_ok() {
-            let new_phone_v = NewVerifiedPhone {
-                phone: _phone.to_string(),
-            };
-            diesel::insert_into(schema::verified_phones::table)
-                .values(&new_phone_v)
+        let _connection = establish_connection();
+        let _phone = data.phone.as_deref().unwrap();
+        let _code: i32 = data.code
+            .as_deref()
+            .unwrap()
+            .parse()
+            .unwrap();
+    
+        let _res = block(move || {
+            if phone_codes
+                .filter(schema::phone_codes::phone.eq(_phone))
+                .filter(schema::phone_codes::code.eq(_code))
+                .select(schema::phone_codes::id)
+                .first::<i32>(&_connection)
+                .is_ok() {
+                let new_phone_v = NewVerifiedPhone {
+                    phone: _phone.to_string(),
+                };
+                diesel::insert_into(schema::verified_phones::table)
+                    .values(&new_phone_v)
+                    .execute(&_connection)
+                    .expect("E.");
+    
+                diesel::delete (
+                phone_codes
+                    .filter(schema::phone_codes::phone.eq(_phone))
+                    .filter(schema::phone_codes::code.eq(_code))
+                )
                 .execute(&_connection)
-                .expect("E.");
-
-            diesel::delete (
-            phone_codes
-                .filter(schema::phone_codes::phone.eq(&_phone))
-                .filter(schema::phone_codes::code.eq(&_code))
-            )
-            .execute(&_connection)
-            .expect("E");
-            1
-        }
-        else {
-            0
-        }
-    }).await?;
-
-    Ok(Json(_res))
+                .expect("E");
+                1
+            }
+            else {
+                0
+            }
+        }).await?;
+        Ok(Json(_res))
+    }
 }

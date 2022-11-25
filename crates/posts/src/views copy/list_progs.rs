@@ -33,15 +33,13 @@ pub fn list_urls(config: &mut web::ServiceConfig) {
 
 pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id > 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id > 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -73,15 +71,13 @@ pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<
 }
 pub async fn delete_list_from_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id > 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id > 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -94,21 +90,19 @@ pub async fn delete_list_from_user_collection(data: Json<ItemParams>) -> Result<
 
 pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if community_id < 1 && data.community_id.is_none() {
+    else if community_id == 0 || data.community_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "parametr 'community_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -116,6 +110,10 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
         let list = get_post_list(data.id.unwrap()).expect("E.");
         if list.community_id.is_some() {
             let target_community = list.get_community().expect("E.");
+            let pub_types = vec![1,7,13];
+            if !pub_types.iter().any(|&i| i==target_community.types) {
+                Err(Error::BadRequest("Permission Denied".to_string()))
+            }
             else if community_id > 0 {
                 let community = get_community(community_id).expect("E.");
                 let _res = block(move || list.add_in_community_collections(community.id)).await?;
@@ -138,11 +136,8 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
         else {
             let owner = list.get_creator().expect("E.");
             let _tuple = get_user_permission(&owner, user_id);
-            if _tuple.0 == false {
+            if _tuple.0 == false || user_id == 0 || data.community_id.is_none() {
                 Err(Error::BadRequest(_tuple.1))
-            }
-            else if user_id == 0 || data.community_id.is_none() {
-                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let _res = block(move || list.add_in_community_collections(data.community_id.unwrap())).await?;
@@ -153,19 +148,17 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
 }
 pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if community_id < 1 || data.community_id.is_none() {
+    else if community_id == 0 || data.community_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'community_id' not found!".to_string(),
         }).unwrap();
@@ -195,17 +188,12 @@ pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Re
 
 pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id > 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id > 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
-    }
     else if data.name.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'name' is required!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
+        Err(Error::BadRequest("Добавьте название".to_string()))
     }
     else {
         let _res = block(move || PostList::create_list(data)).await?;
@@ -214,23 +202,15 @@ pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson
 }
 pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id > 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id > 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
-    }
     else if data.name.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'name' is required!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
+        Err(Error::BadRequest("Добавьте название".to_string()))
     }
     else if data.id.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
+        Err(Error::BadRequest("Номер списка не передан".to_string()))
     }
     else {
         let list = get_post_list(data.id.unwrap()).expect("E.");
@@ -245,21 +225,19 @@ pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJso
 }
 pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
-    }
-    else if data.name.is_none() {
+    else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'name' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if community_id < 1 && data.community_id.is_none() {
+    else if community_id == 0 || data.community_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "parametr 'community_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -283,27 +261,19 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
 }
 pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() || {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if data.name.is_none() {
+    else if community_id == 0 || data.community_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'name' is required!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
-    else if community_id > 1 && data.community_id.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "parametr 'community_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -328,15 +298,13 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
 
 pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -356,7 +324,7 @@ pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             }
         }
         else {
-            if community_id < 1 && list.user_id == user_id {
+            if community_id == 0 && (list.user_id == user_id || list.user_id == user_id) {
                 let _res = block(move || list.delete_item()).await?;
                 Ok(Json(_res))
             }
@@ -369,15 +337,13 @@ pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 
 pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -397,7 +363,7 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
             }
         }
         else {
-            if community_id < 1 && (list.user_id == user_id || list.user_id == user_id) {
+            if community_id == 0 && (list.user_id == user_id || list.user_id == user_id) {
                 let _res = block(move || list.restore_item()).await?;
                 Ok(Json(_res))
             }
@@ -410,15 +376,13 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 
 pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || (user_id == 0 && community_id == 0) {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 && community_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -427,11 +391,8 @@ pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
         if list.community_id.is_some() {
             let community = get_community(list.community_id.unwrap()).expect("E.");
             let _tuple = get_community_permission(&community, user_id);
-            if _tuple.0 == false {
+            if _tuple.0 == false || !list.is_user_copy_el(user_id) || !community.is_user_copy_el(user_id) {
                 Err(Error::BadRequest(_tuple.1))
-            }
-            else if !list.is_user_copy_el(user_id) || !community.is_user_copy_el(user_id) {
-                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let _res = block(move || list.copy_list(user_id, data.owners.clone())).await?;
@@ -441,11 +402,8 @@ pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
         else {
             let owner = get_user(list.user_id).expect("E.");
             let _tuple = get_user_permission(&owner, user_id);
-            if _tuple.0 == false {
+            if _tuple.0 == false || !list.is_user_copy_el(user_id) || !owner.is_user_copy_el(user_id) {
                 Err(Error::BadRequest(_tuple.1))
-            }
-            else if !list.is_user_copy_el(user_id) || !community.is_user_copy_el(user_id) {
-                Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
                 let _res = block(move || list.copy_list(user_id, data.owners.clone())).await?;

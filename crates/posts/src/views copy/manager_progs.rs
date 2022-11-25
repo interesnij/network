@@ -80,27 +80,25 @@ pub async fn create_claim_list(data: Json<ReportParams>) -> Result<Json<i16>, Er
     use crate::models::ModeratedReport;
 
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.types.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'types' is required!".to_string(),
+            error: "parametr 'types' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -146,27 +144,25 @@ pub async fn create_claim_post(data: Json<ReportParams>) -> Result<Json<i16>, Er
     use crate::models::ModeratedReport;
 
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.types.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'types' is required!".to_string(),
+            error: "parametr 'types' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -213,27 +209,25 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
     use crate::models::ModeratedReport;
 
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'id' is required!".to_string(),
+            error: "parametr 'id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else if data.types.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'types' is required!".to_string(),
+            error: "parametr 'types' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -280,15 +274,13 @@ pub async fn create_claim_comment(data: Json<ReportParams>) -> Result<Json<i16>,
 // веерное событие
 pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -310,15 +302,13 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 // веерное событие
 pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -340,15 +330,13 @@ pub async fn close_community(data: Json<CloseParams>) -> Result<Json<i16>, Error
 // веерное событие
 pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -370,15 +358,13 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 // веерное событие
 pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -399,15 +385,13 @@ pub async fn unclose_community(data: Json<CloseParams>) -> Result<Json<i16>, Err
 
 pub async fn close_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -437,15 +421,13 @@ pub async fn close_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 }
 pub async fn close_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -475,15 +457,13 @@ pub async fn close_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 }
 pub async fn close_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -514,15 +494,13 @@ pub async fn close_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> 
 
 pub async fn unclose_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -552,15 +530,13 @@ pub async fn unclose_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 }
 pub async fn unclose_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -590,15 +566,13 @@ pub async fn unclose_post(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 }
 pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -630,15 +604,13 @@ pub async fn unclose_comment(data: Json<CloseParams>) -> Result<Json<i16>, Error
 // веерное событие
 pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -660,15 +632,13 @@ pub async fn suspend_community(data: Json<ModerationParams>) -> Result<Json<i16>
 // веерное событие
 pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -690,15 +660,13 @@ pub async fn unsuspend_community(data: Json<ModerationParams>) -> Result<Json<i1
 // веерное событие
 pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is requiredd!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -720,15 +688,13 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
 // веерное событие
 pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -749,15 +715,13 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
 
 pub async fn suspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -787,15 +751,13 @@ pub async fn suspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Err
 }
 pub async fn unsuspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -826,15 +788,13 @@ pub async fn unsuspend_list(data: Json<ModerationParams>) -> Result<Json<i16>, E
 
 pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -859,15 +819,13 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
 
 pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -890,15 +848,13 @@ pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>,
 
 pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -921,15 +877,13 @@ pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i
 
 pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -952,15 +906,13 @@ pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16
 
 pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -983,15 +935,13 @@ pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i1
 
 pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() {
+    if err.is_some() || user_id == 0 {
+        // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id < 1 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'item_id' is required!".to_string(),
+            error: "parametr 'item_id' not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }

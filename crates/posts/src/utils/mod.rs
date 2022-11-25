@@ -212,7 +212,7 @@ pub fn get_owner_data (
             }
             else if owner.types == 3 {
                 // токен сообщества
-                return (None, 0, owner.community_id.unwrap());
+                return (None, owner.user_id, owner.community_id.unwrap());
             }
             else {
                 return (Some("owner not found!".to_string()), 0, 0);
