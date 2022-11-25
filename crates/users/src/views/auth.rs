@@ -405,7 +405,6 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
                 )
                 .execute(&_connection)
                 .expect("E");
-                1
 
              Ok(Json(_res))
         }
