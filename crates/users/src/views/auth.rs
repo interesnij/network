@@ -300,7 +300,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
     
             let _connection = establish_connection();
             if users
-                .filter(schema::users::phone.eq(req_phone))
+                .filter(schema::users::phone.eq(req_phone.clone()))
                 .select(schema::users::id)
                 .first::<i32>(&_connection)
                 .is_ok() {
@@ -310,7 +310,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
                 Err(Error::BadRequest(body))
             }
             else if verified_phones
-                .filter(schema::verified_phones::phone.eq(data.phone.clone()))
+                .filter(schema::verified_phones::phone.eq(req_phone.clone()))
                 .select(schema::verified_phones::id)
                 .first::<i32>(&_connection)
                 .is_ok() {
