@@ -390,24 +390,23 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
             .select(schema::phone_codes::id)
             .first::<i32>(&_connection)
             .is_ok() {
-            let _res = block(move || {
                 let new_phone_v = NewVerifiedPhone {
                     phone: _phone.to_string(),
                 };
-                diesel::insert_into(schema::verified_phones::table)
+                 let _res = diesel::insert_into(schema::verified_phones::table)
                     .values(&new_phone_v)
                     .execute(&_connection)
                     .expect("E.");
     
                 diesel::delete (
-                phone_codes
-                    .filter(schema::phone_codes::phone.eq(_phone.clone()))
-                    .filter(schema::phone_codes::code.eq(_code))
+                    phone_codes
+                        .filter(schema::phone_codes::phone.eq(_phone.clone()))
+                        .filter(schema::phone_codes::code.eq(_code))
                 )
                 .execute(&_connection)
                 .expect("E");
                 1
-            }).await?;
+
              Ok(Json(_res))
         }
         else {
