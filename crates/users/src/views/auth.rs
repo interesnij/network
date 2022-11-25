@@ -410,6 +410,7 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
                 1
             }).await?;
              Ok(Json(_res))
+        }
         else {
              0
         }
