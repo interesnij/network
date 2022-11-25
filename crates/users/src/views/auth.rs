@@ -357,7 +357,7 @@ pub struct OptionPhoneCodeJson {
     pub phone: Option<String>,
     pub code:  Option<String>,
 }
-pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i16>, Error> {
+pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<usize>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
     if err.is_some() || (user_id != 0) {
         return Err(Error::BadRequest(err.unwrap()));
