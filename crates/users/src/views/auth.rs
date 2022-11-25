@@ -274,9 +274,9 @@ pub struct PhoneJson {
 }
 #[derive(Deserialize)]
 pub struct PhoneCodeJson {
-    pub token: Option<String>,
-    pub phone: Option<String>,
-    pub code:  Option<String>,
+    pub token: String,
+    pub phone: String,
+    pub code:  String,
 }
 pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
@@ -326,11 +326,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
                 println!("{:?}", new_request);
     
                 let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
-                let _code: i32 = data.code
-                    .as_deref()
-                    .unwrap()
-                    .parse()
-                    .unwrap();
+                let _code: i32 = phone200.code.parse().unwrap();
                 let new_phone_code = NewPhoneCode {
                     phone: req_phone.to_string(),
                     code:  _code,
@@ -355,7 +351,13 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
     }
 }
 
-pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, Error> {
+#[derive(Deserialize)]
+pub struct OptionPhoneCodeJson {
+    pub token: Option<String>,
+    pub phone: Option<String>,
+    pub code:  Option<String>,
+}
+pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
     if err.is_some() || (user_id != 0) {
         Err(Error::BadRequest(err.unwrap()))
