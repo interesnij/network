@@ -326,10 +326,14 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
                 println!("{:?}", new_request);
     
                 let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
-                let code_i32: i32 = phone200.code.parse().unwrap();
+                let _code: i32 = data.code
+                    .as_deref()
+                    .unwrap()
+                    .parse()
+                    .unwrap();
                 let new_phone_code = NewPhoneCode {
                     phone: req_phone.to_string(),
-                    code:  code_i32,
+                    code:  _code,
                 };
                 let c = diesel::insert_into(schema::phone_codes::table)
                     .values(&new_phone_code)
@@ -382,7 +386,7 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, E
     
         let _res = block(move || {
             if phone_codes
-                .filter(schema::phone_codes::phone.eq(_phone))
+                .filter(schema::phone_codes::phone.eq(_phone.clone()))
                 .filter(schema::phone_codes::code.eq(_code))
                 .select(schema::phone_codes::id)
                 .first::<i32>(&_connection)
@@ -397,7 +401,7 @@ pub async fn phone_verify(data: web::Json<PhoneCodeJson>) -> Result<Json<i16>, E
     
                 diesel::delete (
                 phone_codes
-                    .filter(schema::phone_codes::phone.eq(_phone))
+                    .filter(schema::phone_codes::phone.eq(_phone.clone()))
                     .filter(schema::phone_codes::code.eq(_code))
                 )
                 .execute(&_connection)
