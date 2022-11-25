@@ -362,7 +362,7 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
     if err.is_some() || (user_id != 0) {
         Err(Error::BadRequest(err.unwrap()))
     } 
-    else if data.phone.is_none() {
+    else if data.phone.clone().is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'phone' is required!".to_string(),
         }).unwrap(); 
