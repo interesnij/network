@@ -412,7 +412,10 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<i
              Ok(Json(_res))
         }
         else {
-             0
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Code' is incorrect!".to_string(),
+            }).unwrap(); 
+            Err(Error::BadRequest(body))
         }
     }
 }
