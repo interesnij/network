@@ -14,14 +14,15 @@ use crate::utils::{
     ErrorParams, CardUserJson,
     RegListData, SearchRegListData,
     TargetListData, SearchTargetListData,
-    UsersData, UserDetailJson, 
+    UsersData, UserDetailJson, TokenJson
 };
-use crate::models::User;
+use crate::models::{User, Owner};
 use crate::errors::Error;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
+    config.route("/test_all_tokens", web::get().to(test_all_tokens));
     config.route("/profile", web::get().to(profile_page));
     config.route("/friends", web::get().to(user_friends_page));
     config.route("/friends-online", web::get().to(user_friends_online_page));
@@ -48,6 +49,11 @@ pub async fn index_page() -> impl Responder {
                 hello, I users server.
             </p>
         </div>")
+}
+
+pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
+    let _res = block(move || Owner::get_all_tokens()).await?;
+     Ok(Json(_res))
 }
 
 pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {

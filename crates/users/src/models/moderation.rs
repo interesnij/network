@@ -19,6 +19,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     EditTokenPageResp,
+    TokenJson,
 };
 use crate::models::User;
 
@@ -128,6 +129,35 @@ pub struct EditedOwnerData {
 }
 
 impl Owner {
+    pub fn get_all_tokens() -> Vec<TokenJson> {
+        use crate::schema::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        let all = owners 
+            .load::<Owner>(&_connection)
+            .expect("E.");
+        let mut list = Vec::new();
+        for i in all.iter() { 
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
+
+    }
     pub fn get_edit_data(&self) -> EditTokenPageResp {
         return EditTokenPageResp {
             id:            self.id,
