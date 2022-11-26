@@ -178,7 +178,7 @@ pub fn get_user_owner_data (
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if owner.types == 1 {
-                if user_id.is_some() {
+                if user_id.is_some() || user_id.unwrap() > 0 {
                     let _id = user_id.unwrap();
                     let _user = get_user(_id);
                     if _user.is_ok() {
