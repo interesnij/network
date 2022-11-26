@@ -295,9 +295,9 @@ pub struct PhoneCodeJson {
 
 
 pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token, Some(0), 0);
+    let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
 
-    if err.is_some() {  
+    if err.is_some() {   
         return Err(Error::BadRequest(err.unwrap()));
     }  
     else if user_id == 0 { 
