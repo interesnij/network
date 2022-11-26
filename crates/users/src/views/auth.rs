@@ -294,12 +294,14 @@ pub struct PhoneCodeJson {
 }
 #[derive(Deserialize)]
 pub struct PhoneForm {
+    pub token: Option<String>,
     pub phone: String,
-    pub code:  i32,
+    pub code:  String,
 }
 
 pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
     let mut form: PhoneForm = PhoneForm {
+        token: None,
         phone: "".to_string(),
         code:  0,
     }; 
@@ -310,11 +312,13 @@ pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
             let data = chunk.expect("split_payload err chunk");
             if let Ok(s) = std::str::from_utf8(&data) {
                 let data_string = s.to_string();
-                if field.name() == "phone" {
-                    form.phone = data_string
+                if field.name() == "token" {
+                    form.token = Some(data_string);
                 } else if field.name() == "code" {
                     let code: i32 = data_string.parse().unwrap();
                     form.code = code;
+                } else if field.name() == "phone" {
+                    form.phone = data_string;
                 }
             }
         }
@@ -322,7 +326,8 @@ pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
     form
 }
 pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
+    let form = phone_form(payload.borrow_mut()).await;
+    let (err, user_id) = get_user_owner_data(form.token, Some(0), 0);
 
     if err.is_some() {
         return Err(Error::BadRequest(err.unwrap()));
@@ -340,16 +345,13 @@ pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
         return Err(Error::BadRequest(body));
     }
 
-    let form = phone_form(payload.borrow_mut()).await;
-
-    let req_phone = form.phone;
-    if req_phone.len() > 8 {
+    if form.phone.len() > 8 {
         use crate::models::NewPhoneCode;
         use crate::schema::users::dsl::users;
     
         let _connection = establish_connection();
         if users
-            .filter(schema::users::phone.eq(req_phone.clone()))
+            .filter(schema::users::phone.eq(form.phone.clone()))
             .select(schema::users::id)
             .first::<i32>(&_connection)
             .is_ok() {
@@ -359,7 +361,7 @@ pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
              Err(Error::BadRequest(body))
         }
         else {
-            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
+            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &form.phone;
             let __request = reqwest::get(_url).await.expect("E.");
             let new_request = __request.text().await.unwrap();
             println!("{:?}", new_request);
