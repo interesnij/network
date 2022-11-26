@@ -325,11 +325,11 @@ pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
     }
     form
 }
-pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
+pub async fn phone_send(mut payload: Multipart) -> Result<Json<i16>, Error> {
     let form = phone_form(payload.borrow_mut()).await;
     let (err, user_id) = get_user_owner_data(form.token, Some(0), 0);
 
-    if err.is_some() {
+    if err.is_some() { 
         return Err(Error::BadRequest(err.unwrap()));
     }  
     else if user_id == 0 { 
