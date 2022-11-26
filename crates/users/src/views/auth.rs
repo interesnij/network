@@ -292,74 +292,103 @@ pub struct PhoneCodeJson {
     pub phone: String,
     pub code:  String,
 }
-pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> {
+#[derive(Deserialize)]
+pub struct PhoneForm {
+    pub phone: String,
+    pub code:  i32,
+}
+
+pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
+    let mut form: PhoneForm = PhoneForm {
+        phone: "".to_string(),
+        code:  0,
+    }; 
+
+    while let Some(item) = payload.next().await {
+        let mut field: Field = item.expect("split_payload err");
+        while let Some(chunk) = field.next().await {
+            let data = chunk.expect("split_payload err chunk");
+            if let Ok(s) = std::str::from_utf8(&data) {
+                let data_string = s.to_string();
+                if field.name() == "phone" {
+                    form.phone = data_string
+                } else if field.name() == "code" {
+                    let code: i32 = data_string.parse().unwrap();
+                    form.code = code;
+                }
+            }
+        }
+    }
+    form
+}
+pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
+
     if err.is_some() {
-        Err(Error::BadRequest(err.unwrap()))
-    } 
+        return Err(Error::BadRequest(err.unwrap()));
+    }  
     else if user_id == 0 { 
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied.".to_string(),
         }).unwrap(); 
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.phone.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'phone' is required!".to_string(),
         }).unwrap(); 
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
-    else {
-        let req_phone = data.phone.as_deref().unwrap();
-        if req_phone.len() > 8 {
-            use crate::models::NewPhoneCode;
-            use crate::schema::{
-                users::dsl::users,
-            };
+
+    let form = phone_form(payload.borrow_mut()).await;
+
+    let req_phone = form.phone;
+    if req_phone.len() > 8 {
+        use crate::models::NewPhoneCode;
+        use crate::schema::users::dsl::users;
     
-            let _connection = establish_connection();
-            if users
-                .filter(schema::users::phone.eq(req_phone.clone()))
-                .select(schema::users::id)
-                .first::<i32>(&_connection)
-                .is_ok() {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
-                }).unwrap();
-                Err(Error::BadRequest(body))
-            }
-            else {
-                let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
-                let __request = reqwest::get(_url).await.expect("E.");
-                let new_request = __request.text().await.unwrap();
-                println!("{:?}", new_request);
-    
-                let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
-                let _code: i32 = phone200.code.parse().unwrap();
-                let new_phone_code = NewPhoneCode {
-                    phone:   req_phone.to_string(),
-                    code:    _code,
-                    types:   1,
-                    accept:  false,
-                    created: chrono::Local::now().naive_utc(),
-                };
-                let c = diesel::insert_into(schema::phone_codes::table)
-                    .values(&new_phone_code)
-                    .execute(&_connection);
-                if c.is_ok() {
-                    Ok(Json(1))
-                }
-                else {
-                    Ok(Json(0))
-                }
-            }
+        let _connection = establish_connection();
+        if users
+            .filter(schema::users::phone.eq(req_phone.clone()))
+            .select(schema::users::id)
+            .first::<i32>(&_connection)
+            .is_ok() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
+            }).unwrap();
+             Err(Error::BadRequest(body))
         }
         else {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
-            }).unwrap();
-            Err(Error::BadRequest(body))
+            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
+            let __request = reqwest::get(_url).await.expect("E.");
+            let new_request = __request.text().await.unwrap();
+            println!("{:?}", new_request);
+    
+            let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
+            let _code: i32 = phone200.code.parse().unwrap();
+            let new_phone_code = NewPhoneCode {
+                phone:   req_phone.to_string(),
+                code:    _code,
+                types:   1,
+                accept:  false,
+                created: chrono::Local::now().naive_utc(),
+            };
+            let c = diesel::insert_into(schema::phone_codes::table)
+                .values(&new_phone_code)
+                .execute(&_connection);
+            if c.is_ok() {
+                Ok(Json(1))
+            }
+            else {
+                Ok(Json(0))
+            }
         }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
     }
 }
 
