@@ -341,9 +341,11 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_password (
-            data.old_password.as_deref().unwrap(),
-            data.new_password.as_deref().unwrap()
+        Ok(Json(
+            owner.edit_password (
+                data.old_password.as_deref().unwrap(),
+                data.new_password.as_deref().unwrap()
+            )
         ))
     }
 }
