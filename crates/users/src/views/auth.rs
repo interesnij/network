@@ -293,7 +293,13 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
     let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
     if err.is_some() || (user_id != 0) {
         Err(Error::BadRequest(err.unwrap()))
-    } 
+    }
+    else if user_id != 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied.".to_string(),
+        }).unwrap(); 
+        Err(Error::BadRequest(body))
+    }
     else if data.phone.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'phone' is required!".to_string(),
