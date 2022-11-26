@@ -296,7 +296,7 @@ pub struct PhoneCodeJson {
 #[derive(Deserialize)]
 pub struct PhoneJson2 {
     pub token: String,
-    pub phone: String,
+    pub phone: u64,
 }
 pub async fn phone_send_2(data: Json<PhoneJson2>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(Some(data.token.clone()), Some(0), 0);
