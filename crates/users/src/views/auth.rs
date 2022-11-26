@@ -296,7 +296,7 @@ pub struct PhoneCodeJson {
 pub struct PhoneForm {
     pub token: Option<String>,
     pub phone: String,
-    pub code:  String,
+    pub code:  i32,
 }
 
 pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
