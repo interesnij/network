@@ -123,8 +123,10 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     use crate::models::{
         NewUserLocation, NewIpUser,
         NewUserPrivate, NewUserNotification,
+        PhoneCode,
     };
     use crate::schema::phone_codes::dsl::phone_codes;
+    use chrono::Duration;
 
     let _connection = establish_connection();
     let (err, _) = get_user_owner_data(data.token.clone(), None, 0);
@@ -376,7 +378,7 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<u
         return Err(Error::BadRequest(body));
     }
         use crate::schema::phone_codes::dsl::phone_codes;
-        use crate::models::{NewVerifiedPhone, PhoneCode};
+        use crate::models::PhoneCode;
         use chrono::Duration;
 
         let _connection = establish_connection();

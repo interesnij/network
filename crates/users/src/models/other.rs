@@ -20,7 +20,7 @@ pub struct PhoneCode {
     pub id:      i32,
     pub phone:   String,
     pub code:    i32,
-    pub types:   i32,
+    pub types:   i16,
     pub accept:  bool,
     pub created: chrono::NaiveDateTime,
 } 
@@ -29,7 +29,7 @@ pub struct PhoneCode {
 pub struct NewPhoneCode { 
     pub phone:   String,
     pub code:    i32,
-    pub types:   i32,
+    pub types:   i16,
     pub accept:  bool,
     pub created: chrono::NaiveDateTime,
 }
