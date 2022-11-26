@@ -323,7 +323,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
              Err(Error::BadRequest(body))
         }
         else {
-            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &data.phone;
+            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
             let __request = reqwest::get(_url).await.expect("E.");
             let new_request = __request.text().await.unwrap();
             println!("{:?}", new_request);
