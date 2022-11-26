@@ -137,7 +137,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'first_name' not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.last_name.is_none() {
         let body = serde_json::to_string(&ErrorParams {
@@ -160,21 +160,21 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     let _phone_code: PhoneCode;
     let _phone_code_res = phone_codes
         .filter(schema::phone_codes::phone.eq(_phone.clone()))
-        .filter(schema::phone_codes::code.eq(_code))
+        .filter(schema::phone_codes::types.eq(1))
         .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
         .first::<PhoneCode>(&_connection);
     if _phone_code_res.is_ok() {
         _phone_code = _phone_code_res.expect("E.");
         if !_phone_code.accept {
             let body = serde_json::to_string(&ErrorParams {
-                error: "This code or phone not accept!".to_string(),
+                error: "This phone not accepted!".to_string(),
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
     }
     else {
          let body = serde_json::to_string(&ErrorParams {
-              error: "Code or phone is incorrect!".to_string(),
+              error: "This phone not found!".to_string(),
         }).unwrap(); 
         return Err(Error::BadRequest(body));
     }
@@ -397,10 +397,10 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<u
             .first::<PhoneCode>(&_connection);
         if _phone_code_res.is_ok() {
             _phone_code = _phone_code_res.expect("E.");
-            let _update = diesel::update(_phone_code)
+            let _update = diesel::update(&_phone_code)
                 .set(schema::phone_codes::accept.eq(true))
                 .execute(&_connection); 
-            Ok(Json(_res))
+            Ok(Json(1))
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
