@@ -6,10 +6,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4"
-#actix-files = "0.6"
-#actix-session = "0.5"
 actix-redis = "0.10"
-#native-tls = "0.2.4"
 serde = "1.0"
 serde_json = "*"
 dotenv = "0.15.0"
@@ -22,8 +19,12 @@ bcrypt = "0.12.1"
 jsonwebtoken = "8.1.0"
 reqwest = "0.11.13"
 derive_more = "0.99.5"
-#concat-string = "1.0.1"
 cookie = "*"
+actix-form-data = "0.6.2"
+actix-multipart = "0.4.0-beta.12"
+futures = "0.3.21"
+actix-form-data = "0.6.2"
+
 
 [dependencies.uuid]
 version = "1.2.2"
