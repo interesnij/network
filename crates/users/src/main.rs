@@ -42,7 +42,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(web::Data::new(app_state.to_owned()))
             .app_data(web::JsonConfig::default().limit(4096))
-            .wrap(cors)
+            //.wrap(cors)
             .configure(routes)
 
     })
