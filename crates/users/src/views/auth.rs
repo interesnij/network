@@ -369,7 +369,7 @@ pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
             let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
             let _code: i32 = phone200.code.parse().unwrap();
             let new_phone_code = NewPhoneCode {
-                phone:   req_phone.to_string(),
+                phone:   form.phone,
                 code:    _code,
                 types:   1,
                 accept:  false,
