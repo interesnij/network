@@ -21,9 +21,6 @@ use diesel::{
 use crate::schema;
 use crate::models::{User, NewUser};
 use crate::errors::Error;
-use actix_multipart::{Field, Multipart};
-use std::borrow::BorrowMut;
-use futures_util::stream::StreamExt as _;
 
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {

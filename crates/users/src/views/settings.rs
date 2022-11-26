@@ -45,9 +45,10 @@ pub struct EditPhoneData {
 
 #[derive(Deserialize)]
 pub struct EditPasswordData {
-    pub token:    Option<String>,
-    pub user_id:  Option<i32>,
-    pub password: Option<String>,
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,
+    pub old_password: Option<String>,
+    pub new_password: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -316,9 +317,15 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if data.password.is_none() {
+    else if data.old_password.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'password' is required!".to_string(),
+            error: "Field 'old_password' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.new_password.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'new_password' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -334,6 +341,9 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_password(data.password.as_deref().unwrap())))
+        Ok(Json(owner.edit_password (
+            data.old_password.as_deref().unwrap(),
+            data.new_password.as_deref().unwrap()
+        ))
     }
 }
