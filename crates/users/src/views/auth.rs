@@ -292,6 +292,10 @@ pub struct PhoneCodeJson {
     pub phone: String,
     pub code:  String,
 }
+#[derive(Deserialize)]
+pub struct CodeJson {
+    pub code: String,
+}
 
 pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), None, 0);
@@ -321,7 +325,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
             let new_request = __request.text().await.unwrap();
             println!("{:?}", new_request);
     
-            let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
+            let phone200: CodeJson = serde_json::from_str(&new_request).unwrap();
             let _code: i32 = phone200.code.parse().unwrap();
             let new_phone_code = NewPhoneCode {
                 phone:   _phone,
