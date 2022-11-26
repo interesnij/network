@@ -22,7 +22,6 @@ derive_more = "0.99.5"
 cookie = "*"
 actix-form-data = "0.6.2"
 actix-multipart = "0.4.0-beta.12"
-futures = "0.3.21"
 actix-form-data = "0.6.2"
 
 
