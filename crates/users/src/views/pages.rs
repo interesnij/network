@@ -56,7 +56,6 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
         if err.is_some() {
-            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
