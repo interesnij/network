@@ -338,12 +338,6 @@ pub async fn phone_send(payload: &mut Multipart) -> Result<Json<i16>, Error> {
         }).unwrap(); 
         return Err(Error::BadRequest(body));
     }
-    else if data.phone.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'phone' is required!".to_string(),
-        }).unwrap(); 
-        return Err(Error::BadRequest(body));
-    }
 
     if form.phone.len() > 8 {
         use crate::models::NewPhoneCode;
