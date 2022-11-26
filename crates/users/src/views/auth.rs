@@ -299,12 +299,6 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
     if err.is_some() {   
         return Err(Error::BadRequest(err.unwrap()));
     }  
-    else if user_id == 0 { 
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Permission Denied.".to_string(),
-        }).unwrap(); 
-        return Err(Error::BadRequest(body));
-    }
     let _phone = data.phone.as_deref().unwrap().to_string();
     if _phone.len() > 8 {
         use crate::models::NewPhoneCode;
