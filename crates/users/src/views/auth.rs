@@ -294,7 +294,7 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id = 0 {
+    else if user_id == 0 {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied.".to_string(),
         }).unwrap(); 
