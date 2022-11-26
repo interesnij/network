@@ -28,6 +28,7 @@ use futures_util::stream::StreamExt as _;
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/phone_send", web::post().to(phone_send));
+    config.route("/phone_send_2", web::post().to(phone_send_2));
     config.route("/phone_verify", web::post().to(phone_verify));
     config.route("/signup", web::post().to(process_signup));
     config.route("/login", web::post().to(login));
@@ -292,7 +293,72 @@ pub struct PhoneCodeJson {
     pub phone: String,
     pub code:  String,
 }
+#[derive(Deserialize)]
+pub struct PhoneJson2 {
+    pub token: String,
+    pub phone: String,
+}
+pub async fn phone_send_2(data: Json<PhoneJson2>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(Some(data.token.clone()), Some(0), 0);
 
+    if err.is_some() {   
+        return Err(Error::BadRequest(err.unwrap()));
+    }  
+    else if user_id == 0 { 
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied.".to_string(),
+        }).unwrap(); 
+        return Err(Error::BadRequest(body));
+    }
+    let _phone = data.phone.clone();
+    if _phone.len() > 8 {
+        use crate::models::NewPhoneCode;
+        use crate::schema::users::dsl::users;
+    
+        let _connection = establish_connection();
+        if users
+            .filter(schema::users::phone.eq(_phone.clone()))
+            .select(schema::users::id)
+            .first::<i32>(&_connection)
+            .is_ok() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
+            }).unwrap();
+             Err(Error::BadRequest(body))
+        }
+        else {
+            let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
+            let __request = reqwest::get(_url).await.expect("E.");
+            let new_request = __request.text().await.unwrap();
+            println!("{:?}", new_request);
+    
+            let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
+            let _code: i32 = phone200.code.parse().unwrap();
+            let new_phone_code = NewPhoneCode {
+                phone:   _phone,
+                code:    _code,
+                types:   1,
+                accept:  false,
+                created: chrono::Local::now().naive_utc(),
+            };
+            let c = diesel::insert_into(schema::phone_codes::table)
+                .values(&new_phone_code)
+                .execute(&_connection);
+            if c.is_ok() {
+                Ok(Json(1))
+            }
+            else {
+                Ok(Json(0))
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
 
 pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), Some(0), 0);
