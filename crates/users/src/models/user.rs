@@ -130,13 +130,14 @@ impl User {
         use chrono::Duration;
         use crate::models::PhoneCode;
         
+        let _connection = establish_connection();
         if phone_codes
             .filter(schema::phone_codes::phone.eq(phone))
             .filter(schema::phone_codes::types.eq(2))
             .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
             .first::<PhoneCode>(&_connection)
             .is_ok() {
-            let _connection = establish_connection();
+            
             let _o = diesel::update(self)
                 .set(schema::users::phone.eq(phone))
                 .execute(&_connection)
