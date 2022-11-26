@@ -126,12 +126,26 @@ impl User {
         return 1;
     }
     pub fn edit_phone(&self, phone: &str) -> i16 {
-        let _connection = establish_connection();
-        let _o = diesel::update(self)
-            .set(schema::users::phone.eq(phone))
-            .execute(&_connection)
-            .expect("E.");
-        return 1;
+        use crate::schema::phone_codes::dsl::phone_codes;
+        use chrono::Duration;
+        use crate::models::PhoneCode;
+        
+        if phone_codes
+            .filter(schema::phone_codes::phone.eq(phone))
+            .filter(schema::phone_codes::types.eq(2))
+            .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
+            .first::<PhoneCode>(&_connection)
+            .is_ok() {
+            let _connection = establish_connection();
+            let _o = diesel::update(self)
+                .set(schema::users::phone.eq(phone))
+                .execute(&_connection)
+                .expect("E.");
+            return 1;
+        }
+        else {
+            return 0;
+        }
     } 
     pub fn edit_link(&self, link: &str) -> i16 {
         let _connection = establish_connection();

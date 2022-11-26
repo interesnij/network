@@ -219,6 +219,8 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
+    use crate::models::PhoneCode;
+
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
@@ -250,6 +252,7 @@ pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
+        
         Ok(Json(owner.edit_phone(data.phone.as_deref().unwrap())))
     }
 }
