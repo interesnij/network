@@ -195,15 +195,13 @@ CREATE TABLE user_visible_perms (
 CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, target_id);
 
 -- телефонные коды
-CREATE TABLE phone_codes (
-    id    SERIAL PRIMARY KEY,
-    phone VARCHAR(14) NOT NULL,
-    code  INT NOT NULL
-);
--- телефоные подтвержденные
-CREATE TABLE verified_phones (
-    id    SERIAL PRIMARY KEY,
-    phone VARCHAR(14) NOT NULL
+CREATE TABLE phone_codes ( 
+    id      SERIAL PRIMARY KEY,
+    phone   VARCHAR(14) NOT NULL,
+    code    INT NOT NULL,
+    types   SMALLINT NOT NULL,
+    accept  BOOLEAN NOT NULL DEFAULT FALSE,
+    created TIMESTAMP NOT NULL
 );
 
 -- друзья -------

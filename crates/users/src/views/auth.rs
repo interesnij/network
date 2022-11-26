@@ -29,7 +29,7 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::post().to(process_signup));
     config.route("/login", web::post().to(login));
     config.route("/logout", web::get().to(logout));
-}
+} 
 
 pub async fn logout() -> HttpResponse {
     HttpResponse::Unauthorized().finish()
@@ -124,13 +124,12 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         NewUserLocation, NewIpUser,
         NewUserPrivate, NewUserNotification,
     };
-    use crate::schema::verified_phones::dsl::verified_phones;
+    use crate::schema::phone_codes::dsl::phone_codes;
 
     let _connection = establish_connection();
     let (err, _) = get_user_owner_data(data.token.clone(), None, 0);
     if err.is_some() {
-        // если проверка токена не удалась...
-        Err(Error::BadRequest(err.unwrap()))
+        return Err(Error::BadRequest(err.unwrap()));
     }
     else if data.first_name.is_none() {
         let body = serde_json::to_string(&ErrorParams {
@@ -142,129 +141,139 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'last_name' not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.password.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'password' not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.phone.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'phone' not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
-    else if verified_phones
-        .filter(schema::verified_phones::phone.eq(data.phone.as_deref().unwrap()))
-        .select(schema::verified_phones::id)
-        .first::<i32>(&_connection)
-        .is_err() {
+    let _phone_code: PhoneCode;
+    let _phone_code_res = phone_codes
+        .filter(schema::phone_codes::phone.eq(_phone.clone()))
+        .filter(schema::phone_codes::code.eq(_code))
+        .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
+        .first::<PhoneCode>(&_connection);
+    if _phone_code_res.is_ok() {
+        _phone_code = _phone_code_res.expect("E.");
+        if !_phone_code.accept {
             let body = serde_json::to_string(&ErrorParams {
-                error: "phone not verified!".to_string(),
+                error: "This code or phone not accept!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
+        }
     }
     else {
-        let is_man: bool;
-        if data.is_man.is_none() {
-            is_man = true;
+         let body = serde_json::to_string(&ErrorParams {
+              error: "Code or phone is incorrect!".to_string(),
+        }).unwrap(); 
+        return Err(Error::BadRequest(body));
+    }
+    
+    let is_man: bool;
+    if data.is_man.is_none() {
+        is_man = true;
+    }
+    else {
+        if data.is_man.unwrap() != 1 {
+             is_man = false;
         }
         else {
-            if data.is_man.unwrap() != 1 {
-                is_man = false;
-            }
-            else {
-                is_man = true;
-            }
+             is_man = true;
         }
-        let _connection = establish_connection();
-        let mut ipaddr: String = String::new();
-
-        if let Some(val) = &req.peer_addr() {
-            ipaddr = val.ip().to_string();
-        };
-
-        let count = User::count_users() + 1;
-        let link = "/id".to_string() + &count.to_string() + &"/".to_string();
-        let form_user = NewUser {
-            first_name:    data.first_name.as_deref().unwrap().to_string(),
-            last_name:     data.last_name.as_deref().unwrap().to_string(),
-            phone:         data.phone.as_deref().unwrap().to_string(),
-            types:         1,
-            is_man:        is_man,
-            password:      hash(data.password.as_deref().unwrap(), 8).unwrap(),
-            link:          link,
-            last_activity: chrono::Local::now().naive_utc(),
-        };
-
-        let _new_user = diesel::insert_into(schema::users::table)
-            .values(&form_user)
-            .get_result::<User>(&_connection)
-            .expect("Error saving user.");
-
-        // записываем местоположение нового пользователя
-        let _geo_url = "http://api.sypexgeo.net/J5O6d/json/".to_owned() + &ipaddr;
-        let _geo_request = reqwest::get(_geo_url).await.expect("E.");
-        let new_request = _geo_request.text().await.unwrap();
-        let location200: UserLoc = serde_json::from_str(&new_request).unwrap();
-        let _user_location = NewUserLocation {
-            user_id: _new_user.id,
-            city_ru: Some(location200.city.name_ru),
-            city_en: Some(location200.city.name_en),
-            region_ru: Some(location200.region.name_ru),
-            region_en: Some(location200.region.name_en),
-            country_ru: Some(location200.country.name_ru),
-            country_en: Some(location200.country.name_en),
-        };
-        diesel::insert_into(schema::user_locations::table)
-            .values(&_user_location)
-            .execute(&_connection)
-            .expect("Error saving user_location.");
-
-        // записываем IP нового пользователя
-        let _user_ip = NewIpUser {
-            user_id: _new_user.id,
-            ip: ipaddr,
-        };
-        diesel::insert_into(schema::ip_users::table)
-            .values(&_user_ip)
-            .execute(&_connection)
-            .expect("Error saving user_ip.");
-
-        // записываем приватность нового пользователя
-        let _user_private = NewUserPrivate {
-            user_id:    _new_user.id,
-            see_all:    1,
-            see_info:   1,
-            see_friend: 1,
-        };
-        diesel::insert_into(schema::user_privates::table)
-            .values(&_user_private)
-            .execute(&_connection)
-            .expect("Error saving user_private.");
-
-        // записываем уведомления профиля нового пользователя
-        let _user_notification = NewUserNotification {
-            user_id:              _new_user.id,
-            connection_request:   true,
-            connection_confirmed: true,
-            user_invite:          true,
-        };
-        diesel::insert_into(schema::user_notifications::table)
-            .values(&_user_notification)
-            .execute(&_connection)
-            .expect("Error saving user_notification.");
-
-        Ok(Json(NewUserDetailJson {
-            id:         _new_user.id,
-            first_name: _new_user.first_name.clone(),
-            last_name:  _new_user.last_name.clone(),
-            is_man:     _new_user.is_man,
-            link:       _new_user.link.clone(),
-        }))
     }
+    let _connection = establish_connection();
+    let mut ipaddr: String = String::new();
+
+    if let Some(val) = &req.peer_addr() {
+          ipaddr = val.ip().to_string();
+    };
+
+    let count = User::count_users() + 1;
+    let link = "/id".to_string() + &count.to_string() + &"/".to_string();
+    let form_user = NewUser {
+        first_name:    data.first_name.as_deref().unwrap().to_string(),
+        last_name:     data.last_name.as_deref().unwrap().to_string(),
+        phone:         data.phone.as_deref().unwrap().to_string(),
+        types:         1,
+        is_man:        is_man,
+        password:      hash(data.password.as_deref().unwrap(), 8).unwrap(),
+        link:          link,
+        last_activity: chrono::Local::now().naive_utc(),
+    };
+
+    let _new_user = diesel::insert_into(schema::users::table)
+        .values(&form_user)
+        .get_result::<User>(&_connection)
+         .expect("Error saving user.");
+
+    // записываем местоположение нового пользователя
+    let _geo_url = "http://api.sypexgeo.net/J5O6d/json/".to_owned() + &ipaddr;
+    let _geo_request = reqwest::get(_geo_url).await.expect("E.");
+    let new_request = _geo_request.text().await.unwrap();
+    let location200: UserLoc = serde_json::from_str(&new_request).unwrap();
+    let _user_location = NewUserLocation {
+        user_id: _new_user.id,
+        city_ru: Some(location200.city.name_ru),
+        city_en: Some(location200.city.name_en),
+        region_ru: Some(location200.region.name_ru),
+        region_en: Some(location200.region.name_en),
+        country_ru: Some(location200.country.name_ru),
+        country_en: Some(location200.country.name_en),
+    };
+    diesel::insert_into(schema::user_locations::table)
+        .values(&_user_location)
+        .execute(&_connection)
+        .expect("Error saving user_location.");
+
+    // записываем IP нового пользователя
+    let _user_ip = NewIpUser {
+        user_id: _new_user.id,
+        ip: ipaddr,
+    };
+    diesel::insert_into(schema::ip_users::table)
+        .values(&_user_ip)
+        .execute(&_connection)
+        .expect("Error saving user_ip.");
+
+    // записываем приватность нового пользователя
+    let _user_private = NewUserPrivate {
+        user_id:    _new_user.id,
+        see_all:    1,
+        see_info:   1,
+        see_friend: 1,
+    };
+    diesel::insert_into(schema::user_privates::table)
+        .values(&_user_private)
+        .execute(&_connection)
+        .expect("Error saving user_private.");
+
+    // записываем уведомления профиля нового пользователя
+    let _user_notification = NewUserNotification {
+        user_id:              _new_user.id,
+        connection_request:   true,
+        connection_confirmed: true,
+        user_invite:          true,
+    };
+    diesel::insert_into(schema::user_notifications::table)
+        .values(&_user_notification)
+        .execute(&_connection)
+        .expect("Error saving user_notification.");
+
+    Ok(Json(NewUserDetailJson {
+        id:         _new_user.id,
+        first_name: _new_user.first_name.clone(),
+        last_name:  _new_user.last_name.clone(),
+        is_man:     _new_user.is_man,
+        link:       _new_user.link.clone(),
+    }))
 }
 
 #[derive(Deserialize)]
@@ -295,7 +304,6 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
             use crate::models::NewPhoneCode;
             use crate::schema::{
                 users::dsl::users,
-                verified_phones::dsl::verified_phones,
             };
     
             let _connection = establish_connection();
@@ -309,16 +317,6 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
                 }).unwrap();
                 Err(Error::BadRequest(body))
             }
-            else if verified_phones
-                .filter(schema::verified_phones::phone.eq(req_phone.clone()))
-                .select(schema::verified_phones::id)
-                .first::<i32>(&_connection)
-                .is_ok() {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: "phone already verified!".to_string(),
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
-            }
             else {
                 let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &req_phone;
                 let __request = reqwest::get(_url).await.expect("E.");
@@ -328,8 +326,11 @@ pub async fn phone_send(data: web::Json<PhoneJson>) -> Result<Json<i16>, Error> 
                 let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
                 let _code: i32 = phone200.code.parse().unwrap();
                 let new_phone_code = NewPhoneCode {
-                    phone: req_phone.to_string(),
-                    code:  _code,
+                    phone:   req_phone.to_string(),
+                    code:    _code,
+                    types:   1,
+                    accept:  false,
+                    created: chrono::Local::now().naive_utc(),
                 };
                 let c = diesel::insert_into(schema::phone_codes::table)
                     .values(&new_phone_code)
@@ -375,7 +376,8 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<u
         return Err(Error::BadRequest(body));
     }
         use crate::schema::phone_codes::dsl::phone_codes;
-        use crate::models::NewVerifiedPhone;
+        use crate::models::{NewVerifiedPhone, PhoneCode};
+        use chrono::Duration;
 
         let _connection = establish_connection();
         let _phone = data.phone.as_deref().unwrap();
@@ -384,33 +386,23 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<u
             .unwrap()
             .parse()
             .unwrap();
-        if phone_codes
+        
+        let _phone_code: PhoneCode;
+        let _phone_code_res = phone_codes
             .filter(schema::phone_codes::phone.eq(_phone.clone()))
             .filter(schema::phone_codes::code.eq(_code))
-            .select(schema::phone_codes::id)
-            .first::<i32>(&_connection)
-            .is_ok() {
-                let new_phone_v = NewVerifiedPhone {
-                    phone: _phone.to_string(),
-                };
-                 let _res = diesel::insert_into(schema::verified_phones::table)
-                    .values(&new_phone_v)
-                    .execute(&_connection)
-                    .expect("E.");
-    
-                diesel::delete (
-                    phone_codes
-                        .filter(schema::phone_codes::phone.eq(_phone.clone()))
-                        .filter(schema::phone_codes::code.eq(_code))
-                )
-                .execute(&_connection)
-                .expect("E");
-
-             Ok(Json(_res))
+            .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
+            .first::<PhoneCode>(&_connection);
+        if _phone_code_res.is_ok() {
+            _phone_code = _phone_code_res.expect("E.");
+            let _update = diesel::update(_phone_code)
+                .set(schema::phone_codes::accept.eq(true))
+                .execute(&_connection); 
+            Ok(Json(_res))
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Code' is incorrect!".to_string(),
+                error: "Code is incorrect!".to_string(),
             }).unwrap(); 
             Err(Error::BadRequest(body))
         }

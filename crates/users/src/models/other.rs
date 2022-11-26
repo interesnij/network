@@ -3,7 +3,6 @@ use crate::schema::{
     phone_codes,
     user_visible_perms,
     featured_friends,
-    verified_phones,
     user_notifications,
 };
 use diesel::{Queryable, Insertable};
@@ -12,29 +11,27 @@ use serde::{Serialize, Deserialize};
 //use crate::errors::Error;
 
 /////// PhoneCode //////
+// types:
+// 1 create account
+// 2 update phone
+// 3 update secure settings
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct PhoneCode {
-    pub id:    i32,
-    pub phone: String,
-    pub code:  i32,
-}
+    pub id:      i32,
+    pub phone:   String,
+    pub code:    i32,
+    pub types:   i32,
+    pub accept:  bool,
+    pub created: chrono::NaiveDateTime,
+} 
 #[derive(Deserialize, Insertable)]
 #[table_name="phone_codes"]
-pub struct NewPhoneCode {
-    pub phone: String,
-    pub code:  i32,
-}
-
-/////// VerifiedPhone //////
-#[derive(Debug, Queryable, Serialize, Identifiable)]
-pub struct VerifiedPhone {
-    pub id:    i32,
-    pub phone: String,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="verified_phones"]
-pub struct NewVerifiedPhone {
-    pub phone: String,
+pub struct NewPhoneCode { 
+    pub phone:   String,
+    pub code:    i32,
+    pub types:   i32,
+    pub accept:  bool,
+    pub created: chrono::NaiveDateTime,
 }
 
 /////// Варианты значения полей приватности //////
