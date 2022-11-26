@@ -159,7 +159,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     }
     let _phone_code: PhoneCode;
     let _phone_code_res = phone_codes
-        .filter(schema::phone_codes::phone.eq(data.phone.clone()))
+        .filter(schema::phone_codes::phone.eq(data.phone.as_deref().unwrap()))
         .filter(schema::phone_codes::types.eq(1))
         .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
         .first::<PhoneCode>(&_connection);
