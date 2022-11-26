@@ -14,9 +14,9 @@ use crate::utils::{
     ErrorParams, CardUserJson,
     RegListData, SearchRegListData,
     TargetListData, SearchTargetListData,
-    UsersData, UserDetailJson, TokenJson
+    UsersData, UserDetailJson,
 };
-use crate::models::{User, Owner};
+use crate::models::{User, Owner, TokenJson};
 use crate::errors::Error;
 
 

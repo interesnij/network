@@ -19,9 +19,8 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     EditTokenPageResp,
-    TokenJson,
 };
-use crate::models::User;
+use crate::models::{User, TokenJson};
 
 
 /////// OwnerService //////
