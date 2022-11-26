@@ -20,7 +20,7 @@ use crate::utils::{
     establish_connection,
     EditTokenPageResp,
 };
-use crate::models::{User, TokenJson};
+use crate::models::User;
 
 
 /////// OwnerService //////
