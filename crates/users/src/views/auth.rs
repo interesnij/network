@@ -292,44 +292,12 @@ pub struct PhoneCodeJson {
     pub phone: String,
     pub code:  String,
 }
-#[derive(Deserialize)]
-pub struct PhoneForm {
-    pub token: Option<String>,
-    pub phone: String,
-    pub code:  i32,
-}
 
-pub async fn phone_form(payload: &mut Multipart) -> PhoneForm {
-    let mut form: PhoneForm = PhoneForm {
-        token: None,
-        phone: "".to_string(),
-        code:  0,
-    }; 
 
-    while let Some(item) = payload.next().await {
-        let mut field: Field = item.expect("split_payload err");
-        while let Some(chunk) = field.next().await {
-            let data = chunk.expect("split_payload err chunk");
-            if let Ok(s) = std::str::from_utf8(&data) {
-                let data_string = s.to_string();
-                if field.name() == "token" {
-                    form.token = Some(data_string);
-                } else if field.name() == "code" {
-                    let code: i32 = data_string.parse().unwrap();
-                    form.code = code;
-                } else if field.name() == "phone" {
-                    form.phone = data_string;
-                }
-            }
-        }
-    }
-    form
-}
-pub async fn phone_send(mut payload: Multipart) -> Result<Json<i16>, Error> {
-    let form = phone_form(payload.borrow_mut()).await;
-    let (err, user_id) = get_user_owner_data(form.token, Some(0), 0);
+pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token, Some(0), 0);
 
-    if err.is_some() { 
+    if err.is_some() {  
         return Err(Error::BadRequest(err.unwrap()));
     }  
     else if user_id == 0 { 
@@ -338,14 +306,14 @@ pub async fn phone_send(mut payload: Multipart) -> Result<Json<i16>, Error> {
         }).unwrap(); 
         return Err(Error::BadRequest(body));
     }
-
-    if form.phone.len() > 8 {
+    let _phone = form.phone.as_deref().unwrap().to_string();
+    if _phone.len() > 8 {
         use crate::models::NewPhoneCode;
         use crate::schema::users::dsl::users;
     
         let _connection = establish_connection();
         if users
-            .filter(schema::users::phone.eq(form.phone.clone()))
+            .filter(schema::users::phone.eq(_phone.clone()))
             .select(schema::users::id)
             .first::<i32>(&_connection)
             .is_ok() {
@@ -363,7 +331,7 @@ pub async fn phone_send(mut payload: Multipart) -> Result<Json<i16>, Error> {
             let phone200: PhoneCodeJson = serde_json::from_str(&new_request).unwrap();
             let _code: i32 = phone200.code.parse().unwrap();
             let new_phone_code = NewPhoneCode {
-                phone:   form.phone,
+                phone:   _phone,
                 code:    _code,
                 types:   1,
                 accept:  false,
