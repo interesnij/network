@@ -11,9 +11,8 @@ use crate::models::{
 };
 use crate::utils::{
     establish_connection, get_limit_offset,
-    UserPrivateJson, LocationJson, KeyValue,
+    EditNotifyResp, LocationJson, KeyValue,
     CardUserJson, UserDetailJson, EditPrivateResp, 
-    EditNotifyResp,
 };
 use crate::schema::users;
 use crate::errors::Error;
