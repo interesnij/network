@@ -202,18 +202,21 @@ impl User {
         _ => 0,
         };
 
-        use crate::models::NewUserVisiblePerm;
-        for user_id in users_ids.unwrap().iter() {
-            let _new_perm = NewUserVisiblePerm {
-                user_id:   self.id,
-                target_id: *user_id,
-                types:     value,
-            };
-            diesel::insert_into(schema::user_visible_perms::table)
-                .values(&_new_perm)
-                .execute(&_connection)
-                .expect("Error.");
+        if users_ids.is_some() {
+            use crate::models::NewUserVisiblePerm;
+            for user_id in users_ids.unwrap().iter() {
+                let _new_perm = NewUserVisiblePerm {
+                    user_id:   self.id,
+                    target_id: *user_id,
+                    types:     value,
+                };
+                diesel::insert_into(schema::user_visible_perms::table)
+                    .values(&_new_perm)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
         }
+        
         return 1;
     }
     pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
@@ -2960,6 +2963,46 @@ impl User {
         }
 
         return list;
+    }
+    pub fn delete_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            1 => 31,
+            6 => 36,
+            7 => 37,
+            _ => 31,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn restore_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let user_types = self.types;
+        let _case = match user_types {
+            31 => 1,
+            36 => 6,
+            37 => 7,
+            _ => 1,
+        };
+        let o = diesel::update(self)
+            .set(schema::users::types.eq(_case))
+            .execute(&_connection);
+
+        if o.is_ok() {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 }
 
