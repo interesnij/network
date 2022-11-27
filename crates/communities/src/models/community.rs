@@ -19,6 +19,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
     NullableExpressionMethods,
+    PgTextExpressionMethods,
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{
