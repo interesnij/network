@@ -177,13 +177,14 @@ impl User {
         };
         return KeyWalue {
             value: value,
-            info:  info,
+            info:  info.to_string(),
         }
     }
 
     pub fn get_private_json(&self) -> EditPrivateResp {
         let private = self.get_private_model();
-        if let private.see_all == 3 || private.see_all == 11 {
+        let see_all = private.see_all;
+        if let see_all == 3 || see_all == 11 {
             let see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(20, 0));
         }
         else {
