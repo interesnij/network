@@ -9,7 +9,7 @@ use crate::utils::{
 };
 use crate::models::ModeratedLog;
 use crate::errors::Error;
-use serde::Deserialize; 
+use serde::{Deserialize, Serialize}; 
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
