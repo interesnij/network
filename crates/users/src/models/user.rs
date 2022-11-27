@@ -11,7 +11,7 @@ use crate::models::{
 };
 use crate::utils::{
     establish_connection, get_limit_offset,
-    UserPrivateJson, LocationJson, KeyWalue,
+    UserPrivateJson, LocationJson, KeyValue,
     CardUserJson, UserDetailJson, EditPrivateResp, 
     EditNotifyResp,
 };
@@ -256,7 +256,7 @@ impl User {
             .expect("E.");
         return 1;
     }
-    pub fn get_private_field(value: i16) -> KeyWalue {
+    pub fn get_private_field(value: i16) -> KeyValue {
         let info = match value {
             1 => "Все пользователи",
             2 => "Все друзья и все подписчики",
@@ -273,7 +273,7 @@ impl User {
             13 => "Только я",
             _ => "Ошибка",
         };
-        return KeyWalue {
+        return KeyValue {
             value: value,
             info:  info.to_string(),
         }
