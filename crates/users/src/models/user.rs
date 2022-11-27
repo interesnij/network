@@ -1616,7 +1616,7 @@ impl User {
 
 
     ///////////////////////////////
-    pub fn get_limit_see_all_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1647,7 +1647,7 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E");
     }
-    pub fn get_limit_see_all_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1678,7 +1678,7 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E");
     }
-    pub fn get_limit_see_all_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1709,7 +1709,7 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E");
     }
-    pub fn get_limit_see_all_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_all_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1741,7 +1741,7 @@ impl User {
             .expect("E");
     }
 
-    pub fn get_limit_see_info_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1772,7 +1772,7 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E");
     }
-    pub fn get_limit_see_info_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1803,7 +1803,7 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E");
     }
-    pub fn get_limit_see_info_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
@@ -1834,7 +1834,7 @@ impl User {
             .load::<CardUserJson>(&_connection)
             .expect("E");
     }
-    pub fn get_limit_see_info_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+    pub fn get_limit_see_info_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
             users::dsl::users,
