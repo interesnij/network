@@ -7,7 +7,7 @@ use diesel::{
 use crate::schema;
 use crate::models::{
     UserLocation, UserInfo, UserPrivate,
-    TokenDetailJson, TokenJson,
+    TokenDetailJson, TokenJson, UserNotification,
 };
 use crate::utils::{
     establish_connection, get_limit_offset,
