@@ -573,7 +573,7 @@ impl ModeratedLog {
         action:       i16,
         description:  Option<String>,
         time_to_suspend: Option<chrono::NaiveDateTime>
-    ) -> () {
+    ) -> i16 {
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
@@ -587,6 +587,7 @@ impl ModeratedLog {
             .values(&new_log_form)
             .execute(&_connection)
             .expect("Error.");
+        return 1;
     }
 }
 #[derive(Deserialize, Insertable)]
