@@ -1614,251 +1614,381 @@ impl User {
         return items;
     }
 
-    pub fn get_limit_see_all_exclude_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
-            .filter(schema::user_visible_perms::types.eq(11))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_all_exclude_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
-            .filter(schema::user_visible_perms::types.eq(11))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_all_include_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
-            .filter(schema::user_visible_perms::types.eq(1))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_all_include_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
-            .filter(schema::user_visible_perms::types.eq(1))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_limit_see_info_exclude_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
-            .filter(schema::user_visible_perms::types.eq(12))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_info_exclude_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
-            .filter(schema::user_visible_perms::types.eq(12))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_info_include_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
-            .filter(schema::user_visible_perms::types.eq(2))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_info_include_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
-            .filter(schema::user_visible_perms::types.eq(2))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_limit_see_friend_exclude_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
-            .filter(schema::user_visible_perms::types.eq(13))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_friend_exclude_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
-            .filter(schema::user_visible_perms::types.eq(13))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_friend_include_friends_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
-            .filter(schema::user_visible_perms::types.eq(3))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
-    pub fn get_limit_see_friend_include_follows_ids(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<i32> {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
-            .filter(schema::user_visible_perms::types.eq(3))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items;
-    }
 
     ///////////////////////////////
-    pub fn get_limit_see_all_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_all_exclude_friends_ids(limit, offset));
+    pub fn get_limit_see_all_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(11))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
-    pub fn get_limit_see_all_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_all_include_friends_ids(limit, offset));
+    pub fn get_limit_see_all_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(1))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
-    pub fn get_limit_see_all_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_all_exclude_follows_ids(limit, offset));
+    pub fn get_limit_see_all_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(11))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
-    pub fn get_limit_see_all_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_all_include_follows_ids(limit, offset));
+    pub fn get_limit_see_all_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(1))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
 
-    pub fn get_limit_see_info_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_info_exclude_friends_ids(limit, offset));
+    pub fn get_limit_see_info_exclude_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(12))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
-    pub fn get_limit_see_info_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_info_include_friends_ids(limit, offset));
+    pub fn get_limit_see_info_include_friends(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(2))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
-    pub fn get_limit_see_info_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_info_exclude_follows_ids(limit, offset));
+    pub fn get_limit_see_info_exclude_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(12))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
-    pub fn get_limit_see_info_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_info_include_follows_ids(limit, offset));
+    pub fn get_limit_see_info_include_follows(&self, limit: i64, offset: i64) -> Vec<CardUserJson> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(2))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
 
     pub fn get_limit_see_friend_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_friend_exclude_friends_ids(limit, offset));
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(13))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
     pub fn get_limit_see_friend_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_friend_include_friends_ids(limit, offset));
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::types.eq(3))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
     pub fn get_limit_see_friend_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_friend_exclude_follows_ids(limit, offset));
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(13))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
     pub fn get_limit_see_friend_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::utils::get_card_users_from_ids;
-        return get_card_users_from_ids(self.get_limit_see_friend_include_follows_ids(limit, offset));
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            users::dsl::users,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let items_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::types.eq(3))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E"); 
+        
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
     }
     ///////////////////
 
