@@ -261,7 +261,6 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         user_id:              _new_user.id,
         connection_request:   true,
         connection_confirmed: true,
-        user_invite:          true,
     };
     diesel::insert_into(schema::user_notifications::table)
         .values(&_user_notification)

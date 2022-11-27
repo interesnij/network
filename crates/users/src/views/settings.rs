@@ -591,7 +591,7 @@ pub async fn delete_account(data: Json<MinimalData>) -> Result<Json<i16>, Error>
         Ok(Json(body))
     }
 }
-pub async fn restore_account(data: Json<DeleteAccountData>) -> Result<Json<i16>, Error> {
+pub async fn restore_account(data: Json<MinimalData>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
