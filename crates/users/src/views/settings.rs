@@ -8,7 +8,7 @@ use crate::utils::{
     get_user, get_user_owner_data,
     ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditPhoneResp, EditLinkResp,
-    KeyWalue,
+    KeyWalue, EditNotifyResp,
 };
 use crate::models::{User, };
 use crate::errors::Error;
@@ -16,22 +16,24 @@ use serde::Deserialize;
 
 
 pub fn settings_urls(config: &mut web::ServiceConfig) {
-    config.route("/settings/edit_link", web::get().to(edit_link_page));
-    config.route("/settings/edit_name", web::get().to(edit_name_page));
-    config.route("/settings/edit_phone", web::get().to(edit_phone_page));
-    config.route("/settings/edit_private", web::post().to(edit_private_page));
-    config.route("/settings/delete_account", web::post().to(delete_account_page));
+    config.route("/settings/get_link", web::get().to(edit_link_page));
+    config.route("/settings/get_name", web::get().to(edit_name_page));
+    config.route("/settings/get_phone", web::get().to(edit_phone_page));
+    config.route("/settings/get_private", web::get().to(edit_private_page));
+    config.route("/settings/get_delete_account", web::get().to(delete_account_page));
+    config.route("/settings/get_notifies", web::get().to(edit_notifies_page));
 
     config.route("/settings/edit_link", web::post().to(edit_link));
     config.route("/settings/edit_name", web::post().to(edit_name));
     config.route("/settings/edit_password", web::post().to(edit_password));
     config.route("/settings/edit_phone", web::post().to(edit_phone));
     config.route("/settings/edit_private", web::post().to(edit_private));
+    config.route("/settings/edit_notify", web::post().to(edit_notify));
     config.route("/settings/delete_account", web::post().to(delete_account));
     config.route("/settings/restore_account", web::post().to(restore_account));
 }  
 
-pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyWalue>>, Error> {
+pub async fn edit_notifies_page(req: HttpRequest) -> Result<Json<EditNotifyResp>, Error> {
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -55,6 +57,43 @@ pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyWalue>>
                 owner = owner_res.expect("E");
             }
             else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let body = block(move || owner.get_notify_json()).await?;
+            Ok(Json(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyWalue>>, Error> {
+    let params_some = web::Query::<SmallData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner_res = get_user(user_id);
+            if owner_res.is_err() {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "owner not found!".to_string(),
                 }).unwrap();
@@ -517,11 +556,11 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
 }
 
 #[derive(Deserialize)]
-pub struct DeleteAccountData {
+pub struct MinimalData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
 }
-pub async fn delete_account(data: Json<DeleteAccountData>) -> Result<Json<i16>, Error> {
+pub async fn delete_account(data: Json<MinimalData>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
@@ -580,6 +619,38 @@ pub async fn restore_account(data: Json<DeleteAccountData>) -> Result<Json<i16>,
         }
         
         let body = block(move || owner.restore_item()).await?;
+        Ok(Json(body))
+    }
+}
+
+pub async fn edit_notify(data: Json<MinimalData>) -> Result<Json<EditNotifyResp>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body)) 
+    }
+    else if user_id == 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: User;
+        let owner_res = get_user(user_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        
+        let body = block(move || owner.get_notify_json()).await?;
         Ok(Json(body))
     }
 }

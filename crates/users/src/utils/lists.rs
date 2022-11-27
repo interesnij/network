@@ -129,3 +129,9 @@ pub struct EditPrivateResp {
     pub see_friend_include_friends: Option<Vec<CardUserJson>>,
     pub see_friend_include_follows: Option<Vec<CardUserJson>>,
 }
+
+#[derive(Serialize)]
+pub struct EditNotifyResp {
+    pub connection_request:   bool,
+    pub connection_confirmed: bool,
+} 
