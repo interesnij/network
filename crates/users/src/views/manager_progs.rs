@@ -59,7 +59,7 @@ pub struct ReportResp {
 }
 
 pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error> {
-    let params_some = web::Query::<SmallData>::from_query(&req.query_string());
+    let params_some = web::Query::<ReportParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
@@ -110,7 +110,7 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
                     first_name: target.first_name,
                     last_name:  target.last_name,
                     link:       target.link,
-                    image:      target.image,
+                    image:      target.s_avatar,
                 };
                 list.push(KeyValue {
                     value: 1,
