@@ -138,6 +138,7 @@ impl Moderated {
 
         use crate::utils::get_community;
         let item = get_community(self.community_id).expect("E.");
+        return 1;
     }
     pub fn create_close (
         &self,
@@ -172,7 +173,8 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
         let item = get_community(self.community_id).expect("E.");
-        item.close_item()
+        item.close_item();
+        return 1;
     }
     pub fn delete_close (
         &self,
@@ -221,7 +223,8 @@ impl Moderated {
         .expect("E");
 
         let item = get_community(self.community_id).expect("E.");
-        item.unclose_item()
+        item.unclose_item();
+        return 1;
     }
     pub fn delete_suspend (
         &self,
@@ -271,7 +274,8 @@ impl Moderated {
 
         use crate::utils::get_community;
         let item = get_community(self.community_id).expect("E.");
-        item.unsuspend_item()
+        item.unsuspend_item();
+        return 1;
     }
     pub fn unverify (
         &self,
@@ -604,7 +608,7 @@ pub struct NewModeratedLog {
     //types:
     // 4 Записи
     // 34 Записи
-#[derive(Debug, Queryable, Serialize, Identifiable)]
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct OwnerService {
     pub id:    i32,
     pub types: i16,
