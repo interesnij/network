@@ -40,23 +40,15 @@ pub async fn gen_jwt (
     .unwrap()
 }
 
-pub async fn unwrap_jwt (
-    _token: String,
-    secret: &String,
-) -> Result<TokenData<Claims>, jsonwebtoken::errors::Error> {
-    let jwt_key = secret.clone();
-    block(move || {
+pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
+    let jwt_key = _secret.clone();
+    let claims = block(move || {
         let decoding_key = DecodingKey::from_secret(jwt_key.as_bytes());
 
         decode::<Claims>(&_token, &decoding_key, &Validation::default())
     })
     .await
-    .unwrap()
-}
-
-pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
-    let claims = unwrap_jwt(_token, _secret).await;
-
+    .unwrap();
     if let Err(_) = claims {
         return Err(403);
     }
