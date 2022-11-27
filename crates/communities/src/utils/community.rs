@@ -28,6 +28,17 @@ pub struct EditTokenPageResp {
     pub all_services:  Vec<OwnerService>,
 }
 
+#[derive(Serialize)]
+pub struct KeyValue {
+    pub value: i16,
+    pub info:  String,
+}
+
+#[derive(Serialize)]
+pub struct EditLinkResp {
+    pub link: String,
+}
+
 #[derive(Deserialize)]
 pub struct ObjectData {
     pub token:   Option<String>,
@@ -128,9 +139,48 @@ pub struct CommunityNotificationJson {
     pub community_invite:     bool,
 }
 
-////////
+
+#[derive(Deserialize)]
+pub struct SearchRegListData {
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub q:            Option<String>,
+    pub limit:        Option<i64>,
+    pub offset:       Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct SearchTargetListData {
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub q:            Option<String>,
+    pub target_id:    Option<i32>,
+    pub limit:        Option<i64>,
+    pub offset:       Option<i64>,
+}
+
 #[derive(Serialize)]
-pub struct CommunityVisiblePermJson {
-    pub see_info:   i16,
-    pub see_member: i16,
+pub struct EditPrivateResp {
+    pub see_member:                   KeyValue,
+    pub see_info:                     KeyValue,
+    pub see_settings:                 KeyValue,
+    pub see_log:                      KeyValue,
+    pub see_stat:                     KeyValue,
+
+    pub see_member_exclude_members:   Option<Vec<CardUserJson>>,
+    pub see_member_exclude_members:   Option<Vec<CardUserJson>>,
+
+    pub see_info_include_members:     Option<Vec<CardUserJson>>,
+    pub see_info_include_members:     Option<Vec<CardUserJson>>,
+
+    pub see_settings_exclude_members: Option<Vec<CardUserJson>>,
+    pub see_settings_exclude_members: Option<Vec<CardUserJson>>,
+
+    pub see_log_include_members:      Option<Vec<CardUserJson>>,
+    pub see_log_include_members:      Option<Vec<CardUserJson>>,
+
+    pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
+    pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
 }
