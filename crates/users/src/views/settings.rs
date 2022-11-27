@@ -62,10 +62,11 @@ pub struct EditLinkData {
 
 #[derive(Deserialize)]
 pub struct EditPrivateData {
-    pub token: Option<String>,
-    pub field: Option<String>,
-    pub value: Option<i16>,
-    pub users: Option<Vec<i16>>,
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub field:   Option<String>,
+    pub value:   Option<i16>,
+    pub users:   Option<Vec<i32>>,
 }
 
 pub async fn edit_private_page(req: HttpRequest) -> Result<Json<EditPrivateResp>, Error> {
@@ -438,9 +439,9 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
             return Err(Error::BadRequest(body));
         }
         
-        let body = block(move || owner.edit_private (
+        let body = block(move || owner.edit_private ( 
             data.field.as_deref().unwrap(),
-            data.value,
+            data.value.unwrap(),
             data.users.clone()
         )).await?;
         Ok(Json(body))
