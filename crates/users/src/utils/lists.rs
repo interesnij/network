@@ -78,7 +78,7 @@ pub struct EditTokenPageResp {
     pub is_active:     bool,
     pub item_services: Vec<OwnerService>,
     pub all_services:  Vec<OwnerService>,
-}
+} 
 
 #[derive(Deserialize)]
 pub struct UsersData {

@@ -210,14 +210,13 @@ CREATE UNIQUE INDEX featured_communities_unq ON featured_communities (community_
 
 
 CREATE TABLE moderateds (
-    id          SERIAL PRIMARY KEY,
-    description VARCHAR(500),
-    verified    BOOLEAN NOT NULL DEFAULT false,
-    status      SMALLINT NOT NULL,
-    types       SMALLINT NOT NULL,
-    object_id   INT NOT NULL,
-    created     TIMESTAMP NOT NULL,
-    count       INT NOT NULL
+    id           SERIAL PRIMARY KEY,
+    description  VARCHAR(500),
+    verified     BOOLEAN NOT NULL DEFAULT false,
+    status       SMALLINT NOT NULL,
+    community_id INT NOT NULL,
+    created      TIMESTAMP NOT NULL,
+    count        INT NOT NULL
 );
 
 CREATE TABLE moderated_reports (
@@ -235,8 +234,7 @@ CREATE TABLE moderated_penalties (
     user_id      INT NOT NULL,
     moderated_id INT NOT NULL,
     expiration   TIMESTAMP,
-    types        SMALLINT NOT NULL,
-    object_id    INT NOT NULL,
+    community_id INT NOT NULL,
     status       SMALLINT NOT NULL,
     created      TIMESTAMP NOT NULL
 );
@@ -245,10 +243,9 @@ CREATE UNIQUE INDEX moderated_penalties_unq ON moderated_penalties (user_id, mod
 CREATE TABLE moderated_logs (
     id              SERIAL PRIMARY KEY,
     user_id         INT NOT NULL,
-    object_id       INT NOT NULL,
+    community_id    INT NOT NULL,
     action          SMALLINT NOT NULL,
     description     VARCHAR(500),
-    types           SMALLINT NOT NULL,
     created         TIMESTAMP NOT NULL,
     time_to_suspend TIMESTAMP,
 
@@ -350,81 +347,10 @@ CREATE TABLE owners (
 
 CREATE INDEX item_service_key_index ON owners (service_key);
 
--- создадим токен нашего браузерного приложения, чтобы сто раз не добавлять
-INSERT INTO owners (id, user_id, community_id, name, description, types, secret_key, service_key, is_active)
-VALUES (1, 1, 1, 'Админ-токен', 'admin token', 3, '%n%#Nv!|||y9nU', 'ghp_f88dT7u4JT4uWmbA8kzCksHg67Jdx2KnzX4', true ) ON CONFLICT DO NOTHING;
-
 -- связь сервисов токенов с токенами -------
 CREATE TABLE owner_services_items (
-    id          SERIAL PRIMARY KEY, -- id
-    owner_id    INT NOT NULL,       -- id токена-владельца
-    service_id  INT NOT NULL        -- id сервиса
+    id         SERIAL PRIMARY KEY, -- id
+    owner_id   INT NOT NULL,       -- id токена-владельца
+    service_id INT NOT NULL        -- id сервиса
 );
 CREATE UNIQUE INDEX owner_services_items_unq ON owner_services_items (owner_id, service_id);
-
--- создадим сервисные разрешения для браузерного приложения
--- создадим варианты для токенов, чтобы сто раз не добавлять
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (1, 0, 1) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (2, 0, 2) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (3, 0, 3) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (4, 0, 4) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (5, 0, 5) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (6, 0, 6) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (7, 0, 7) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (8, 0, 8) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (9, 0, 9) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (10, 0, 10) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (11, 0, 11) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (12, 0, 12) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (13, 0, 13) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (14, 0, 14) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (15, 0, 15) ON CONFLICT DO NOTHING;
-
--- дальше только для владельцев токена - работа с управлением
-
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (16, 0, 31) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (17, 0, 32) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (18, 0, 33) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (19, 0, 34) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (20, 0, 35) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (21, 0, 36) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (22, 0, 37) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (23, 0, 38) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (24, 0, 39) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (25, 0, 40) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (26, 0, 41) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (27, 0, 42) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (28, 0, 43) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (29, 0, 44) ON CONFLICT DO NOTHING;
-INSERT INTO owner_services_items (id, owner_id, service_id)
-VALUES (30, 0, 45) ON CONFLICT DO NOTHING;
-
