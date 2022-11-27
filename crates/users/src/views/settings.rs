@@ -25,7 +25,7 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/edit_name", web::post().to(edit_name));
     config.route("/settings/edit_password", web::post().to(edit_password));
     config.route("/settings/edit_phone", web::post().to(edit_phone));
-    config.route("/settings/edit_private", web::post().to(edit_private));
+    //config.route("/settings/edit_private", web::post().to(edit_private));
     //config.route("/settings/remove_profile", web::post().to(remove_profile));
 }  
 
@@ -90,7 +90,8 @@ pub async fn edit_private_page(req: HttpRequest) -> Result<Json<EditPrivateResp>
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            Ok(Json(EditLinkResp{link: owner.link}))
+            let body = block(move || owner.get_private_json()).await?;
+            Ok(Json(body))
         }
     }
     else {
