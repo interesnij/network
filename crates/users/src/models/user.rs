@@ -115,6 +115,102 @@ pub struct GetSessionFields {
 }
 
 impl User { 
+    pub fn edit_private (
+        &self, 
+        field:     &str, 
+        value:     i16, 
+        users_ids: Option<Vec<i32>>
+    ) -> i16 {
+        let users_vec = vec![3,4,5,6,9,10,11,12];
+        if field != "see_all" && field != "see_all" && field != "see_friend" {
+            return 0;
+        }
+        else if value < 1 || value > 13 {
+            return 0;
+        }
+        else if users_vec.iter().any(|&i| i==value) && users.is_none() {
+            return 0;
+        }
+        let _connection = establish_connection();
+        let private = self.get_private_model().expect("E.");
+        if field == "see_all" {
+            diesel::update(&private)
+            .set(schema::users::see_all.eq(value))
+            .execute(&_connection)
+            .expect("E.");
+        }
+        else if field == "see_info" {
+            diesel::update(&private)
+            .set(schema::users::see_info.eq(value))
+            .execute(&_connection)
+            .expect("E.");
+        }
+        else if field == "see_friend" {
+            diesel::update(&private)
+            .set(schema::users::see_friend.eq(value))
+            .execute(&_connection)
+            .expect("E.");
+        }
+        // нужно удалить из списка тех, кто был туда внесен
+        // с противоположными правами.
+        match value {
+        1 => diesel::delete (
+                user_visible_perms
+                    .filter(schema::user_visible_perms::user_id.eq(self.id))
+                    .filter(schema::user_visible_perms::types.eq(11))
+            )
+            .execute(&_connection)
+            .expect("E"),
+        2 => diesel::delete (
+                user_visible_perms
+                    .filter(schema::user_visible_perms::user_id.eq(self.id))
+                    .filter(schema::user_visible_perms::types.eq(12))
+            )
+            .execute(&_connection)
+            .expect("E"),
+        3 => diesel::delete (
+                user_visible_perms
+                    .filter(schema::user_visible_perms::user_id.eq(self.id))
+                    .filter(schema::user_visible_perms::types.eq(13))
+            )
+            .execute(&_connection)
+            .expect("E"),
+        11 => diesel::delete (
+                user_visible_perms
+                    .filter(schema::user_visible_perms::user_id.eq(self.id))
+                    .filter(schema::user_visible_perms::types.eq(1))
+            )
+            .execute(&_connection)
+            .expect("E"),
+        12 => diesel::delete (
+                user_visible_perms
+                    .filter(schema::user_visible_perms::user_id.eq(self.id))
+                    .filter(schema::user_visible_perms::types.eq(2))
+            )
+            .execute(&_connection)
+            .expect("E"),
+        13 => diesel::delete (
+                user_visible_perms
+                    .filter(schema::user_visible_perms::user_id.eq(self.id))
+                    .filter(schema::user_visible_perms::types.eq(3))
+            )
+            .execute(&_connection)
+            .expect("E"),
+        _ => 0,
+        };
+        for user_id in users_ids.clone() {
+            let _new_perm = NewUserVisiblePerm {
+                user_id:   self.id,
+                target_id: *user_id,
+                types:     value,
+            };
+            diesel::insert_into(schema::user_visible_perms::table)
+                .values(&_new_perm)
+                .execute(&_connection)
+                .expect("Error.");
+        }
+        return 1;
+    }
     pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
         let _connection = establish_connection();
         let _o = diesel::update(self)
