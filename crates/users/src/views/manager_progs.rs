@@ -209,9 +209,8 @@ pub async fn create_claim_user(data: Json<ReportParams>) -> Result<Json<i16>, Er
             let _res = block(move || ModeratedReport::create (
                 user_id,
                 data.types.unwrap(),
-                owner.id,
+                owner.id, 
                 data.description.clone(),
-                3,
             )).await?;
             Ok(Json(_res))
         }
@@ -243,7 +242,6 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
                         item.id,
                         2,
                         data.description.clone(),
-                        data.expiration,
                     );
                     item.close_item()
                 }
@@ -281,7 +279,6 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
                         item.id,
                         4,
                         data.description.clone(),
-                        data.expiration,
                     );
                     item.close_item()
                 }
