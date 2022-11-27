@@ -128,31 +128,34 @@ impl User {
         else if value < 1 || value > 13 {
             return 0;
         }
-        else if users_vec.iter().any(|&i| i==value) && users.is_none() {
+        else if users_vec.iter().any(|&i| i==value) && users_ids.is_none() {
             return 0;
         }
         let _connection = establish_connection();
         let private = self.get_private_model().expect("E.");
         if field == "see_all" {
             diesel::update(&private)
-            .set(schema::users::see_all.eq(value))
+            .set(schema::user_privates::see_all.eq(value))
             .execute(&_connection)
             .expect("E.");
         }
         else if field == "see_info" {
             diesel::update(&private)
-            .set(schema::users::see_info.eq(value))
+            .set(schema::user_privates::see_info.eq(value))
             .execute(&_connection)
             .expect("E.");
         }
         else if field == "see_friend" {
             diesel::update(&private)
-            .set(schema::users::see_friend.eq(value))
+            .set(schema::user_privates::see_friend.eq(value))
             .execute(&_connection)
             .expect("E.");
         }
+        
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
+        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
         match value {
         1 => diesel::delete (
                 user_visible_perms

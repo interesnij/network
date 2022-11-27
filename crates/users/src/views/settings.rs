@@ -63,8 +63,8 @@ pub struct EditLinkData {
 #[derive(Deserialize)]
 pub struct EditPrivateData {
     pub token: Option<String>,
-    pub field: String,
-    pub value: i16,
+    pub field: Option<String>,
+    pub value: Option<i16>,
     pub users: Option<Vec<i16>>,
 }
 
