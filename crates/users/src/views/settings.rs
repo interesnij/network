@@ -348,7 +348,7 @@ pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
         let body = block(move || owner.edit_name (
             data.first_name.as_deref().unwrap(),
             data.last_name.as_deref().unwrap()
-        ))).await?;
+        )).await?;
         Ok(Json(body))
     }
 }
@@ -394,7 +394,7 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
         let body = block(move || owner.edit_password (
             data.old_password.as_deref().unwrap(),
             data.new_password.as_deref().unwrap()
-        ))).await?;
+        )).await?;
         Ok(Json(body))
     }
 }
