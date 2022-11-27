@@ -196,7 +196,7 @@ impl User {
         let mut see_friend_include_follows: Option<Vec<CardUserJson>>;
 
         let private = self.get_private_model();
-        if let private.see_all = 3 || private.see_all = 11 {
+        if private.see_all == 3 || private.see_all == 11 {
             see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(20, 0));
         }
         else {
