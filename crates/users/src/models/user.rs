@@ -203,7 +203,7 @@ impl User {
         };
 
         use crate::models::NewUserVisiblePerm;
-        for user_id in users_ids.clone() {
+        for user_id in users_ids.clone().iter() {
             let _new_perm = NewUserVisiblePerm {
                 user_id:   self.id,
                 target_id: user_id,
