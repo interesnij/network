@@ -8,7 +8,7 @@ use crate::utils::{
     get_user, get_user_owner_data,
     ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditPhoneResp, EditLinkResp,
-    KeyWalue, EditNotifyResp,
+    KeyValue, EditNotifyResp,
 };
 use crate::models::{User, };
 use crate::errors::Error;
@@ -74,7 +74,7 @@ pub async fn edit_notifies_page(req: HttpRequest) -> Result<Json<EditNotifyResp>
     }
 }
 
-pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyWalue>>, Error> {
+pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyValue>>, Error> {
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -101,31 +101,31 @@ pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyWalue>>
             }
 
             let mut list = Vec::new();
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 1,
                 info:  "У меня есть другой аккаунт".to_string(),
             });
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 2,
                 info:  "Соцсеть отнимает много времени".to_string(),
             });
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 3,
                 info:  "Мало свободы самовыражения".to_string(),
             });
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 4,
                 info:  "Соцсеть плохо защищает данные".to_string(),
             });
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 5,
                 info:  "Соцсеть скучная".to_string(),
             });
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 6,
                 info:  "Соцсеть плохо работает".to_string(),
             });
-            list.push(KeyWalue {
+            list.push(KeyValue {
                 value: 7,
                 info:  "Другая причина".to_string(),
             });

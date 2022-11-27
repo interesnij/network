@@ -106,16 +106,16 @@ pub struct EditLinkResp {
 }
 
 #[derive(Serialize)]
-pub struct KeyWalue {
+pub struct KeyValue {
     pub value: i16,
     pub info:  String,
 }
 
 #[derive(Serialize)]
 pub struct EditPrivateResp {
-    pub see_all:                    KeyWalue,
-    pub see_info:                   KeyWalue,
-    pub see_friend:                 KeyWalue,
+    pub see_all:                    KeyValue,
+    pub see_info:                   KeyValue,
+    pub see_friend:                 KeyValue,
     pub see_all_exclude_friends:    Option<Vec<CardUserJson>>,
     pub see_all_exclude_follows:    Option<Vec<CardUserJson>>,
     pub see_all_include_friends:    Option<Vec<CardUserJson>>,

@@ -52,7 +52,7 @@ pub struct ModerationParams {
 }
 #[derive(Serialize)]
 pub struct ReportResp {
-    pub options: Vec<KeyWalue>,
+    pub options: Vec<KeyValue>,
     pub user:    CardUserJson,
 }
 
@@ -109,53 +109,53 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
                     last_name:  target.last_name,
                     link:       target.link,
                     image:      target.image,
-                }
-                list.push(KeyWalue {
+                };
+                list.push(KeyValue {
                     value: 1,
                     info:  "Эротика / Порнография".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 2,
                     info:  "Оскорбительное содержание".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 3,
                     info:  "Мошенничество".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 4,
                     info:  "Наркотики".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 5,
                     info:  "Продажа оружия".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 6,
                     info:  "Насилие".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 7,
                     info:  "Призыв к травле".to_string(),
                 });
 
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 8,
                     info:  "Призыв к суициду".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 9,
                     info:  "Жестокое обращение c животными".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 10,
                     info:  "Введение в заблуждение".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 11,
                     info:  "Экстремизм".to_string(),
                 });
-                list.push(KeyWalue {
+                list.push(KeyValue {
                     value: 12,
                     info:  "Риторика ненависти".to_string(),
                 });
