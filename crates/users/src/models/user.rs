@@ -182,26 +182,27 @@ impl User {
     }
 
     pub fn get_private_json(&self) -> EditPrivateResp {
+        let mut see_all_exclude_friends:    Option<Vec<CardUserJson>>,
+        let mut see_all_exclude_follows:    Option<Vec<CardUserJson>>,
+        let mut see_all_include_friends:    Option<Vec<CardUserJson>>,
+        let mut see_all_include_follows:    Option<Vec<CardUserJson>>,
+        let mut see_info_exclude_friends:   Option<Vec<CardUserJson>>,
+        let mut see_info_exclude_follows:   Option<Vec<CardUserJson>>,
+        let mut see_info_include_friends:   Option<Vec<CardUserJson>>,
+        let mut see_info_include_follows:   Option<Vec<CardUserJson>>,
+        let mut see_friend_exclude_friends: Option<Vec<CardUserJson>>,
+        let mut see_friend_exclude_follows: Option<Vec<CardUserJson>>,
+        let mut see_friend_include_friends: Option<Vec<CardUserJson>>,
+        let mut see_friend_include_follows: Option<Vec<CardUserJson>>,
+
         let private = self.get_private_model();
-        let see_all = private.see_all;
-        if let see_all = 3 || see_all = 11 {
-            let see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(20, 0));
+        if let private.see_all = 3 || private.see_all = 11 {
+            see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(20, 0));
         }
         else {
-            let see_all_exclude_follows = None;
+            see_all_exclude_follows = None;
         }
-        //let mut see_all_exclude_friends:    Option<Vec<CardUserJson>>,
-        //let mut see_all_exclude_follows:    Option<Vec<CardUserJson>>,
-        //let mut see_all_include_friends:    Option<Vec<CardUserJson>>,
-        //let mut see_all_include_follows:    Option<Vec<CardUserJson>>,
-        //let mut see_info_exclude_friends:   Option<Vec<CardUserJson>>,
-        //let mut see_info_exclude_follows:   Option<Vec<CardUserJson>>,
-        //let mut see_info_include_friends:   Option<Vec<CardUserJson>>,
-        //let mut see_info_include_follows:   Option<Vec<CardUserJson>>,
-        //let mut see_friend_exclude_friends: Option<Vec<CardUserJson>>,
-        //let mut see_friend_exclude_follows: Option<Vec<CardUserJson>>,
-        //let mut see_friend_include_friends: Option<Vec<CardUserJson>>,
-        //let mut see_friend_include_follows: Option<Vec<CardUserJson>>,
+    
         return EditPrivateResp {
             see_all:                    User::get_private_field(private.see_all),
             see_info:                   User::get_private_field(private.see_info),
