@@ -1,5 +1,5 @@
-use serde::Serialize;
-
+use serde::{Serialize, Deserialize};
+use crate::models::OwnerService;
 
 ////////
 #[derive(Serialize)]
@@ -170,17 +170,17 @@ pub struct EditPrivateResp {
     pub see_stat:                     KeyValue,
 
     pub see_member_exclude_members:   Option<Vec<CardUserJson>>,
-    pub see_member_exclude_members:   Option<Vec<CardUserJson>>,
+    pub see_member_include_members:   Option<Vec<CardUserJson>>,
 
-    pub see_info_include_members:     Option<Vec<CardUserJson>>,
+    pub see_info_exclude_members:     Option<Vec<CardUserJson>>,
     pub see_info_include_members:     Option<Vec<CardUserJson>>,
 
     pub see_settings_exclude_members: Option<Vec<CardUserJson>>,
-    pub see_settings_exclude_members: Option<Vec<CardUserJson>>,
+    pub see_settings_include_members: Option<Vec<CardUserJson>>,
 
-    pub see_log_include_members:      Option<Vec<CardUserJson>>,
+    pub see_log_exclude_members:      Option<Vec<CardUserJson>>,
     pub see_log_include_members:      Option<Vec<CardUserJson>>,
 
     pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
-    pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
+    pub see_stat_include_members:     Option<Vec<CardUserJson>>,
 }

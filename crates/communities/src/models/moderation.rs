@@ -17,8 +17,16 @@ use diesel::{
 };
 use crate::errors::Error;
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
+use crate::utils::{
+    establish_connection,
+    EditTokenPageResp,
+};
 
+#[derive(Serialize)]
+pub struct TokenServiceJson {
+    pub id:   i32,
+    pub name: String,
+}
 
 /////// Moderated //////
 ////////// Статус
@@ -384,13 +392,12 @@ impl Moderated {
 #[derive(Deserialize, Insertable)]
 #[table_name="moderateds"]
 pub struct NewModerated {
-    pub description: Option<String>,
-    pub verified:    bool,
-    pub status:      i16,
-    pub types:       i16,
-    pub object_id:   i32,
-    pub created:     chrono::NaiveDateTime,
-    pub count:       i32,
+    pub description:  Option<String>,
+    pub verified:     bool,
+    pub status:       i16,
+    pub community_id: i32,
+    pub created:      chrono::NaiveDateTime,
+    pub count:        i32,
 }
 
 /////// ModeratedReport //////

@@ -1,6 +1,12 @@
 mod community;
-//use serde::Serialize;
-use diesel::prelude::*;
+
+use diesel::{
+    RunQueryDsl,
+    ExpressionMethods,
+    QueryDsl,
+    PgConnection,
+    Connection,
+};
 use crate::schema;
 use crate::models::{
     Community, User, 
