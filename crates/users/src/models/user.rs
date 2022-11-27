@@ -196,11 +196,80 @@ impl User {
         let mut see_friend_include_follows: Option<Vec<CardUserJson>>;
 
         let private = self.get_private_model().expect("E.");
+        
+        if private.see_all == 5 || private.see_all == 9 {
+            see_all_exclude_friends = Some(self.get_limit_see_all_exclude_friends(Some(20), Some(0)));
+        }
+        else {
+            see_all_exclude_friends = None;
+        }
         if private.see_all == 3 || private.see_all == 11 {
             see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(Some(20), Some(0)));
         }
         else {
             see_all_exclude_follows = None;
+        }
+        if private.see_all == 6 || private.see_all == 10 {
+            see_all_include_friends = Some(self.get_limit_see_all_include_friends(Some(20), Some(0)));
+        }
+        else {
+            see_all_include_friends = None;
+        }
+        if private.see_all == 4 || private.see_all == 12 {
+            see_all_include_follows = Some(self.get_limit_see_all_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_all_include_follows = None;
+        }
+
+        if private.see_info == 5 || private.see_info == 9 {
+            see_info_exclude_friends = Some(self.get_limit_see_info_exclude_friends(Some(20), Some(0)));
+        }
+        else {
+            see_info_exclude_friends = None;
+        }
+        if private.see_info == 3 || private.see_info == 11 {
+            see_info_exclude_follows = Some(self.get_limit_see_info_exclude_follows(Some(20), Some(0)));
+        }
+        else {
+            see_info_exclude_follows = None;
+        }
+        if private.see_info == 6 || private.see_info == 10 {
+            see_info_include_friends = Some(self.get_limit_see_info_include_friends(Some(20), Some(0)));
+        }
+        else {
+            see_info_include_friends = None;
+        }
+        if private.see_info == 4 || private.see_info == 12 {
+            see_info_include_follows = Some(self.get_limit_see_info_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_info_include_follows = None;
+        }
+
+        if private.see_friend == 5 || private.see_friend == 9 {
+            see_friend_exclude_friends = Some(self.get_limit_see_friend_exclude_friends(Some(20), Some(0)));
+        }
+        else {
+            see_friend_exclude_friends = None;
+        }
+        if private.see_friend == 3 || private.see_friend == 11 {
+            see_friend_exclude_follows = Some(self.get_limit_see_friend_exclude_follows(Some(20), Some(0)));
+        }
+        else {
+            see_friend_exclude_follows = None;
+        }
+        if private.see_friend == 6 || private.see_friend == 10 {
+            see_friend_include_friends = Some(self.get_limit_see_friend_include_friends(Some(20), Some(0)));
+        }
+        else {
+            see_friend_include_friends = None;
+        }
+        if private.see_friend == 4 || private.see_friend == 12 {
+            see_friend_include_follows = Some(self.get_limit_see_friend_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_friend_include_follows = None;
         }
     
         return EditPrivateResp {
