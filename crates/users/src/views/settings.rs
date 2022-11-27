@@ -60,6 +60,13 @@ pub struct EditLinkData {
     pub link:    Option<String>,
 }
 
+#[derive(Deserialize)]
+pub struct EditPrivateData {
+    pub token: Option<String>,
+    pub field: String,
+    pub value: i16,
+    pub users: Option<Vec<CardUserJson>>,
+}
 
 pub async fn edit_private_page(req: HttpRequest) -> Result<Json<EditPrivateResp>, Error> {
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
@@ -258,7 +265,8 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_link(data.link.as_deref().unwrap())))
+        let body = block(move || owner.edit_link(data.link.as_deref().unwrap())).await?;
+        Ok(Json(body))
     }
 }
 
@@ -294,8 +302,8 @@ pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        
-        Ok(Json(owner.edit_phone(data.phone.as_deref().unwrap())))
+        let body = block(move || owner.edit_phone(data.phone.as_deref().unwrap())).await?;
+        Ok(Json(body))
     }
 }
 
@@ -337,10 +345,11 @@ pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(owner.edit_name(
+        let body = block(move || owner.edit_name (
             data.first_name.as_deref().unwrap(),
             data.last_name.as_deref().unwrap()
-        )))
+        ))).await?;
+        Ok(Json(body))
     }
 }
 
@@ -382,11 +391,66 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        Ok(Json(
-            owner.edit_password (
-                data.old_password.as_deref().unwrap(),
-                data.new_password.as_deref().unwrap()
-            )
-        ))
+        let body = block(move || owner.edit_password (
+            data.old_password.as_deref().unwrap(),
+            data.new_password.as_deref().unwrap()
+        ))).await?;
+        Ok(Json(body))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct EditPrivateData {
+    pub token: Option<String>,
+    pub field: Option<String>,
+    pub value: Option<i16>,
+    pub users: Option<Vec<i32>>,
+}
+
+pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body)) 
+    }
+    else if user_id == 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.value.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'value' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.field.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'field' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: User;
+        let owner_res = get_user(user_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "owner not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        
+        let body = block(move || owner.edit_private (
+            data.field.as_deref().unwrap(),
+            data.value,
+            data.users.clone()
+        ))).await?;
+        Ok(Json(body))
     }
 }
