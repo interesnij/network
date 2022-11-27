@@ -16,8 +16,9 @@ use crate::models::{
 };
 use crate::utils::{
     establish_connection, get_limit_offset,
-    UserPrivateJson, LocationJson,
-    CardUserJson, UserDetailJson,
+    UserPrivateJson, LocationJson, KeyWalue,
+    CardUserJson, UserDetailJson, EditPrivateResp, 
+
 };
 use crate::schema::users;
 use crate::errors::Error;
@@ -156,6 +157,67 @@ impl User {
             .execute(&_connection)
             .expect("E.");
         return 1;
+    }
+    pub fn get_private_field(value: i16) -> KeyWalue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Все друзья и все подписчики",
+            3 => "Все друзья и подписчики, кроме",
+            4 => "Все друзья и некоторые подписчики",
+            5 => "Все подписчики и друзья, кроме",
+            6 => "Все подписчики и некоторые друзья",
+            7 => "Все друзья",
+            8 => "Все подписчики",
+            9 => "Друзья, кроме",
+            10 => "Некоторые друзья",
+            11 => "Подписчики, кроме",
+            12 => "Некоторые подписчики",
+            13 => "Только я",
+            _ => "Ошибка".to_string(),
+        };
+        return KeyWalue {
+            value: value,
+            info:  info,
+        }
+    }
+
+    pub fn get_private_json(&self) -> EditPrivateResp {
+        let private = self.get_private_model();
+        if let private.see_all == 3 || private.see_all == 11 {
+            let see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(20, 0));
+        }
+        else {
+            let see_all_exclude_follows = None;
+        }
+        //let mut see_all_exclude_friends:    Option<Vec<CardUserJson>>,
+        //let mut see_all_exclude_follows:    Option<Vec<CardUserJson>>,
+        //let mut see_all_include_friends:    Option<Vec<CardUserJson>>,
+        //let mut see_all_include_follows:    Option<Vec<CardUserJson>>,
+        //let mut see_info_exclude_friends:   Option<Vec<CardUserJson>>,
+        //let mut see_info_exclude_follows:   Option<Vec<CardUserJson>>,
+        //let mut see_info_include_friends:   Option<Vec<CardUserJson>>,
+        //let mut see_info_include_follows:   Option<Vec<CardUserJson>>,
+        //let mut see_friend_exclude_friends: Option<Vec<CardUserJson>>,
+        //let mut see_friend_exclude_follows: Option<Vec<CardUserJson>>,
+        //let mut see_friend_include_friends: Option<Vec<CardUserJson>>,
+        //let mut see_friend_include_follows: Option<Vec<CardUserJson>>,
+        return EditPrivateResp {
+            see_all:                    User::get_private_field(private.see_all),
+            see_info:                   User::get_private_field(private.see_info),
+            see_friend:                 User::get_private_field(private.see_friend),
+            see_all_exclude_friends:    None,
+            see_all_exclude_follows:    see_all_exclude_follows,
+            see_all_include_friends:    None,
+            see_all_include_follows:    None,
+            see_info_exclude_friends:   None,
+            see_info_exclude_follows:   None,
+            see_info_include_friends:   None,
+            see_info_include_follows:   None,
+            see_friend_exclude_friends: None,
+            see_friend_exclude_follows: None,
+            see_friend_include_friends: None,
+            see_friend_include_follows: None,
+        };
     }
     pub fn edit_password (
         &self, 
