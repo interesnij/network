@@ -182,18 +182,18 @@ impl User {
     }
 
     pub fn get_private_json(&self) -> EditPrivateResp {
-        let mut see_all_exclude_friends:    Option<Vec<CardUserJson>>;
-        let mut see_all_exclude_follows:    Option<Vec<CardUserJson>>;
-        let mut see_all_include_friends:    Option<Vec<CardUserJson>>;
-        let mut see_all_include_follows:    Option<Vec<CardUserJson>>;
-        let mut see_info_exclude_friends:   Option<Vec<CardUserJson>>;
-        let mut see_info_exclude_follows:   Option<Vec<CardUserJson>>;
-        let mut see_info_include_friends:   Option<Vec<CardUserJson>>;
-        let mut see_info_include_follows:   Option<Vec<CardUserJson>>;
-        let mut see_friend_exclude_friends: Option<Vec<CardUserJson>>;
-        let mut see_friend_exclude_follows: Option<Vec<CardUserJson>>;
-        let mut see_friend_include_friends: Option<Vec<CardUserJson>>;
-        let mut see_friend_include_follows: Option<Vec<CardUserJson>>;
+        let see_all_exclude_friends:    Option<Vec<CardUserJson>>;
+        let see_all_exclude_follows:    Option<Vec<CardUserJson>>;
+        let see_all_include_friends:    Option<Vec<CardUserJson>>;
+        let see_all_include_follows:    Option<Vec<CardUserJson>>;
+        let see_info_exclude_friends:   Option<Vec<CardUserJson>>;
+        let see_info_exclude_follows:   Option<Vec<CardUserJson>>;
+        let see_info_include_friends:   Option<Vec<CardUserJson>>;
+        let see_info_include_follows:   Option<Vec<CardUserJson>>;
+        let see_friend_exclude_friends: Option<Vec<CardUserJson>>;
+        let see_friend_exclude_follows: Option<Vec<CardUserJson>>;
+        let see_friend_include_friends: Option<Vec<CardUserJson>>;
+        let see_friend_include_follows: Option<Vec<CardUserJson>>;
 
         let private = self.get_private_model().expect("E.");
         
