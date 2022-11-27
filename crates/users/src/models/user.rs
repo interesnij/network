@@ -151,7 +151,7 @@ impl User {
             .execute(&_connection)
             .expect("E.");
         }
-        
+
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
@@ -206,7 +206,7 @@ impl User {
         for user_id in users_ids.clone() {
             let _new_perm = NewUserVisiblePerm {
                 user_id:   self.id,
-                target_id: *user_id,
+                target_id: user_id,
                 types:     value,
             };
             diesel::insert_into(schema::user_visible_perms::table)
