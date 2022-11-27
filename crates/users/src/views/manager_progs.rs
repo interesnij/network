@@ -75,7 +75,7 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if data.target_id.is_none() {
+        else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Field 'target_id' is required!".to_string(),
             }).unwrap();
@@ -83,7 +83,7 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
         }
         else {
             let owner_res = get_user(user_id);
-            let target_res = get_user(data.target_id.unwrap());
+            let target_res = get_user(params.target_id.unwrap());
             if owner_res.is_err() {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "owner user not found!".to_string(),
@@ -211,7 +211,6 @@ pub async fn create_claim_user(data: Json<ReportParams>) -> Result<Json<i16>, Er
                 data.types.unwrap(),
                 owner.id, 
                 data.description.clone(),
-                None,
             )).await?;
             Ok(Json(_res))
         }
