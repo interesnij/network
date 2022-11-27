@@ -206,7 +206,7 @@ impl User {
         for user_id in users_ids.unwrap().iter() {
             let _new_perm = NewUserVisiblePerm {
                 user_id:   self.id,
-                target_id: user_id,
+                target_id: *user_id,
                 types:     value,
             };
             diesel::insert_into(schema::user_visible_perms::table)
