@@ -65,7 +65,7 @@ pub struct EditPrivateData {
     pub token: Option<String>,
     pub field: String,
     pub value: i16,
-    pub users: Option<Vec<CardUserJson>>,
+    pub users: Option<Vec<i16>>,
 }
 
 pub async fn edit_private_page(req: HttpRequest) -> Result<Json<EditPrivateResp>, Error> {
@@ -397,14 +397,6 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
         )).await?;
         Ok(Json(body))
     }
-}
-
-#[derive(Deserialize)]
-pub struct EditPrivateData {
-    pub token: Option<String>,
-    pub field: Option<String>,
-    pub value: Option<i16>,
-    pub users: Option<Vec<i32>>,
 }
 
 pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Error> {
