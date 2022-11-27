@@ -370,8 +370,6 @@ pub struct NewOwnerServicesItem {
 }
 
 /////// Moderated //////
-////////// Тип модерируемого объекта
-    // 1 Пользователь
 ////////// Статус
     // 1 На рассмотрении
     // 2 Объект заморожен
@@ -385,23 +383,20 @@ pub struct Moderated {
     pub description: Option<String>,
     pub verified:    bool,
     pub status:      i16,
-    pub types:       i16,
-    pub object_id:   i32,
+    pub target_id:   i32,
     pub created:     chrono::NaiveDateTime,
     pub count:       i32,
 }
 
 impl Moderated {
     pub fn get_or_create_moderated_object (
-        object_id: i32,
-        types: i16,
+        target_id: i32,
     ) -> Moderated {
         use crate::schema::moderateds::dsl::moderateds;
 
         let _connection = establish_connection();
         let some_moderateds = moderateds
-            .filter(schema::moderateds::object_id.eq(object_id))
-            .filter(schema::moderateds::types.eq(types))
+            .filter(schema::moderateds::target_id.eq(target_id))
             .first::<Moderated>(&_connection);
         if some_moderateds.is_ok() {
             return some_moderateds.expect("E");
@@ -411,8 +406,7 @@ impl Moderated {
                 description: None,
                 verified:    false,
                 status:      1,
-                types:       types,
-                object_id:   object_id,
+                target_id:   target_id,
                 created:     chrono::Local::now().naive_utc(),
                 count:       0,
             };
@@ -458,7 +452,7 @@ impl Moderated {
 
         diesel::update(self)
             .set((
-                schema::moderateds::types.eq(2),
+                schema::moderateds::status.eq(2),
                 schema::moderateds::verified.eq(true)
             ))
             .execute(&_connection)
@@ -467,16 +461,14 @@ impl Moderated {
         ModeratedPenaltie::create_suspension_penalty (
             self.id,
             manager_id,
-            self.types,
-            self.object_id,
+            self.target_id,
             duration
         );
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       self.id,
+            target_id:       self.target_id,
             action:          1,
             description:     description,
-            types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: duration,
         };
@@ -485,14 +477,8 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
 
-        return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.suspend_item()
-            },
-            _ => 1,
-        };
+        let item = get_user(self.target_id).expect("E.");
+        item.suspend_item();
     }
     pub fn create_close (
         &self,
@@ -502,7 +488,7 @@ impl Moderated {
         let _connection = establish_connection();
         diesel::update(self)
             .set((
-                schema::moderateds::types.eq(3),
+                schema::moderateds::status.eq(3),
                 schema::moderateds::verified.eq(true)
             ))
             .execute(&_connection)
@@ -511,16 +497,14 @@ impl Moderated {
         ModeratedPenaltie::create_close_penalty (
             self.id,
             manager_id,
-            self.types,
-            self.object_id
+            self.target_id
         );
 
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       self.id,
+            target_id:       self.target_id,
             action:          2,
             description:     description,
-            types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -528,14 +512,8 @@ impl Moderated {
             .values(&new_log_form)
             .execute(&_connection)
             .expect("Error.");
-        return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.close_item()
-            },
-            _ => 1,
-        };
+        let item = get_user(self.target_id).expect("E.");
+        item.close_item();
     }
     pub fn delete_close (
         &self,
@@ -551,10 +529,9 @@ impl Moderated {
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       self.id,
+            target_id:       self.target_id,
             action:          4,
             description:     description,
-            types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -584,14 +561,8 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.unclose_item()
-            },
-            _ => 1,
-        };
+        let item = get_user(self.target_id).expect("E.");
+        item.restore_item();
     }
     pub fn delete_suspend (
         &self,
@@ -607,10 +578,9 @@ impl Moderated {
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       self.id,
+            target_id:       self.target_id,
             action:          3,
             description:     description,
-            types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -640,14 +610,8 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        return match self.types {
-            1 =>  {
-                use crate::utils::get_user;
-                let item = get_user(self.object_id).expect("E.");
-                item.unsuspend_item()
-            },
-            _ => 1,
-        };
+        let item = get_user(self.target_id).expect("E.");
+        item.unsuspend_item();
     }
     pub fn unverify (
         &self,
@@ -662,10 +626,9 @@ impl Moderated {
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       self.id,
+            target_id:       self.target_id,
             action:          5,
             description:     description,
-            types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -707,10 +670,9 @@ impl Moderated {
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       self.id,
+            target_id:       self.target_id,
             action:          6,
             description:     description,
-            types:           self.types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: None,
         };
@@ -773,8 +735,7 @@ pub struct NewModerated {
     pub description: Option<String>,
     pub verified:    bool,
     pub status:      i16,
-    pub types:       i16,
-    pub object_id:   i32,
+    pub target_id:   i32,
     pub created:     chrono::NaiveDateTime,
     pub count:       i32,
 }
@@ -782,8 +743,7 @@ pub struct NewModerated {
 /////// ModeratedReport //////
 
 ////////// Тип жалобы
-    // 1 Порнография
-    // 2 Для взрослых
+    // 1 Эротика / Порнография
     // 3 Оскорбительное содержание
     // 4 Мошенничество
     // 5 Наркотики
@@ -809,12 +769,11 @@ impl ModeratedReport {
     pub fn create (
         reporter_id: i32,
         types: i16,
-        object_id: i32,
+        target_id: i32,
         description: Option<String>,
-        repost_types: i16
     ) -> i16 {
         let _connection = establish_connection();
-        let moderated_obj = Moderated::get_or_create_moderated_object(object_id, types);
+        let moderated_obj = Moderated::get_or_create_moderated_object(target_id);
         if moderated_obj.get_reporters_ids().iter().any(|&i| i==reporter_id) {
             return 0;
         }
@@ -823,7 +782,7 @@ impl ModeratedReport {
             user_id:      reporter_id,
             moderated_id: moderated_obj.id,
             description:  description,
-            types:        repost_types,
+            types:        types,
             created:      chrono::Local::now().naive_utc(),
             };
             diesel::insert_into(schema::moderated_reports::table)
@@ -856,24 +815,22 @@ pub struct ModeratedPenaltie {
     pub user_id:      i32,
     pub moderated_id: i32,
     pub expiration:   Option<chrono::NaiveDateTime>,
-    pub types:        i16, // описан в самом начале, одно и то же - объект.
-    pub object_id:    i32,
+    pub target_id:    i32,
     pub status:       i16,
     pub created:      chrono::NaiveDateTime,
 }
 
 impl ModeratedPenaltie {
     pub fn is_suspend(&self) -> bool {
-        return self.types == 1;
+        return self.status == 1;
     }
     pub fn is_closed(&self) -> bool {
-        return self.types == 2;
+        return self.status == 2;
     }
     pub fn create_suspension_penalty (
         moderated_id: i32,
         manager_id: i32,
-        types: i16,
-        object_id: i32,
+        target_id: i32,
         duration: Option<chrono::NaiveDateTime>,
     ) -> i16 {
         let _connection = establish_connection();
@@ -881,8 +838,7 @@ impl ModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
             expiration:   duration,
-            types:        types,
-            object_id:    object_id,
+            target_id:    target_id,
             status:       1,
             created:      chrono::Local::now().naive_utc(),
             };
@@ -895,16 +851,14 @@ impl ModeratedPenaltie {
     pub fn create_close_penalty (
         moderated_id: i32,
         manager_id: i32,
-        types: i16,
-        object_id: i32,
+        target_id: i32,
     ) -> i16 {
         let _connection = establish_connection();
         let new_form = NewModeratedPenaltie {
             user_id:      manager_id,
             moderated_id: moderated_id,
             expiration:   None,
-            types:        types,
-            object_id:    object_id,
+            target_id:    target_id,
             status:       2,
             created:      chrono::Local::now().naive_utc(),
             };
@@ -922,8 +876,7 @@ pub struct NewModeratedPenaltie {
     pub user_id:      i32,
     pub moderated_id: i32,
     pub expiration:   Option<chrono::NaiveDateTime>,
-    pub types:        i16, // описан в самом начале, одно и то же - объект.
-    pub object_id:    i32,
+    pub target_id:    i32,
     pub status:       i16,
     pub created:      chrono::NaiveDateTime,
 }
@@ -941,10 +894,9 @@ pub struct NewModeratedPenaltie {
 pub struct ModeratedLog {
     pub id:              i32,
     pub user_id:         i32,
-    pub object_id:       i32,
+    pub target_id:       i32,
     pub action:          i16,
     pub description:     Option<String>,
-    pub types:           i16,            // описан в самом начале, одно и то же - объект.
     pub created:         chrono::NaiveDateTime,
     pub time_to_suspend: Option<chrono::NaiveDateTime>,
 }
@@ -952,19 +904,17 @@ pub struct ModeratedLog {
 impl ModeratedLog {
     pub fn create (
         manager_id:  i32,
-        object_id:   i32,
+        target_id:   i32,
         action:      i16,
         description: Option<String>,
-        types:       i16,
         time_to_suspend: Option<chrono::NaiveDateTime>
     ) -> () {
         let _connection = establish_connection();
         let new_log_form = NewModeratedLog {
             user_id:         manager_id,
-            object_id:       object_id,
+            target_id:       target_id,
             action:          action,
             description:     description,
-            types:           types,
             created:         chrono::Local::now().naive_utc(),
             time_to_suspend: time_to_suspend,
         };
@@ -978,10 +928,9 @@ impl ModeratedLog {
 #[table_name="moderated_logs"]
 pub struct NewModeratedLog {
     pub user_id:         i32,
-    pub object_id:       i32,
+    pub target_id:       i32,
     pub action:          i16,
     pub description:     Option<String>,
-    pub types:           i16,                 // описан в самом начале, одно и то же - объект.
     pub created:         chrono::NaiveDateTime,
     pub time_to_suspend: Option<chrono::NaiveDateTime>,
 }
