@@ -197,7 +197,7 @@ impl User {
 
         let private = self.get_private_model().expect("E.");
         if private.see_all == 3 || private.see_all == 11 {
-            see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(20, 0));
+            see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(Some(20), Some(0)));
         }
         else {
             see_all_exclude_follows = None;
