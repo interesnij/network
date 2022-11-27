@@ -129,7 +129,6 @@ impl User {
     pub fn edit_phone(&self, phone: &str) -> i16 {
         use crate::schema::phone_codes::dsl::phone_codes;
         use chrono::Duration;
-        use crate::models::PhoneCode;
         
         let _connection = establish_connection();
         if phone_codes

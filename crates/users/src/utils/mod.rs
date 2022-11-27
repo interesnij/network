@@ -118,23 +118,6 @@ pub fn get_users_from_ids(ids: Vec<i32>) -> Vec<User> {
         .load::<User>(&_connection)
         .expect("E");
 }
-pub fn get_card_users_from_ids(ids: Vec<i32>) -> Vec<CardUserJson> {
-    use crate::schema::users::dsl::users;
-
-    let _connection = establish_connection();
-    return users
-        .filter(schema::users::id.eq_any(ids))
-        .filter(schema::users::types.lt(31))
-        .select((
-            schema::users::id,
-            schema::users::first_name,
-            schema::users::last_name,
-            schema::users::link,
-            schema::users::s_avatar,
-        ))
-        .load::<CardUserJson>(&_connection)
-        .expect("E");
-}
 
 pub fn get_user(pk: i32) -> Result<User, Error> {
     use crate::schema::users::dsl::users;
