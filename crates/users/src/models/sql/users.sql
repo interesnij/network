@@ -238,8 +238,7 @@ CREATE TABLE moderateds (
     description VARCHAR(500),
     verified    BOOLEAN NOT NULL DEFAULT false,
     status      SMALLINT NOT NULL,
-    types       SMALLINT NOT NULL,
-    object_id   INT NOT NULL,
+    target_id   INT NOT NULL,
     created     TIMESTAMP NOT NULL,
     count       INT NOT NULL
 );
@@ -259,8 +258,7 @@ CREATE TABLE moderated_penalties (
     user_id      INT NOT NULL,
     moderated_id INT NOT NULL,
     expiration   TIMESTAMP,
-    types        SMALLINT NOT NULL,
-    object_id    INT NOT NULL,
+    target_id    INT NOT NULL,
     status       SMALLINT NOT NULL,
     created      TIMESTAMP NOT NULL
 );
@@ -269,10 +267,9 @@ CREATE UNIQUE INDEX moderated_penalties_unq ON moderated_penalties (user_id, mod
 CREATE TABLE moderated_logs (
     id              SERIAL PRIMARY KEY,
     user_id         INT NOT NULL,
-    object_id       INT NOT NULL,
+    target_id       INT NOT NULL,
     action          SMALLINT NOT NULL,
     description     VARCHAR(500),
-    types           SMALLINT NOT NULL,
     created         TIMESTAMP NOT NULL,
     time_to_suspend TIMESTAMP,
 
