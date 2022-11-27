@@ -1,24 +1,19 @@
 use serde::{Serialize, Deserialize};
 use diesel::{
-    Queryable,
-    Insertable,
-    RunQueryDsl,
-    QueryDsl,
-    PgTextExpressionMethods,
-    ExpressionMethods,
+    Queryable, Insertable,
+    RunQueryDsl, QueryDsl,
+    PgTextExpressionMethods, ExpressionMethods,
 };
 use crate::schema;
 use crate::models::{
-    UserLocation,
-    UserInfo,
-    UserPrivate,
+    UserLocation, UserInfo, UserPrivate,
     TokenDetailJson, TokenJson,
 };
 use crate::utils::{
     establish_connection, get_limit_offset,
     UserPrivateJson, LocationJson, KeyWalue,
     CardUserJson, UserDetailJson, EditPrivateResp, 
-
+    EditNotifyResp,
 };
 use crate::schema::users;
 use crate::errors::Error;
@@ -283,7 +278,13 @@ impl User {
             info:  info.to_string(),
         }
     }
-
+    pub fn get_notify_json(&self) -> EditNotifyResp {
+        let notify = self.get_notify_model().expect("E.");
+        return EditNotifyResp {
+            connection_request:   notify.connection_request,
+            connection_confirmed: notify.connection_confirmed,
+        }
+    }
     pub fn get_private_json(&self) -> EditPrivateResp {
         let see_all_exclude_friends:    Option<Vec<CardUserJson>>;
         let see_all_exclude_follows:    Option<Vec<CardUserJson>>;
@@ -2164,6 +2165,40 @@ impl User {
     }
     ///////////////////
 
+    pub fn get_notify_model(&self) -> Result<UserNotification, Error> {
+        let notify = self.find_notify_model();
+        if notify.is_ok() {
+            return notify;
+        }
+        else {
+            return self.create_notify_model();
+        }
+    }
+    pub fn create_notify_model(&self) -> Result<UserNotification, Error> {
+        use crate::models::NewUserNotification;
+
+        let _connection = establish_connection();
+        let _new_notify = NewUserNotification {
+            user_id:              self.id,
+            connection_request:   true,
+            connection_confirmed: true,
+        };
+        let _notify = diesel::insert_into(schema::user_notifications::table)
+            .values(&_new_notify)
+            .get_result::<UserNotification>(&_connection)?;
+
+        return Ok(_notify);
+    }
+    pub fn find_notify_model(&self) -> Result<UserNotification, Error> {
+        use crate::schema::user_notifications::dsl::user_notifications;
+
+        let _connection = establish_connection();
+        let notify = user_notifications
+            .filter(schema::user_notifications::user_id.eq(self.id))
+            .first(&_connection)?;
+        return Ok(notify);
+    }
+
     pub fn get_private_model(&self) -> Result<UserPrivate, Error> {
         let private = self.find_private_model();
         if private.is_ok() {
@@ -2197,18 +2232,6 @@ impl User {
             .filter(schema::user_privates::user_id.eq(self.id))
             .first(&_connection)?;
         return Ok(private);
-    }
-
-    pub fn get_private_model_json(&self) -> Result<UserPrivateJson, Error> {
-        let private = self.get_private_model();
-        return match private {
-          Ok(_ok) => Ok(UserPrivateJson {
-              see_all:    _ok.see_all,
-              see_info:   _ok.see_info,
-              see_friend: _ok.see_friend,
-          }),
-          Err(_error) => Err(_error),
-        };
     }
 
     pub fn is_user_see_info(&self, user_id: i32) -> bool {

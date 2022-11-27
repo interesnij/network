@@ -105,16 +105,14 @@ pub struct UserSignup {
 #[derive(Queryable, Serialize, Identifiable, Associations)]
 pub struct UserNotification {
     pub id:                   i32,
-    pub user_id:         i32,
+    pub user_id:              i32,
     pub connection_request:   bool,
     pub connection_confirmed: bool,
-    pub user_invite:     bool,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="user_notifications"]
 pub struct NewUserNotification {
-    pub user_id:         i32,
+    pub user_id:              i32,
     pub connection_request:   bool,
     pub connection_confirmed: bool,
-    pub user_invite:     bool,
-}
+} 
