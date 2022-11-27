@@ -105,10 +105,12 @@ pub struct EditLinkResp {
     pub link: String,
 }
 
+#[derive(Serialize)]
 pub struct KeyWalue {
     pub value: i16,
     pub info:  String,
 }
+
 #[derive(Serialize)]
 pub struct EditPrivateResp {
     pub see_all:                    KeyWalue,
