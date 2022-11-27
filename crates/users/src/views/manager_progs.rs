@@ -7,7 +7,7 @@ use actix_web::{
 use crate::utils::{
     get_user, get_moderation, get_user_owner_data,
     get_user_permission,
-    ErrorParams, KeyValue, CardUserJson, SmallData,
+    ErrorParams, KeyValue, CardUserJson,
 };
 use crate::models::ModeratedLog;
 use crate::errors::Error;
@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
-    config.route("/get_claim/", web::post().to(get_claim_page));
+    config.route("/get_claim/", web::get().to(get_claim_page));
     config.route("/create_claim_user/", web::post().to(create_claim_user));
     config.route("/close_user/", web::post().to(close_user));
     config.route("/unclose_user/", web::post().to(unclose_user));
@@ -97,7 +97,6 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
                 return Err(Error::BadRequest(body));
             }
 
-            let owner = owner_res.expect("E.");
             let target = target_res.expect("E.");
             let _tuple = get_user_permission(&target, user_id);
             if _tuple.0 == false {
