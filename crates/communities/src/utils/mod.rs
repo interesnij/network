@@ -134,3 +134,58 @@ pub fn get_moderation(id: i32) -> Result<Moderation, Error> {
         .filter(schema::moderations::id.eq(id))
         .first(&connection)?);
 }
+
+pub fn get_user_owner_data ( 
+    token:         Option<String>,  // токен
+    user_id:       Option<i32>,     // возможный id request_user'а,
+    service_types: i16              // тип сервиса и роли в нем
+) -> (Option<String>, i32) {
+    // проверка токена на допуск к объектам пользователя
+    // нам нужно узнать по токену тип владельца.
+    // заодним мы выясним id пользователя.
+    if token.is_some() {
+        use crate::schema::owners::dsl::owners;
+        let _connection = establish_connection();
+        let _token = token.as_deref().unwrap();
+        let owner_res = owners
+            .filter(schema::owners::service_key.eq(_token))
+            .first::<Owner>(&_connection);
+        if owner_res.is_ok() {
+            let owner = owner_res.expect("E");
+            if owner.types == 1 {
+                if user_id.is_some() {
+                    let _id = user_id.unwrap();
+                    let _user = get_user(_id);
+                    if _user.is_ok() {
+                        return (None, _id);
+                    } 
+                    else {
+                        return (Some("user not found!".to_string()), 0);
+                    }
+                }
+                else {
+                    // параметра user_id нет - значит пользователь анонимный
+                    return (None, 0);
+                }
+            }
+            else if owner.types == 2 {
+                // это токен пользователя
+                if service_types > 0 && owner.is_service_types_ok(service_types) {
+                    // проверим, есть ли запрашиваемый сервис и роль в нем
+                    // у этого токена
+                    return (None, owner.user_id);
+                }
+                return (Some("This role is not allowed in this service!".to_string()), 0);
+            }
+            else {
+                return (Some("owner not found!".to_string()), 0);
+            }
+        }
+        else {
+            return (Some("tokens owner not found!".to_string()), 0);
+        }
+    }
+    else {
+        return (Some("parametr 'token' not found!".to_string()), 0);
+    }
+}

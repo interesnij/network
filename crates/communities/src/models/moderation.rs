@@ -805,22 +805,6 @@ impl Owner {
         }
         return self.get_token_detail();
     }
-    pub fn get_services(&self) -> Vec<OwnerService> {
-        use crate::schema::{
-            owner_services::dsl::owner_services,
-            owner_services_items::dsl::owner_services_items,
-        };
-        let items_ids = owner_services_items
-            .filter(schema::owner_services_items::owner_id.eq(self.id))
-            .select(schema::owner_services_items::id)
-            .load::<i32>(&_connection)
-            .expect("E.");
-
-        return owner_services
-            .filter(schema::owner_services::id.eq_any(items_ids))
-            .load::<OwnerService>(&_connection)
-            .expect("E.");
-    }
 }
 
 #[derive(Deserialize, Insertable)]

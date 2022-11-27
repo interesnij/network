@@ -263,7 +263,7 @@ CREATE TABLE owner_services (
     types SMALLINT NOT NULL,    -- определитель сервиса и доступа
     name  VARCHAR(100) NOT NULL -- название сервиса
 );
-CREATE INDEX owner_serivices_index ON owner_services (owner_id);
+CREATE INDEX owner_serivices_index ON owner_services (types);
 
 -- создадим варианты для токенов, чтобы сто раз не добавлять
 INSERT INTO owner_services (id, types, name) 
