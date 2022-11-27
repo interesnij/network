@@ -4,6 +4,7 @@ pub mod auth;
 pub mod owner_progs;
 pub mod progs;
 pub mod settings;
+pub mod manager_progs;
 
 pub use self::{
     pages::*,
@@ -12,4 +13,5 @@ pub use self::{
     owner_progs::*,
     progs::*,
     settings::*,
+    manager_progs::*,
 };

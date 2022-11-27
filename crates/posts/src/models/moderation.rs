@@ -123,16 +123,16 @@ impl Moderated {
         return self.verified;
     }
     pub fn is_suspend(&self) -> bool {
-        return self.types == 2;
+        return self.status == 2;
     }
     pub fn is_pending(&self) -> bool {
-        return self.types == 1;
+        return self.status == 1;
     }
     pub fn is_closed(&self) -> bool {
-        return self.types == 3;
+        return self.status == 3;
     }
     pub fn is_rejected(&self) -> bool {
-        return self.types == 5;
+        return self.status == 5;
     }
     pub fn create_suspend (
         &self,
@@ -198,7 +198,7 @@ impl Moderated {
         let _connection = establish_connection();
         diesel::update(self)
             .set((
-                schema::moderateds::types.eq(3),
+                schema::moderateds::status.eq(3),
                 schema::moderateds::verified.eq(true)
             ))
             .execute(&_connection)
