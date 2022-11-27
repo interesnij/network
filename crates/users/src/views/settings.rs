@@ -7,7 +7,7 @@ use actix_web::{
 use crate::utils::{
     get_user,
     get_user_owner_data,
-    ErrorParams, SmallData,
+    ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditPhoneResp, EditLinkResp,
 };
 use crate::models::{User, };
@@ -19,11 +19,13 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/edit_link", web::get().to(edit_link_page));
     config.route("/settings/edit_name", web::get().to(edit_name_page));
     config.route("/settings/edit_phone", web::get().to(edit_phone_page));
+    config.route("/settings/edit_private", web::post().to(edit_private_page));
 
     config.route("/settings/edit_link", web::post().to(edit_link));
     config.route("/settings/edit_name", web::post().to(edit_name));
     config.route("/settings/edit_password", web::post().to(edit_password));
     config.route("/settings/edit_phone", web::post().to(edit_phone));
+    config.route("/settings/edit_private", web::post().to(edit_private));
     //config.route("/settings/remove_profile", web::post().to(remove_profile));
 }  
 
@@ -58,6 +60,46 @@ pub struct EditLinkData {
     pub link:    Option<String>,
 }
 
+
+pub async fn edit_private_page(req: HttpRequest) -> Result<Json<EditPrivateResp>, Error> {
+    let params_some = web::Query::<SmallData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if user_id == 0 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: User;
+            let owner_res = get_user(user_id);
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            Ok(Json(EditLinkResp{link: owner.link}))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
 
 pub async fn edit_link_page(req: HttpRequest) -> Result<Json<EditLinkResp>, Error> {
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
