@@ -450,7 +450,7 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
             data.field.as_deref().unwrap(),
             data.value,
             data.users.clone()
-        ))).await?;
+        )).await?;
         Ok(Json(body))
     }
 }
