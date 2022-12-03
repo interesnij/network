@@ -515,7 +515,7 @@ pub async fn copy_post(data: Json<DataCopyPost>) -> Result<Json<i16>, Error> {
             if _tuple.0 == false {
                 Err(Error::BadRequest(_tuple.1))
             }
-            else if !list.is_user_copy_el(user_id) || !owner.is_user_copy_el(user_id) {
+            else if !list.is_user_copy_el(user_id) || !community.is_user_copy_el(user_id) {
                 Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
