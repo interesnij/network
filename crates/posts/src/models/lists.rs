@@ -605,7 +605,7 @@ impl PostList {
             AttachList
         };
 
-        let stack: Vec<AttachPostListResp> = Vec::new();
+        let mut stack: Vec<AttachPostListResp> = Vec::new();
         let _connection = establish_connection();
         let lists = post_lists
             .filter(schema::post_lists::id.eq_any(ids))
@@ -640,9 +640,9 @@ impl PostList {
             }
             let data = AttachList {
                 id:      list.id,
-                name:    list.name,
+                name:    list.name.clone(),
                 types:   list.types,
-                image:   list.image,
+                image:   list.image.clone(),
                 count:   list.count,
                 see_el:  list.see_el,
                 copy_el: list.copy_el,

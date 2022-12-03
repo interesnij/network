@@ -146,7 +146,7 @@ impl Post {
             AttachPost,
         };
 
-        let stack: Vec<AttachPostResp> = Vec::new();
+        let mut stack: Vec<AttachPostResp> = Vec::new();
         let _connection = establish_connection();
         let post_list = posts
             .filter(schema::posts::id.eq_any(ids))
@@ -227,7 +227,7 @@ impl Post {
         let _connection = establish_connection();
         let mut _count = 0;
         let mut _step = 0;
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let (_limit, mut _offset) = get_limit_offset(limit, offset, 20);
 
         let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
         let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
