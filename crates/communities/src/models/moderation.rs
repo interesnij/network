@@ -19,6 +19,7 @@ use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
+    get_community,
     EditTokenPageResp,
 };
 
