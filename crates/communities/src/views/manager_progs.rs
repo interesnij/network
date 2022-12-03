@@ -8,7 +8,7 @@ use crate::utils::{
     get_user, 
     get_moderation, get_user_owner_data,
     get_community_permission, 
-    //get_community,
+    get_community,
     ErrorParams, KeyValue, 
     //CardUserJson, 
     CardCommunityJson,
