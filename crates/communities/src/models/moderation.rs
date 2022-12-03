@@ -15,7 +15,6 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
 };
-use crate::errors::Error;
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
@@ -138,7 +137,6 @@ impl Moderated {
             .execute(&_connection)
             .expect("Error.");
 
-        use crate::utils::get_community;
         let item = get_community(self.community_id).expect("E.");
         item.suspend_item();
         return 1;
@@ -275,7 +273,6 @@ impl Moderated {
         .execute(&_connection)
         .expect("E");
 
-        use crate::utils::get_community;
         let item = get_community(self.community_id).expect("E.");
         item.unsuspend_item();
         return 1;
