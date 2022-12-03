@@ -728,7 +728,7 @@ impl User {
 
         let _connection = establish_connection();
         return friends
-            .filter(schema::friends::user_id.eq(user_id)))
+            .filter(schema::friends::user_id.eq(user_id))
             .filter(schema::friends::target_id.eq(self_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection).is_ok();
