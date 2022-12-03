@@ -116,7 +116,7 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
         let list = get_post_list(data.id.unwrap()).expect("E.");
         if list.community_id.is_some() {
             let target_community = list.get_community().expect("E.");
-            else if community_id > 0 {
+            if community_id > 0 {
                 let community = get_community(community_id).expect("E.");
                 let _res = block(move || list.add_in_community_collections(community.id)).await?;
                 Ok(Json(_res))

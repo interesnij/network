@@ -44,7 +44,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
             if community_id > 0 && list.community_id.unwrap() != community_id {
                 Err(Error::BadRequest("Permission Denied".to_string()))
             }
-            else 
+            else {
                 let community = list.get_community().expect("E.");
                 let _tuple = get_community_permission(&community, user_id);
                 if _tuple.0 == false {
