@@ -26,10 +26,11 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     CommunityCategoryJson, CardUserJson,
     CommunityPrivateJson, NewCommunityJson,
-    TokenDetailJson, TokenJson,
 };
 use crate::errors::Error;
-
+use crate::models::{
+    TokenDetailJson, TokenJson,
+}
 
 /////// CommunityCategories //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]

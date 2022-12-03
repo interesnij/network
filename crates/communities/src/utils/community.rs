@@ -88,6 +88,14 @@ pub struct NewCommunityJson {
     pub link:  String,
 }
 
+#[derive(Serialize, Queryable)]
+pub struct CardCommunityJson {
+    pub id:    i32,
+    pub name:  String,
+    pub link:  String,
+    pub image: Option<String>,
+}
+
 ////////
 #[derive(Serialize)]
 // универсальный сериализатор для списков пользователей
@@ -183,4 +191,13 @@ pub struct EditPrivateResp {
 
     pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
     pub see_stat_include_members:     Option<Vec<CardUserJson>>,
+}
+
+#[derive(Serialize)]
+pub struct ErrorParams {
+    pub error: String,
+}
+#[derive(Serialize)]
+pub struct InfoParams {
+    pub info: String,
 }

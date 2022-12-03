@@ -266,7 +266,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJs
     else {
         let _res = block(move || Owner::create (
             user_id,
-            data.community_id.unwrap(),
+            data.community_id,
             data.name.as_deref().unwrap().to_string(),
             data.description.clone(),
             data.services_ids.as_deref().unwrap().to_vec(),
