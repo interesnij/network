@@ -368,7 +368,7 @@ impl Post {
         }
         return SearchAllPosts {
             posts:  posts_json,
-            offset: offset,
+            offset: _offset,
         };
     }
 
