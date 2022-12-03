@@ -18,26 +18,6 @@ pub use self::{
 };
 
 
-pub fn get_limit (
-    limit: Option<i64>,
-    default_limit: i64
-) -> i64 {
-    let _limit: i64;
-    if limit.is_some() {
-        let l_unwrap = limit.unwrap();
-        if l_unwrap > 100 {
-            _limit = default_limit;
-        }
-        else {
-            _limit = l_unwrap;
-        }
-    }
-    else {
-        _limit = default_limit;
-    }
-    _limit
-}
-
 pub fn get_limit_offset (
     limit: Option<i64>,
     offset: Option<i64>,
@@ -110,13 +90,6 @@ pub fn get_community(id: i32) -> Result<Community, Error> {
     let connection = establish_connection();
     return Ok(communitys
         .filter(schema::communitys::id.eq(id))
-        .first(&connection)?);
-}
-pub fn get_community_with_link(link: String) -> Result<Community, Error> {
-    use crate::schema::communitys::dsl::communitys;
-    let connection = establish_connection();
-    return Ok(communitys
-        .filter(schema::communitys::link.eq("/".to_owned() + &link + &"/".to_string()))
         .first(&connection)?);
 }
 pub fn get_user(id: i32) -> Result<User, Error> {

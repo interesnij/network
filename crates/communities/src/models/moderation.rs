@@ -140,6 +140,7 @@ impl Moderated {
 
         use crate::utils::get_community;
         let item = get_community(self.community_id).expect("E.");
+        item.suspend_item();
         return 1;
     }
     pub fn create_close (
