@@ -237,7 +237,7 @@ pub struct SParams {
 pub struct UserListJson {
     pub users: Vec<CardUserJson>,
 }
-#[derive(Serialize, Queryable)]
+#[derive(Deserialize, Serialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
     pub id:         i32,
