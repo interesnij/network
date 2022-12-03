@@ -10,7 +10,7 @@ use diesel::{
 use crate::schema;
 use crate::models::{
     Community, User, 
-    Owner, Moderation,
+    Owner, Moderated,
 };
 use crate::errors::Error;
 pub use self::{
@@ -136,9 +136,35 @@ pub fn get_owner(id: i32) -> Result<Owner, Error> {
 pub fn get_moderation(id: i32) -> Result<Moderation, Error> {
     use crate::schema::moderateds::dsl::moderateds;
     let connection = establish_connection();
-    return Ok(moderations
+    return Ok(moderateds
         .filter(schema::moderateds::id.eq(id))
         .first(&connection)?);
+}
+
+pub fn get_community_permission(community: &Community, user_id: i32)
+    -> (bool, String) {
+
+    if community.types > 10 {
+        if community.is_closed() {
+            return (false, community.name.clone() + &": сообщество заблокировано за нарушение правил сайта".to_string())
+        }
+        else if community.is_deleted() {
+            return (false, community.name.clone() + &": сообщество удалено".to_string())
+        }
+        else if community.is_suspended() {
+            return (false, community.name.clone() + &": сообщество будет разморожено ".to_string() + &community.get_longest_penalties())
+        }
+        else { return (false, "Закрыто".to_string())}
+    }
+    else if community.is_user_in_ban(user_id) {
+        return (false, community.name.clone() + &": сообщество добавило Вас в чёрный список".to_string())
+    }
+    else if !community.is_user_see_el(user_id) {
+        return (false, community.name.clone() + &": Ошибка доступа".to_string())
+    }
+    else {
+        return (true, "Открыто".to_string())
+    }
 }
 
 pub fn get_user_owner_data ( 
