@@ -99,7 +99,7 @@ impl PostComment {
             AttachPermList
         };
 
-        let stack: Vec<AttachPostCommentResp> = Vec::new();
+        let mut stack: Vec<AttachPostCommentResp> = Vec::new();
         let _connection = establish_connection();
         let comments = post_comments
             .filter(schema::post_comments::id.eq_any(ids))
@@ -178,7 +178,7 @@ impl PostComment {
         let _connection = establish_connection();
         let mut _count = 0;
         let mut _step = 0;
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let (_limit, mut _offset) = get_limit_offset(limit, offset, 20);
 
         let mut creator_include: Vec<i32> = Vec::new();   // запишем ids пользователей, у которых можно смотреть посты
         let mut community_include: Vec<i32> = Vec::new(); // запишем ids сообществ, у которых можно смотреть посты
@@ -312,7 +312,7 @@ impl PostComment {
                     }
                 }
             }
-            _offset += _limit;
+            _offset += _step;
         }
         return SearchAllComments {
             comments: list_json,
