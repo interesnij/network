@@ -17,8 +17,8 @@ use crate::utils::{
     get_limit_offset,
     PostListDetailJson, PostListPageJson,
     CardUserJson, CardOwnerJson,
-    CardCommentJson, EditUserListJson
-    EditCommunityListJson, RespListJson, DataListJson,
+    CardCommentJson, EditListJson,
+    RespListJson, DataListJson,
     DataNewPost, RespPost, CardPostJson,
     AttachPostListResp,
 };
@@ -161,9 +161,8 @@ impl PostList {
             .filter(schema::communitys::community_id.eq(self.community_id.unwrap()))
             .first::<Community>(&_connection)?);
     }
-
-    pub fn get_user_edit_list_json(&self) -> Result<EditUserListJson, Error> {
-        return Ok(EditUserListJson {
+    pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
+        return Ok(EditListJson {
             id:                   self.id,
             name:                 self.name.clone(),
             description:          self.description.clone(),
@@ -175,52 +174,16 @@ impl PostList {
             copy_el:              self.copy_el,
             reactions:            self.reactions.clone(),
 
-            see_el_exclude_follows:         self.get_limit_see_el_exclude_follows(Some(20), Some(0)),
-            see_comment_exclude_follows:    self.get_limit_see_comment_exclude_follows(Some(20), Some(0)),
-            create_el_exclude_follows:      self.get_limit_create_el_exclude_follows(Some(20), Some(0)),
-            create_comment_exclude_follows: self.get_limit_create_comment_exclude_follows(Some(20), Some(0)),
-            copy_el_exclude_follows:        self.get_limit_copy_el_exclude_follows(Some(20), Some(0)),
-            see_el_include_follows:         self.get_limit_see_el_include_follows(Some(20), Some(0)),
-            see_comment_include_follows:    self.get_limit_see_comment_include_follows(Some(20), Some(0)),
-            create_el_include_follows:      self.get_limit_create_el_include_follows(Some(20), Some(0)),
-            create_comment_include_follows: self.get_limit_create_comment_include_follows(Some(20), Some(0)),
-            copy_el_include_follows:        self.get_limit_copy_el_include_follows(Some(20), Some(0)),
-
-            see_el_exclude_friends:         self.get_limit_see_el_exclude_friends(Some(20), Some(0)),
-            see_comment_exclude_friends:    self.get_limit_see_comment_exclude_friends(Some(20), Some(0)),
-            create_el_exclude_friends:      self.get_limit_create_el_exclude_friends(Some(20), Some(0)),
-            create_comment_exclude_friends: self.get_limit_create_comment_exclude_friends(Some(20), Some(0)),
-            copy_el_exclude_friends:        self.get_limit_copy_el_exclude_friends(Some(20), Some(0)),
-            see_el_include_friends:         self.get_limit_see_el_include_friends(Some(20), Some(0)),
-            see_comment_include_friends:    self.get_limit_see_comment_include_friends(Some(20), Some(0)),
-            create_el_include_friends:      self.get_limit_create_el_include_friends(Some(20), Some(0)),
-            create_comment_include_friends: self.get_limit_create_comment_include_friends(Some(20), Some(0)),
-            copy_el_include_friends:        self.get_limit_copy_el_include_friends(Some(20), Some(0)),
-        }); 
-    }
-    pub fn get_community_edit_list_json(&self) -> Result<EditCommunityListJson, Error> {
-        return Ok(EditUserListJson {
-            id:                   self.id,
-            name:                 self.name.clone(),
-            description:          self.description.clone(),
-            image:                self.image.clone(),
-            see_el:               self.see_el,
-            see_comment:          self.see_comment,
-            create_el:            self.create_el,
-            create_comment:       self.create_comment,
-            copy_el:              self.copy_el,
-            reactions:            self.reactions.clone(),
-
-            see_el_exclude_members:         self.get_limit_see_el_exclude_members(Some(20), Some(0)),
-            see_comment_exclude_members:    self.get_limit_see_comment_exclude_members(Some(20), Some(0)),
-            create_el_exclude_members:      self.get_limit_create_el_exclude_members(Some(20), Some(0)),
-            create_comment_exclude_members: self.get_limit_create_comment_exclude_members(Some(20), Some(0)),
-            copy_el_exclude_members:        self.get_limit_copy_el_exclude_members(Some(20), Some(0)),
-            see_el_include_members:         self.get_limit_see_el_include_members(Some(20), Some(0)),
-            see_comment_include_members:    self.get_limit_see_comment_include_members(Some(20), Some(0)),
-            create_el_include_members:      self.get_limit_create_el_include_members(Some(20), Some(0)),
-            create_comment_include_members: self.get_limit_create_comment_include_members(Some(20), Some(0)),
-            copy_el_include_members:        self.get_limit_copy_el_include_members(Some(20), Some(0)),
+            see_el_exclude_users:         self.get_limit_see_el_exclude_users(Some(20), Some(0)),
+            see_comment_exclude_users:    self.get_limit_see_comment_exclude_users(Some(20), Some(0)),
+            create_el_exclude_users:      self.get_limit_create_el_exclude_users(Some(20), Some(0)),
+            create_comment_exclude_users: self.get_limit_create_comment_exclude_users(Some(20), Some(0)),
+            copy_el_exclude_users:        self.get_limit_copy_el_exclude_users(Some(20), Some(0)),
+            see_el_include_users:         self.get_limit_see_el_include_users(Some(20), Some(0)),
+            see_comment_include_users:    self.get_limit_see_comment_include_users(Some(20), Some(0)),
+            create_el_include_users:      self.get_limit_create_el_include_users(Some(20), Some(0)),
+            create_comment_include_users: self.get_limit_create_comment_include_users(Some(20), Some(0)),
+            copy_el_include_users:        self.get_limit_copy_el_include_users(Some(20), Some(0)),
         }); 
     }
     pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {
@@ -952,34 +915,34 @@ impl PostList {
             .expect("E");
     }
 
-    pub fn get_limit_see_el_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_see_el_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(11, limit, offset); 
     }
-    pub fn get_limit_see_el_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_see_el_include_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(1, limit, offset); 
     } 
-    pub fn get_limit_see_comment_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_see_comment_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(12, limit, offset); 
     }
-    pub fn get_limit_see_comment_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_see_comment_include_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(2, limit, offset); 
     }
-    pub fn get_limit_create_el_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_create_el_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(13, limit, offset); 
     }
-    pub fn get_limit_create_el_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_create_el_include_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(3, limit, offset); 
     }
-    pub fn get_limit_create_comment_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_create_comment_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(14, limit, offset); 
     }
-    pub fn get_limit_create_comment_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_create_comment_include_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(4, limit, offset); 
     }
-    pub fn get_limit_copy_el_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_copy_el_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(15, limit, offset); 
     }
-    pub fn get_limit_copy_el_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_limit_copy_el_include_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(5, limit, offset); 
     }
 
