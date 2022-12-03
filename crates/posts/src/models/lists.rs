@@ -807,7 +807,10 @@ impl PostList {
         types:   i16, 
     ) -> bool {
         // проверяем, если ли пользователь в вкл/искл списках списка записей
-        use crate::schema::post_list_perms::dsl::post_list_perms;
+        use crate::schema::{
+            post_list_perms::dsl::post_list_perms,
+            communities_memberships::dsl::communities_memberships,
+        };
 
         let _connection = establish_connection();
         return post_list_perms
@@ -897,8 +900,8 @@ impl PostList {
             .filter(schema::post_list_perms::types.eq(types))
             .limit(_limit)
             .offset(_offset)
-            .select(schema::post_list_perms::target_id)
-            .load::<i32>(&_connection)
+            .select(schema::post_list_perms::user_id)
+            .load::<i32>(&_connection) 
             .expect("E");
 
         return item_users
@@ -1703,7 +1706,7 @@ impl PostList {
         .execute(&_connection)
         .expect("E");
 
-        if exclude_vec.iter().any(|&i| i==see_el_unwrap) {
+        if exclude_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_exclude = NewPostListPerm {
@@ -1718,7 +1721,7 @@ impl PostList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==see_el_unwrap) {
+        else if include_vec.iter().any(|&i| i==data.see_el.unwrap()) {
             if data.see_el_users.is_some() {
                 for user_id in data.see_el_users.as_deref().unwrap() {
                     let _new_include = NewPostListPerm {

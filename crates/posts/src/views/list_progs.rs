@@ -283,7 +283,7 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
 }
 pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
-    if err.is_some() || {
+    if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
     else if user_id < 1 && community_id < 1 {

@@ -31,7 +31,11 @@ pub struct DataCopyList {
     pub item_id: Option<i32>,
     pub owners:  Vec<String>,
 }
-
+#[derive(Deserialize)]
+pub struct SmallData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+}
 #[derive(Deserialize)]
 pub struct ReactionData {
     pub token:       Option<String>,
