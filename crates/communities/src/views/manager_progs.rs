@@ -5,7 +5,7 @@ use actix_web::{
     HttpRequest,
 };
 use crate::utils::{
-    //get_user, 
+    get_user, 
     get_moderation, get_user_owner_data,
     get_community_permission, 
     //get_community,
@@ -15,6 +15,7 @@ use crate::utils::{
 };
 use crate::models::ModeratedLog;
 use serde::{Deserialize, Serialize}; 
+use crate::errors::Error;
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
