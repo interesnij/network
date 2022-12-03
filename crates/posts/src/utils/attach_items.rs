@@ -37,16 +37,14 @@ pub struct AttachOwner {
     pub link:       String,
     pub s_avatar:   Option<String>,
     pub see_all:    i16,
-    pub see_friend: i16,
 }
 #[derive(Serialize)]
 pub struct AttachCommunity {
-    pub id:         i32,
-    pub name:       String,
-    pub types:      i16,
-    pub link:       String,
-    pub s_avatar:   Option<String>,
-    pub see_member: i16,
+    pub id:       i32,
+    pub name:     String,
+    pub types:    i16,
+    pub link:     String,
+    pub s_avatar: Option<String>,
 }
 #[derive(Serialize)]
 pub struct AttachPermList {

@@ -1,15 +1,12 @@
 use diesel::{
     Queryable,
     Insertable,
-    //ExpressionMethods,
-    //QueryDsl,
 };
 use crate::schema::{
     item_users,
     item_communitys,
     item_lists,
     item_comments,
-    //item_posts,
     item_photos,
     item_docs,
     item_goods,
@@ -22,9 +19,7 @@ use crate::schema::{
     item_sites,
     attach_items,
 };
-//use crate::errors::Error;
 use serde::{Serialize, Deserialize};
-//use actix_web::web::Json;
 
 
 #[derive(Serialize, Identifiable, Queryable)]
@@ -69,21 +64,22 @@ pub struct NewItemCommunity {
     pub s_avatar:     Option<String>,
 }
 
-/////// ItemList //////
-// list_types ↓
-// 20 Список записей (не создаем, он и так есть на этом сервисе)
-// 21 Плейлист
-// 22 Список документов
-// 23 Список опросов
-// 24 Список фотографий
-// 25 Список роликов
-// 26 Список товаров
-// 27 Список обсуждений
-// 28 Список википедии
-// 29 Список статей
-// 30 Папка
-// 31 Список стикеров
-
+/*
+ItemList
+list_types ↓
+20 Список записей (не создаем, он и так есть на этом сервисе)
+21 Плейлист
+22 Список документов
+23 Список опросов
+24 Список фотографий
+25 Список роликов
+26 Список товаров
+27 Список обсуждений
+28 Список википедии
+29 Список статей
+30 Папка
+31 Список стикеров
+*/
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct ItemList {
     pub id:             i32,
@@ -109,16 +105,17 @@ pub struct NewItemList {
     pub count:          i32,
 }
 
-/////// ItemComment //////
-// comment_types ↓
-// 81 Коммент к записи     (не создаем, он и так есть на этом сервисе)
-// 82 Коммент к фотографии
-// 83 Коммент к ролику
-// 84 Коммент к товару
-// 85 Коммент к обсуждению
-// 86 Коммент к статье википедии
-// 87 Коммент форума
-
+/*
+ItemComment
+comment_types ↓
+81 Коммент к записи     (не создаем, он и так есть на этом сервисе)
+82 Коммент к фотографии
+83 Коммент к ролику
+84 Коммент к товару
+85 Коммент к обсуждению
+86 Коммент к статье википедии
+87 Коммент форума
+*/
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct ItemComment {
     pub id:            i32,
@@ -405,41 +402,42 @@ pub struct NewItemSite {
     pub types:        i16,
 }
 
-/////// AttachItem //////
-// типы объектов (item_types)
-// 1  Пользователь item_users
-// 2  Сообщество   item_communitys
-// 3  Сайт         item_sites
-// 20 Список записей    item_lists
-// 21 Плейлист          item_lists
-// 22 Список документов item_lists
-// 23 Список опросов    item_lists
-// 24 Список фотографий item_lists
-// 25 Список роликов    item_lists
-// 26 Список товаров    item_lists
-// 27 Список обсуждений item_lists
-// 28 Список википедии  item_lists
-// 29 Список статей     item_lists
-// 30 Папка             item_lists
-// 31 Список стикеров   item_lists
-// 51 Запись       item_posts
-// 52 Трек         item_audios
-// 53 Документ     item_docs
-// 54 Опрос        item_surveys
-// 55 Фотография   item_photos
-// 56 Ролик        item_videos
-// 57 Товар        item_goods
-// 58 Обсуждение   item_forums
-// 59 Статья вики  item_wikis
-// 60 Статья       item_articles
-// 81 Коммент к записи           item_comments
-// 82 Коммент к фотографии       item_comments
-// 83 Коммент к ролику           item_comments
-// 84 Коммент к товару           item_comments
-// 85 Коммент к обсуждению       item_comments
-// 86 Коммент к статье википедии item_comments
-// 87 Коммент форума             item_comments
-
+/*
+AttachItem
+типы объектов (item_types)
+1  Пользователь item_users
+2  Сообщество   item_communitys
+3  Сайт         item_sites
+20 Список записей    item_lists
+21 Плейлист          item_lists
+22 Список документов item_lists
+23 Список опросов    item_lists
+24 Список фотографий item_lists
+25 Список роликов    item_lists
+26 Список товаров    item_lists
+27 Список обсуждений item_lists
+28 Список википедии  item_lists
+29 Список статей     item_lists
+30 Папка             item_lists
+31 Список стикеров   item_lists
+51 Запись       item_posts
+52 Трек         item_audios
+53 Документ     item_docs
+54 Опрос        item_surveys
+55 Фотография   item_photos
+56 Ролик        item_videos
+57 Товар        item_goods
+58 Обсуждение   item_forums
+59 Статья вики  item_wikis
+60 Статья       item_articles
+81 Коммент к записи           item_comments
+82 Коммент к фотографии       item_comments
+83 Коммент к ролику           item_comments
+84 Коммент к товару           item_comments
+85 Коммент к обсуждению       item_comments
+86 Коммент к статье википедии item_comments
+87 Коммент форума             item_comments
+*/
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct AttachItem {
     pub id:           i32,
