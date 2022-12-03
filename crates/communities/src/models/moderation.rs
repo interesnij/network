@@ -28,14 +28,15 @@ pub struct TokenServiceJson {
     pub name: String,
 }
 
-/////// Moderated //////
-////////// Статус
-    // 1 На рассмотрении
-    // 2 Объект заморожен
-    // 3 Объект закрыт
-    // 4 Объекту присвоен баннер
-    // 5 Отвергнутый
-
+/*
+Moderated
+Статус
+1 На рассмотрении
+2 Объект заморожен
+3 Объект закрыт
+4 Объекту присвоен баннер
+5 Отвергнутый
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct Moderated {
     pub id:           i32,
@@ -404,23 +405,24 @@ pub struct NewModerated {
     pub count:        i32,
 }
 
-/////// ModeratedReport //////
+/*
+ModeratedReport
 
-////////// Тип жалобы
-    // 1 Порнография
-    // 2 Для взрослых
-    // 3 Оскорбительное содержание
-    // 4 Мошенничество
-    // 5 Наркотики
-    // 6 Продажа оружия
-    // 7 Насилие
-    // 8 Призыв к травле
-    // 9 Призыв к суициду
-    // 10 Жестокое обращение c животными
-    // 11 Введение в заблуждение
-    // 12 Экстремизм
-    // 13 Риторика ненависти
-
+Тип жалобы
+1 Порнография
+2 Для взрослых
+3 Оскорбительное содержание
+4 Мошенничество
+5 Наркотики
+6 Продажа оружия
+7 Насилие
+8 Призыв к травле
+9 Призыв к суициду
+10 Жестокое обращение c животными
+11 Введение в заблуждение
+12 Экстремизм
+13 Риторика ненависти
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable, Associations)]
 pub struct ModeratedReport {
     pub id:           i32,
@@ -468,12 +470,13 @@ pub struct NewModeratedReport {
     pub created:      chrono::NaiveDateTime,
 }
 
-/////// ModeratedPenaltie //////
+/*
+ModeratedPenaltie
 
-////////// Статус штрафа
-    // 1 Приостановлено
-    // 2 Закрыто
-
+Статус штрафа
+1 Приостановлено
+2 Закрыто
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable, Associations)]
 pub struct ModeratedPenaltie {
     pub id:           i32,
@@ -546,15 +549,16 @@ pub struct NewModeratedPenaltie {
     pub created:      chrono::NaiveDateTime,
 }
 
-/////// ModeratedLogs //////
-// action:
-// 1 приостановлено
-// 2 закрыто
-// 3 отмена приостановки
-// 4 отмена закрытия
-// 5 отмена верификации
-// 6 отклонение жалоб
-
+/*
+ModeratedLogs
+action:
+1 приостановлено
+2 закрыто
+3 отмена приостановки
+4 отмена закрытия
+5 отмена верификации
+6 отклонение жалоб
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable,  Associations)]
 pub struct ModeratedLog {
     pub id:              i32,
@@ -602,13 +606,14 @@ pub struct NewModeratedLog {
 }
 
 
-
-/////// OwnerService //////
-// сервисы токенов и их разрешения. Работа с данными
-// только для владельцев токенов
-    //types:
-    // 4 Записи
-    // 34 Записи
+/*
+OwnerService
+сервисы токенов и их разрешения. Работа с данными
+только для владельцев токенов
+types:
+4 Записи
+34 Записи
+*/
 #[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
 pub struct OwnerService {
     pub id:    i32,
@@ -634,12 +639,13 @@ pub struct NewOwnerService {
     pub name:  String,
 }
 
-/////// Owner //////
-////////// Тип владельца
-    // 1 Приложение
-    // 2 Пользователь
-    // 2 Сообщество
-
+/*
+Owner
+Тип владельца
+1 Приложение
+2 Пользователь
+3. Сообщество
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct Owner {
     pub id:           i32,
@@ -832,9 +838,8 @@ pub struct NewOwner {
     pub is_active:    bool,
 }
 
-/////// OwnerServicesItem //////
-// связь сервисов токенов с токенами
 
+// связь сервисов токенов с токенами
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct OwnerServicesItem {
     pub id:         i32,

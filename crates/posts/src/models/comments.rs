@@ -33,18 +33,18 @@ use crate::schema::post_comments;
 use crate::errors::Error;
 
 
-/////// PostComment //////
-
-/////// PostComment //////
-// 0 Опубликованный
-// 2 Изменённый
-// 5 Опубликованный приватный
-// 10 Удаленый
-// 12 Изменённый Удаленый
-// 15 Удаленый приватный
-// 21 Закрытый
-// 22 Изменённый Закрытый
-// 26 приватный Закрытый
+/*
+PostComment
+0 Опубликованный
+2 Изменённый
+5 Опубликованный приватный
+10 Удаленый
+12 Изменённый Удаленый
+15 Удаленый приватный
+21 Закрытый
+22 Изменённый Закрытый
+26 приватный Закрытый
+*/
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct PostComment {
@@ -90,8 +90,7 @@ pub struct SearchAllComments {
 }
 impl PostComment {
     pub fn get_comments_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostCommentResp> {
-        // выдача инфы для прикрепления комментов
-        // по запросу API
+        // выдача инфы для прикрепления комментов по запросу API
         use crate::schema::post_comments::dsl::post_comments;
         use crate::utils::{
             AttachOwner,
@@ -116,12 +115,11 @@ impl PostComment {
             if list.community_id.is_some() {
                 let community = list.get_community().expect("E.");
                 c_resp = Some(AttachCommunity {
-                    id:         community.id,
-                    name:       community.name,
-                    types:      community.types,
-                    link:       community.link,
-                    s_avatar:   community.s_avatar,
-                    see_member: community.see_member,
+                    id:       community.id,
+                    name:     community.name,
+                    types:    community.types,
+                    link:     community.link,
+                    s_avatar: community.s_avatar,
                 })
             }
             else {
@@ -134,7 +132,6 @@ impl PostComment {
                     link:       creator.link,
                     s_avatar:   creator.s_avatar,
                     see_all:    creator.see_all,
-                    see_friend: creator.see_friend,
                 })
             }
 

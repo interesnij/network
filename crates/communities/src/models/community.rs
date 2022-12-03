@@ -23,12 +23,10 @@ use diesel::{
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{
-    establish_connection,
-    get_limit_offset,
-    CommunityCategoryJson,
-    CardUserJson,
-    CommunityPrivateJson,
-    NewCommunityJson,
+    establish_connection, get_limit_offset,
+    CommunityCategoryJson, CardUserJson,
+    CommunityPrivateJson, NewCommunityJson,
+    TokenDetailJson, TokenJson,
 };
 use crate::errors::Error;
 
@@ -160,70 +158,71 @@ pub struct NewCommunitySubcategory {
     pub position:    i16,
 }
 
-/////// Community //////
+/*
+Community
 
-/////// Тип сообщества //////
-    // 1 публичное сообщество
-    // 2 закрытое сообщество
-    // 3 публичное сообщество
+Тип сообщества
+1 публичное сообщество
+2 закрытое сообщество
+3 публичное сообщество
 
-    // 7 публичное сообщество подало заявку
-    // 8 закрытое сообщество подало заявку
-    // 9 публичное сообщество подало заявку
+7 публичное сообщество подало заявку
+8 закрытое сообщество подало заявку
+9 публичное сообщество подало заявку
 
-    // 13 публичное сообщество идентификацированное
-    // 14 закрытое сообщество идентификацированное
-    // 15 публичное сообщество идентификацированное
+13 публичное сообщество идентификацированное
+14 закрытое сообщество идентификацированное
+15 публичное сообщество идентификацированное
 
-    // 21 удалено публичное сообщество
-    // 22 удалено закрытое сообщество
-    // 23 удалено публичное сообщество
+21 удалено публичное сообщество
+22 удалено закрытое сообщество
+23 удалено публичное сообщество
 
-    // 27 удалено публичное сообщество подало заявку
-    // 28 удалено закрытое сообщество подало заявку
-    // 29 удалено публичное сообщество подало заявку
+27 удалено публичное сообщество подало заявку
+28 удалено закрытое сообщество подало заявку
+29 удалено публичное сообщество подало заявку
 
-    // 33 удалено публичное сообщество идентификацированное
-    // 34 удалено закрытое сообщество идентификацированное
-    // 35 удалено публичное сообщество идентификацированное
+33 удалено публичное сообщество идентификацированное
+34 удалено закрытое сообщество идентификацированное
+35 удалено публичное сообщество идентификацированное
 
-    // 41 баннер публичное сообщество
-    // 42 баннер закрытое сообщество
-    // 43 баннер публичное сообщество
+41 баннер публичное сообщество
+42 баннер закрытое сообщество
+43 баннер публичное сообщество
 
-    // 47 баннер публичное сообщество подало заявку
-    // 48 баннер закрытое сообщество подало заявку
-    // 49 баннер публичное сообщество подало заявку
+47 баннер публичное сообщество подало заявку
+48 баннер закрытое сообщество подало заявку
+49 баннер публичное сообщество подало заявку
 
-    // 53 баннер публичное сообщество идентификацированное
-    // 54 баннер закрытое сообщество идентификацированное
-    // 55 баннер публичное сообщество идентификацированное
+53 баннер публичное сообщество идентификацированное
+54 баннер закрытое сообщество идентификацированное
+55 баннер публичное сообщество идентификацированное
 
-    // 61 закрыто публичное сообщество
-    // 62 закрыто закрытое сообщество
-    // 63 закрыто публичное сообщество
+61 закрыто публичное сообщество
+62 закрыто закрытое сообщество
+63 закрыто публичное сообщество
 
-    // 67 закрыто публичное сообщество подало заявку
-    // 68 закрыто закрытое сообщество подало заявку
-    // 69 закрыто публичное сообщество подало заявку
+67 закрыто публичное сообщество подало заявку
+68 закрыто закрытое сообщество подало заявку
+69 закрыто публичное сообщество подало заявку
 
-    // 73 закрыто публичное сообщество идентификацированное
-    // 74 закрыто закрытое сообщество идентификацированное
-    // 75 закрыто публичное сообщество идентификацированное
+73 закрыто публичное сообщество идентификацированное
+74 закрыто закрытое сообщество идентификацированное
+75 закрыто публичное сообщество идентификацированное
 
-    // 81 закрыто публичное сообщество
-    // 82 закрыто закрытое сообщество
-    // 83 закрыто публичное сообщество
+81 приостановлено публичное сообщество
+82 приостановлено закрытое сообщество
+83 приостановлено публичное сообщество
 
-    // 87 закрыто публичное сообщество подало заявку
-    // 88 закрыто закрытое сообщество подало заявку
-    // 89 закрыто публичное сообщество подало заявку
+87 приостановлено публичное сообщество подало заявку
+88 приостановлено закрытое сообщество подало заявку
+89 приостановлено публичное сообщество подало заявку
 
-    // 93 закрыто публичное сообщество идентификацированное
-    // 94 закрыто закрытое сообщество идентификацированное
-    // 95 закрыто публичное сообщество идентификацированное
+93 приостановлено публичное сообщество идентификацированное
+94 приостановлено закрытое сообщество идентификацированное
+95 приостановлено публичное сообщество идентификацированное
+*/
 
-/////// Community //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct Community {
     pub id:          i32,
@@ -475,7 +474,7 @@ impl Community {
         return self.types < 10;
     }
 
-    pub fn create_banned_user(&self, user_id: i32) -> bool {
+    pub fn create_banned_user(&self, user_id: i32) -> i16 {
         let _connection = establish_connection();
         let new_banned_user = NewCommunityBannedUser {
             community_id: self.id,
@@ -486,13 +485,13 @@ impl Community {
             .execute(&_connection);
 
         if banned_user.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn delete_banned_user(&self, user_id: i32) -> bool {
+    pub fn delete_banned_user(&self, user_id: i32) -> i16 {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
@@ -504,19 +503,13 @@ impl Community {
             .execute(&_connection);
 
         if banned_user.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
 
-    // придется усложнить работу создания сообщества, в частности
-    // создание подписчика:
-    // 1. Сначала создаётся сообщество
-    // 2. Из формы ссылка нового сообщества присылается
-    // обратно для создания объекта стены и уведомлений, ведь
-    // создатель должен получать их как админ
     pub fn create_community (
         name: String,
         category_id: i32,
@@ -623,116 +616,116 @@ impl Community {
         );
     }
 
-    pub fn create_administrator(&self, user_id: i32) -> bool {
+    pub fn create_administrator(&self, user_id: i32) -> i16 {
         // нужно создавать объект уведомлений для сообщества для нового админа
         use crate::schema::communities_memberships::dsl::communities_memberships;
         if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return false;
+            return 0;
         }
         let _connection = establish_connection();
-        let member: Result<CommunitiesMembership, diesel::result::Error> = communities_memberships
+        let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection);
+            .first::<CommunitiesMembership>(&_connection);
 
         return match member {
-             Ok(_ok) => {
-                 diesel::update(&_ok)
-                 .set(schema::communities_memberships::level.eq(5))
-                 .execute(&_connection)
-                 .expect("Error.");
-                 return true;
-             },
-             Err(_error) => false,
+            Ok(_ok) => {
+                diesel::update(&_ok)
+                    .set(schema::communities_memberships::level.eq(5))
+                    .execute(&_connection)
+                    .expect("Error.");
+                return 1;
+            },
+            Err(_error) => 0,
         };
     }
-    pub fn create_editor(&self, user_id: i32) -> bool {
+    pub fn create_editor(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
         if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return false;
+            return 0;
         }
         let _connection = establish_connection();
-        let member: Result<CommunitiesMembership, diesel::result::Error> = communities_memberships
+        let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection);
+            .first::<CommunitiesMembership>(&_connection);
 
         return match member {
-             Ok(_ok) => {
-                 diesel::update(&_ok)
-                 .set(schema::communities_memberships::level.eq(3))
-                 .execute(&_connection)
-                 .expect("Error.");
-                 return true;
-             },
-             Err(_error) => false,
+            Ok(_ok) => {
+                diesel::update(&_ok)
+                    .set(schema::communities_memberships::level.eq(3))
+                    .execute(&_connection)
+                    .expect("Error.");
+                return 1;
+            },
+            Err(_error) => 0,
         };
     }
-    pub fn create_moderator(&self, user_id: i32) -> bool {
+    pub fn create_moderator(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
         if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return false;
+            return 0;
         }
         let _connection = establish_connection();
-        let member: Result<CommunitiesMembership, diesel::result::Error> = communities_memberships
+        let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection);
+            .first::<CommunitiesMembership>(&_connection);
 
         return match member {
-             Ok(_ok) => {
-                 diesel::update(&_ok)
-                 .set(schema::communities_memberships::level.eq(2))
-                 .execute(&_connection)
-                 .expect("Error.");
-                 return true;
-             },
-             Err(_error) => false,
+            Ok(_ok) => {
+                diesel::update(&_ok)
+                    .set(schema::communities_memberships::level.eq(2))
+                    .execute(&_connection)
+                    .expect("Error.");
+                return 1;
+            },
+            Err(_error) => 0,
         };
     }
-    pub fn create_advertisor(&self, user_id: i32) -> bool {
+    pub fn create_advertisor(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
         if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return false;
+            return 0;
         }
         let _connection = establish_connection();
-        let member: Result<CommunitiesMembership, diesel::result::Error> = communities_memberships
+        let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection);
+            .first::<CommunitiesMembership>(&_connection);
 
         return match member {
-             Ok(_ok) => {
-                 diesel::update(&_ok)
-                 .set(schema::communities_memberships::level.eq(4))
-                 .execute(&_connection)
-                 .expect("Error.");
-                 return true;
-             },
-             Err(_error) => false,
+            Ok(_ok) => {
+                diesel::update(&_ok)
+                    .set(schema::communities_memberships::level.eq(4))
+                    .execute(&_connection)
+                    .expect("Error.");
+                return 1;
+            },
+            Err(_error) => 0,
         };
     }
-    pub fn delete_staff_member(&self, user_id: i32) -> bool {
+    pub fn delete_staff_member(&self, user_id: i32) -> i16 {
         // нужно удалять объект уведомлений для сообщества
         use crate::schema::communities_memberships::dsl::communities_memberships;
         if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return false;
+            return 0;
         }
         let _connection = establish_connection();
-        let member: Result<CommunitiesMembership, diesel::result::Error> = communities_memberships
+        let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .first(&_connection);
+            .first::<CommunitiesMembership>(&_connection);
 
         return match member {
-             Ok(_ok) => {
-                 diesel::update(&_ok)
-                 .set(schema::communities_memberships::level.eq(1))
-                 .execute(&_connection)
-                 .expect("Error.");
-                 return true;
-             },
-             Err(_error) => false,
+            Ok(_ok) => {
+                diesel::update(&_ok)
+                    .set(schema::communities_memberships::level.eq(1))
+                    .execute(&_connection)
+                    .expect("Error.");
+                return 1;
+            },
+            Err(_error) => 0,
         };
     }
 
@@ -818,468 +811,6 @@ impl Community {
             .load::<i32>(&_connection)
             .expect("E");
         return items_ids;
-    }
-
-    pub fn get_see_info_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(12))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-    pub fn get_see_info_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(2))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-    pub fn is_user_see_info_exclude(&self, user_id: i32) -> bool {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        return community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq(user_id))
-            .filter(schema::community_visible_perms::types.eq(2))
-            .select(schema::community_visible_perms::target_id)
-            .first::<i32>(&_connection)
-            .is_ok();
-    }
-
-    pub fn get_see_info_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
-        };
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(12))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        let _users = users
-            .filter(schema::users::id.eq_any(items))
-            .select((
-                schema::users::user_id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return _users;
-    }
-    pub fn get_see_info_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
-        };
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(2))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        let _users = users
-            .filter(schema::users::id.eq_any(items))
-            .select((
-                schema::users::user_id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return _users;
-    }
-
-    pub fn get_see_member_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(11))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-    pub fn get_see_member_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(1))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-
-    pub fn get_see_member_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
-        };
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(11))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-      }
-      pub fn get_see_member_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-          use crate::schema::{
-              community_visible_perms::dsl::community_visible_perms,
-              users::dsl::users,
-          };
-
-          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-          let _connection = establish_connection();
-          let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(1))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-    }
-
-    pub fn get_see_settings_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(13))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-    pub fn get_see_settings_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(3))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-
-    pub fn get_see_settings_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
-        };
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(13))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-      }
-      pub fn get_see_settings_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-          use crate::schema::{
-              community_visible_perms::dsl::community_visible_perms,
-              users::dsl::users,
-          };
-
-          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-          let _connection = establish_connection();
-          let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(3))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-    }
-
-    pub fn get_see_log_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(14))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-    pub fn get_see_log_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(4))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-
-    pub fn get_see_log_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
-        };
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(14))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-      }
-      pub fn get_see_log_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-          use crate::schema::{
-              community_visible_perms::dsl::community_visible_perms,
-              users::dsl::users,
-          };
-
-          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-          let _connection = establish_connection();
-          let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(4))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-    }
-
-    pub fn get_see_stat_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(15))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-    pub fn get_see_stat_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(5))
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-        return items_ids;
-    }
-
-    pub fn get_see_stat_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
-        };
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(15))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
-      }
-      pub fn get_see_stat_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-          use crate::schema::{
-              community_visible_perms::dsl::community_visible_perms,
-              users::dsl::users,
-          };
-
-          let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-          let _connection = establish_connection();
-          let items = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(5))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-          let _users = users
-              .filter(schema::users::id.eq_any(items))
-              .select((
-                  schema::users::user_id,
-                  schema::users::first_name,
-                  schema::users::last_name,
-                  schema::users::link,
-                  schema::users::s_avatar.nullable(),
-              ))
-              .load::<CardUserJson>(&_connection)
-              .expect("E");
-          return _users;
     }
 
     pub fn get_members(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
@@ -1695,7 +1226,8 @@ impl Community {
             .filter(schema::communities_memberships::user_id.eq(user_id))
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .select(schema::communities_memberships::id)
-            .first::<i32>(&_connection).is_ok();
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn is_user_staff(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
@@ -1706,7 +1238,8 @@ impl Community {
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.ne(1))
             .select(schema::communities_memberships::id)
-            .first::<i32>(&_connection).is_ok();
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn is_user_admin(&self, user_id: i32) -> bool {
         use crate::schema::communities_memberships::dsl::communities_memberships;
@@ -1717,8 +1250,104 @@ impl Community {
             .filter(schema::communities_memberships::community_id.eq(self.id))
             .filter(schema::communities_memberships::level.eq(5))
             .select(schema::communities_memberships::id)
-            .first::<i32>(&_connection).is_ok();
+            .first::<i32>(&_connection)
+            .is_ok();
     }
+
+    pub fn is_user_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool {
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            communities_memberships::dsl::communities_memberships,
+        };
+
+        let _connection = establish_connection();
+        return community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::types.eq(types))
+            .select(schema::community_visible_perms::target_id)
+            .first::<i32>(&_connection)
+            .is_ok() &&
+        communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
+    pub fn get_ie_members_for_types (
+        &self, 
+        types:  i16,
+        limit:  Option<i64>, 
+        offset: Option<i64>,
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
+
+        let _connection = establish_connection();
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(types))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::community_visible_perms::target_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(30))
+            .select((
+                schema::users::user_id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
+    }
+
+    pub fn get_limit_see_member_exclude_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(11, limit, offset); 
+    }
+    pub fn get_limit_see_member_include_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(1, limit, offset); 
+    }
+    pub fn get_limit_see_info_exclude_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(12, limit, offset); 
+    }
+    pub fn get_limit_see_info_include_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(2, limit, offset); 
+    }
+    pub fn get_limit_see_settings_exclude_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(13, limit, offset); 
+    }
+    pub fn get_limit_see_settings_include_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(3, limit, offset); 
+    }
+    pub fn get_limit_see_log_exclude_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(14, limit, offset); 
+    }
+    pub fn get_limit_see_log_include_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(4, limit, offset); 
+    }
+    pub fn get_limit_see_stat_exclude_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(15, limit, offset); 
+    }
+    pub fn get_limit_see_stat_include_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_members_for_types(5, limit, offset); 
+    }
+
     pub fn is_user_see_info(&self, user_id: i32) -> bool {
         let private = self.get_private_model();
         return match private {
@@ -1728,12 +1357,13 @@ impl Community {
               3 => self.is_user_staff(user_id),
               4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-              7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              6 => !self.is_user_perm_exists(user_id, 12),
+              7 => self.is_user_perm_exists(user_id, 2),
               _ => false},
           Err(_) => false,
         };
     }
+
     pub fn is_user_see_member(&self, user_id: i32) -> bool {
         let private = self.get_private_model();
         return match private {
@@ -1743,8 +1373,8 @@ impl Community {
               3 => self.is_user_staff(user_id),
               4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_member_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-              7 => self.get_see_member_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              6 => !self.is_user_perm_exists(user_id, 11),
+              7 => self.is_user_perm_exists(user_id, 1),
               _ => false},
           Err(_) => false,
         };
@@ -1758,8 +1388,8 @@ impl Community {
               3 => self.is_user_staff(user_id),
               4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_settings_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-              7 => self.get_see_settings_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              6 => !self.is_user_perm_exists(user_id, 13),
+              7 => self.is_user_perm_exists(user_id, 3),
               _ => false},
           Err(_) => false,
         };
@@ -1773,8 +1403,8 @@ impl Community {
               3 => self.is_user_staff(user_id),
               4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_log_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-              7 => self.get_see_log_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              6 => !self.is_user_perm_exists(user_id, 14),
+              7 => self.is_user_perm_exists(user_id, 4),
               _ => false},
           Err(_) => false,
         };
@@ -1788,8 +1418,8 @@ impl Community {
               3 => self.is_user_staff(user_id),
               4 => self.is_user_admin(user_id),
               5 => self.user_id == user_id,
-              6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-              7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+              6 => !self.is_user_perm_exists(user_id, 15),
+              7 => self.is_user_perm_exists(user_id, 5),
               _ => false},
           Err(_) => false,
         };
@@ -1846,8 +1476,8 @@ impl Community {
                  3 => self.is_user_staff(user_id),
                  4 => self.is_user_admin(user_id),
                  5 => self.user_id == user_id,
-                 6 => !self.get_see_info_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-                 7 => self.get_see_info_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                 6 => !self.is_user_perm_exists(user_id, 12),
+                 7 => self.is_user_perm_exists(user_id, 2),
                   _ => false
              };
              let bool_see_member = match _ok.see_member {
@@ -1856,8 +1486,8 @@ impl Community {
                  3 => self.is_user_staff(user_id),
                  4 => self.is_user_admin(user_id),
                  5 => self.user_id == user_id,
-                 6 => !self.get_see_member_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-                 7 => self.get_see_member_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                 6 => !self.is_user_perm_exists(user_id, 11),
+                 7 => self.is_user_perm_exists(user_id, 1),
                   _ => false
              };
              let bool_see_settings = match _ok.see_settings {
@@ -1866,8 +1496,8 @@ impl Community {
                  3 => self.is_user_staff(user_id),
                  4 => self.is_user_admin(user_id),
                  5 => self.user_id == user_id,
-                 6 => !self.get_see_settings_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-                 7 => self.get_see_settings_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                 6 => !self.is_user_perm_exists(user_id, 13),
+                 7 => self.is_user_perm_exists(user_id, 3),
                  _ => false
             };
             let bool_see_log = match _ok.see_log {
@@ -1876,8 +1506,8 @@ impl Community {
                 3 => self.is_user_staff(user_id),
                 4 => self.is_user_admin(user_id),
                 5 => self.user_id == user_id,
-                6 => !self.get_see_log_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-                7 => self.get_see_log_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                6 => !self.is_user_perm_exists(user_id, 14),
+                7 => self.is_user_perm_exists(user_id, 4),
                  _ => false
             };
 
@@ -1887,8 +1517,8 @@ impl Community {
                 3 => self.is_user_staff(user_id),
                 4 => self.is_user_admin(user_id),
                 5 => self.user_id == user_id,
-                6 => !self.get_see_stat_exclude_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
-                7 => self.get_see_stat_include_users_ids().iter().any(|&i| i==user_id) && self.is_user_member(user_id),
+                6 => !self.is_user_perm_exists(user_id, 15),
+                7 => self.is_user_perm_exists(user_id, 5),
                 _ => false
             };
             bool_stack.push(bool_see_info);
@@ -2147,16 +1777,78 @@ impl Community {
         return true;
     }
 
+    pub fn get_token_detail(&self, token_id: i32) -> TokenDetailJson {
+        use crate::schema::owners::dsl::owners;
+        use crate::models::{Owner, TokenServiceJson};
+
+        let _connection = establish_connection(); 
+        let _token = owners
+            .filter(schema::owners::id.eq(token_id))
+            .filter(schema::owners::types.eq(3))
+            .first::<Owner>(&_connection)
+            .expect("E.");
+
+        let mut services = Vec::new();
+        for s in _token.get_services().iter() {
+            services.push (TokenServiceJson {
+                id:   s.id,
+                name: s.name.clone(),
+            });
+        }
+
+        return TokenDetailJson {
+            id:          _token.id,
+            name:        _token.name.clone(),
+            description: _token.description.clone(),
+            is_active:   _token.is_active,
+            services:    services,
+        }
+    }
+
+    pub fn get_tokens(&self) -> Vec<TokenJson> {
+        use crate::schema::owners::dsl::owners;
+        use crate::models::{Owner, TokenServiceJson};
+
+        let _connection = establish_connection();
+        let mut list = Vec::new();
+
+        let _tokens = owners
+            .filter(schema::owners::user_id.eq(self.id))
+            .filter(schema::owners::types.eq(3))
+            .load::<Owner>(&_connection)
+            .expect("E.");
+
+        for i in _tokens.iter() {
+            let mut services = Vec::new();
+            for s in i.get_services().iter() {
+                services.push (TokenServiceJson {
+                    id:   s.id,
+                    name: s.name.clone(),
+                });
+            }
+            list.push (
+                TokenJson {
+                    id:        i.id,
+                    name:      i.name.clone(),
+                    is_active: i.is_active,
+                    services:  services,
+                }
+            );
+        }
+
+        return list;
+    }
 }
 
-
-/////// CommunityMembership //////
-// level
-// 1 подписчик
-// 2 модератор
-// 3 редактор
-// 4 рекламщик
-// 5 администратор
+/*
+CommunityMembership
+level
+1 подписчик
+2 модератор
+3 редактор
+4 рекламщик
+5 администратор
+*/
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct CommunitiesMembership {
     pub id:           i32,
@@ -2177,18 +1869,6 @@ pub struct NewCommunitiesMembership {
     pub visited:      i16,
 }
 impl CommunitiesMembership {
-    // придется усложнить работу создания подписчика:
-    // 1. Сначала создаётся подписчик
-    // 2. Затем на сервере пользователей создаются объекты стены и
-    // уведомлений, таблицы то источников находятся там.
-
-    //user.plus_communities(1);
-    //user.plus_community_visited(community.id);
-    //if is_administrator || is_editor || is_moderator {
-    //    add_notification_community_subscriber(user.id);
-    //}
-    //add_new_community_subscriber(user.id);
-
     pub fn create_membership (
         user_id: i32,
         community: &Community,
@@ -2230,7 +1910,6 @@ pub struct CommunityInfo {
     pub description:  Option<String>,
     pub members:      i32,
 }
-
 #[derive(Deserialize, Insertable)]
 #[table_name="community_infos"]
 pub struct NewCommunityInfo {
@@ -2245,15 +1924,16 @@ pub struct NewCommunityInfo {
     pub members:      i32,
 }
 
-/////// CommunityPrivate //////
-    // 1 Все пользователи
-    // 2 Подписчики
-    // 3 Персонал
-    // 4 Администраторы
-    // 5 Владелец сообщества
-    // 6 Подписчики, кроме
-    // 7 Некоторые подписчики
-
+/*
+CommunityPrivate //////
+1 Все пользователи
+2 Подписчики
+3 Персонал
+4 Администраторы
+5 Владелец сообщества
+6 Подписчики, кроме
+7 Некоторые подписчики
+*/
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct CommunityPrivate {
     pub id:           i32,
@@ -2293,19 +1973,19 @@ pub struct NewCommunityNotification {
     pub community_invite:     bool,
 }
 
-
-// включения и исключения для пользователей касательно конкретного сообщества
-// 1 может видеть подписчиков
-// 2 может видеть информацию
-// 3 может видеть настройки
-// 4 может видеть логи
-// 5 может видеть статистику
-// 11 не может видеть подписчиков
-// 12 не может видеть информацию
-// 13 не может видеть настройки
-// 14 не может видеть логи
-// 15 не может видеть статистику
-
+/*
+включения и исключения для пользователей касательно конкретного сообщества
+1 может видеть подписчиков
+2 может видеть информацию
+3 может видеть настройки
+4 может видеть логи
+5 может видеть статистику
+11 не может видеть подписчиков
+12 не может видеть информацию
+13 не может видеть настройки
+14 не может видеть логи
+15 не может видеть статистику
+*/
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct CommunityVisiblePerm {
     pub id:           i32,

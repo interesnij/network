@@ -31,59 +31,60 @@ use crate::models::{
     PostListPerm, NewPostListPerm,
 };
 
-////////// Тип списка
-    // 0 основной список
-    // 5 пользовательский список
-    // 10 список предложки
-    // 15 Фото со страницы
-    // 20 Фото со стены
-    // 25 основной список приватный
-    // 30 пользовательский список приватный
+/*
+Тип списка
+0 основной список
+5 пользовательский список
+10 список предложки
+15 Фото со страницы
+20 Фото со стены
+25 основной список приватный
+30 пользовательский список приватный
 
-    // 45 удаленный пользовательский список
-    // 70 удаленный пользовательский список приватный
+45 удаленный пользовательский список
+70 удаленный пользовательский список приватный
 
-    // 80 закрытый основной список
-    // 85 закрытый пользовательский список
-    // 95 закрытый Фото со страницы
-    // 100 закрытый Фото со стены
-    // 105 закрытый основной список приватный
-    // 110 закрытый пользовательский список приватный
+80 закрытый основной список
+85 закрытый пользовательский список
+95 закрытый Фото со страницы
+100 закрытый Фото со стены
+105 закрытый основной список приватный
+110 закрытый пользовательский список приватный
 
-    // 120 замороженный основной список
-    // 125 замороженный пользовательский список
-    // 135 замороженный Фото со страницы
-    // 140 замороженный Фото со стены
-    // 145 замороженный основной список приватный
-    // 150 замороженный пользовательский список приватный
+120 замороженный основной список
+125 замороженный пользовательский список
+135 замороженный Фото со страницы
+140 замороженный Фото со стены
+145 замороженный основной список приватный
+150 замороженный пользовательский список приватный
 
-    // 165 полностью удаленный пользовательский список
-    // 190 полностью удаленный пользовательский список приватный
+165 полностью удаленный пользовательский список
+190 полностью удаленный пользовательский список приватный
 
-//////////// Приватность списка
-    // 1 Все пользователи
-    // 2 Все друзья и все подписчики
-    // 3 Все друзья и подписчики, кроме
-    // 4 Все друзья и некоторые подписчики
-    // 5 Все подписчики и друзья, кроме
-    // 6 Все подписчики и некоторые друзья
-    // 7 Все друзья
-    // 8 Все подписчики
-    // 9 Друзья, кроме
-    // 10 Некоторые друзья
-    // 11 Подписчики, кроме
-    // 12 Некоторые подписчики
-    // 13 Только я
+Приватность списка
+1 Все пользователи
+2 Все друзья и все подписчики
+3 Все друзья и подписчики, кроме
+4 Все друзья и некоторые подписчики
+5 Все подписчики и друзья, кроме
+6 Все подписчики и некоторые друзья
+7 Все друзья
+8 Все подписчики
+9 Друзья, кроме
+10 Некоторые друзья
+11 Подписчики, кроме
+12 Некоторые подписчики
+13 Только я
 
-    // 14 Все пользователи
-    // 15 Подписчики
-    // 16 Персонал
-    // 17 Администраторы
-    // 18 Подписчики, кроме
-    // 19 Некоторые подписчики
-    // 20 Владелец сообщества
+14 Все пользователи
+15 Подписчики
+16 Персонал
+17 Администраторы
+18 Подписчики, кроме
+19 Некоторые подписчики
+20 Владелец сообщества
+*/
 
-/////// PostList //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct PostList {
     pub id:             i32,
@@ -620,12 +621,11 @@ impl PostList {
             if list.community_id.is_some() {
                 let community = list.get_community().expect("E.");
                 c_resp = Some(AttachCommunity {
-                    id:         community.id,
-                    name:       community.name,
-                    types:      community.types,
-                    link:       community.link,
-                    s_avatar:   community.s_avatar,
-                    see_member: community.see_member,
+                    id:       community.id,
+                    name:     community.name,
+                    types:    community.types,
+                    link:     community.link,
+                    s_avatar: community.s_avatar,
                 })
             }
             else {
@@ -638,7 +638,6 @@ impl PostList {
                     link:       creator.link,
                     s_avatar:   creator.s_avatar,
                     see_all:    creator.see_all,
-                    see_friend: creator.see_friend,
                 })
             }
             let data = AttachList {
@@ -804,359 +803,151 @@ impl PostList {
         );
     }
 
-    pub fn get_see_el_exclude_users_ids(&self) -> Vec<i32> {
+    pub fn is_user_member_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool {
+        // проверяем, если ли пользователь в вкл/искл списках списка записей
         use crate::schema::post_list_perms::dsl::post_list_perms;
 
         let _connection = establish_connection();
-        let items = post_list_perms
+        return post_list_perms
+            .filter(schema::post_list_perms::user_id.eq(user_id))
             .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(11))
+            .filter(schema::post_list_perms::types.eq(types))
             .select(schema::post_list_perms::user_id)
+            .first::<i32>(&_connection)
+            .is_ok() &&
+        communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_friend_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool {
+        // проверяем, если ли пользователь в вкл/искл списках пользователя 
+        // и дружит ли он с self
+        use crate::schema::{
+            post_list_perms::dsl::post_list_perms,
+            friends::dsl::friends,
+        };
+
+        let _connection = establish_connection();
+        return post_list_perms
+            .filter(schema::post_list_perms::user_id.eq(user_id))
+            .filter(schema::post_list_perms::post_list_id.eq(self.id))
+            .filter(schema::post_list_perms::types.eq(types))
+            .select(schema::post_list_perms::user_id)
+            .first::<i32>(&_connection)
+            .is_ok() &&
+        friends 
+            .filter(schema::friends::target_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(user_id))
+            .select(schema::friends::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_follow_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool {
+        // проверяем, если ли пользователь в вкл/искл списках пользователя 
+        // и подписан ли он на self
+        use crate::schema::{
+            post_list_perms::dsl::post_list_perms,
+            follows::dsl::follows,
+        };
+
+        let _connection = establish_connection();
+        return post_list_perms
+            .filter(schema::post_list_perms::user_id.eq(user_id))
+            .filter(schema::post_list_perms::post_list_id.eq(self.id))
+            .filter(schema::post_list_perms::types.eq(types))
+            .select(schema::post_list_perms::user_id)
+            .first::<i32>(&_connection)
+            .is_ok() &&
+        follows
+            .filter(schema::follows::target_id.eq(self.user_id))
+            .filter(schema::follows::user_id.eq(user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
+    pub fn get_ie_users_for_types (
+        &self, 
+        types:  i16,
+        limit:  Option<i64>, 
+        offset: Option<i64>,
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            post_list_perms::dsl::post_list_perms,
+            item_users::dsl::item_users,
+        };
+
+        let _connection = establish_connection();
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let items_ids = post_list_perms
+            .filter(schema::post_list_perms::post_list_id.eq(self.id))
+            .filter(schema::post_list_perms::types.eq(types))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::post_list_perms::target_id)
             .load::<i32>(&_connection)
             .expect("E");
 
-        return items;
-    }
-    pub fn get_see_el_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(1))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-    pub fn get_see_el_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_see_el_exclude_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
+        return item_users
+            .filter(schema::item_users::id.eq_any(items_ids))
+            .filter(schema::item_users::types.lt(31))
             .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
+                schema::item_users::user_id,
+                schema::item_users::first_name,
+                schema::item_users::last_name,
+                schema::item_users::link,
+                schema::item_users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E");
-        return items;
     }
 
-    pub fn get_see_el_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_see_el_include_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
+    pub fn get_limit_see_el_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(11, limit, offset); 
+    }
+    pub fn get_limit_see_el_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(1, limit, offset); 
+    } 
+    pub fn get_limit_see_comment_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(12, limit, offset); 
+    }
+    pub fn get_limit_see_comment_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(2, limit, offset); 
+    }
+    pub fn get_limit_create_el_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(13, limit, offset); 
+    }
+    pub fn get_limit_create_el_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(3, limit, offset); 
+    }
+    pub fn get_limit_create_comment_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(14, limit, offset); 
+    }
+    pub fn get_limit_create_comment_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(4, limit, offset); 
+    }
+    pub fn get_limit_copy_el_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(15, limit, offset); 
+    }
+    pub fn get_limit_copy_el_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_users_for_types(5, limit, offset); 
     }
 
-    pub fn get_see_comment_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(12))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-    pub fn get_see_comment_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(2))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-
-    pub fn get_see_comment_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_see_comment_exclude_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_see_comment_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_see_comment_include_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_create_el_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(13))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-    pub fn get_create_el_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(3))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-
-    pub fn get_create_el_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_create_el_exclude_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_create_el_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_create_el_include_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_create_comment_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(14))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-    pub fn get_create_comment_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(4))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-
-    pub fn get_create_comment_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_create_comment_exclude_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_create_comment_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_create_comment_include_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_copy_el_exclude_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(15))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-    pub fn get_copy_el_include_users_ids(&self) -> Vec<i32> {
-        use crate::schema::post_list_perms::dsl::post_list_perms;
-
-        let _connection = establish_connection();
-        let items = post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(self.id))
-            .filter(schema::post_list_perms::types.eq(5))
-            .select(schema::post_list_perms::user_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return items;
-    }
-
-    pub fn get_copy_el_exclude(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_copy_el_exclude_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
-
-    pub fn get_copy_el_include(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        use crate::schema::users::dsl::users;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-        let items = users
-            .filter(schema::users::user_id.eq_any(self.get_copy_el_include_users_ids()))
-            .filter(schema::users::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
-        return items;
-    }
 
     pub fn is_user_see_el(&self, user_id: i32) -> bool {
         let private_field = self.see_el;
@@ -1171,8 +962,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
-                19 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                18 => !self.is_member_perm_exists(user_id, 11),
+                19 => self.is_member_perm_exists(user_id, 1),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1182,16 +973,16 @@ impl PostList {
             return match private_field {
                 1 => true,
                 2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
-                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
-                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                3 => creator.is_connected_with_user_with_id(user_id) || !self.is_follow_perm_exists(user_id, 11),
+                4 => creator.is_connected_with_user_with_id(user_id) || self.is_follow_perm_exists(user_id, 1),
+                5 => creator.is_self_followers_user_with_id(user_id) || !self.is_friend_perm_exists(user_id, 11),
+                6 => creator.is_self_followers_user_with_id(user_id) || self.is_friend_perm_exists(user_id, 1),
                 7 => creator.is_connected_with_user_with_id(user_id),
                 8 => creator.is_self_followers_user_with_id(user_id),
-                9 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                10 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                11 => !self.get_see_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
-                12 => self.get_see_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                9 => !self.is_friend_perm_exists(user_id, 11),
+                10 => self.is_friend_perm_exists(user_id, 1),
+                11 => !self.is_follow_perm_exists(user_id, 11),
+                12 => self.is_follow_perm_exists(user_id, 1),
                 _ => false,
             };
         }
@@ -1210,8 +1001,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
-                19 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                18 => !self.is_member_perm_exists(user_id, 12),
+                19 => self.is_member_perm_exists(user_id, 2),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1221,16 +1012,16 @@ impl PostList {
             return match private_field {
                 1 => true,
                 2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
-                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
-                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                3 => creator.is_connected_with_user_with_id(user_id) || !self.is_follow_perm_exists(user_id, 12),
+                4 => creator.is_connected_with_user_with_id(user_id) || self.is_follow_perm_exists(user_id, 2),
+                5 => creator.is_self_followers_user_with_id(user_id) || !self.is_friend_perm_exists(user_id, 12),
+                6 => creator.is_self_followers_user_with_id(user_id) || self.is_friend_perm_exists(user_id, 2),
                 7 => creator.is_connected_with_user_with_id(user_id),
                 8 => creator.is_self_followers_user_with_id(user_id),
-                9 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                10 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                11 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
-                12 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                9 => !self.is_friend_perm_exists(user_id, 12),
+                10 => self.is_friend_perm_exists(user_id, 2),
+                11 => !self.is_follow_perm_exists(user_id, 12),
+                12 => self.is_follow_perm_exists(user_id, 2),
                 _ => false,
             };
         }
@@ -1248,8 +1039,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.get_see_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
-                19 => self.get_see_comment_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                18 => !self.is_member_perm_exists(user_id, 13),
+                19 => self.is_member_perm_exists(user_id, 3),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1259,16 +1050,16 @@ impl PostList {
             return match private_field {
                 1 => true,
                 2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
-                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
-                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                3 => creator.is_connected_with_user_with_id(user_id) || !self.is_follow_perm_exists(user_id, 13),
+                4 => creator.is_connected_with_user_with_id(user_id) || self.is_follow_perm_exists(user_id, 3),
+                5 => creator.is_self_followers_user_with_id(user_id) || !self.is_friend_perm_exists(user_id, 13),
+                6 => creator.is_self_followers_user_with_id(user_id) || self.is_friend_perm_exists(user_id, 3),
                 7 => creator.is_connected_with_user_with_id(user_id),
                 8 => creator.is_self_followers_user_with_id(user_id),
-                9 => !self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                10 => self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                11 => !self.get_create_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
-                12 => self.get_create_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                9 => !self.is_friend_perm_exists(user_id, 13),
+                10 => self.is_friend_perm_exists(user_id, 3),
+                11 => !self.is_follow_perm_exists(user_id, 13),
+                12 => self.is_follow_perm_exists(user_id, 3),
                 _ => false,
             };
         }
@@ -1286,8 +1077,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
-                19 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                18 => !self.is_member_perm_exists(user_id, 14),
+                19 => self.is_member_perm_exists(user_id, 4),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1297,16 +1088,16 @@ impl PostList {
             return match private_field {
                 1 => true,
                 2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
-                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
-                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                3 => creator.is_connected_with_user_with_id(user_id) || !self.is_follow_perm_exists(user_id, 14),
+                4 => creator.is_connected_with_user_with_id(user_id) || self.is_follow_perm_exists(user_id, 4),
+                5 => creator.is_self_followers_user_with_id(user_id) || !self.is_friend_perm_exists(user_id, 14),
+                6 => creator.is_self_followers_user_with_id(user_id) || self.is_friend_perm_exists(user_id, 4),
                 7 => creator.is_connected_with_user_with_id(user_id),
                 8 => creator.is_self_followers_user_with_id(user_id),
-                9 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                10 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                11 => !self.get_create_comment_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
-                12 => self.get_create_comment_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                9 => !self.is_friend_perm_exists(user_id, 14),
+                10 => self.is_friend_perm_exists(user_id, 4),
+                11 => !self.is_follow_perm_exists(user_id, 14),
+                12 => self.is_follow_perm_exists(user_id, 4),
                 _ => false,
             };
         }
@@ -1324,8 +1115,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
-                19 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && community.is_user_member(user_id),
+                18 => !self.is_member_perm_exists(user_id, 15),
+                19 => self.is_member_perm_exists(user_id, 5),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1335,25 +1126,25 @@ impl PostList {
             return match private_field {
                 1 => true,
                 2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
-                3 => creator.is_connected_with_user_with_id(user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                4 => creator.is_connected_with_user_with_id(user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id)),
-                5 => creator.is_self_followers_user_with_id(user_id) || (!self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
-                6 => creator.is_self_followers_user_with_id(user_id) || (self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id)),
+                3 => creator.is_connected_with_user_with_id(user_id) || !self.is_follow_perm_exists(user_id, 15),
+                4 => creator.is_connected_with_user_with_id(user_id) || self.is_follow_perm_exists(user_id, 5),
+                5 => creator.is_self_followers_user_with_id(user_id) || !self.is_friend_perm_exists(user_id, 15),
+                6 => creator.is_self_followers_user_with_id(user_id) || self.is_friend_perm_exists(user_id, 5),
                 7 => creator.is_connected_with_user_with_id(user_id),
                 8 => creator.is_self_followers_user_with_id(user_id),
-                9 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                10 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_connected_with_user_with_id(user_id),
-                11 => !self.get_copy_el_exclude_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
-                12 => self.get_copy_el_include_users_ids().iter().any(|&i| i==user_id) && creator.is_self_followers_user_with_id(user_id),
+                9 => !self.is_friend_perm_exists(user_id, 15),
+                10 => self.is_friend_perm_exists(user_id, 5),
+                11 => !self.is_follow_perm_exists(user_id, 15),
+                12 => self.is_follow_perm_exists(user_id, 5),
                 _ => false,
             };
         }
     }
     pub fn is_anon_user_see_el(&self) -> bool {
-        return self.see_el == 1 && self.see_el == 14;
+        return self.see_el == 1 || self.see_el == 14;
     }
     pub fn is_anon_user_see_comment(&self) -> bool {
-        return self.see_comment == 1 && self.see_comment == 14;
+        return self.see_comment == 1 || self.see_comment == 14;
     }
 
     pub fn get_community_selected_post_list_pk(community_id: i32) -> i32 {
@@ -1676,7 +1467,7 @@ impl PostList {
             };
             let _posts_list_position = diesel::insert_into(schema::community_post_list_positions::table)
                 .values(&_new_posts_list_position)
-                .get_result::<CommunityPostListPosition>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
         }
         else {
@@ -1688,7 +1479,7 @@ impl PostList {
             };
             let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)
                 .values(&_new_posts_list_position)
-                .get_result::<UserPostListPosition>(&_connection)
+                .execute(&_connection)
                 .expect("Error.");
         }
         let exclude_vec = vec![3, 5, 9, 11, 18];
@@ -1704,7 +1495,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1719,7 +1510,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1735,7 +1526,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1750,7 +1541,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1766,7 +1557,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1781,7 +1572,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1797,7 +1588,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1812,7 +1603,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error saving post_list_position.");
                 }
             }
@@ -1828,7 +1619,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error saving post_list_position.");
                 }
             }
@@ -1843,7 +1634,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error saving post_list_position.");
                 }
             }
@@ -1900,44 +1691,16 @@ impl PostList {
         };
         diesel::update(&list)
             .set(edit_post_list)
-            .get_result::<PostList>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
-            let exclude_vec = vec![3, 5, 9, 11, 18];
-            let include_vec = vec![4, 6, 10, 12, 19];
 
-        // если отредактированный список стал видимым всем,
-        // мы всем записям списка, которые опубликованы,
-        // присвоим тип "приватные", чтобы они не участвовали
-        // в публичных мероприятиях типа поиска
-        // Ну и наоборот, в противном случае.
-        let see_el_unwrap = data.see_el.unwrap();
-        if see_el_unwrap != list_see_el {
-            if see_el_unwrap == 1 || see_el_unwrap == 14 {
-                for item in list.get_items().iter() {
-                    if item.types == 5 {
-                        diesel::update(item)
-                            .set(schema::posts::types.eq(item.types + 5))
-                            .execute(&_connection)
-                            .expect("Error.");
-                    }
-                }
-            }
-            else {
-                for item in list.get_items().iter() {
-                    if item.types == 0 {
-                        diesel::update(item)
-                            .set(schema::posts::types.eq(item.types + 5))
-                            .execute(&_connection)
-                            .expect("Error.");
-                    }
-                }
-            }
-        }
+        let exclude_vec = vec![3, 5, 9, 11, 18];
+        let include_vec = vec![4, 6, 10, 12, 19];
 
         diesel::delete (
-          post_list_perms
-            .filter(schema::post_list_perms::post_list_id.eq(_id))
-            .filter(schema::post_list_perms::types.ne(20))
+            post_list_perms
+                .filter(schema::post_list_perms::post_list_id.eq(_id))
+                .filter(schema::post_list_perms::types.ne(20))
         )
         .execute(&_connection)
         .expect("E");
@@ -1952,7 +1715,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1967,7 +1730,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -1983,8 +1746,8 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
-                        .expect("Error saving post_list_position.");
+                        .execute(&_connection)
+                        .expect("Error.");
                 }
             }
         }
@@ -1998,7 +1761,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2014,7 +1777,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2029,7 +1792,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2045,7 +1808,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2060,7 +1823,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2076,7 +1839,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_exclude)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2091,7 +1854,7 @@ impl PostList {
                     };
                     diesel::insert_into(schema::post_list_perms::table)
                         .values(&_new_include)
-                        .get_result::<PostListPerm>(&_connection)
+                        .execute(&_connection)
                         .expect("Error.");
                 }
             }
@@ -2290,7 +2053,7 @@ impl PostList {
         if position_lists.len() > 0 {
             return post_lists
                 .filter(schema::post_lists::id.eq_any(position_lists))
-                .filter(schema::post_lists::types.lt(10))
+                .filter(schema::post_lists::types.lt(31))
                 .load::<PostList>(&_connection)
                 .expect("E.");
         }
@@ -2298,7 +2061,7 @@ impl PostList {
         let mut stack = Vec::new();
         let user_lists = post_lists
             .filter(schema::post_lists::user_id.eq(user_pk))
-            .filter(schema::post_lists::types.lt(10))
+            .filter(schema::post_lists::types.lt(31))
             .select(schema::post_lists::id)
             .load::<i32>(&_connection)
             .expect("E.");

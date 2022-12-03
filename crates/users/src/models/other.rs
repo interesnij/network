@@ -7,14 +7,14 @@ use crate::schema::{
 };
 use diesel::{Queryable, Insertable};
 use serde::{Serialize, Deserialize};
-//use crate::utils::establish_connection;
-//use crate::errors::Error;
 
-/////// PhoneCode //////
-// types:
-// 1 create account
-// 2 update phone
-// 3 update secure settings
+/*
+PhoneCode
+types:
+1 create account
+2 update phone
+3 update secure settings
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct PhoneCode {
     pub id:      i32,
@@ -34,15 +34,16 @@ pub struct NewPhoneCode {
     pub created: chrono::NaiveDateTime,
 }
 
-/////// Варианты значения полей приватности //////
-// исключения/включения пользователей (связь user_id на основных пользователей)
-// 1 может видеть открытый профиль
-// 2 может видеть информацию
-// 3 может видеть друзей
-// 11 не может видеть открытый профиль
-// 12 не может видеть информацию
-// 13 не может видеть друзей
-
+/*
+Варианты значения полей приватности
+исключения/включения пользователей (связь user_id на основных пользователей)
+1 может видеть открытый профиль
+2 может видеть информацию
+3 может видеть друзей
+11 не может видеть открытый профиль
+12 не может видеть информацию
+13 не может видеть друзей
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct UserVisiblePerm {
     pub id:        i32,
