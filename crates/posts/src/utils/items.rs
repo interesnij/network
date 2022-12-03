@@ -53,16 +53,16 @@ pub struct EditListJson {
     pub copy_el:              i16,
     pub reactions:            Option<String>,
 
-    pub see_el_exclude_users:         Option<Vec<CardUserJson>>,
-    pub see_comment_exclude_users:    Option<Vec<CardUserJson>>,
-    pub create_el_exclude_users:      Option<Vec<CardUserJson>>,
-    pub create_comment_exclude_users: Option<Vec<CardUserJson>>,
-    pub copy_el_exclude_users:        Option<Vec<CardUserJson>>,
-    pub see_el_include_users:         Option<Vec<CardUserJson>>,
-    pub see_comment_include_users:    Option<Vec<CardUserJson>>,
-    pub create_el_include_users:      Option<Vec<CardUserJson>>,
-    pub create_comment_include_users: Option<Vec<CardUserJson>>,
-    pub copy_el_include_users:        Option<Vec<CardUserJson>>,
+    pub see_el_exclude_users:         Vec<CardUserJson>,
+    pub see_comment_exclude_users:    Vec<CardUserJson>,
+    pub create_el_exclude_users:      Vec<CardUserJson>,
+    pub create_comment_exclude_users: Vec<CardUserJson>,
+    pub copy_el_exclude_users:        Vec<CardUserJson>,
+    pub see_el_include_users:         Vec<CardUserJson>,
+    pub see_comment_include_users:    Vec<CardUserJson>,
+    pub create_el_include_users:      Vec<CardUserJson>,
+    pub create_comment_include_users: Vec<CardUserJson>,
+    pub copy_el_include_users:        Vec<CardUserJson>,
 }
 
 #[derive(Serialize, Deserialize)]
