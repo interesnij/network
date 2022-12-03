@@ -30,7 +30,7 @@ use crate::utils::{
 use crate::errors::Error;
 use crate::models::{
     TokenDetailJson, TokenJson,
-}
+};
 
 /////// CommunityCategories //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
@@ -509,6 +509,17 @@ impl Community {
         else {
             return 0;
         }
+    }
+    pub fn is_user_in_ban(&self, user_id: i32) -> bool {
+        use crate::schema::community_banned_users::dsl::community_banned_users;
+
+        let _connection = establish_connection();
+        return community_banned_users
+            .filter(schema::community_banned_users::user_id.eq(user_id))
+            .filter(schema::community_banned_users::community_id.eq(self.id))
+            .select(schema::community_banned_users::id)
+            .first::<i32>(&_connection)
+            .is_ok();
     }
 
     pub fn create_community (

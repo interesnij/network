@@ -133,7 +133,7 @@ pub fn get_owner(id: i32) -> Result<Owner, Error> {
         .filter(schema::owners::id.eq(id))
         .first(&connection)?);
 }
-pub fn get_moderation(id: i32) -> Result<Moderation, Error> {
+pub fn get_moderation(id: i32) -> Result<Moderated, Error> {
     use crate::schema::moderateds::dsl::moderateds;
     let connection = establish_connection();
     return Ok(moderateds
@@ -159,10 +159,7 @@ pub fn get_community_permission(community: &Community, user_id: i32)
     else if community.is_user_in_ban(user_id) {
         return (false, community.name.clone() + &": сообщество добавило Вас в чёрный список".to_string())
     }
-    else if !community.is_user_see_el(user_id) {
-        return (false, community.name.clone() + &": Ошибка доступа".to_string())
-    }
-    else {
+    else { 
         return (true, "Открыто".to_string())
     }
 }
