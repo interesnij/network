@@ -185,8 +185,8 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                                 community,
                                 list,
                                 lists,
-                                _limit,
-                                _offset
+                                params.limit,
+                                params.offset
                             )).unwrap();
                             HttpResponse::Ok().body(body)
                         }
@@ -207,8 +207,8 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
                             owner,
                             list,
                             lists,
-                            _limit,
-                            _offset
+                            params.limit,
+                            params.offset
                         )).unwrap();
                         HttpResponse::Ok().body(body)
                     }
@@ -305,7 +305,7 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if user_id < 1 && community_id < 1 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -694,7 +694,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if user_id < 1 && community_id < 1 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -765,7 +765,7 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if user_id < 1 && community_id < 1 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
@@ -863,7 +863,7 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
-        else if (user_id < 1 && community_id < 1) {
+        else if user_id < 1 && community_id < 1 {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();

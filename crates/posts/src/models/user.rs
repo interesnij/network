@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
+    get_limit_offset,
     CardPostJson,
     CardUserJson,
 };
