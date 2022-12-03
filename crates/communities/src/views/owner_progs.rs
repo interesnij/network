@@ -264,7 +264,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJs
         Err(Error::BadRequest("Field 'services_ids' is required!".to_string()))
     }
     else {
-        let _res = block(move || Owner::create_token (
+        let _res = block(move || Owner::create (
             user_id,
             data.community_id.unwrap(),
             data.name.as_deref().unwrap().to_string(),

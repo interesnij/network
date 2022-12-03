@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     get_limit_offset,
+    CardUserJson,
 };
 use diesel::{
     Queryable,
@@ -729,7 +730,7 @@ impl User {
         let _connection = establish_connection();
         return friends
             .filter(schema::friends::user_id.eq(user_id))
-            .filter(schema::friends::target_id.eq(self_id))
+            .filter(schema::friends::target_id.eq(self.id))
             .select(schema::friends::id)
             .first::<i32>(&_connection).is_ok();
     }
@@ -985,6 +986,28 @@ impl User {
             .expect("Error.");
         self.plus_communities(1);
         return 1;
+    }
+    pub fn is_member_of_community(&self, community_id: i32) -> bool {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+
+        let _connection = establish_connection();
+        return communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.user_id))
+            .filter(schema::communities_memberships::community_id.eq(community_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_in_ban(&self, community_id: i32) -> bool {
+        use crate::schema::community_banned_users::dsl::community_banned_users;
+
+        let _connection = establish_connection();
+        return community_banned_users
+            .filter(schema::community_banned_users::user_id.eq(self.user_id))
+            .filter(schema::community_banned_users::community_id.eq(community_id))
+            .select(schema::community_banned_users::id)
+            .first::<i32>(&_connection)
+            .is_ok();
     }
     pub fn leave_community(&self, community_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;

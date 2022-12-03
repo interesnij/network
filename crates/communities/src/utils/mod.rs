@@ -134,10 +134,10 @@ pub fn get_owner(id: i32) -> Result<Owner, Error> {
         .first(&connection)?);
 }
 pub fn get_moderation(id: i32) -> Result<Moderation, Error> {
-    use crate::schema::moderations::dsl::moderations;
+    use crate::schema::moderateds::dsl::moderateds;
     let connection = establish_connection();
     return Ok(moderations
-        .filter(schema::moderations::id.eq(id))
+        .filter(schema::moderateds::id.eq(id))
         .first(&connection)?);
 }
 
