@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     CardPostJson,
+    CardUserJson,
 };
 use diesel::{
     Queryable,
@@ -244,7 +245,7 @@ impl Community {
             let _connection = establish_connection();
             let mut _count = 0;
 
-            for list in self.get_post_lists(20, 0).iter() {
+            for list in self.get_post_lists(Some(20), Some(0)).iter() {
                 if (user_id > 0 && list.is_user_see_el(user_id))
                     ||
                     (user_id == 0 && list.is_anon_user_see_el())

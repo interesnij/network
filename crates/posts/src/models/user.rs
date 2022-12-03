@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     CardPostJson,
+    CardUserJson,
 };
 use diesel::{
     Queryable,
@@ -199,7 +200,7 @@ impl User {
             let _connection = establish_connection();
             let mut _count = 0;
 
-            for list in self.get_post_lists(20, 0).iter() {
+            for list in self.get_post_lists(Some(20), Some(0)).iter() {
                 if (user_id > 0 && list.is_user_see_el(user_id))
                     ||
                     (user_id == 0 && list.is_anon_user_see_el())
@@ -583,7 +584,7 @@ impl User {
             9 => !self.is_friend_perm_exists(user_id, 10),
             10 => self.is_friend_perm_exists(user_id, 0),
             11 => !self.is_follow_perm_exists(user_id, 10),
-            12 => self.is_folloe_perm_exists(user_id, 0),
+            12 => self.is_follow_perm_exists(user_id, 0),
             _ => false,
         };
     }
@@ -1683,7 +1684,7 @@ impl User {
                 return 0;
             }
         }
-        return false;
+        return 0;
     }
 
     pub fn frend_user (
@@ -1737,7 +1738,7 @@ impl User {
         is_user_see_all: bool,
     ) -> i16 {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
-            return false;
+            return 0;
         }
         use crate::schema::friends::dsl::friends;
 

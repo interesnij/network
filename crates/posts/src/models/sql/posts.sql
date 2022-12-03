@@ -17,7 +17,7 @@
 13 Только я
 */
 
-CREATE TABLE users (
+CREATE TABLE users ( 
     id             SERIAL PRIMARY KEY,    -- id записи
     user_id        INT NOT NULL,          -- id пользователя (ссылка на основную таблицу)
     first_name     VARCHAR(100) NOT NULL, -- имя пользователя
@@ -47,7 +47,7 @@ CREATE TABLE users (
 таблица нужна для ассоциации постов с их сообществами,
 а также для самостоятельности сервиса.
 */
-CREATE TABLE communitys (
+CREATE TABLE communitys ( 
     id             SERIAL PRIMARY KEY,    -- id записи
     community_id   INT NOT NULL,          -- копия id сообщества с сервиса сообществ
     user_id        INT NOT NULL,          -- id владельца (ссылка на основную таблицу)
