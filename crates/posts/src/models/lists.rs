@@ -17,8 +17,8 @@ use crate::utils::{
     get_limit_offset,
     PostListDetailJson, PostListPageJson,
     CardUserJson, CardOwnerJson,
-    CardCommentJson,
-    EditListJson, RespListJson, DataListJson,
+    CardCommentJson, EditUserListJson
+    EditCommunityListJson, RespListJson, DataListJson,
     DataNewPost, RespPost, CardPostJson,
     AttachPostListResp,
 };
@@ -162,8 +162,8 @@ impl PostList {
             .first::<Community>(&_connection)?);
     }
 
-    pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
-        return Ok(EditListJson {
+    pub fn get_user_edit_list_json(&self) -> Result<EditUserListJson, Error> {
+        return Ok(EditUserListJson {
             id:                   self.id,
             name:                 self.name.clone(),
             description:          self.description.clone(),
@@ -175,18 +175,53 @@ impl PostList {
             copy_el:              self.copy_el,
             reactions:            self.reactions.clone(),
 
-            see_el_include_users:         self.get_see_el_include_users_ids(),
-            see_comment_include_users:    self.get_see_comment_include_users_ids(),
-            create_el_include_users:      self.get_create_el_include_users_ids(),
-            create_comment_include_users: self.get_create_comment_include_users_ids(),
-            copy_el_include_users:        self.get_copy_el_include_users_ids(),
+            see_el_exclude_follows:         self.get_limit_see_el_exclude_follows(Some(20), Some(0)),
+            see_comment_exclude_follows:    self.get_limit_see_comment_exclude_follows(Some(20), Some(0)),
+            create_el_exclude_follows:      self.get_limit_create_el_exclude_follows(Some(20), Some(0)),
+            create_comment_exclude_follows: self.get_limit_create_comment_exclude_follows(Some(20), Some(0)),
+            copy_el_exclude_follows:        self.get_limit_copy_el_exclude_follows(Some(20), Some(0)),
+            see_el_include_follows:         self.get_limit_see_el_include_follows(Some(20), Some(0)),
+            see_comment_include_follows:    self.get_limit_see_comment_include_follows(Some(20), Some(0)),
+            create_el_include_follows:      self.get_limit_create_el_include_follows(Some(20), Some(0)),
+            create_comment_include_follows: self.get_limit_create_comment_include_follows(Some(20), Some(0)),
+            copy_el_include_follows:        self.get_limit_copy_el_include_follows(Some(20), Some(0)),
 
-            see_el_exclude_users:         self.get_see_el_exclude_users_ids(),
-            see_comment_exclude_users:    self.get_see_comment_exclude_users_ids(),
-            create_el_exclude_users:      self.get_create_el_exclude_users_ids(),
-            create_comment_exclude_users: self.get_create_comment_exclude_users_ids(),
-            copy_el_exclude_users:        self.get_copy_el_exclude_users_ids(),
-        });
+            see_el_exclude_friends:         self.get_limit_see_el_exclude_friends(Some(20), Some(0)),
+            see_comment_exclude_friends:    self.get_limit_see_comment_exclude_friends(Some(20), Some(0)),
+            create_el_exclude_friends:      self.get_limit_create_el_exclude_friends(Some(20), Some(0)),
+            create_comment_exclude_friends: self.get_limit_create_comment_exclude_friends(Some(20), Some(0)),
+            copy_el_exclude_friends:        self.get_limit_copy_el_exclude_friends(Some(20), Some(0)),
+            see_el_include_friends:         self.get_limit_see_el_include_friends(Some(20), Some(0)),
+            see_comment_include_friends:    self.get_limit_see_comment_include_friends(Some(20), Some(0)),
+            create_el_include_friends:      self.get_limit_create_el_include_friends(Some(20), Some(0)),
+            create_comment_include_friends: self.get_limit_create_comment_include_friends(Some(20), Some(0)),
+            copy_el_include_friends:        self.get_limit_copy_el_include_friends(Some(20), Some(0)),
+        }); 
+    }
+    pub fn get_community_edit_list_json(&self) -> Result<EditCommunityListJson, Error> {
+        return Ok(EditUserListJson {
+            id:                   self.id,
+            name:                 self.name.clone(),
+            description:          self.description.clone(),
+            image:                self.image.clone(),
+            see_el:               self.see_el,
+            see_comment:          self.see_comment,
+            create_el:            self.create_el,
+            create_comment:       self.create_comment,
+            copy_el:              self.copy_el,
+            reactions:            self.reactions.clone(),
+
+            see_el_exclude_members:         self.get_limit_see_el_exclude_members(Some(20), Some(0)),
+            see_comment_exclude_members:    self.get_limit_see_comment_exclude_members(Some(20), Some(0)),
+            create_el_exclude_members:      self.get_limit_create_el_exclude_members(Some(20), Some(0)),
+            create_comment_exclude_members: self.get_limit_create_comment_exclude_members(Some(20), Some(0)),
+            copy_el_exclude_members:        self.get_limit_copy_el_exclude_members(Some(20), Some(0)),
+            see_el_include_members:         self.get_limit_see_el_include_members(Some(20), Some(0)),
+            see_comment_include_members:    self.get_limit_see_comment_include_members(Some(20), Some(0)),
+            create_el_include_members:      self.get_limit_create_el_include_members(Some(20), Some(0)),
+            create_comment_include_members: self.get_limit_create_comment_include_members(Some(20), Some(0)),
+            copy_el_include_members:        self.get_limit_copy_el_include_members(Some(20), Some(0)),
+        }); 
     }
     pub fn get_owner_meta(&self) -> Result<CardOwnerJson, Error> {
         let _connection = establish_connection();
@@ -234,7 +269,7 @@ impl PostList {
         let selected_post_list_pk = PostList::get_user_selected_post_list_pk(user_id);
         let list = get_post_list(selected_post_list_pk).expect("E.");
 
-        let lists = PostList::get_user_post_lists(user_id, 10, 0);
+        let lists = PostList::get_user_post_lists(user_id, Some(10), Some(0));
 
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta().expect("E");
@@ -269,7 +304,7 @@ impl PostList {
 
         let selected_post_list_pk = PostList::get_community_selected_post_list_pk(community_id);
         let list = get_post_list(selected_post_list_pk).expect("E.");
-        let lists = PostList::get_community_post_lists(community_id, 10, 0);
+        let lists = PostList::get_community_post_lists(community_id, Some(10), Some(0));
 
         let mut lists_json = Vec::new();
         let list_owner = list.get_owner_meta().expect("E");
@@ -821,7 +856,7 @@ impl PostList {
             .is_ok() &&
         communities_memberships
             .filter(schema::communities_memberships::user_id.eq(user_id))
-            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id.unwrap()))
             .select(schema::communities_memberships::id)
             .first::<i32>(&_connection)
             .is_ok();
@@ -962,8 +997,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.is_member_perm_exists(user_id, 11),
-                19 => self.is_member_perm_exists(user_id, 1),
+                18 => !self.is_user_member_exists(user_id, 11),
+                19 => self.is_user_member_exists(user_id, 1),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1001,8 +1036,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.is_member_perm_exists(user_id, 12),
-                19 => self.is_member_perm_exists(user_id, 2),
+                18 => !self.is_user_member_exists(user_id, 12),
+                19 => self.is_user_member_exists(user_id, 2),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1039,8 +1074,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.is_member_perm_exists(user_id, 13),
-                19 => self.is_member_perm_exists(user_id, 3),
+                18 => !self.is_user_member_exists(user_id, 13),
+                19 => self.is_user_member_exists(user_id, 3),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1077,8 +1112,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.is_member_perm_exists(user_id, 14),
-                19 => self.is_member_perm_exists(user_id, 4),
+                18 => !self.is_user_member_exists(user_id, 14),
+                19 => self.is_user_member_exists(user_id, 4),
                 20 => community.user_id == user_id,
                 _ => false,
             };
@@ -1115,8 +1150,8 @@ impl PostList {
                 15 => community.is_user_member(user_id),
                 16 => community.is_user_staff(user_id),
                 17 => community.is_user_admin(user_id),
-                18 => !self.is_member_perm_exists(user_id, 15),
-                19 => self.is_member_perm_exists(user_id, 5),
+                18 => !self.is_user_member_exists(user_id, 15),
+                19 => self.is_user_member_exists(user_id, 5),
                 20 => community.user_id == user_id,
                 _ => false,
             };
