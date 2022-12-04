@@ -4,6 +4,7 @@ use crate::utils::{
     get_limit_offset,
     CardPostJson,
     CardUserJson,
+    CardPostListJson,
 };
 use diesel::{
     Queryable,
