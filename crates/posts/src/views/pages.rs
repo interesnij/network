@@ -3,6 +3,8 @@ use actix_web::{
     HttpResponse,
     Responder,
     web,
+    web::Json,
+    web::block,
 };
 use crate::utils::{
     get_community,
@@ -18,7 +20,7 @@ use crate::utils::{
     AttachPostResp, AttachPostCommentResp,
     SearchTargetListData, SearchRegListData,
     SearchObjectTargetListData, SearchObjectRegListData,
-    CardPostListJson, CardPostJson, CardPostCommentJson,
+    CardPostListJson, CardPostJson, CardCommentJson,
 };
 use crate::models::{
     PostList,
@@ -46,16 +48,16 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/search_user_lists/", web::get().to(search_user_lists_page));
     config.route("/search_community_lists/", web::get().to(search_community_lists));
 
-    config.route("/search_posts/", web::get().to(search_lists_page));
+    config.route("/search_posts/", web::get().to(search_posts_page));
     config.route("/search_user_posts/", web::get().to(search_user_lists_page));
-    config.route("/search_community_posts/", web::get().to(search_community_lists));
-    config.route("/search_list_posts/", web::get().to(search_community_lists));
+    config.route("/search_community_posts/", web::get().to(search_community_lists_page));
+    config.route("/search_list_posts/", web::get().to(search_community_lists_page));
 
     //config.route("/search_comments/", web::get().to(search_comments_page));
-    //config.route("/search_user_comments/", web::get().to(search_user_comments));
-    //config.route("/search_community_comments/", web::get().to(search_community_comments));
-    //config.route("/search_list_comments/", web::get().to(search_list_comments));
-    //config.route("/search_post_comments/", web::get().to(search_post_comments));
+    //config.route("/search_user_comments/", web::get().to(search_user_comments_page));
+    //config.route("/search_community_comments/", web::get().to(search_community_comments_page));
+    //config.route("/search_list_comments/", web::get().to(search_list_comments_page));
+    //config.route("/search_post_comments/", web::get().to(search_post_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -970,7 +972,7 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
 }
 
 
-pub async fn search_post_list_page(req: HttpRequest) -> Result<Json<Vec<CardPostListJson>>, Error> {
+pub async fn search_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPostListJson>>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
