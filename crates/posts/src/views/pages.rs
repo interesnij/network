@@ -22,11 +22,10 @@ use crate::utils::{
     SearchTargetListData, SearchRegListData,
     SearchObjectTargetListData, SearchObjectRegListData,
     CardPostListJson, CardPostJson, CardCommentJson,
-    SearchAllPosts,
 };
 use crate::models::{
     PostList, Post, PostComment,
-    User, Community,
+    User, Community, SearchAllPosts,
 };
 use serde::Deserialize;
 use crate::errors::Error;
@@ -1424,8 +1423,8 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                         }
                         else {
                             let body = serde_json::to_string(&item.search_items (
-                                &q,
                                 user_id,
+                                &q,
                                 params.limit,
                                 params.offset
                             )).unwrap();
@@ -1444,8 +1443,8 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.search_items (
-                            &q,
                             user_id,
+                            &q,
                             params.limit,
                             params.offset
                         )).unwrap();
@@ -1473,8 +1472,8 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                         }
                         else {
                             let body = serde_json::to_string(&item.search_items (
-                                &q,
                                 user_id,
+                                &q,
                                 params.limit,
                                 params.offset
                             )).unwrap();
@@ -1493,8 +1492,8 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.search_items (
-                            &q,
                             user_id,
+                            &q,
                             params.limit,
                             params.offset
                         )).unwrap();
