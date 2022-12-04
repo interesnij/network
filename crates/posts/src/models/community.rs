@@ -238,7 +238,7 @@ impl Community {
                     owner_link:  owner.link.clone(),
                     owner_image: owner.image.clone(),
                     image:       i.image.clone(),
-                    types:       i.types,
+                    types:       i.get_code(),
                     count:       i.count,
                 }
             );
