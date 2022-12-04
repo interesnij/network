@@ -567,7 +567,7 @@ pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUser
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -575,7 +575,7 @@ pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUser
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -585,7 +585,7 @@ pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUser
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -605,13 +605,13 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
         }
         else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'target_id' not found!".to_string(),
+                error: "Field 'target_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -619,7 +619,7 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -667,7 +667,7 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -687,13 +687,13 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
         }
         else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'target_id' not found!".to_string(),
+                error: "Field 'target_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -701,7 +701,7 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -749,7 +749,7 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -775,13 +775,13 @@ pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Ve
         }
         else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'target_id' not found!".to_string(),
+                error: "Field 'target_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -789,7 +789,7 @@ pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Ve
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -830,7 +830,7 @@ pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Ve
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -856,7 +856,7 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -864,7 +864,7 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -886,7 +886,7 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -912,7 +912,7 @@ pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<Car
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -920,7 +920,7 @@ pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<Car
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is required!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -942,7 +942,7 @@ pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<Car
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -962,13 +962,13 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
         }
         else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'target_id' not found!".to_string(),
+                error: "Field 'target_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' not required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -976,7 +976,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "parametr 'q' is empty!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -1025,7 +1025,7 @@ pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardU
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
+            error: "Parametrs not found!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }

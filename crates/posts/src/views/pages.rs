@@ -14,10 +14,11 @@ use crate::utils::{
     get_community_permission,
     get_anon_community_permission,
     get_owner_data,
-    ErrorParams,
-    AttachPostListResp,
-    AttachPostResp,
-    AttachPostCommentResp,
+    ErrorParams, AttachPostListResp,
+    AttachPostResp, AttachPostCommentResp,
+    SearchTargetListData, SearchRegListData,
+    SearchObjectTargetListData, SearchObjectRegListData,
+    CardPostListJson, CardPostJson, CardPostCommentJson,
 };
 use crate::models::{
     PostList,
@@ -41,9 +42,20 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/post_reactions/", web::get().to(post_reactions_page));
     config.route("/comment_reactions/", web::get().to(comment_reactions_page));
 
-    //config.route("/search_lists/", web::get().to(search_lists_page));
-    //config.route("/search_posts/", web::get().to(search_posts_page));
+    config.route("/search_lists/", web::get().to(search_lists_page));
+    config.route("/search_user_lists/", web::get().to(search_user_lists_page));
+    config.route("/search_community_lists/", web::get().to(search_community_lists));
+
+    config.route("/search_posts/", web::get().to(search_lists_page));
+    config.route("/search_user_posts/", web::get().to(search_user_lists_page));
+    config.route("/search_community_posts/", web::get().to(search_community_lists));
+    config.route("/search_list_posts/", web::get().to(search_community_lists));
+
     //config.route("/search_comments/", web::get().to(search_comments_page));
+    //config.route("/search_user_comments/", web::get().to(search_user_comments));
+    //config.route("/search_community_comments/", web::get().to(search_community_comments));
+    //config.route("/search_list_comments/", web::get().to(search_list_comments));
+    //config.route("/search_post_comments/", web::get().to(search_post_comments));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -63,7 +75,7 @@ pub struct LoadListParams {
     pub list_id: Option<i32>,    // какой список интересует
     pub limit:   Option<i64>,    // кол-во постов
     pub offset:  Option<i64>,    // число смещения
-}
+} 
 
 pub async fn load_list_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<LoadListParams>::from_query(req.query_string());
@@ -957,12 +969,525 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
     }
 }
 
-#[derive(Debug, Deserialize)]
-pub struct SearchParams {
-    pub token:   Option<String>,
-    pub user_id: Option<i32>,
-    pub q:       Option<String>,
-    pub item_id: Option<i32>,
-    pub limit:   Option<i64>,
-    pub offset:  Option<i64>,
+
+pub async fn search_post_list_page(req: HttpRequest) -> Result<Json<Vec<CardPostListJson>>, Error> {
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, _user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            // если проверка токена не удалась...
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'q' not found!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is required!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let _res = block(move || PostList::search_post_lists(&q, params.limit, params.offset)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: User;
+            let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if user_id > 0 {
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+            else {
+                let _tuple = get_anon_user_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: Community;
+            let owner_res = get_community(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if user_id > 0 {
+                let _tuple = get_community_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+            else {
+                let _tuple = get_anon_community_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson>>, Error> {
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, _user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametr 'q' not found!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is required!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let _res = block(move || Post::search_posts(&q, params.limit, params.offset)).await?;
+            Ok(Json(_res))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_user_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson>>, Error> {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: User;
+            let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if user_id > 0 {
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_posts(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+            else {
+                let _tuple = get_anon_user_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_posts(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_community_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson>>, Error> {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: Community;
+            let owner_res = get_community(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if user_id > 0 {
+                let _tuple = get_community_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+            else {
+                let _tuple = get_anon_community_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else {
+                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    Ok(Json(body))
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+
+pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Parametr 'target_id' is required!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let item: PostList;
+            let item_res = get_post_list(params.target_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "post list not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            if user_id > 0 {
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
+                    if community_id > 0 && c_id != community_id {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied.".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let community = item.get_community().expect("E.");
+                        let _tuple = get_community_permission(&community, user_id);
+                        if _tuple.0 == false {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: _tuple.1.to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else {
+                            let body = serde_json::to_string(&item.search_items (
+                                &q,
+                                params.limit,
+                                params.offset
+                            )).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_user_permission(&owner, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.search_items (
+                            &q,
+                            params.limit,
+                            params.offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+            else {
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
+                    if community_id > 0 && c_id != community_id {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied.".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let community = item.get_community().expect("E.");
+                        let _tuple = get_anon_community_permission(&community);
+                        if _tuple.0 == false {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: _tuple.1.to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else {
+                            let body = serde_json::to_string(&item.search_items (
+                                &q,
+                                params.limit,
+                                params.offset
+                            )).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_anon_user_permission(&owner);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.search_items (
+                            &q,
+                            params.limit,
+                            params.offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
 }

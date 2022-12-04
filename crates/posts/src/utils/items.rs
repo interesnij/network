@@ -240,7 +240,7 @@ pub struct PostListsJson {
 // это объект списка записей
 pub struct CardPostListJson {
     pub name:        String,
-    pub owner_name:  String,
+    pub owner_name:  String, 
     pub owner_link:  String,
     pub owner_image: Option<String>,
     pub image:       Option<String>,
@@ -471,3 +471,53 @@ pub struct ReactionsCommentJson {
     pub count:  String,
     pub users:  Vec<CardReactionPostJson>,
 }
+
+#[derive(Deserialize)]
+pub struct SearchRegListData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub q:       Option<String>,
+    pub limit:   Option<i64>,
+    pub offset:  Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct SearchObjectRegListData {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub object_id: Option<i32>,
+    pub q:         Option<String>,
+    pub limit:     Option<i64>,
+    pub offset:    Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct SearchTargetListData {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub target_id: Option<i32>,
+    pub q:         Option<String>,
+    pub limit:     Option<i64>,
+    pub offset:    Option<i64>,
+}
+
+#[derive(Deserialize)]
+pub struct SearchObjectTargetListData {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub object_id: Option<i32>,
+    pub target_id: Option<i32>,
+    pub q:         Option<String>,
+    pub limit:     Option<i64>,
+    pub offset:    Option<i64>,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct EditTokenPageResp {
+    pub id:            i32,
+    pub name:          String,
+    pub description:   Option<String>,
+    pub is_active:     bool,
+    pub item_services: Vec<OwnerService>,
+    pub all_services:  Vec<OwnerService>,
+} 
