@@ -5,6 +5,8 @@ use crate::schema::{
     moderated_penalties,
     moderated_logs,
     owners,
+    owner_services,
+    owner_services_items,
 };
 use diesel::{
     Queryable,
@@ -19,6 +21,66 @@ use crate::models::{
     User,
     //Community,
 };
+
+
+/*
+OwnerService
+сервисы токенов и их разрешения. Работа с данными
+types:
+1 Профиль
+2 Сайты
+3 Почта
+4 Записи
+5 Аудиозаписи
+6 Документы
+7 Опросы
+8 Фотографии
+9 Видиозаписи
+10 Товары
+11 Обсуждения
+12 Википедия
+13 Статьи
+14 Сообщения
+15 Планировщик
+
+31 Профиль
+32 Сайты
+33 Почта
+34 Записи
+35 Аудиозаписи
+37 Опросы
+38 Фотографии
+39 Видиозаписи
+40 Товары
+41 Обсуждения
+42 Википедия
+43 Статьи
+44 Сообщения
+45 Планировщик
+*/
+#[derive(Debug, Queryable, Deserialize, Serialize, Identifiable)]
+pub struct OwnerService {
+    pub id:    i32,
+    pub types: i16,
+    pub name:  String,
+}
+impl OwnerService { 
+    pub fn get_all() -> Vec<OwnerService> {
+        use crate::schema::owner_services::dsl::owner_services;
+
+        let _connection = establish_connection();
+        return owner_services
+            .load::<OwnerService>(&_connection)
+            .expect("E.");
+    }
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owner_services"]
+pub struct NewOwnerService {
+    pub types: i16,
+    pub name:  String,
+}
 
 /*
 Owner
@@ -50,6 +112,51 @@ pub struct NewOwner {
     pub service_key:  String,
     pub is_active:    bool,
 }
+
+#[derive(Serialize)]
+pub struct TokenServiceJson {
+    pub id:   i32,
+    pub name: String,
+}
+
+#[derive(Serialize)]
+pub struct TokenDetailJson {
+    pub id:          i32,
+    pub name:        String,
+    pub description: Option<String>,
+    pub is_active:   bool,
+    pub services:    Vec<TokenServiceJson>,
+}
+#[derive(Serialize)]
+pub struct TokenJson {
+    pub id:        i32,
+    pub name:      String,
+    pub is_active: bool,
+    pub services:  Vec<TokenServiceJson>,
+}
+#[derive(Serialize)]
+pub struct EditedOwnerData {
+    pub name:        String,
+    pub description: Option<String>,
+}
+
+////// OwnerServicesItem //////
+// связь сервисов токенов с токенами
+
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct OwnerServicesItem {
+    pub id:         i32,
+    pub owner_id:   i32,
+    pub service_id: i32,
+}
+
+#[derive(Deserialize, Insertable)]
+#[table_name="owner_services_items"]
+pub struct NewOwnerServicesItem {
+    pub owner_id:   i32,
+    pub service_id: i32,
+}
+
 
 /*
 Moderated
