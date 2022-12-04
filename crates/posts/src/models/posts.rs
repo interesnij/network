@@ -128,6 +128,7 @@ pub struct EditPostPosition {
     pub position: i16,
 }
 
+#[derive(Serialize)]
 pub struct SearchAllPosts {
     pub posts:  Vec<CardPostJson>,
     pub offset: i64,
