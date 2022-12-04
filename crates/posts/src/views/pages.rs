@@ -22,6 +22,7 @@ use crate::utils::{
     SearchTargetListData, SearchRegListData,
     SearchObjectTargetListData, SearchObjectRegListData,
     CardPostListJson, CardPostJson, CardCommentJson,
+    SearchAllPosts,
 };
 use crate::models::{
     PostList, Post, PostComment,
@@ -1368,7 +1369,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
-            return HttpResponse::Ok().body(body);
+            HttpResponse::Ok().body(body)
         }
         else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
@@ -1380,7 +1381,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Field 'q' is required!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            HttpResponse::Ok().body(body)
         }
         else {
             let item: PostList;
@@ -1400,10 +1401,10 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
-                return Err(Error::BadRequest(body));
+                HttpResponse::Ok().body(body)
             }
 
-            if user_id > 0 {
+            else if user_id > 0 {
                 if item.community_id.is_some() {
                     let c_id = item.community_id.unwrap();
                     if community_id > 0 && c_id != community_id {
