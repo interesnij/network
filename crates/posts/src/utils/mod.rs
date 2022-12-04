@@ -321,8 +321,11 @@ pub fn get_community_owner_id (
 
 pub fn get_user_permission(user: &User, user_id: i32)
     -> (bool, String) {
-
-    if user.types > 10 {
+    
+    if user.id == user_id {
+        return (true, "Открыто".to_string())
+    }
+    else if user.types > 10 {
         if user.is_closed() {
             return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
         }
