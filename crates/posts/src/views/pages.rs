@@ -23,7 +23,7 @@ use crate::utils::{
     CardPostListJson, CardPostJson, CardCommentJson,
 };
 use crate::models::{
-    PostList, Post, PostComment
+    PostList, Post, PostComment,
     User, Community,
 };
 use serde::Deserialize;

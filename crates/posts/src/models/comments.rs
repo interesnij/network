@@ -89,7 +89,7 @@ pub struct SearchAllComments {
     pub offset:   i64,
 }
 impl PostComment {
-    pub fn get_comments_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostCommentResp> {
+    pub fn get_comments_for_attach(ids: Vec<i32>) -> Vec<AttachPostCommentResp> {
         // выдача инфы для прикрепления комментов по запросу API
         use crate::schema::post_comments::dsl::post_comments;
         use crate::utils::{

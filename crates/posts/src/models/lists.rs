@@ -595,7 +595,7 @@ impl PostList {
             return "".to_string()
         }
     }
-    pub fn get_lists_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostListResp> {
+    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<AttachPostListResp> {
         // выдача инфы для прикрепления списков записей
         // по запросу API
         use crate::schema::post_lists::dsl::post_lists;

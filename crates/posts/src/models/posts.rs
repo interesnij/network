@@ -134,7 +134,7 @@ pub struct SearchAllPosts {
 }
 
 impl Post {
-    pub fn get_posts_for_attach(&self, ids: Vec<i32>) -> Vec<AttachPostResp> {
+    pub fn get_posts_for_attach(ids: Vec<i32>) -> Vec<AttachPostResp> {
         // выдача инфы для прикрепления записей по запросу API
         use crate::schema::posts::dsl::posts;
         use crate::utils::{
@@ -199,9 +199,9 @@ impl Post {
                 repost:         i.repost,
                 is_signature:   i.is_signature,
                 reactions:      i.reactions,
-                types:          i.get_code(),                         // например pos1
-                parent:         i.get_parent_post_json(),     // пост родитель
-                reactions_list: self.get_reactions_json(0, list.get_reactions_list()),
+                types:          i.get_code(),
+                parent:         i.get_parent_post_json(),
+                reactions_list: i.get_reactions_json(0, list.get_reactions_list()),                
                 attachments:    i.get_attach(),
             };
             stack.push (AttachPostResp {
