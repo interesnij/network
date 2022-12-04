@@ -681,10 +681,9 @@ impl PostList {
 
     pub fn search_items (
         &self,
-        q:       &String,
-        user_id: i32,
-        limit:   Option<i64>,
-        offset:  Option<i64>,
+        q:      &String,
+        limit:  Option<i64>,
+        offset: Option<i64>,
     ) -> Vec<CardPostJson> {
         use crate::schema::posts::dsl::posts;
 
@@ -693,23 +692,18 @@ impl PostList {
         let reactions_list = self.get_reactions_list();
 
         let mut posts_json = Vec::new();
-        if  (user_id > 0 && self.is_user_see_el(user_id))
-            ||
-            (user_id == 0 && self.is_anon_user_see_el())
-            {
-            let items = posts
-                .filter(schema::posts::post_list_id.eq(self.id))
-                .filter(schema::posts::content.ilike(&q))
-                .filter(schema::posts::types.lt(11))
-                .limit(_limit)
-                .offset(_offset)
-                .order(schema::posts::created.desc())
-                .load::<Post>(&_connection)
-                .expect("E.");
+        let items = posts
+            .filter(schema::posts::post_list_id.eq(self.id))
+            .filter(schema::posts::content.ilike(&q))
+            .filter(schema::posts::types.lt(11))
+            .limit(_limit)
+            .offset(_offset)
+            .order(schema::posts::created.desc())
+            .load::<Post>(&_connection)
+            .expect("E.");
 
-            for i in items.iter() {
-                posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
-            }
+        for i in items.iter() {
+            posts_json.push ( i.get_post_json(user_id, reactions_list.clone()) )
         }
 
         return posts_json;

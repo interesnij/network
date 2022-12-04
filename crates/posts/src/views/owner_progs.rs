@@ -44,16 +44,16 @@ pub struct VecIdsParams {
 
 // выдаем данные для закрепления списков записей в других сервисах
 pub async fn get_attach_post_lists(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostListResp>>, Error> {
-    let _res = block(move || PostList::get_lists_for_attach(data.ids)).await?;
+    let _res = block(move || PostList::get_lists_for_attach(data.ids.clone())).await?;
     Ok(Json(_res))
 }
 // выдаем данные для закрепления записей в других сервисах
 pub async fn get_attach_posts(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostResp>>, Error> {
-    let _res = block(move || Post::get_posts_for_attach(data.ids)).await?;
+    let _res = block(move || Post::get_posts_for_attach(data.ids.clone())).await?;
     Ok(Json(_res))
 }
 // выдаем данные для закрепления комментов в других сервисах
 pub async fn get_attach_post_comments(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostCommentResp>>, Error> {
-    let _res = block(move || PostComment::get_comments_for_attach(data.ids)).await?;
+    let _res = block(move || PostComment::get_comments_for_attach(data.ids.clone())).await?;
     Ok(Json(_res)) 
 }

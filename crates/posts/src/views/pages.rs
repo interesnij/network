@@ -1474,7 +1474,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.search_items (
-                            &q,
+                            &q, 
                             params.limit,
                             params.offset
                         )).unwrap();
