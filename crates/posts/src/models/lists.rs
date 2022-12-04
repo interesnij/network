@@ -681,9 +681,10 @@ impl PostList {
 
     pub fn search_items (
         &self,
-        q:      &String,
-        limit:  Option<i64>,
-        offset: Option<i64>,
+        user_id: i32, 
+        q:       &String,
+        limit:   Option<i64>,
+        offset:  Option<i64>,
     ) -> Vec<CardPostJson> {
         use crate::schema::posts::dsl::posts;
 
