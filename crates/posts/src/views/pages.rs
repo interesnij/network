@@ -1332,7 +1332,7 @@ pub async fn search_community_posts_page(req: HttpRequest) -> Result<Json<Vec<Ca
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -1345,7 +1345,7 @@ pub async fn search_community_posts_page(req: HttpRequest) -> Result<Json<Vec<Ca
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
