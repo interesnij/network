@@ -1168,7 +1168,7 @@ pub async fn search_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, _user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1189,7 +1189,7 @@ pub async fn search_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            let _res = block(move || Post::search_posts(&q, params.limit, params.offset)).await?;
+            let _res = block(move || Post::search_posts(&q, user_id, params.limit, params.offset)).await?;
             Ok(Json(_res))
         }
     }
@@ -1252,7 +1252,7 @@ pub async fn search_user_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPos
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_posts(&q, params.limit, params.offset)).await?;
+                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
                     Ok(Json(body))
                 }
             }
@@ -1265,8 +1265,8 @@ pub async fn search_user_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPos
                     Err(Error::BadRequest(body))
                 }
                 else {
-                    let body = block(move || owner.search_posts(&q, params.limit, params.offset)).await?;
-                    Ok(Json(body))
+                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+                    Ok(Json(body)) 
                 }
             }
         }
