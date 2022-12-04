@@ -226,7 +226,7 @@ impl Community {
             .order(schema::post_lists::created.desc())
             .limit(_limit)
             .offset(_offset)
-            .load::<CardPostListJson>(&_connection)
+            .load::<PostList>(&_connection)
             .expect("E.");
         
         for i in lists.iter() {
@@ -238,7 +238,7 @@ impl Community {
                     owner_link:  owner.link.clone(),
                     owner_image: owner.image.clone(),
                     image:       i.image.clone(),
-                    types:       i.get_code(),
+                    types:       i.types,
                     count:       i.count,
                 }
             );
