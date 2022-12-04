@@ -27,12 +27,12 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
 }
 
 // создаем пользователя сервиса, создателя списков, постов, комментов
-pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
+pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
     let _res = block(move || User::create_user(data)).await?;
     Ok(Json(_res))
 }
 // создаем сообщество сервиса, создателя списков, постов, комментов
-pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<bool>, Error> {
+pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Json<bool>, Error> {
     let _res = block(move || Community::create_community(data)).await?;
     Ok(Json(_res))
 }
