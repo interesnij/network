@@ -46,12 +46,12 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
 
     config.route("/search_lists/", web::get().to(search_lists_page));
     config.route("/search_user_lists/", web::get().to(search_user_lists_page));
-    config.route("/search_community_lists/", web::get().to(search_community_lists));
+    config.route("/search_community_lists/", web::get().to(search_community_lists_page));
 
     config.route("/search_posts/", web::get().to(search_posts_page));
     config.route("/search_user_posts/", web::get().to(search_user_lists_page));
     config.route("/search_community_posts/", web::get().to(search_community_lists_page));
-    config.route("/search_list_posts/", web::get().to(search_community_lists_page));
+    config.route("/search_list_posts/", web::get().to(search_list_posts_page));
 
     //config.route("/search_comments/", web::get().to(search_comments_page));
     //config.route("/search_user_comments/", web::get().to(search_user_comments_page));
@@ -1425,6 +1425,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                         else {
                             let body = serde_json::to_string(&item.search_items (
                                 &q,
+                                user_id,
                                 params.limit,
                                 params.offset
                             )).unwrap();
@@ -1444,6 +1445,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     else {
                         let body = serde_json::to_string(&item.search_items (
                             &q,
+                            user_id,
                             params.limit,
                             params.offset
                         )).unwrap();
@@ -1472,6 +1474,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                         else {
                             let body = serde_json::to_string(&item.search_items (
                                 &q,
+                                user_id,
                                 params.limit,
                                 params.offset
                             )).unwrap();
@@ -1490,7 +1493,8 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     }
                     else {
                         let body = serde_json::to_string(&item.search_items (
-                            &q, 
+                            &q,
+                            user_id,
                             params.limit,
                             params.offset
                         )).unwrap();
