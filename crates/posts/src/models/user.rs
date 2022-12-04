@@ -166,12 +166,13 @@ impl User {
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Vec<PostList> {
+    ) -> Vec<CardPostListJson> {
         use crate::schema::post_lists::dsl::post_lists;
 
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
-        return post_lists
+        let mut lists_json = Vec::new();
+        let lists =  post_lists
             .filter(schema::post_lists::user_id.eq(self.user_id))
             .filter(schema::post_lists::community_id.is_null())
             .filter(schema::post_lists::types.lt(31))
@@ -182,6 +183,22 @@ impl User {
             .offset(_offset)
             .load::<PostList>(&_connection)
             .expect("E.");
+
+        for i in lists.iter() {
+            let owner = i.get_owner_meta().expect("E");
+            lists_json.push (
+                CardPostListJson {
+                    name:        i.name.clone(),
+                    owner_name:  owner.name.clone(),
+                    owner_link:  owner.link.clone(),
+                    owner_image: owner.image.clone(),
+                    image:       i.image.clone(),
+                    types:       i.get_code(),
+                    count:       i.count,
+                }
+            );
+        } 
+        return lists_json;
     }
     pub fn search_posts (
         &self,

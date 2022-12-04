@@ -8,6 +8,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_community,
+    get_user,
     get_post_list,
     get_post,
     get_post_comment,
@@ -1060,7 +1061,7 @@ pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPos
                 }
                 else {
                     let body = block(move || owner.search_post_lists(&q, params.limit, params.offset)).await?;
-                    Ok(Json(body))
+                    Ok(Json(body)) 
                 }
             }
             else {
@@ -1164,7 +1165,7 @@ pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<Ca
     }
 }
 
-pub async fn search_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson>>, Error> {
+pub async fn search_posts_page(req: HttpRequest) -> Result<Json<SearchAllPosts>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1190,7 +1191,7 @@ pub async fn search_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPostJson
                 return Err(Error::BadRequest(body));
             }
             let _res = block(move || Post::search_posts(&q, user_id, params.limit, params.offset)).await?;
-            Ok(Json(_res))
+            Ok(Json(_res))  
         }
     }
     else {
@@ -1375,6 +1376,12 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
         else {
             let item: PostList;
             let item_res = get_post_list(params.target_id.unwrap());
@@ -1386,6 +1393,14 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     error: "post list not found!".to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
+            }
+
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
             }
 
             if user_id > 0 {

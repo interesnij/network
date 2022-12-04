@@ -241,7 +241,7 @@ impl Community {
                     count:       i.count,
                 }
             );
-        }
+        } 
         return lists_json;
     }
 
