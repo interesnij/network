@@ -23,10 +23,8 @@ use crate::utils::{
     CardPostListJson, CardPostJson, CardCommentJson,
 };
 use crate::models::{
-    PostList,
-    Post,
-    Community,
-    PostComment,
+    PostList, Post, PostComment
+    User, Community,
 };
 use serde::Deserialize;
 use crate::errors::Error;
@@ -1010,7 +1008,7 @@ pub async fn search_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPostList
     }
 }
 
-pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPostListJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1088,7 +1086,7 @@ pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardUse
     }
 }
 
-pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPostListJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();

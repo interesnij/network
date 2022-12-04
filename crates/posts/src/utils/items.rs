@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::AttachmentsJson;
 use crate::models::{
     OwnerService,
-}
+};
 
 #[derive(Serialize)]
 pub struct ErrorParams {
