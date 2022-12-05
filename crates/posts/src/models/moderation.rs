@@ -16,7 +16,10 @@ use diesel::{
     QueryDsl,
 };
 use serde::{Serialize, Deserialize};
-use crate::utils::establish_connection;
+use crate::utils::{
+    establish_connection,
+    EditTokenPageResp,
+};
 use crate::models::{
     User,
     //Community,
@@ -212,7 +215,7 @@ impl Owner {
             .set((
                 schema::owners::name.eq(name.clone()),
                 schema::owners::secret_key.eq(secret_key.clone()),
-                schema::owners::services_ids.eq(services_ids.clone()),
+                schema::owners::service_key.eq(service_key.clone()),
             ))
             .execute(&_connection);
 
