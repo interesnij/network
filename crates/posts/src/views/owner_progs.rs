@@ -33,15 +33,37 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/delete_token", web::post().to(delete_token));
 } 
 
+static gen_token: &str = "111";
+
 // создаем пользователя сервиса, создателя списков, постов, комментов
 pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
-    let _res = block(move || User::create_user(data)).await?;
-    Ok(Json(_res))
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else {
+        if data.secret_key.as_deref().unwrap() == gen_token {
+            let _res = block(move || User::create_user(data))).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
 }
 // создаем сообщество сервиса, создателя списков, постов, комментов
 pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Json<bool>, Error> {
-    let _res = block(move || Community::create_community(data)).await?;
-    Ok(Json(_res))
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else {
+        if data.secret_key.as_deref().unwrap() == gen_token {
+            let _res = block(move || Community::create_community(data))).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -52,8 +74,19 @@ pub struct VecIdsParams {
 // manager send!
 // выдаем данные для закрепления списков записей в других сервисах
 pub async fn get_attach_post_lists(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostListResp>>, Error> {
-    let _res = block(move || PostList::get_lists_for_attach(data.ids.clone())).await?;
-    Ok(Json(_res))
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else {
+        if data.secret_key.as_deref().unwrap() == gen_token {
+            let _res = block(move || PostList::get_lists_for_attach(data.ids.clone())).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+    
 }
 
 // manager send!

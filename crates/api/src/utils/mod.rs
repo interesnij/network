@@ -7,6 +7,7 @@ use diesel::{
     Connection,
 };
 
+
 pub fn get_error_response(_error: reqwest::Error) -> String {
     //if _error.is_status() {
     //    println!("Нет соединения");
