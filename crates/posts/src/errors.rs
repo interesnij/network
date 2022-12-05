@@ -147,7 +147,7 @@ impl From<DBError> for Error {
 }
 
 impl From<BlockingError> for Error {
-    fn from(error: BlockingError) -> Error {
+    fn from(_error: BlockingError) -> Error {
         //error!("Thread blocking error {:?}", error);
         Error::BlockingError("Thread blocking error".into())
     }

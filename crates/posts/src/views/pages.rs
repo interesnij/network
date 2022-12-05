@@ -1114,7 +1114,13 @@ pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<Ca
                 return Err(Error::BadRequest(body));
             }
             let owner: Community;
-            let owner_res = get_community(params.target_id.unwrap());
+            let _id: i32;
+            if community_id > 0 {
+                _id = community_id;
+            } else {
+                _id = params.target_id.unwrap();
+            }
+            let owner_res = get_community(_id);
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
@@ -1283,7 +1289,13 @@ pub async fn search_community_posts_page(req: HttpRequest) -> Result<Json<Vec<Ca
                 return Err(Error::BadRequest(body));
             }
             let owner: Community;
-            let owner_res = get_community(params.target_id.unwrap());
+            let _id: i32;
+            if community_id > 0 {
+                _id = community_id;
+            } else {
+                _id = params.target_id.unwrap();
+            }
+            let owner_res = get_community(_id);
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
