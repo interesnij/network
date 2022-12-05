@@ -27,7 +27,7 @@ use crate::utils::{
 
 use crate::models::{
     Post, User, Community, PostList,
-    PostCommentCounterReaction,
+    PostCommentCounterReaction, SearchAllComments,
 };
 use crate::schema::post_comments;
 use crate::errors::Error;

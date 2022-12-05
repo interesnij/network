@@ -373,6 +373,48 @@ impl Post {
         };
     }
 
+    pub fn search_comments (
+        &self,
+        q:              &String,
+        user_id:        i32,
+        reactions_list: Vec<i32>,
+        limit:          Option<i64>,
+        offset:         Option<i64>,
+    ) -> Vec<CardCommentJson> { 
+        use crate::schema::post_comments::dsl::post_comments;
+        use crate::models::PostComment;
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let mut comments_json = Vec::new();
+        let items = post_comments
+            .filter(schema::post_comments::post_id.eq(self.id))
+            .filter(schema::post_comments::content.ilike(&q))
+            .filter(schema::post_comments::types.lt(5))
+            .order(schema::post_comments::created.desc())
+            .limit(_limit)
+            .offset(_offset)
+            .load::<PostComment>(&_connection)
+            .expect("E.");
+
+        for c in items.iter() {
+            let creator = c.get_owner_meta().expect("E");
+            comments_json.push (CardCommentJson {
+                content:        c.content.clone(),
+                owner_name:     creator.name.clone(),
+                owner_link:     creator.link.clone(),
+                owner_image:    creator.image.clone(),
+                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                reactions:      c.reactions,
+                types:          c.get_code(),       // например cpo1
+                replies:        c.replies,          // кол-во ответов
+                reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
+                attachments:    None,
+            });
+        }
+        return comments_json;
+    }
+
     pub fn item_message_reposts_count (
         item_id: i32,
         types: i16
