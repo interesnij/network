@@ -16,7 +16,7 @@ use crate::utils::{
     get_anon_user_permission,
     get_community_permission,
     get_anon_community_permission,
-    get_owner_data,
+    get_owner_data, 
     ErrorParams, AttachPostListResp,
     AttachPostResp, AttachPostCommentResp,
     SearchTargetListData, SearchRegListData,
@@ -1536,6 +1536,61 @@ pub async fn search_user_comments_page(req: HttpRequest) -> Result<Json<SearchAl
             }
             let owner: User;
             let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+
+            let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+            Ok(Json(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_community_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: Community;
+            let owner_res = get_community(params.target_id.unwrap());
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }

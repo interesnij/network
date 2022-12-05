@@ -23,7 +23,7 @@ use crate::schema::{
 };
 
 use actix_web::web::Json;
-use crate::models::{Post, PostList};
+use crate::models::{Post, PostList, SearchAllComments};
 
 /*
 Community
@@ -308,6 +308,7 @@ impl Community {
         offset:  Option<i64>,
     ) -> SearchAllComments {
         use crate::schema::post_comments::dsl::post_comments;
+        use crate::models::PostComment;
 
         let _connection = establish_connection();
         let mut _count = 0;
