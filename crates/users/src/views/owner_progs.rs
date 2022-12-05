@@ -374,7 +374,7 @@ pub struct AddTokenData {
     user_id:      Option<i32>,
     name:         Option<String>,
     description:  Option<String>,
-    services_ids: Option<Vec<i32>>,
+    services_ids: Option<Vec<i32>>, 
 }
 
 pub async fn create_user_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJson>, Error> {

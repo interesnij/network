@@ -101,6 +101,140 @@ pub struct Owner {
     pub is_active:    bool,
 }
 
+impl Owner {
+    pub fn get_edit_data(&self) -> EditTokenPageResp {
+        return EditTokenPageResp {
+            id:            self.id,
+            name:          self.name.clone(),
+            description:   self.description.clone(),
+            is_active:     self.is_active,
+            item_services: self.get_services(),
+            all_services:  OwnerService::get_all(),
+        }
+    }
+    pub fn is_service_types_ok(&self, types: i16) -> bool {
+        use crate::schema::{
+            owner_services::dsl::owner_services,
+            owner_services_items::dsl::owner_services_items,
+        };
+
+        let _connection = establish_connection();
+        let items_ids = owner_services_items
+            .filter(schema::owner_services_items::owner_id.eq(self.id))
+            .select(schema::owner_services_items::id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let types_vec = owner_services
+            .filter(schema::owner_services::id.eq_any(items_ids))
+            .select(schema::owner_services::types)
+            .load::<i16>(&_connection)
+            .expect("E.");
+        return types_vec.iter().any(|&i| i==types);
+    }
+
+    pub fn get_services(&self) -> Vec<OwnerService> {
+        use crate::schema::{
+            owner_services::dsl::owner_services,
+            owner_services_items::dsl::owner_services_items,
+        };
+
+        let _connection = establish_connection();
+        let items_ids = owner_services_items
+            .filter(schema::owner_services_items::owner_id.eq(self.id))
+            .select(schema::owner_services_items::id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+
+        return owner_services
+            .filter(schema::owner_services::id.eq_any(items_ids))
+            .load::<OwnerService>(&_connection)
+            .expect("E.");
+    }
+    pub fn create (
+        user_id:      i32,
+        name:         String,
+        description:  Option<String>,
+        secret_key:   String,
+        service_key:  String,
+        types:        i16,
+        services_ids: Vec<i32>
+    ) -> i16 {
+        let _connection = establish_connection();
+        let new_form = NewOwner {
+            user_id:     user_id,
+            name:        name,
+            description: description,
+            types:       types,
+            secret_key:  secret_key,
+            service_key: service_key,
+            is_active:   true,
+        };
+        let new_token = diesel::insert_into(schema::owners::table)
+            .values(&new_form)
+            .get_result::<Owner>(&_connection)
+            .expect("E.");
+
+        for id in services_ids.iter() {
+            let new_item = NewOwnerServicesItem {
+                owner_id:   new_token.id,
+                service_id: *id,
+            };
+            let _new_item = diesel::insert_into(schema::owner_services_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
+        return 1;
+    }
+    pub fn delete(&self) -> i16 {
+        use crate::models::moderation::owners::dsl::owners;
+
+        let _connection = establish_connection();
+        let _delete_item = diesel::delete (
+            owners
+                .filter(schema::owners::user_id.eq(self.user_id))
+        )
+        .execute(&_connection);
+        return 1;
+    }
+    pub fn edit (
+        &self,
+        name:         String,
+        description:  Option<String>,
+        secret_key:   String,
+        service_key:  String,
+        services_ids: Vec<i32>
+    ) -> i16 {
+        use crate::schema::owner_services_items::dsl::owner_services_items;
+
+        let _connection = establish_connection();
+        let _delete_items = diesel::delete(owner_services_items.filter(schema::owner_services_items::service_id.eq_any(&services_ids)))
+            .execute(&_connection)
+            .expect("E");
+
+            let _update_owner = diesel::update(self)
+            .set((
+                schema::owners::name.eq(name.clone()),
+                schema::owners::description.eq(description.clone()),
+                schema::owners::secret_key.eq(secret_key.clone()),
+                schema::owners::services_ids.eq(services_ids.clone()),
+            ))
+            .execute(&_connection);
+
+        for id in services_ids.iter() {
+            let new_item = NewOwnerServicesItem {
+                owner_id:   self.id,
+                service_id: *id,
+            };
+            diesel::insert_into(schema::owner_services_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
+        return 1;
+    }
+}
+
 #[derive(Deserialize, Insertable)]
 #[table_name="owners"] 
 pub struct NewOwner {
