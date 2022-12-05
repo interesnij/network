@@ -12,6 +12,7 @@ use crate::models::{
 };
 use crate::errors::Error;
 use crate::utils::{
+    get_owner,
     AttachmentsJson, AttachPostCommentResp,
     AttachPostResp, AttachPostListResp,
     EditTokenPageResp, ErrorParams, ObjectData, SmallData,
@@ -109,7 +110,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
     }
     else {
         let _res = block(move || Owner::create (
-            user_id.unwrap(),
+            data.user_id.unwrap(),
             data.name.as_deref().unwrap().to_string(),
             data.types.unwrap(),
             data.secret_key.as_deref().unwrap().to_string(),
@@ -152,7 +153,7 @@ pub async fn edit_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id.unwrap() {
+        if owner.user_id == data.user_id.unwrap() {
                 let _res = block(move || owner.edit (
                     data.name.as_deref().unwrap().to_string(),
                     data.secret_key.as_deref().unwrap().to_string(),

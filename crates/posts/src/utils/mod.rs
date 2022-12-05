@@ -139,6 +139,14 @@ pub fn get_post(pk: i32) -> Result<Post, Error> {
         .first::<Post>(&_connection)?);
 }
 
+pub fn get_owner(pk: i32) -> Result<Owner, Error> {
+    use crate::schema::owners::dsl::owners;
+    let _connection = establish_connection();
+    return Ok(owners
+        .filter(schema::owners::id.eq(pk))
+        .first::<Owner>(&_connection)?);
+}
+
 pub fn get_post_comment(pk: i32) -> Result<PostComment, Error> {
     use crate::schema::post_comments::dsl::post_comments;
     let _connection = establish_connection();
