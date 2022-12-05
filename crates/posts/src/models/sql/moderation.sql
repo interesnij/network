@@ -73,7 +73,7 @@ CREATE TABLE owners (
     service_key  VARCHAR(200) NOT NULL,  -- сервисный ключ
     is_active    BOOLEAN NOT NULL,       -- активно
 
-    UNIQUE(service_key)
+    UNIQUE(service_key) 
 );
 CREATE INDEX item_service_key_index ON owners (service_key);
 

@@ -71,16 +71,10 @@ pub async fn get_attach_post_comments(data: Json<VecIdsParams>) -> Result<Json<V
 }
 
 #[derive(Deserialize)]
-pub struct TokenData {
-    pub token:   Option<String>,
-    pub user_id: Option<i32>,
-    pub id:      Option<i32>,
-}
-
-#[derive(Deserialize)]
 pub struct AddTokenData {
     token:        Option<String>,
     user_id:      Option<i32>,
+    community_id: Option<i32>,
     name:         Option<String>,
     secret_key:   Option<String>,
     service_key:  Option<String>,
@@ -111,6 +105,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
     else {
         let _res = block(move || Owner::create (
             data.user_id.unwrap(),
+            data.community_id.unwrap(),
             data.name.as_deref().unwrap().to_string(),
             data.types.unwrap(),
             data.secret_key.as_deref().unwrap().to_string(),
