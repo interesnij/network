@@ -263,6 +263,7 @@ impl User {
         offset:  Option<i64>,
     ) -> SearchAllComments {
         use crate::schema::post_comments::dsl::post_comments;
+        use crate:models::PostComment;
 
         let _connection = establish_connection();
         let mut _count = 0;
