@@ -231,7 +231,19 @@ pub struct CardOwnerJson {
     pub link:  String,
     pub image: Option<String>,
 }
-//////////// Сериализаторы списков записей
+
+#[derive(Deserialize)]
+pub struct ObjectData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub id:      Option<i32>,
+}
+
+#[derive(Deserialize)]
+pub struct SmallData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+}
 
 #[derive(Serialize)]
 // это для пагинации

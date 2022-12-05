@@ -138,7 +138,7 @@ impl Owner {
             .expect("E.");
         let mut list = Vec::new();
         for i in all.iter() { 
-            let mut services = Vec::new();
+            let mut services = Vec::new(); 
             for s in i.get_services().iter() {
                 services.push (TokenServiceJson {
                     id:   s.id,
