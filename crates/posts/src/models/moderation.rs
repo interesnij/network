@@ -154,6 +154,7 @@ impl Owner {
     }
     pub fn create (
         user_id:      i32,
+        community_id: Option<i32>,
         name:         String,
         secret_key:   String,
         service_key:  String,
@@ -162,12 +163,13 @@ impl Owner {
     ) -> i16 {
         let _connection = establish_connection();
         let new_form = NewOwner {
-            user_id:     user_id,
-            name:        name,
-            types:       types,
-            secret_key:  secret_key,
-            service_key: service_key,
-            is_active:   true,
+            user_id:      user_id,
+            community_id: community_id,
+            name:         name,
+            types:        types,
+            secret_key:   secret_key,
+            service_key:  service_key,
+            is_active:    true,
         };
         let new_token = diesel::insert_into(schema::owners::table)
             .values(&new_form)
