@@ -651,12 +651,11 @@ impl Community {
     }
 
     pub fn create_community (
-        token:        String, 
         community_id: i32,
         user_id:      i32,
         name:         String,
         types:        i16,
-        link:         String, 
+        link:         String,  
         s_avatar:     Option<String>,
         follows_ids:  Option<Vec<(i32, i16)>>
     ) -> i16 {
