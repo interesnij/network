@@ -105,11 +105,11 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
     else {
         let _res = block(move || Owner::create (
             data.user_id.unwrap(),
-            data.community_id.unwrap(),
+            data.community_id,
             data.name.as_deref().unwrap().to_string(),
-            data.types.unwrap(),
             data.secret_key.as_deref().unwrap().to_string(),
             data.service_key.as_deref().unwrap().to_string(),
+            data.types.unwrap(),
             data.services_ids.as_deref().unwrap().to_vec(),
         )).await?;
         Ok(Json(_res))
@@ -183,7 +183,7 @@ pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id.unwrap() {
+        if owner.user_id == data.user_id.unwrap() {
             let _res = block(move || owner.delete ()).await?;
             Ok(Json(_res))
         }
