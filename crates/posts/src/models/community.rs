@@ -143,12 +143,12 @@ pub struct NewCommunity {
 
 #[derive(Deserialize)]
 pub struct NewCommunityJson {
-    pub token:        String,
-    pub community_id: i32,
-    pub user_id:      i32,
-    pub name:         String,
-    pub types:        i16,
-    pub link:         String,
+    pub token:        Option<String>, 
+    pub community_id: Option<i32>,
+    pub user_id:      Option<i32>,
+    pub name:         Option<String>,
+    pub types:        Option<i16>,
+    pub link:         Option<String>,
     pub s_avatar:     Option<String>,
     pub follows:      Option<Vec<(i32, i16)>>,  // список id подписчтков сообщества (1) и их права (2)
 }
@@ -650,24 +650,33 @@ impl Community {
         return self.count_fix_items() < 10;
     }
 
-    pub fn create_community(community: Json<NewCommunityJson>) -> bool {
+    pub fn create_community (
+        token:        String, 
+        community_id: i32,
+        user_id:      i32,
+        name:         String,
+        types:        i16,
+        link:         String, 
+        s_avatar:     Option<String>,
+        follows:      Option<Vec<(i32, i16)>>
+    ) -> i16 {
         use crate::schema::communitys::dsl::communitys;
 
         let _connection = establish_connection();
         if communitys
-            .filter(schema::communitys::community_id.eq(community.community_id))
+            .filter(schema::communitys::community_id.eq(community_id))
             .select(schema::communitys::id)
             .first::<i32>(&_connection)
             .is_ok() {
                 return false;
         }
         let new_community_form = NewCommunity {
-            community_id:   community.community_id,
-            user_id:        community.user_id,
-            name:           community.name.clone(),
-            types:          community.types,
-            link:           community.link.clone(),
-            s_avatar:       community.s_avatar.clone(),
+            community_id:   community_id,
+            user_id:        user_id,
+            name:           name.clone(),
+            types:          types,
+            link:           link.clone(),
+            s_avatar:       s_avatar.clone(),
 
             see_el:         1,
             see_comment:    1,
@@ -685,11 +694,10 @@ impl Community {
             .execute(&_connection)
             .expect("Error.");
 
-        let community_id = community.community_id;
-        if community.follows.is_some() {
+        if follows.is_some() {
             use crate::schema::communities_memberships::dsl::communities_memberships;
 
-            for (user_id, level) in community.follows.as_deref().unwrap() {
+            for (user_id, level) in follows.unwrap() {
                 if communities_memberships
                     .filter(schema::communities_memberships::user_id.eq(user_id))
                     .filter(schema::communities_memberships::community_id.eq(community_id))
@@ -708,7 +716,7 @@ impl Community {
                 }
             }
         }
-        return true;
+        return 1;
     }
 
     pub fn plus_lists(&self, count: i32) -> bool {
