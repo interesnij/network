@@ -106,7 +106,6 @@ impl Owner {
         return EditTokenPageResp {
             id:            self.id,
             name:          self.name.clone(),
-            description:   self.description.clone(),
             is_active:     self.is_active,
             item_services: self.get_services(),
             all_services:  OwnerService::get_all(),
@@ -153,7 +152,6 @@ impl Owner {
     pub fn create (
         user_id:      i32,
         name:         String,
-        description:  Option<String>,
         secret_key:   String,
         service_key:  String,
         types:        i16,
@@ -163,7 +161,6 @@ impl Owner {
         let new_form = NewOwner {
             user_id:     user_id,
             name:        name,
-            description: description,
             types:       types,
             secret_key:  secret_key,
             service_key: service_key,
@@ -200,7 +197,6 @@ impl Owner {
     pub fn edit (
         &self,
         name:         String,
-        description:  Option<String>,
         secret_key:   String,
         service_key:  String,
         services_ids: Vec<i32>
@@ -215,7 +211,6 @@ impl Owner {
             let _update_owner = diesel::update(self)
             .set((
                 schema::owners::name.eq(name.clone()),
-                schema::owners::description.eq(description.clone()),
                 schema::owners::secret_key.eq(secret_key.clone()),
                 schema::owners::services_ids.eq(services_ids.clone()),
             ))
@@ -257,7 +252,6 @@ pub struct TokenServiceJson {
 pub struct TokenDetailJson {
     pub id:          i32,
     pub name:        String,
-    pub description: Option<String>,
     pub is_active:   bool,
     pub services:    Vec<TokenServiceJson>,
 }

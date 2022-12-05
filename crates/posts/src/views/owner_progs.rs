@@ -81,7 +81,6 @@ pub struct AddTokenData {
     token:        Option<String>,
     user_id:      Option<i32>,
     name:         Option<String>,
-    description:  Option<String>,
     secret_key:   Option<String>,
     service_key:  Option<String>,
     types:        Option<i16>,
@@ -112,7 +111,6 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
         let _res = block(move || Owner::create (
             user_id.unwrap(),
             data.name.as_deref().unwrap().to_string(),
-            data.description.clone(),
             data.types.unwrap(),
             data.secret_key.as_deref().unwrap().to_string(),
             data.service_key.as_deref().unwrap().to_string(),
@@ -157,7 +155,6 @@ pub async fn edit_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
         if owner.user_id == user_id.unwrap() {
                 let _res = block(move || owner.edit (
                     data.name.as_deref().unwrap().to_string(),
-                    data.description.clone(),
                     data.secret_key.as_deref().unwrap().to_string(),
                     data.service_key.as_deref().unwrap().to_string(),
                     data.services_ids.as_deref().unwrap().to_vec(),
