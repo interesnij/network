@@ -1813,8 +1813,8 @@ pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
             HttpResponse::Ok().body(body)
         }
         else {
-            let item: PostList;
-            let item_res = get_post_list(params.target_id.unwrap());
+            let item: Post;
+            let item_res = get_post(params.target_id.unwrap());
             if item_res.is_ok() {
                 item = item_res.expect("E");
             }
@@ -1951,7 +1951,7 @@ pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
                         let body = serde_json::to_string(&item.search_comments (
                             user_id,
                             list.get_reactions_list(),
-                            &q,
+                            &q, 
                             params.limit,
                             params.offset
                         )).unwrap();
