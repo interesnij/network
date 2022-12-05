@@ -1461,7 +1461,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
 }
 
 
-pub async fn search_comments_page(req: HttpRequest) -> Result<SearchAllComments, Error> {
+pub async fn search_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1492,7 +1492,7 @@ pub async fn search_comments_page(req: HttpRequest) -> Result<SearchAllComments,
                 params.limit, 
                 params.offset
             )).await?;
-            Ok(Json(_res))  
+            Ok(Json(_res))   
         }
     }
     else {
