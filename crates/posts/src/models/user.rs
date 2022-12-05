@@ -465,7 +465,7 @@ impl User {
             .select(schema::users::id)
             .first::<i32>(&_connection)
             .is_ok() {
-                return false;
+                return 0;
         }
         let new_form = NewUser {
             user_id:        user.user_id,
@@ -504,7 +504,7 @@ impl User {
                     .first::<i32>(&_connection).is_err() {
                         let new_form = NewFriend {
                             user_id:   new_user_id,
-                            target_id: *_user_id,
+                            target_id: _user_id,
                         };
                         diesel::insert_into(schema::friends::table)
                             .values(&new_form)
