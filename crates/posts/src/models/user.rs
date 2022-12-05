@@ -14,7 +14,7 @@ use diesel::{
     QueryDsl,
     PgTextExpressionMethods,
 };
-use actix_web::web::Json;
+
 use crate::schema;
 use crate::schema::{
     users,

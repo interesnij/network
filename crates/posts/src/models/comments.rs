@@ -96,7 +96,6 @@ impl PostComment {
         use crate::utils::{
             AttachOwner,
             AttachCommunity,
-            AttachList,
             AttachPermList
         };
 

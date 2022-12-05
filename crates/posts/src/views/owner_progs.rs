@@ -3,19 +3,18 @@ use actix_web::{
     web::block,
     web::Json,
 };
-use serde::Serialize;
+
 use crate::models::{
     User, Community, Owner,
     NewUserJson, NewCommunityJson,
     PostList, Post, PostComment,
-    TokenDetailJson, TokenJson,
 };
 use crate::errors::Error;
 use crate::utils::{
     get_owner,
-    AttachmentsJson, AttachPostCommentResp,
+    AttachPostCommentResp,
     AttachPostResp, AttachPostListResp,
-    EditTokenPageResp, ErrorParams, ObjectData, SmallData,
+    ErrorParams, ObjectData,
 };
 use serde::Deserialize;
 
@@ -33,7 +32,7 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/delete_token", web::post().to(delete_token));
 } 
 
-static gen_token: &str = "111";
+static TOKEN: &str = "111";
 
 // создаем пользователя сервиса, создателя списков, постов, комментов
 pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
@@ -69,7 +68,7 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, E
         else {
             is_man = true;
         }
-        if data.token.as_deref().unwrap() == gen_token {
+        if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || User::create_user(
                 data.user_id.unwrap(),
                 data.first_name.as_deref().unwrap().to_string(),
@@ -110,7 +109,7 @@ pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Js
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
     } 
     else { 
-        if data.token.as_deref().unwrap() == gen_token {
+        if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || Community::create_community (
                 data.community_id.unwrap(),
                 data.user_id.unwrap(),
@@ -144,7 +143,7 @@ pub async fn get_attach_post_lists(data: Json<VecIdsParams>) -> Result<Json<Vec<
         Err(Error::BadRequest("Field 'ids' is required!".to_string()))
     }
     else {
-        if data.token.as_deref().unwrap() == gen_token {
+        if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || PostList::get_lists_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
             Ok(Json(_res))
         }
@@ -165,7 +164,7 @@ pub async fn get_attach_posts(data: Json<VecIdsParams>) -> Result<Json<Vec<Attac
         Err(Error::BadRequest("Field 'ids' is required!".to_string()))
     }
     else {
-        if data.token.as_deref().unwrap() == gen_token {
+        if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || Post::get_posts_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
             Ok(Json(_res))
         }
@@ -185,7 +184,7 @@ pub async fn get_attach_post_comments(data: Json<VecIdsParams>) -> Result<Json<V
         Err(Error::BadRequest("Field 'ids' is required!".to_string()))
     }
     else {
-        if data.token.as_deref().unwrap() == gen_token {
+        if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || PostComment::get_comments_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
             Ok(Json(_res))
         }
@@ -232,7 +231,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
         Err(Error::BadRequest("Field 'services_ids' is required!".to_string()))
     }
     else {
-        if data.token.as_deref().unwrap() == gen_token {
+        if data.token.as_deref().unwrap() == TOKEN {
                 let _res = block(move || Owner::create (
                 data.user_id.unwrap(),
                 data.community_id,
@@ -285,7 +284,7 @@ pub async fn edit_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if data.token.as_deref().unwrap() == gen_token && owner.user_id == data.user_id.unwrap() {
+        if data.token.as_deref().unwrap() == TOKEN && owner.user_id == data.user_id.unwrap() {
                 let _res = block(move || owner.edit (
                     data.name.as_deref().unwrap().to_string(),
                     data.secret_key.as_deref().unwrap().to_string(),
@@ -320,7 +319,7 @@ pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if data.token.as_deref().unwrap() == gen_token && owner.user_id == data.user_id.unwrap() {
+        if data.token.as_deref().unwrap() == TOKEN && owner.user_id == data.user_id.unwrap() {
             let _res = block(move || owner.delete ()).await?;
             Ok(Json(_res))
         }

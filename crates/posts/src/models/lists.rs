@@ -28,7 +28,7 @@ use crate::models::{
     NewUserPostListCollection,
     UserPostListPosition, CommunityPostListPosition,
     NewCommunityPostListCollection,
-    PostListPerm, NewPostListPerm,
+    NewPostListPerm,
 };
 
 /*
@@ -227,8 +227,6 @@ impl PostList {
     }
 
     pub fn get_user_post_page(user_id: i32) -> Option<PostListPageJson> {
-        use crate::utils::CardPostListJson;
-
         let selected_post_list_pk = PostList::get_user_selected_post_list_pk(user_id);
         let list = get_post_list(selected_post_list_pk).expect("E.");
 
@@ -263,8 +261,6 @@ impl PostList {
         return Some(data);
     }
     pub fn get_community_post_page(community_id: i32) -> PostListPageJson {
-        use crate::utils::CardPostListJson;
-
         let selected_post_list_pk = PostList::get_community_selected_post_list_pk(community_id);
         let list = get_post_list(selected_post_list_pk).expect("E.");
         let lists = PostList::get_community_post_lists(community_id, Some(10), Some(0));
@@ -355,8 +351,6 @@ impl PostList {
         limit:  Option<i64>,
         offset: Option<i64>,
     ) -> Json<PostListDetailJson> {
-        use crate::utils::CardPostListJson;
-
         let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
@@ -406,7 +400,6 @@ impl PostList {
         limit:     Option<i64>,
         offset:    Option<i64>,
     ) -> Json<PostListDetailJson> {
-        use crate::utils::CardPostListJson;
 
         let mut lists_json = Vec::new();
         for i in lists.iter() {
@@ -455,8 +448,6 @@ impl PostList {
         limit:     Option<i64>,
         offset:    Option<i64>,
     ) -> Json<PostListDetailJson> {
-        use crate::utils::CardPostListJson;
-
         let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");

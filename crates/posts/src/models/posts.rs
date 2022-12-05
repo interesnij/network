@@ -141,9 +141,7 @@ impl Post {
         use crate::utils::{
             AttachOwner,
             AttachCommunity,
-            AttachList,
             AttachPermList,
-            AttachmentsJson,
             AttachPost,
         };
 
@@ -382,7 +380,6 @@ impl Post {
         offset:         Option<i64>,
     ) -> Vec<CardCommentJson> { 
         use crate::schema::post_comments::dsl::post_comments;
-        use crate::models::PostComment;
 
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
