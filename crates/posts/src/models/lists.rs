@@ -302,8 +302,6 @@ impl PostList {
         limit:   Option<i64>,
         offset:  Option<i64>,
     ) -> Json<PostListDetailJson> {
-        use crate::utils::CardPostListJson;
-
         let mut lists_json = Vec::new();
         for i in lists.iter() {
             let owner = i.get_owner_meta().expect("E");
@@ -1722,7 +1720,6 @@ impl PostList {
         }
         let _id = data.id.unwrap();
         let list = get_post_list(_id).expect("E.");
-        let list_see_el = list.see_el;
 
         let edit_post_list = EditPostList {
             name:           _name.clone(),
