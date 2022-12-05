@@ -42,7 +42,7 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<bool>, 
     }
     else {
         if data.secret_key.as_deref().unwrap() == gen_token {
-            let _res = block(move || User::create_user(data))).await?;
+            let _res = block(move || User::create_user(data)).await?;
             Ok(Json(_res))
         }
         else {
@@ -57,7 +57,7 @@ pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Js
     }
     else {
         if data.secret_key.as_deref().unwrap() == gen_token {
-            let _res = block(move || Community::create_community(data))).await?;
+            let _res = block(move || Community::create_community(data)).await?;
             Ok(Json(_res))
         }
         else {
