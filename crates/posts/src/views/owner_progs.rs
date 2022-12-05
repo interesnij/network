@@ -52,9 +52,6 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, E
     else if data.types.is_none() {
         Err(Error::BadRequest("Field 'types' is required!".to_string()))
     }
-    else if data.is_man.is_none() {
-        Err(Error::BadRequest("Field 'is_man' is required!".to_string()))
-    }
     else if data.link.is_none() {
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
     }
@@ -64,16 +61,16 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, E
     else {
         if data.token.as_deref().unwrap() == gen_token {
             let _res = block(move || User::create_user(
-                user_id:    data.user_id.unwrap(),
-                first_name: data.first_name.as_deref().unwrap().to_string(),
-                last_name:  data.last_name.as_deref().unwrap().to_string(),
-                types:      data.types.unwrap(),
-                is_man:     data.is_man.unwrap(),
-                link:       data.link.as_deref().unwrap().to_string(),
-                s_avatar:   data.s_avatar.clone(),
-                see_all:    data.see_all.unwrap(),
-                friends:    data.friends.clone(),
-                follows:    data.friends.clone(),
+                data.user_id.unwrap(),
+                data.first_name.as_deref().unwrap().to_string(),
+                data.last_name.as_deref().unwrap().to_string(),
+                data.types.unwrap(),
+                data.is_man.unwrap(),
+                data.link.as_deref().unwrap().to_string(),
+                data.s_avatar.clone(),
+                data.see_all.unwrap(),
+                data.friends.clone(),
+                data.friends.clone(),
             )).await?;
             Ok(Json(_res))
         }
@@ -101,17 +98,17 @@ pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Js
     }
     else if data.link.is_none() {
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
-    }
+    } 
     else { 
         if data.token.as_deref().unwrap() == gen_token {
             let _res = block(move || Community::create_community (
-                community_id: data.community_id.unwrap(),
-                user_id:      data.user_id.unwrap(),
-                name:         data.name.as_deref().unwrap().to_string(),
-                types:        data.types.unwrap(),
-                link:         data.link.as_deref().unwrap().to_string(),
-                s_avatar:     data.s_avatar.clone(),
-                follows:      data.friends.clone(),
+                data.community_id.unwrap(),
+                data.user_id.unwrap(),
+                data.name.as_deref().unwrap().to_string(),
+                data.types.unwrap(),
+                data.link.as_deref().unwrap().to_string(),
+                data.s_avatar.clone(),
+                data.follows.clone(), 
             )).await?;
             Ok(Json(_res))
         }
