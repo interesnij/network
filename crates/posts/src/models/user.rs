@@ -129,14 +129,14 @@ pub struct NewUser {
 
 #[derive(Deserialize, Serialize)]
 pub struct NewUserJson {
-    pub token:      String,
-    pub user_id:    i32,
-    pub first_name: String,
-    pub last_name:  String,
-    pub types:      i16,
-    pub see_all:    i16,
+    pub token:      Option<String>,
+    pub user_id:    Option<i32>,
+    pub first_name: Option<String>,
+    pub last_name:  Option<String>,
+    pub types:      Option<i16>,
+    pub see_all:    Option<i16>,
     pub is_man:     bool,
-    pub link:       String,
+    pub link:       Option<String>,
     pub s_avatar:   Option<String>,
     pub friends:    Option<Vec<i32>>,  // список id друзей пользователя
     pub follows:    Option<Vec<i32>>,  // список id подписчтков пользователя
@@ -445,7 +445,18 @@ impl User {
         return "".to_string();
     }
 
-    pub fn create_user(user: Json<NewUserJson>) -> bool {
+    pub fn create_user (
+        user_id:    i32,
+        first_name: String,
+        last_name:  String,
+        types:      i16,
+        is_man:     bool,
+        link:       String,
+        s_avatar:   Option<String>,
+        see_all:    i16,
+        friends:    Option<Vec<i32>>,
+        follows:    Option<Vec<i32>>
+    ) -> i16 {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -482,18 +493,18 @@ impl User {
 
         let new_user_id = user.user_id;
 
-        if user.friends.is_some() {
+        if friends.is_some() {
             use crate::schema::friends::dsl::friends;
 
-            for user_id in user.friends.as_deref().unwrap() {
+            for _user_id in friends.as_deref().unwrap() {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
-                    .filter(schema::friends::target_id.eq(user_id))
+                    .filter(schema::friends::target_id.eq(_user_id))
                     .select(schema::friends::id)
                     .first::<i32>(&_connection).is_err() {
                         let new_form = NewFriend {
                             user_id:   new_user_id,
-                            target_id: *user_id,
+                            target_id: *_user_id,
                         };
                         diesel::insert_into(schema::friends::table)
                             .values(&new_form)
@@ -502,19 +513,19 @@ impl User {
                 }
             }
         }
-        if user.follows.is_some() {
+        if follows.is_some() {
             use crate::schema::follows::dsl::follows;
 
-            for user_id in user.follows.as_deref().unwrap() {
+            for _user_id in follows.as_deref().unwrap() {
                 if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
-                    .filter(schema::follows::target_id.eq(user_id))
+                    .filter(schema::follows::target_id.eq(_user_id))
                     .select(schema::follows::id)
                     .first::<i32>(&_connection)
                     .is_err() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
-                            target_id: *user_id,
+                            target_id: *_user_id,
                         };
                         diesel::insert_into(schema::follows::table)
                             .values(&new_form)
@@ -524,7 +535,7 @@ impl User {
             }
         }
 
-        return true;
+        return 1;
     }
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()

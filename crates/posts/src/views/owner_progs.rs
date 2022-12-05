@@ -36,13 +36,45 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
 static gen_token: &str = "111";
 
 // создаем пользователя сервиса, создателя списков, постов, комментов
-pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<bool>, Error> {
+pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.first_name.is_none() {
+        Err(Error::BadRequest("Field 'first_name' is required!".to_string()))
+    }
+    else if data.last_name.is_none() {
+        Err(Error::BadRequest("Field 'last_name' is required!".to_string()))
+    }
+    else if data.types.is_none() {
+        Err(Error::BadRequest("Field 'types' is required!".to_string()))
+    }
+    else if data.is_man.is_none() {
+        Err(Error::BadRequest("Field 'is_man' is required!".to_string()))
+    }
+    else if data.link.is_none() {
+        Err(Error::BadRequest("Field 'link' is required!".to_string()))
+    }
+    else if data.see_all.is_none() {
+        Err(Error::BadRequest("Field 'see_all' is required!".to_string()))
+    }
     else {
         if data.token.as_deref().unwrap() == gen_token {
-            let _res = block(move || User::create_user(data)).await?;
+            let _res = block(move || User::create_user(
+                user_id:    data.user_id.unwrap(),
+                first_name: data.first_name.as_deref().unwrap().to_string(),
+                last_name:  data.last_name.as_deref().unwrap().to_string(),
+                types:      data.types.unwrap(),
+                is_man:     data.is_man.unwrap(),
+                link:       data.link.as_deref().unwrap().to_string(),
+                s_avatar:   data.s_avatar.clone(),
+                see_all:    data.see_all.unwrap(),
+                friends:    data.friends.clone(),
+                follows:    data.friends.clone(),
+            )).await?;
             Ok(Json(_res))
         }
         else {
@@ -51,13 +83,36 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<bool>, 
     }
 }
 // создаем сообщество сервиса, создателя списков, постов, комментов
-pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Json<bool>, Error> {
+pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
-    else {
+    else if data.community_id.is_none() {
+        Err(Error::BadRequest("Field 'community_id' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.types.is_none() {
+        Err(Error::BadRequest("Field 'types' is required!".to_string()))
+    }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Field 'name' is required!".to_string()))
+    }
+    else if data.link.is_none() {
+        Err(Error::BadRequest("Field 'link' is required!".to_string()))
+    }
+    else { 
         if data.token.as_deref().unwrap() == gen_token {
-            let _res = block(move || Community::create_community(data)).await?;
+            let _res = block(move || Community::create_community (
+                community_id: data.community_id.unwrap(),
+                user_id:      data.user_id.unwrap(),
+                name:         data.name.as_deref().unwrap().to_string(),
+                types:        data.types.unwrap(),
+                link:         data.link.as_deref().unwrap().to_string(),
+                s_avatar:     data.s_avatar.clone(),
+                follows:      data.friends.clone(),
+            )).await?;
             Ok(Json(_res))
         }
         else {
@@ -83,7 +138,7 @@ pub async fn get_attach_post_lists(data: Json<VecIdsParams>) -> Result<Json<Vec<
     }
     else {
         if data.token.as_deref().unwrap() == gen_token {
-            let _res = block(move || PostList::get_lists_for_attach(data.ids.as_deref().unwrap())).await?;
+            let _res = block(move || PostList::get_lists_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
             Ok(Json(_res))
         }
         else {
@@ -104,7 +159,7 @@ pub async fn get_attach_posts(data: Json<VecIdsParams>) -> Result<Json<Vec<Attac
     }
     else {
         if data.token.as_deref().unwrap() == gen_token {
-            let _res = block(move || Post::get_posts_for_attach(data.ids.as_deref().unwrap())).await?;
+            let _res = block(move || Post::get_posts_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
             Ok(Json(_res))
         }
         else {
@@ -124,7 +179,7 @@ pub async fn get_attach_post_comments(data: Json<VecIdsParams>) -> Result<Json<V
     }
     else {
         if data.token.as_deref().unwrap() == gen_token {
-            let _res = block(move || PostComment::get_comments_for_attach(data.ids.as_deref().unwrap())).await?;
+            let _res = block(move || PostComment::get_comments_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
             Ok(Json(_res))
         }
         else {
