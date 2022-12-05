@@ -668,7 +668,7 @@ impl Community {
             .select(schema::communitys::id)
             .first::<i32>(&_connection)
             .is_ok() {
-                return false;
+                return 0;
         }
         let new_community_form = NewCommunity {
             community_id:   community_id,
