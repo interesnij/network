@@ -375,9 +375,9 @@ impl Post {
 
     pub fn search_comments (
         &self,
-        q:              &String,
         user_id:        i32,
         reactions_list: Vec<i32>,
+        q:              &String,
         limit:          Option<i64>,
         offset:         Option<i64>,
     ) -> Vec<CardCommentJson> { 
