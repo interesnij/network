@@ -658,7 +658,7 @@ impl Community {
         types:        i16,
         link:         String, 
         s_avatar:     Option<String>,
-        follows:      Option<Vec<(i32, i16)>>
+        follows_ids:  Option<Vec<(i32, i16)>>
     ) -> i16 {
         use crate::schema::communitys::dsl::communitys;
 
@@ -694,10 +694,10 @@ impl Community {
             .execute(&_connection)
             .expect("Error.");
 
-        if follows.is_some() {
+        if follows_ids.is_some() {
             use crate::schema::communities_memberships::dsl::communities_memberships;
 
-            for (user_id, level) in follows.unwrap() {
+            for (user_id, level) in follows_ids.unwrap() {
                 if communities_memberships
                     .filter(schema::communities_memberships::user_id.eq(user_id))
                     .filter(schema::communities_memberships::community_id.eq(community_id))

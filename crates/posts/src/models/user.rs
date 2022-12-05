@@ -446,16 +446,16 @@ impl User {
     }
 
     pub fn create_user (
-        user_id:    i32,
-        first_name: String,
-        last_name:  String,
-        types:      i16,
-        is_man:     bool,
-        link:       String,
-        s_avatar:   Option<String>,
-        see_all:    i16,
-        friends:    Option<Vec<i32>>,
-        follows:    Option<Vec<i32>>
+        user_id:     i32,
+        first_name:  String,
+        last_name:   String,
+        types:       i16,
+        is_man:      bool,
+        link:        String,
+        s_avatar:    Option<String>,
+        see_all:     i16,
+        friends_ids: Option<Vec<i32>>,
+        follows_ids: Option<Vec<i32>>
     ) -> i16 {
         use crate::schema::users::dsl::users;
 
@@ -493,10 +493,10 @@ impl User {
 
         let new_user_id = user.user_id;
 
-        if friends.is_some() {
+        if friends_ids.is_some() {
             use crate::schema::friends::dsl::friends;
 
-            for _user_id in friends.as_deref().unwrap() {
+            for _user_id in friends_ids.unwrap() {
                 if friends
                     .filter(schema::friends::user_id.eq(new_user_id))
                     .filter(schema::friends::target_id.eq(_user_id))
@@ -513,10 +513,10 @@ impl User {
                 }
             }
         }
-        if follows.is_some() {
+        if follows_ids.is_some() {
             use crate::schema::follows::dsl::follows;
 
-            for _user_id in follows.as_deref().unwrap() {
+            for _user_id in follows_ids.unwrap() {
                 if follows
                     .filter(schema::follows::user_id.eq(new_user_id))
                     .filter(schema::follows::target_id.eq(_user_id))
