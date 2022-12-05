@@ -13,7 +13,6 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
     PgTextExpressionMethods,
-    PgConnection,
 };
 use crate::schema;
 use crate::schema::{
@@ -22,7 +21,6 @@ use crate::schema::{
     community_visible_perms,
 };
 
-use actix_web::web::Json;
 use crate::models::{Post, PostList, SearchAllComments};
 
 /*
