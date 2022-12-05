@@ -73,6 +73,7 @@ pub async fn get_attach_post_comments(data: Json<VecIdsParams>) -> Result<Json<V
 #[derive(Deserialize)]
 pub struct AddTokenData {
     token:        Option<String>,
+    id:           Option<i32>,
     user_id:      Option<i32>,
     community_id: Option<i32>,
     name:         Option<String>,
