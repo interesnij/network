@@ -1546,7 +1546,7 @@ pub async fn search_user_comments_page(req: HttpRequest) -> Result<Json<SearchAl
                 return Err(Error::BadRequest(body));
             }
 
-            let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+            let body = block(move || owner.search_comments(&q, user_id, params.limit, params.offset)).await?;
             Ok(Json(body))
         }
     }
@@ -1560,7 +1560,7 @@ pub async fn search_user_comments_page(req: HttpRequest) -> Result<Json<SearchAl
 
 pub async fn search_community_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
-    if params_some.is_ok() {
+    if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
@@ -1601,7 +1601,7 @@ pub async fn search_community_comments_page(req: HttpRequest) -> Result<Json<Sea
                 return Err(Error::BadRequest(body));
             }
 
-            let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+            let body = block(move || owner.search_comments(&q, user_id, params.limit, params.offset)).await?;
             Ok(Json(body))
         }
     }
