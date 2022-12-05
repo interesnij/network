@@ -5,7 +5,7 @@ use actix_web::{
 };
 use serde::Serialize;
 use crate::models::{
-    User, Community,
+    User, Community, Owner,
     NewUserJson, NewCommunityJson,
     PostList, Post, PostComment,
     TokenDetailJson, TokenJson,
@@ -90,12 +90,8 @@ pub struct AddTokenData {
 
 // manager send!
 pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
-    if err.is_some() {
-        Err(Error::BadRequest(err.unwrap()))
-    } 
-    else if user_id == 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+    if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
     }
     else if data.name.is_none() {
         Err(Error::BadRequest("Field 'name' is required!".to_string()))
@@ -114,7 +110,7 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
     }
     else {
         let _res = block(move || Owner::create (
-            user_id,
+            user_id.unwrap(),
             data.name.as_deref().unwrap().to_string(),
             data.description.clone(),
             data.types.unwrap(),
@@ -128,12 +124,8 @@ pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> 
 
 // manager send!
 pub async fn edit_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
-    if err.is_some() {
-        Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id == 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+    if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
     }
     else if data.id.is_none() {
         Err(Error::BadRequest("Field 'id' is required!".to_string()))
@@ -162,7 +154,7 @@ pub async fn edit_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id {
+        if owner.user_id == user_id.unwrap() {
                 let _res = block(move || owner.edit (
                     data.name.as_deref().unwrap().to_string(),
                     data.description.clone(),
@@ -180,12 +172,8 @@ pub async fn edit_token(data: Json<AddTokenData>) -> Result<Json<i16>, Error> {
 
 // manager send!
 pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
-    if err.is_some() {
-        Err(Error::BadRequest(err.unwrap()))
-    }
-    else if user_id == 0 {
-        Err(Error::BadRequest("Permission Denied".to_string()))
+    if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
     }
     else if data.id.is_none() {
         Err(Error::BadRequest("Field 'id' is required!".to_string()))
@@ -202,7 +190,7 @@ pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id {
+        if owner.user_id == user_id.unwrap() {
             let _res = block(move || owner.delete ()).await?;
             Ok(Json(_res))
         }
