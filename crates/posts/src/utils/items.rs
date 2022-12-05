@@ -239,12 +239,6 @@ pub struct ObjectData {
     pub id:      Option<i32>,
 }
 
-#[derive(Deserialize)]
-pub struct SmallData {
-    pub token:   Option<String>,
-    pub user_id: Option<i32>,
-}
-
 #[derive(Serialize)]
 // это для пагинации
 pub struct PostListsJson {
