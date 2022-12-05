@@ -84,6 +84,7 @@ pub struct EditComment {
     pub attach:  Option<String>,
 }
 
+#[derive(Serialize)]
 pub struct SearchAllComments {
     pub comments: Vec<CardCommentJson>,
     pub offset:   i64,

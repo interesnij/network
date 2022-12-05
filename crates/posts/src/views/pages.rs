@@ -1803,7 +1803,7 @@ pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
                             HttpResponse::Ok().body(body)
                         }
                         else {
-                            let body = serde_json::to_string(&item.search_items (
+                            let body = serde_json::to_string(&item.search_comments (
                                 user_id,
                                 list.get_reactions_list(),
                                 &q,
@@ -1830,7 +1830,7 @@ pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
                         HttpResponse::Ok().body(body)
                     }
                     else {
-                        let body = serde_json::to_string(&item.search_items (
+                        let body = serde_json::to_string(&item.search_comments (
                             user_id,
                             list.get_reactions_list(),
                             &q,
@@ -1866,7 +1866,7 @@ pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
                             HttpResponse::Ok().body(body)
                         }
                         else {
-                            let body = serde_json::to_string(&item.search_items (
+                            let body = serde_json::to_string(&item.search_comments (
                                 user_id,
                                 list.get_reactions_list(),
                                 &q,
@@ -1893,7 +1893,7 @@ pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
                         HttpResponse::Ok().body(body)
                     }
                     else {
-                        let body = serde_json::to_string(&item.search_items (
+                        let body = serde_json::to_string(&item.search_comments (
                             user_id,
                             list.get_reactions_list(),
                             &q,
