@@ -525,7 +525,7 @@ impl User {
                     .is_err() {
                         let new_form = NewFollow {
                             user_id:   new_user_id,
-                            target_id: *_user_id,
+                            target_id: _user_id,
                         };
                         diesel::insert_into(schema::follows::table)
                             .values(&new_form)
