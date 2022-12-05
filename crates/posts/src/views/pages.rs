@@ -25,7 +25,8 @@ use crate::utils::{
 };
 use crate::models::{
     PostList, Post, PostComment,
-    User, Community, SearchAllPosts,
+    User, Community, 
+    SearchAllPosts, SearchAllComments,
 };
 use serde::Deserialize;
 use crate::errors::Error;
@@ -48,15 +49,15 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/search_community_lists/", web::get().to(search_community_lists_page));
 
     config.route("/search_posts/", web::get().to(search_posts_page));
-    config.route("/search_user_posts/", web::get().to(search_user_lists_page));
-    config.route("/search_community_posts/", web::get().to(search_community_lists_page));
+    config.route("/search_user_posts/", web::get().to(search_user_posts_page));
+    config.route("/search_community_posts/", web::get().to(search_community_posts_page));
     config.route("/search_list_posts/", web::get().to(search_list_posts_page));
 
-    //config.route("/search_comments/", web::get().to(search_comments_page));
-    //config.route("/search_user_comments/", web::get().to(search_user_comments_page));
-    //config.route("/search_community_comments/", web::get().to(search_community_comments_page));
-    //config.route("/search_list_comments/", web::get().to(search_list_comments_page));
-    //config.route("/search_post_comments/", web::get().to(search_post_comments_page));
+    config.route("/search_comments/", web::get().to(search_comments_page));
+    config.route("/search_user_comments/", web::get().to(search_user_comments_page));
+    config.route("/search_community_comments/", web::get().to(search_community_comments_page));
+    config.route("/search_list_comments/", web::get().to(search_list_comments_page));
+    config.route("/search_post_comments/", web::get().to(search_post_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -91,7 +92,7 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
         }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'list_id' is required!".to_string(),
+                error: "Field 'list_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -263,7 +264,7 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
         }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'list_id' is required!".to_string(),
+                error: "Field 'list_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -326,7 +327,7 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
         }
         else if params.list_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'list_id' is required!".to_string(),
+                error: "Field 'list_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -390,7 +391,7 @@ pub async fn load_post_page(req: HttpRequest) -> impl Responder {
         }
         else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "Field 'item_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -529,7 +530,6 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
-            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -537,7 +537,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
         }
         else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "Field 'item_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -701,7 +701,6 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
-            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -715,7 +714,7 @@ pub async fn edit_post_page(req: HttpRequest) -> impl Responder {
         }
         else if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "Field 'item_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -772,7 +771,6 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
-            // если проверка токена не удалась или запрос анонимный...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -787,13 +785,13 @@ pub async fn post_reactions_page(req: HttpRequest) -> impl Responder {
 
         if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "Field 'item_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
         else if params.reaction_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'reaction_id' is required!".to_string(),
+                error: "Field 'reaction_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -870,7 +868,6 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
         if err.is_some() {
-            // если проверка токена не удалась или запрос анонимный...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -891,13 +888,13 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
 
         if params.item_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'item_id' is required!".to_string(),
+                error: "Field 'item_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
         else if params.reaction_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'reaction_id' is required!".to_string(),
+                error: "Field 'reaction_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -985,7 +982,7 @@ pub async fn search_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPostList
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -993,7 +990,7 @@ pub async fn search_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPostList
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "Field 'q' is required!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
@@ -1178,7 +1175,7 @@ pub async fn search_posts_page(req: HttpRequest) -> Result<Json<SearchAllPosts>,
         }
         else if params.q.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'q' not found!".to_string(),
+                error: "Field 'q' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
@@ -1244,32 +1241,8 @@ pub async fn search_user_posts_page(req: HttpRequest) -> Result<Json<Vec<CardPos
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if user_id > 0 {
-                let _tuple = get_user_permission(&owner, user_id);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
-                }
-                else {
-                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
-                    Ok(Json(body))
-                }
-            }
-            else {
-                let _tuple = get_anon_user_permission(&owner);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
-                }
-                else {
-                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
-                    Ok(Json(body)) 
-                }
-            }
+            let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+            Ok(Json(body))
         }
     }
     else {
@@ -1322,32 +1295,8 @@ pub async fn search_community_posts_page(req: HttpRequest) -> Result<Json<Vec<Ca
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if user_id > 0 {
-                let _tuple = get_community_permission(&owner, user_id);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
-                }
-                else {
-                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
-                    Ok(Json(body))
-                }
-            }
-            else {
-                let _tuple = get_anon_community_permission(&owner);
-                if _tuple.0 == false {
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: _tuple.1.to_string(),
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
-                }
-                else {
-                    let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
-                    Ok(Json(body))
-                }
-            }
+            let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+             Ok(Json(body))
         }
     }
     else {
@@ -1372,7 +1321,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
         }
         else if params.target_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Parametr 'target_id' is required!".to_string(),
+                error: "Field 'target_id' is required!".to_string(),
             }).unwrap();
             HttpResponse::Ok().body(body)
         }
@@ -1423,7 +1372,7 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                         }
                         else {
                             let body = serde_json::to_string(&item.search_items (
-                                user_id,
+                                user_id, 
                                 &q,
                                 params.limit,
                                 params.offset
@@ -1493,6 +1442,460 @@ pub async fn search_list_posts_page(req: HttpRequest) -> impl Responder {
                     else {
                         let body = serde_json::to_string(&item.search_items (
                             user_id,
+                            &q,
+                            params.limit,
+                            params.offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+
+pub async fn search_comments_page(req: HttpRequest) -> Result<SearchAllComments, Error> {
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let _res = block(move || PostComment::search_comments (
+                &q, 
+                user_id, 
+                params.limit, 
+                params.offset
+            )).await?;
+            Ok(Json(_res))  
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_user_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            let owner: User;
+            let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "owner not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+
+            let body = block(move || owner.search_posts(&q, user_id, params.limit, params.offset)).await?;
+            Ok(Json(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+pub async fn search_list_comments_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let item: PostList;
+            let item_res = get_post_list(params.target_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "post list not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                HttpResponse::Ok().body(body)
+            }
+
+            else if user_id > 0 {
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
+                    if community_id > 0 && c_id != community_id {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied.".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let community = item.get_community().expect("E.");
+                        let _tuple = get_community_permission(&community, user_id);
+                        if _tuple.0 == false {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: _tuple.1.to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else if !community.is_user_see_comment(user_id) || !item.is_user_see_comment(user_id) {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: "Permission Denied".to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else {
+                            let body = serde_json::to_string(&item.search_items (
+                                user_id, 
+                                &q,
+                                params.limit,
+                                params.offset
+                            )).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_user_permission(&owner, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else if !owner.is_user_see_comment(user_id) || !item.is_user_see_comment(user_id) {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.search_items (
+                            user_id,
+                            &q,
+                            params.limit,
+                            params.offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+            else {
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
+                    if community_id > 0 && c_id != community_id {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied.".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let community = item.get_community().expect("E.");
+                        let _tuple = get_anon_community_permission(&community);
+                        if _tuple.0 == false {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: _tuple.1.to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else if !community.is_anon_user_see_comment() || !item.is_anon_user_see_comment() {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: "Permission Denied".to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else {
+                            let body = serde_json::to_string(&item.search_items (
+                                user_id,
+                                &q,
+                                params.limit,
+                                params.offset
+                            )).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_anon_user_permission(&owner);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else if !owner.is_anon_user_see_comment() || !item.is_anon_user_see_comment() {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.search_items (
+                            user_id,
+                            &q,
+                            params.limit,
+                            params.offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn search_post_comments_page(req: HttpRequest) -> impl Responder {
+    let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id);
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else if params.q.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'q' is required!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
+        else {
+            let item: PostList;
+            let item_res = get_post_list(params.target_id.unwrap());
+            if item_res.is_ok() {
+                item = item_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "post list not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+            let list = item.get_list().expect("E");
+            let q = params.q.clone().unwrap();
+            if q.is_empty() {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Field 'q' is empty!".to_string(),
+                }).unwrap();
+                HttpResponse::Ok().body(body)
+            }
+
+            else if user_id > 0 {
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
+                    if community_id > 0 && c_id != community_id {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied.".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let community = item.get_community().expect("E.");
+                        let _tuple = get_community_permission(&community, user_id);
+                        if _tuple.0 == false {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: _tuple.1.to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else if !community.is_user_see_comment(user_id) || !list.is_user_see_comment(user_id) {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: "Permission Denied".to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else {
+                            let body = serde_json::to_string(&item.search_items (
+                                user_id,
+                                list.get_reactions_list(),
+                                &q,
+                                params.limit,
+                                params.offset
+                            )).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_user_permission(&owner, user_id);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else if !owner.is_user_see_comment(user_id) || !list.is_user_see_comment(user_id) {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.search_items (
+                            user_id,
+                            list.get_reactions_list(),
+                            &q,
+                            params.limit,
+                            params.offset
+                        )).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                }
+            }
+            else {
+                if item.community_id.is_some() {
+                    let c_id = item.community_id.unwrap();
+                    if community_id > 0 && c_id != community_id {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied.".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let community = item.get_community().expect("E.");
+                        let _tuple = get_anon_community_permission(&community);
+                        if _tuple.0 == false {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: _tuple.1.to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else if !community.is_anon_user_see_comment() || !list.is_anon_user_see_comment() {
+                            let body = serde_json::to_string(&ErrorParams {
+                                error: "Permission Denied".to_string(),
+                            }).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                        else {
+                            let body = serde_json::to_string(&item.search_items (
+                                user_id,
+                                list.get_reactions_list(),
+                                &q,
+                                params.limit,
+                                params.offset
+                            )).unwrap();
+                            HttpResponse::Ok().body(body)
+                        }
+                    }
+                }
+                else {
+                    let owner = item.get_creator().expect("E.");
+                    let _tuple = get_anon_user_permission(&owner);
+                    if _tuple.0 == false {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: _tuple.1.to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else if !owner.is_anon_user_see_comment() || !list.is_anon_user_see_comment() {
+                        let body = serde_json::to_string(&ErrorParams {
+                            error: "Permission Denied".to_string(),
+                        }).unwrap();
+                        HttpResponse::Ok().body(body)
+                    }
+                    else {
+                        let body = serde_json::to_string(&item.search_items (
+                            user_id,
+                            list.get_reactions_list(),
                             &q,
                             params.limit,
                             params.offset

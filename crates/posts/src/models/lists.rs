@@ -716,47 +716,39 @@ impl PostList {
         limit:   Option<i64>,
         offset:  Option<i64>,
     ) -> Vec<CardCommentJson> {
+        use crate::schema::post_comments::dsl::post_comments;
+        use crate::models::PostComment;
+
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        if (user_id > 0 && self.is_user_see_el(user_id))
-            ||
-            (user_id == 0 && self.is_anon_user_see_el())
-            {
-            use crate::schema::post_comments::dsl::post_comments;
-            use crate::models::PostComment;
+        let _connection = establish_connection();
+        let reactions_list = self.get_reactions_list();
+        let mut comments_json = Vec::new();
+        let items = post_comments
+            .filter(schema::post_comments::post_id.eq_any(self.get_posts_ids()))
+            .filter(schema::post_comments::content.ilike(&q))
+            .filter(schema::post_comments::types.lt(5))
+            .limit(_limit)
+            .offset(_offset)
+            .order(schema::post_comments::created.desc())
+            .load::<PostComment>(&_connection)
+            .expect("E.");
 
-            let _connection = establish_connection();
-            let reactions_list = self.get_reactions_list();
-            let mut comments_json = Vec::new();
-            let items = post_comments
-                .filter(schema::post_comments::post_id.eq_any(self.get_posts_ids()))
-                .filter(schema::post_comments::content.ilike(&q))
-                .filter(schema::post_comments::types.lt(5))
-                .limit(_limit)
-                .offset(_offset)
-                .order(schema::post_comments::created.desc())
-                .load::<PostComment>(&_connection)
-                .expect("E.");
-
-            for c in items.iter() {
-                let creator = c.get_owner_meta().expect("E");
-                comments_json.push (CardCommentJson {
-                    content:        c.content.clone(),
-                    owner_name:     creator.name.clone(),
-                    owner_link:     creator.link.clone(),
-                    owner_image:    creator.image.clone(),
-                    created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
-                    reactions:      c.reactions,
-                    types:          c.get_code(),       // например cpo1
-                    replies:        c.replies,          // кол-во ответов
-                    reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
-                    attachments:    None,
-                });
-            }
-            return comments_json;
+        for c in items.iter() {
+            let creator = c.get_owner_meta().expect("E");
+            comments_json.push (CardCommentJson {
+                content:        c.content.clone(),
+                owner_name:     creator.name.clone(),
+                owner_link:     creator.link.clone(),
+                owner_image:    creator.image.clone(),
+                created:        c.created.format("%d-%m-%Y в %H:%M").to_string(),
+                reactions:      c.reactions,
+                types:          c.get_code(),       // например cpo1
+                replies:        c.replies,          // кол-во ответов
+                reactions_list: c.get_reactions_json(user_id, reactions_list.clone()),
+                attachments:    None,
+            });
         }
-        else {
-            return Vec::new();
-        }
+        return comments_json;
     }
 
     pub fn get_paginate_items (

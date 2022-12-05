@@ -64,7 +64,7 @@ pub struct OwnerService {
     pub types: i16,
     pub name:  String,
 }
-impl OwnerService {
+impl OwnerService { 
     pub fn get_all() -> Vec<OwnerService> {
         use crate::schema::owner_services::dsl::owner_services;
 
