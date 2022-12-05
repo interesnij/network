@@ -46,6 +46,9 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, E
     else if data.first_name.is_none() {
         Err(Error::BadRequest("Field 'first_name' is required!".to_string()))
     }
+    else if data.is_man.is_none() {
+        Err(Error::BadRequest("Field 'is_man' is required!".to_string()))
+    }
     else if data.last_name.is_none() {
         Err(Error::BadRequest("Field 'last_name' is required!".to_string()))
     }
@@ -59,13 +62,20 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, E
         Err(Error::BadRequest("Field 'see_all' is required!".to_string()))
     }
     else {
+        let is_man: bool;
+        if data.is_man.unwrap() != 1 {
+            is_man = false;
+        }
+        else {
+            is_man = true;
+        }
         if data.token.as_deref().unwrap() == gen_token {
             let _res = block(move || User::create_user(
                 data.user_id.unwrap(),
                 data.first_name.as_deref().unwrap().to_string(),
                 data.last_name.as_deref().unwrap().to_string(),
                 data.types.unwrap(),
-                data.is_man.unwrap(),
+                is_man,
                 data.link.as_deref().unwrap().to_string(),
                 data.s_avatar.clone(),
                 data.see_all.unwrap(),

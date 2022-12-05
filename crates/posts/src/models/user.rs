@@ -135,7 +135,7 @@ pub struct NewUserJson {
     pub last_name:  Option<String>,
     pub types:      Option<i16>,
     pub see_all:    Option<i16>,
-    pub is_man:     bool,
+    pub is_man:     Option<i16>,
     pub link:       Option<String>,
     pub s_avatar:   Option<String>,
     pub friends:    Option<Vec<i32>>,  // список id друзей пользователя
@@ -468,15 +468,15 @@ impl User {
                 return 0;
         }
         let new_form = NewUser {
-            user_id:        user.user_id,
-            first_name:     user.first_name.clone(),
-            last_name:      user.last_name.clone(),
-            types:          user.types,
-            is_man:         user.is_man,
-            link:           user.link.clone(),
-            s_avatar:       user.s_avatar.clone(),
+            user_id:        user_id,
+            first_name:     first_name.clone(),
+            last_name:      last_name.clone(),
+            types:          types,
+            is_man:         is_man,
+            link:           link.clone(),
+            s_avatar:       s_avatar.clone(),
             last_activity:  chrono::Local::now().naive_utc(),
-            see_all:        user.see_all,
+            see_all:        see_all,
             see_el:         1,
             see_comment:    1,
             create_el:      13,
@@ -491,19 +491,17 @@ impl User {
             .execute(&_connection)
             .expect("Error.");
 
-        let new_user_id = user.user_id;
-
         if friends_ids.is_some() {
             use crate::schema::friends::dsl::friends;
 
             for _user_id in friends_ids.unwrap() {
                 if friends
-                    .filter(schema::friends::user_id.eq(new_user_id))
+                    .filter(schema::friends::user_id.eq(user_id))
                     .filter(schema::friends::target_id.eq(_user_id))
                     .select(schema::friends::id)
                     .first::<i32>(&_connection).is_err() {
                         let new_form = NewFriend {
-                            user_id:   new_user_id,
+                            user_id:   user_id,
                             target_id: _user_id,
                         };
                         diesel::insert_into(schema::friends::table)
@@ -518,13 +516,13 @@ impl User {
 
             for _user_id in follows_ids.unwrap() {
                 if follows
-                    .filter(schema::follows::user_id.eq(new_user_id))
+                    .filter(schema::follows::user_id.eq(user_id))
                     .filter(schema::follows::target_id.eq(_user_id))
                     .select(schema::follows::id)
                     .first::<i32>(&_connection)
                     .is_err() {
                         let new_form = NewFollow {
-                            user_id:   new_user_id,
+                            user_id:   user_id,
                             target_id: _user_id,
                         };
                         diesel::insert_into(schema::follows::table)
