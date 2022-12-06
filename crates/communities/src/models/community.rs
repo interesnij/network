@@ -246,6 +246,144 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn edit_private (
+        &self, 
+        field:     &str, 
+        value:     i16, 
+        users_ids: Option<Vec<i32>>
+    ) -> i16 {
+        let is_ie_mode = vec![6,7].iter().any(|&i| i==value);
+        if value < 1 || value > 7 || is_ie_mode && users_ids.is_none() {
+            return 0;
+        }
+
+        let _connection = establish_connection();
+        let private = self.get_private_model().expect("E.");
+        let _update_field = match field {
+            "see_member" => diesel::update(&private)
+                .set(schema::community_privates::see_member.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_info" => diesel::update(&private)
+                .set(schema::community_privates::see_info.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_settings" => diesel::update(&private)
+                .set(schema::community_privates::see_settings.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_log" => diesel::update(&private)
+                .set(schema::community_privates::see_log.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_stat" => diesel::update(&private)
+                .set(schema::community_privates::see_stat.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+        };
+
+        // нужно удалить из списка тех, кто был туда внесен
+        // с противоположными правами.
+        if is_ie_mode && is_ie_mode {
+            use crate::schema::user_visible_perms::dsl::user_visible_perms;
+
+            match value {
+                1 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(11))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                2 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(12))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                3 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(13))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                4 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(14))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                5 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(15))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                11 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(1))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                12 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(2))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                13 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(3))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                14 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(4))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                15 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(5))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                _ => 0,
+            };
+        }
+
+        if users_ids.is_some() {
+            // здесь копировать включенных/исключенных не надо, ведь они
+            // могут набираться из подписчиков. Можно их получать оттуда,
+            // из таблицы users
+            use crate::models::NewCommunityVisiblePerm;
+            for user_id in users_ids.unwrap().iter() {
+                let _new_perm = NewCommunityVisiblePerm {
+                    community_id: self.id,
+                    target_id:    *user_id,
+                    types:        value,
+                };
+                diesel::insert_into(schema::community_visible_perms::table)
+                    .values(&_new_perm)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
+        }
+        
+        return 1;
+    }
+
     pub fn suspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let _case = match self.types {
@@ -1674,107 +1812,6 @@ impl Community {
             ))
             .load::<CardUserJson>(&_connection)?;
         return Ok(_users);
-    }
-
-    pub fn set_members_visible_perms(&self, users: String, types: i16) -> bool {
-        use crate::schema::community_visible_perms::dsl::community_visible_perms;
-
-        let _connection = establish_connection();
-        let mut users_ids = Vec::new();
-        let v: Vec<&str> = users.split(", ").collect();
-        for item in v.iter() {
-            if !item.is_empty() {
-                let pk: i32 = item.parse().unwrap();
-                users_ids.push(pk);
-            }
-        }
-
-        match types {
-            1 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(11))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            11 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(1))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            2 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(12))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            12 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(2))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            3 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(13))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            13 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(3))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            4 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(14))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            14 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(4))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            5 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(15))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            15 => diesel::delete (
-                    community_visible_perms
-                        .filter(schema::community_visible_perms::community_id.eq(self.id))
-                        .filter(schema::community_visible_perms::types.eq(5))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            _ => 0,
-        };
-
-        for user_id in users_ids.iter() {
-            let _new_perm = NewCommunityVisiblePerm {
-                community_id: self.id,
-                target_id:    *user_id,
-                types:        types,
-            };
-            diesel::insert_into(schema::community_visible_perms::table)
-                .values(&_new_perm)
-                .get_result::<CommunityVisiblePerm>(&_connection)
-                .expect("Error.");
-        }
-        return true;
     }
 
     pub fn get_token_detail(&self, token_id: i32) -> TokenDetailJson {

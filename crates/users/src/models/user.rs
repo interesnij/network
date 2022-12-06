@@ -131,86 +131,80 @@ impl User {
         value:     i16, 
         users_ids: Option<Vec<i32>>
     ) -> i16 {
-        let users_vec = vec![3,4,5,6,9,10,11,12];
-        if field != "see_all" && field != "see_all" && field != "see_friend" {
+        let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
+        if value < 1 || value > 13 || is_ie_mode && users_ids.is_none() {
             return 0;
         }
-        else if value < 1 || value > 13 {
-            return 0;
-        }
-        else if users_vec.iter().any(|&i| i==value) && users_ids.is_none() {
-            return 0;
-        }
+
         let _connection = establish_connection();
         let private = self.get_private_model().expect("E.");
-        if field == "see_all" {
-            diesel::update(&private)
-            .set(schema::user_privates::see_all.eq(value))
-            .execute(&_connection)
-            .expect("E.");
-        }
-        else if field == "see_info" {
-            diesel::update(&private)
-            .set(schema::user_privates::see_info.eq(value))
-            .execute(&_connection)
-            .expect("E.");
-        }
-        else if field == "see_friend" {
-            diesel::update(&private)
-            .set(schema::user_privates::see_friend.eq(value))
-            .execute(&_connection)
-            .expect("E.");
-        }
+        let _update_field = match field {
+            "see_all" => diesel::update(&private)
+                .set(schema::user_privates::see_all.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_info" => diesel::update(&private)
+                .set(schema::user_privates::see_info.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_friend" => diesel::update(&private)
+                .set(schema::user_privates::see_friend.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+        };
 
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
+        if is_ie_mode && is_ie_mode {
+            use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
-        match value {
-        1 => diesel::delete (
-                user_visible_perms
-                    .filter(schema::user_visible_perms::user_id.eq(self.id))
-                    .filter(schema::user_visible_perms::types.eq(11))
-            )
-            .execute(&_connection)
-            .expect("E"),
-        2 => diesel::delete (
-                user_visible_perms
-                    .filter(schema::user_visible_perms::user_id.eq(self.id))
-                    .filter(schema::user_visible_perms::types.eq(12))
-            )
-            .execute(&_connection)
-            .expect("E"),
-        3 => diesel::delete (
-                user_visible_perms
-                    .filter(schema::user_visible_perms::user_id.eq(self.id))
-                    .filter(schema::user_visible_perms::types.eq(13))
-            )
-            .execute(&_connection)
-            .expect("E"),
-        11 => diesel::delete (
-                user_visible_perms
-                    .filter(schema::user_visible_perms::user_id.eq(self.id))
-                    .filter(schema::user_visible_perms::types.eq(1))
-            )
-            .execute(&_connection)
-            .expect("E"),
-        12 => diesel::delete (
-                user_visible_perms
-                    .filter(schema::user_visible_perms::user_id.eq(self.id))
-                    .filter(schema::user_visible_perms::types.eq(2))
-            )
-            .execute(&_connection)
-            .expect("E"),
-        13 => diesel::delete (
-                user_visible_perms
-                    .filter(schema::user_visible_perms::user_id.eq(self.id))
-                    .filter(schema::user_visible_perms::types.eq(3))
-            )
-            .execute(&_connection)
-            .expect("E"),
-        _ => 0,
-        };
+            match value {
+                1 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(11))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                2 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(12))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                3 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(13))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                11 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(1))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                12 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(2))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                13 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.id))
+                        .filter(schema::user_visible_perms::types.eq(3))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                _ => 0,
+            };
+        }
 
         if users_ids.is_some() {
             use crate::models::NewUserVisiblePerm;
@@ -2058,80 +2052,6 @@ impl User {
             },
             Err(_) => vec![false, false, false],
         }
-    }
-    pub fn set_user_visible_perms(&self, users: String, types: i16) -> i16 {
-        use crate::models::NewUserVisiblePerm;
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let _connection = establish_connection();
-        let mut users_ids = Vec::new();
-        let v: Vec<&str> = users.split(", ").collect();
-        for item in v.iter() {
-            if !item.is_empty() {
-                let pk: i32 = item.parse().unwrap();
-                users_ids.push(pk);
-            }
-        }
-
-        // нужно удалить из списка тех, кто был туда внесен
-        // с противоположными правами.
-        match types {
-            1 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.id))
-                        .filter(schema::user_visible_perms::types.eq(11))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            2 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.id))
-                        .filter(schema::user_visible_perms::types.eq(12))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            3 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.id))
-                        .filter(schema::user_visible_perms::types.eq(13))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            11 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.id))
-                        .filter(schema::user_visible_perms::types.eq(1))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            12 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.id))
-                        .filter(schema::user_visible_perms::types.eq(2))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            13 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.id))
-                        .filter(schema::user_visible_perms::types.eq(3))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            _ => 0,
-        };
-        for user_id in users_ids.iter() {
-            let _new_perm = NewUserVisiblePerm {
-                user_id:   self.id,
-                target_id: *user_id,
-                types:     types,
-            };
-            diesel::insert_into(schema::user_visible_perms::table)
-                .values(&_new_perm)
-                .execute(&_connection)
-                .expect("Error.");
-        }
-        return 1;
     }
     pub fn get_image_or_null(&self) -> Option<String> {
         if self.s_avatar.is_some() {

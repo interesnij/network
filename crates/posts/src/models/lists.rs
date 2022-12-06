@@ -147,6 +147,146 @@ pub struct EditPostList {
 }
 
 impl PostList {
+    pub fn edit_private (
+        &self, 
+        field:  &str, 
+        value:  i16, 
+        _users: Option<Vec<AttachOwner>>
+    ) -> i16 {
+        let is_ie_mode = vec![3,4,5,6,9,10,11,12,18,19].iter().any(|&i| i==value);
+        if value < 1 || value > 19 || (is_ie_mode && _users.is_none()) {
+            return 0;
+        }
+
+        let _connection = establish_connection();
+        let _update_field = match field {
+            "see_el" => diesel::update(self)
+                .set(schema::post_lists::see_el.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_comment" => diesel::update(self)
+                .set(schema::post_lists::see_comment.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "create_el" => diesel::update(self)
+                .set(schema::post_lists::create_el.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "create_comment" => diesel::update(self)
+                .set(schema::post_lists::create_comment.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "copy_el" => diesel::update(self)
+                .set(schema::post_lists::copy_el.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+            };
+
+        if is_ie_mode {
+            // нужно удалить из списка тех, кто был туда внесен
+            // с противоположными правами.
+            use crate::schema::post_list_perms::dsl::post_list_perms;
+            match value { 
+                1 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(11))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                2 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(12))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                3 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(13))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                4 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(14))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                5 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(15))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                11 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(1))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                12 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(2))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                13 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(3))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                14 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(4))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                15 => diesel::delete (
+                    post_list_perms
+                        .filter(schema::post_list_perms::post_list_id.eq(self.id))
+                        .filter(schema::post_list_perms::types.eq(5))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                _ => 0,
+            };
+        };
+        if _users.is_some() && is_ie_mode {
+            /*
+            это сервис не пользователей, потому мы добавим всех 
+            включенных / исключенных пользователей для приватности в таблицу 
+            пользователей item_users, чтобы выводить сведения при изменении приватности
+            и в других подобных случаях.
+            */
+            use crate::models::{NewPostListPerm, ItemUser};
+            for _user in _users.unwrap().iter() {
+                let _new_perm = NewPostListPerm {
+                    user_id:      _user.id,
+                    post_list_id: self.id,
+                    types:        value,
+                };
+                diesel::insert_into(schema::post_list_perms::table)
+                    .values(&_new_perm)
+                    .execute(&_connection)
+                    .expect("Error.");
+                
+                ItemUser::check_or_create(_user);
+            }
+        }
+        
+        return 1;
+    }
+
     pub fn get_creator(&self) -> Result<User, Error> {
         use crate::schema::users::dsl::users;
 
