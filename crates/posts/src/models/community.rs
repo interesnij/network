@@ -160,7 +160,7 @@ impl Community {
         _users: Option<Vec<AttachOwner>>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
-        if value < 1 || value > 13 || (is_ie_mode && users_ids.is_none()) {
+        if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
             return 0;
         }
 
@@ -285,7 +285,7 @@ impl Community {
                 _ => 0,
             };
         };
-        if users_ids.is_some() && is_ie_mode {
+        if _users.is_some() && is_ie_mode {
             /*
             это сервис не пользователей, потому мы добавим всех 
             включенных / исключенных пользователей для приватности в таблицу 
@@ -296,7 +296,7 @@ impl Community {
             for _user in _users.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.community_id,
-                    target_id:    user.user_id,
+                    target_id:    user.id,
                     types:        value,
                 };
                 diesel::insert_into(schema::community_visible_perms::table)
