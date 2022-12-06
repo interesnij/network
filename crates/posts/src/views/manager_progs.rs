@@ -13,6 +13,7 @@ use crate::utils::{
     get_community_permission,
     get_user_permission,
     get_user_owner_data,
+    get_owner_data,
     ErrorParams,
 };
 use crate::models::ModeratedLog;
@@ -1107,7 +1108,7 @@ pub async fn edit_community_perm(data: Json<CPermParams>) -> Result<Json<i16>, E
         
         if community.is_user_admin(user_id) {
             let _res = block (
-                move || community.update_perm(user_id, types)
+                move || community.update_perm(user_id, data.types.unwrap())
             ).await?;
             Ok(Json(_res))
         }
