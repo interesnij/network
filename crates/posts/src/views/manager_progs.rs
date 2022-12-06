@@ -1056,8 +1056,8 @@ pub async fn edit_user_perm(data: Json<PermParams>) -> Result<Json<i16>, Error> 
         };
         if check {
             let _res = block (
-            move || target_user.change_perm(&self, types: i16) -> i16 {
-                (types)).await?;
+                move || target_user.change_perm(types)
+            ).await?;
             Ok(Json(_res))
         }
         else {
