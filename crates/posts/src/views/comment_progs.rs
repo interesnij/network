@@ -27,10 +27,10 @@ pub fn comment_urls(config: &mut web::ServiceConfig) {
 
 
 pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
-    }
+    } 
     else if user_id < 1 && community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
@@ -94,7 +94,7 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
 }
 
 pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -138,7 +138,7 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
 }
 
 pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -177,7 +177,7 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
 }
 
 pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -217,7 +217,7 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
 
 
 pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id);
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
