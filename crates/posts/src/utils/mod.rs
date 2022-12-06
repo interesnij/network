@@ -180,8 +180,9 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
 }
 
 pub fn get_owner_data (
-    token: Option<String>,
-    user_id: Option<i32>
+    token:         Option<String>,
+    user_id:       Option<i32>,
+    service_types: i16
 ) -> (Option<String>, i32, i32) {
     // проверка токена на допуск к нейтральным объектам
     // (например, для загрузки списка в окне)
@@ -196,7 +197,10 @@ pub fn get_owner_data (
             .first::<Owner>(&_connection);
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
-            if owner.types == 1 {
+            if service_types < 1 || !owner.is_service_types_ok(service_types) {
+                return (Some("This role is not allowed in this service!".to_string()), 0);
+            }
+            else if owner.types == 1 {
                 // токен приложения, которое работает как наше
                 if user_id.is_some() {
                     // параметр id текущего пользователя
@@ -237,7 +241,8 @@ pub fn get_owner_data (
 
 pub fn get_user_owner_data (
     token: Option<String>,
-    user_id: Option<i32>
+    user_id: Option<i32>,
+    service_types: i16,
 ) -> (Option<String>, i32) {
     // проверка токена на допуск к объектам пользователя
     // нам нужно узнать по токену тип владельца.
@@ -250,7 +255,10 @@ pub fn get_user_owner_data (
             .first::<Owner>(&_connection);
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
-            if owner.types == 1 {
+            if service_types < 1 || !owner.is_service_types_ok(service_types) {
+                return (Some("This role is not allowed in this service!".to_string()), 0);
+            }
+            else if owner.types == 1 {
                 if user_id.is_some() {
                     let _id = user_id.unwrap();
                     let _user = get_user(_id);
@@ -282,8 +290,9 @@ pub fn get_user_owner_data (
 }
 
 pub fn get_community_owner_id (
-    token: Option<String>,
-    community_id: Option<i32>
+    token:         Option<String>,
+    community_id:  Option<i32>,
+    service_types: i16,
 ) -> (Option<String>, i32) {
     // проверка токена на допуск к объектам сообщества
     // нам нужно узнать по токену тип владельца.
@@ -296,7 +305,10 @@ pub fn get_community_owner_id (
             .first::<Owner>(&_connection);
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
-            if owner.types == 1 {
+            if service_types < 1 || !owner.is_service_types_ok(service_types) {
+                return (Some("This role is not allowed in this service!".to_string()), 0);
+            }
+            else if owner.types == 1 {
                 if community_id.is_some() {
                     let _id = community_id.unwrap();
                     let _community = get_community(_id);

@@ -35,7 +35,7 @@ use crate::models::{Post, PostList, SearchAllComments,};
 11 MODERATOR
 12 HIGH_MODERATOR
 13 TEAMLEAD_MODERATOR
-14 TRAINEE_MANAGER
+14 TRAINEE_MANAGER 
 15 MANAGER
 16 HIGH_MANAGER
 17 TEAMLEAD_MANAGER
@@ -1139,11 +1139,8 @@ impl User {
         }
     }
 
-    pub fn change_perm_user(&self, types: i16) -> i16 {
+    pub fn change_perm(&self, types: i16) -> i16 {
         let _connection = establish_connection();
-        if types > 30 {
-            return 0;
-        }
         let o = diesel::update(self)
             .set(schema::users::types.eq(types))
             .execute(&_connection);

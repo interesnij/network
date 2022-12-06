@@ -154,7 +154,10 @@ pub fn get_user_owner_data (
             .first::<Owner>(&_connection);
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
-            if owner.types == 1 {
+            if service_types < 1 || !owner.is_service_types_ok(service_types) {
+                return (Some("This role is not allowed in this service!".to_string()), 0);
+            }
+            else if owner.types == 1 {
                 if user_id.is_some() {
                     let _id = user_id.unwrap();
                     let _user = get_user(_id);
@@ -172,12 +175,7 @@ pub fn get_user_owner_data (
             }
             else if owner.types == 2 {
                 // это токен пользователя
-                if service_types > 0 && owner.is_service_types_ok(service_types) {
-                    // проверим, есть ли запрашиваемый сервис и роль в нем
-                    // у этого токена
-                    return (None, owner.user_id);
-                }
-                return (Some("This role is not allowed in this service!".to_string()), 0);
+                return (None, owner.user_id);
             }
             else {
                 return (Some("owner not found!".to_string()), 0);
