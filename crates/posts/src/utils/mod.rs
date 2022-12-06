@@ -198,7 +198,7 @@ pub fn get_owner_data (
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
             if service_types < 1 || !owner.is_service_types_ok(service_types) {
-                return (Some("This role is not allowed in this service!".to_string()), 0);
+                return (Some("This role is not allowed in this service!".to_string()), 0, 0);
             }
             else if owner.types == 1 {
                 // токен приложения, которое работает как наше
