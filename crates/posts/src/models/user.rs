@@ -144,17 +144,6 @@ pub struct NewUserJson {
 }
 
 impl User {
-    pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
-        let _connection = establish_connection();
-        let _o = diesel::update(self)
-            .set((  
-                schema::users::first_name.eq(first_name),
-                schema::users::last_name.eq(last_name)
-            ))
-            .execute(&_connection)
-            .expect("E.");
-        return 1;
-    }
     pub fn update_last_activity(&self) -> i16 {
         let _connection = establish_connection();
         let _o = diesel::update(self)
@@ -334,7 +323,7 @@ impl User {
             for _user in _users.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
-                    target_id: *user_id.user_id,
+                    target_id: user.user_id,
                     types:     value,
                 };
                 diesel::insert_into(schema::user_visible_perms::table)

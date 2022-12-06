@@ -1024,7 +1024,7 @@ pub struct UStaffParams {
     pub types:     Option<i16>,
 }
 
-pub async fn edit_user_perm(data: Json<UStaffParams>) -> Result<Json<i16>, Error> {
+pub async fn edit_user_staff(data: Json<UStaffParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))

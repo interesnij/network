@@ -292,11 +292,11 @@ impl Community {
             пользователей item_users, чтобы выводить сведения при изменении приватности
             и в других подобных случаях.
             */
-            use crate::models::{NewCommunityVisiblePerm, ItemUser};
+            use crate::models::ItemUser;
             for _user in _users.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.community_id,
-                    target_id:    *user_id.user_id,
+                    target_id:    user.user_id,
                     types:        value,
                 };
                 diesel::insert_into(schema::community_visible_perms::table)
