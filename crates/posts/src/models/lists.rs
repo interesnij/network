@@ -590,7 +590,6 @@ impl PostList {
         // по запросу API
         use crate::schema::post_lists::dsl::post_lists;
         use crate::utils::{
-            AttachOwner,
             AttachCommunity,
             AttachList
         };

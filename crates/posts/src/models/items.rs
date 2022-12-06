@@ -42,10 +42,10 @@ impl ItemUser {
 
         let _connection = establish_connection();
         let some_item_user = item_users
-            .filter(schema::item_users::user_id.eq(user_id))
+            .filter(schema::item_users::user_id.eq(user.user_id))
             .select(schema::item_users::id)
             .first::<i32>(&_connection);
-        if some_moderateds.is_err() {
+        if some_item_user.is_err() {
             let new_form = NewItemUser {
                 user_id:    user.user_id,
                 first_name: user.first_name.clone(),
