@@ -166,10 +166,6 @@ impl Community {
 
         let _connection = establish_connection();
         let _update_field = match field {
-            "see_all" => diesel::update(self)
-                .set(schema::communitys::see_all.eq(value))
-                .execute(&_connection)
-                .expect("E."),
             "see_el" => diesel::update(self)
                 .set(schema::communitys::see_el.eq(value))
                 .execute(&_connection)
@@ -184,6 +180,10 @@ impl Community {
                 .expect("E."),
             "create_comment" => diesel::update(self)
                 .set(schema::communitys::create_comment.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "create_list" => diesel::update(self)
+                .set(schema::communitys::create_list.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "copy_el" => diesel::update(self)
@@ -296,7 +296,7 @@ impl Community {
             for _user in _users.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.community_id,
-                    target_id:    user.id,
+                    target_id:    _user.id,
                     types:        value,
                 };
                 diesel::insert_into(schema::community_visible_perms::table)
