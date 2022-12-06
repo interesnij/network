@@ -5,6 +5,7 @@ use crate::utils::{
     CardPostJson,
     CardUserJson,
     CardPostListJson,
+    AttachOwner,
 };
 use diesel::{
     Queryable,
@@ -143,6 +144,211 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::users::first_name.eq(first_name),
+                schema::users::last_name.eq(last_name)
+            ))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn update_last_activity(&self) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::last_activity.eq(chrono::Local::now().naive_utc()))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::users::first_name.eq(first_name),
+                schema::users::last_name.eq(last_name)
+            ))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_link(&self, link: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::link.eq(link))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_avatar(&self, s_avatar: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::s_avatar.eq(s_avatar))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+
+    pub fn edit_private (
+        &self, 
+        field:  &str, 
+        value:  i16, 
+        _users: Option<Vec<AttachOwner>>
+    ) -> i16 {
+        let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
+        if value < 1 || value > 13 || (is_ie_mode && users_ids.is_none()) {
+            return 0;
+        }
+
+        let _connection = establish_connection();
+        let _update_field = match field {
+            "see_all" => diesel::update(&self)
+                .set(schema::users::see_all.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_el" => diesel::update(&self)
+                .set(schema::users::see_el.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_comment" => diesel::update(&self)
+                .set(schema::users::see_comment.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "create_el" => diesel::update(&self)
+                .set(schema::users::create_el.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "create_comment" => diesel::update(&self)
+                .set(schema::users::create_comment.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "copy_el" => diesel::update(&self)
+                .set(schema::users::copy_el.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+            };
+
+        if is_ie_mode {
+            // нужно удалить из списка тех, кто был туда внесен
+            // с противоположными правами.
+            use crate::schema::user_visible_perms::dsl::user_visible_perms;
+            match value { 
+                0 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(10))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                1 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(11))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                2 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(12))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                3 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(13))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                4 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(14))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                5 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(15))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                10 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(0))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                11 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(1))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                12 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(2))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                13 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(3))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                14 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(4))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                15 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(5))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                _ => 0,
+            };
+        };
+        if users_ids.is_some() && is_ie_mode {
+            /*
+            это сервис не пользователей, потому мы добавим всех 
+            включенных / исключенных пользователей для приватности в таблицу 
+            пользователей item_users, чтобы выводить сведения при изменении приватности
+            и в других подобных случаях.
+            */
+            use crate::models::{NewUserVisiblePerm, ItemUser};
+            for _user in _users.unwrap().iter() {
+                let _new_perm = NewUserVisiblePerm {
+                    user_id:   self.user_id,
+                    target_id: *user_id.user_id,
+                    types:     value,
+                };
+                diesel::insert_into(schema::user_visible_perms::table)
+                    .values(&_new_perm)
+                    .execute(&_connection)
+                    .expect("Error.");
+                
+                ItemUser::check_or_create(_user);
+            }
+        }
+        
+        return 1;
+    }
+
     pub fn get_post_lists (
         &self,
         limit:  Option<i64>,
@@ -1139,7 +1345,7 @@ impl User {
         }
     }
 
-    pub fn change_perm(&self, types: i16) -> i16 {
+    pub fn change_staff(&self, types: i16) -> i16 {
         let _connection = establish_connection();
         let o = diesel::update(self)
             .set(schema::users::types.eq(types))
