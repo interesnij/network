@@ -193,27 +193,27 @@ impl User {
 
         let _connection = establish_connection();
         let _update_field = match field {
-            "see_all" => diesel::update(&self)
+            "see_all" => diesel::update(self)
                 .set(schema::users::see_all.eq(value))
                 .execute(&_connection)
                 .expect("E."),
-            "see_el" => diesel::update(&self)
+            "see_el" => diesel::update(self)
                 .set(schema::users::see_el.eq(value))
                 .execute(&_connection)
                 .expect("E."),
-            "see_comment" => diesel::update(&self)
+            "see_comment" => diesel::update(self)
                 .set(schema::users::see_comment.eq(value))
                 .execute(&_connection)
                 .expect("E."),
-            "create_el" => diesel::update(&self)
+            "create_el" => diesel::update(self)
                 .set(schema::users::create_el.eq(value))
                 .execute(&_connection)
                 .expect("E."),
-            "create_comment" => diesel::update(&self)
+            "create_comment" => diesel::update(self)
                 .set(schema::users::create_comment.eq(value))
                 .execute(&_connection)
                 .expect("E."),
-            "copy_el" => diesel::update(&self)
+            "copy_el" => diesel::update(self)
                 .set(schema::users::copy_el.eq(value))
                 .execute(&_connection)
                 .expect("E."),
