@@ -37,7 +37,7 @@ pub struct ItemUser {
     pub s_avatar:   Option<String>,
 }
 impl ItemUser {
-    pub fn check_or_create(user: AttachOwner) -> () {
+    pub fn check_or_create(user: &AttachOwner) -> () {
         use crate::schema::item_users::dsl::item_users;
 
         let _connection = establish_connection();
