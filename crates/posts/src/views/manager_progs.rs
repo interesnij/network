@@ -51,8 +51,8 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/unverify_moderation/", web::post().to(unverify_moderation));
     config.route("/reject_moderation/", web::post().to(reject_moderation));
 
-    config.route("/edit_user_perm/", web::post().to(edit_user_perm));
-    config.route("/edit_community_perm/", web::post().to(edit_community_perm));
+    config.route("/edit_user_staff/", web::post().to(edit_user_staff));
+    config.route("/edit_member_staff/", web::post().to(edit_member_staff));
 }
 
 #[derive(Deserialize)]
@@ -1017,14 +1017,14 @@ pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>
 }
 
 #[derive(Deserialize)]
-pub struct UPermParams {
+pub struct UStaffParams {
     pub token:     Option<String>,
     pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
     pub types:     Option<i16>,
 }
 
-pub async fn edit_user_perm(data: Json<UPermParams>) -> Result<Json<i16>, Error> {
+pub async fn edit_user_perm(data: Json<UStaffParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -1058,7 +1058,7 @@ pub async fn edit_user_perm(data: Json<UPermParams>) -> Result<Json<i16>, Error>
         };
         if check {
             let _res = block (
-                move || target_user.change_perm(types)
+                move || target_user.change_staff(types)
             ).await?;
             Ok(Json(_res))
         }
@@ -1069,14 +1069,14 @@ pub async fn edit_user_perm(data: Json<UPermParams>) -> Result<Json<i16>, Error>
 }
 
 #[derive(Deserialize)]
-pub struct CPermParams {
+pub struct CStaffParams {
     pub token:        Option<String>,
     pub user_id:      Option<i32>,
     pub community_id: Option<i32>,
     pub types:        Option<i16>,
 }
 
-pub async fn edit_community_perm(data: Json<CPermParams>) -> Result<Json<i16>, Error> {
+pub async fn edit_member_staff(data: Json<CStaffParams>) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 0);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -1108,7 +1108,7 @@ pub async fn edit_community_perm(data: Json<CPermParams>) -> Result<Json<i16>, E
         
         if community.is_user_admin(user_id) {
             let _res = block (
-                move || community.update_perm(user_id, data.types.unwrap())
+                move || community.update_staff_member(user_id, data.types.unwrap())
             ).await?;
             Ok(Json(_res))
         }

@@ -28,7 +28,7 @@ pub struct AttachPostCommentResp {
     pub data:      AttachPostComment,      // данные коммента
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct AttachOwner {
     pub id:         i32,
     pub first_name: String,
@@ -38,7 +38,7 @@ pub struct AttachOwner {
     pub s_avatar:   Option<String>,
     pub see_all:    i16,
 }
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct AttachCommunity {
     pub id:       i32,
     pub name:     String,

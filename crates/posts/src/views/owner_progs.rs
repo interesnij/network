@@ -20,8 +20,8 @@ use serde::Deserialize;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
-    config.route("/create_service_user/", web::post().to(create_service_user));
-    config.route("/create_service_community/", web::post().to(create_service_community));
+    config.route("/create_user/", web::post().to(create_user));
+    config.route("/create_community/", web::post().to(create_community));
 
     config.route("/get_attach_post_lists/", web::get().to(get_attach_post_lists));
     config.route("/get_attach_posts/", web::get().to(get_attach_posts));
@@ -32,10 +32,19 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/delete_token", web::post().to(delete_token));
 } 
 
+/* 
+токен апи-шлюза. Когда надо произвести доп изменения в сервисах, 
+причастных к какому-либо изменению в базах данных. Например, создание токенов
+приложений, к которым хочет аппелировать owner.
+Или изменение названия сообщества, которое потянет такие изменения на всех
+сервисах, в которых участвует сообщество. Такие зависимости пользователей и сообществ
+пропишутся в сервисе апи шлюза для более удобного взаимодействия П. и С. с сервисами.
+*/
 static TOKEN: &str = "111";
 
+// manager send!
 // создаем пользователя сервиса, создателя списков, постов, комментов
-pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
+pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
@@ -88,8 +97,9 @@ pub async fn create_service_user(data: Json<NewUserJson>) -> Result<Json<i16>, E
         }
     }
 }
+// manager send!
 // создаем сообщество сервиса, создателя списков, постов, комментов
-pub async fn create_service_community(data: Json<NewCommunityJson>) -> Result<Json<i16>, Error> {
+pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }

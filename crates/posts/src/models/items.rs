@@ -1,6 +1,9 @@
 use diesel::{
     Queryable,
     Insertable,
+    RunQueryDsl,
+    ExpressionMethods,
+    QueryDsl,
 };
 use crate::schema::{
     item_users,
@@ -20,6 +23,7 @@ use crate::schema::{
     attach_items,
 };
 use serde::{Serialize, Deserialize};
+use crate::utils::{establish_connection, AttachOwner};
 
 
 #[derive(Serialize, Identifiable, Queryable)]
@@ -31,6 +35,31 @@ pub struct ItemUser {
     pub types:      i16,
     pub link:       String,
     pub s_avatar:   Option<String>,
+}
+impl ItemUser {
+    pub fn check_or_create(user: AttachOwner) -> () {
+        use crate::schema::item_users::dsl::item_users;
+
+        let _connection = establish_connection();
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(user_id))
+            .select(schema::item_users::id)
+            .first::<i32>(&_connection);
+        if some_moderateds.is_err() {
+            let new_form = NewItemUser {
+                user_id:    user.user_id,
+                first_name: user.first_name.clone(),
+                last_name:  user.last_name.clone(),
+                types:      user.types,
+                link:       user.link.clone(),
+                s_avatar:   user.s_avatar.clone(),
+            };
+            let _new = diesel::insert_into(schema::item_users::table)
+                .values(&new_form)
+                .execute(&_connection)
+                .expect("Error.");
+        }
+    }
 }
 
 #[derive(Deserialize, Insertable)]
