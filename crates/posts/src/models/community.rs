@@ -1418,6 +1418,26 @@ impl Community {
         }
         return true;
     }
+    pub fn update_perm(&self, user_id: i32, level: i16) -> i16 {
+        use crate::schema::communities_memberships::dsl::communities_memberships;
+ 
+        let _connection = establish_connection();
+        let member = communities_memberships
+            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .first::<CommunitiesMembership>(&_connection);
+
+        return match member {
+            Ok(_ok) => {
+                diesel::update(&_ok)
+                    .set(schema::communities_memberships::level.eq(level))
+                    .execute(&_connection)
+                    .expect("Error.");
+                return 1;
+            },
+            Err(_error) => 0,
+        };
+    }
 }
 
 /////// CommunitiesMembership //////
