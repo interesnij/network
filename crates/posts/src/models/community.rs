@@ -158,9 +158,9 @@ impl Community {
         field:  &str, 
         value:  i16, 
         _users: Option<Vec<AttachOwner>>
-    ) -> i16 {
-        let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
-        if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
+    ) -> i16 { 
+        let is_ie_mode = vec![6,7].iter().any(|&i| i==value);
+        if value < 1 || value > 7 || (is_ie_mode && _users.is_none()) {
             return 0;
         }
 
