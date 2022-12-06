@@ -5,6 +5,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
 };
+use crate::schema;
 use crate::schema::{
     item_users,
     item_communitys,
