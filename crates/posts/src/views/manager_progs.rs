@@ -51,6 +51,7 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/reject_moderation/", web::post().to(reject_moderation));
 
     config.route("/edit_user_perm/", web::post().to(edit_user_perm));
+    config.route("/edit_community_perm/", web::post().to(edit_community_perm));
 }
 
 #[derive(Deserialize)]
@@ -1015,14 +1016,14 @@ pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>
 }
 
 #[derive(Deserialize)]
-pub struct PermParams {
+pub struct UPermParams {
     pub token:     Option<String>,
     pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
     pub types:     Option<i16>,
 }
 
-pub async fn edit_user_perm(data: Json<PermParams>) -> Result<Json<i16>, Error> {
+pub async fn edit_user_perm(data: Json<UPermParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -1057,6 +1058,56 @@ pub async fn edit_user_perm(data: Json<PermParams>) -> Result<Json<i16>, Error> 
         if check {
             let _res = block (
                 move || target_user.change_perm(types)
+            ).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct CPermParams {
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub types:        Option<i16>,
+}
+
+pub async fn edit_community_perm(data: Json<CPermParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 0);
+    if err.is_some() {
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if user_id < 1 && community_id < 1 {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if data.community_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'community_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.types.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'types' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = data.community_id.unwrap();
+        }
+        let community = get_community(c_id).expect("E.");
+        
+        if community.is_user_admin(user_id) {
+            let _res = block (
+                move || community.update_perm(user_id, types)
             ).await?;
             Ok(Json(_res))
         }

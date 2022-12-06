@@ -629,11 +629,8 @@ impl Community {
     }
 
     pub fn create_administrator(&self, user_id: i32) -> i16 {
-        // нужно создавать объект уведомлений для сообщества для нового админа
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return 0;
-        }
+
         let _connection = establish_connection();
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -653,9 +650,7 @@ impl Community {
     }
     pub fn create_editor(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return 0;
-        }
+
         let _connection = establish_connection();
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -675,9 +670,7 @@ impl Community {
     }
     pub fn create_moderator(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return 0;
-        }
+
         let _connection = establish_connection();
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -697,9 +690,7 @@ impl Community {
     }
     pub fn create_advertisor(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return 0;
-        }
+
         let _connection = establish_connection();
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -718,11 +709,8 @@ impl Community {
         };
     }
     pub fn delete_staff_member(&self, user_id: i32) -> i16 {
-        // нужно удалять объект уведомлений для сообщества
         use crate::schema::communities_memberships::dsl::communities_memberships;
-        if !self.get_members_ids().iter().any(|&i| i==user_id) {
-            return 0;
-        }
+
         let _connection = establish_connection();
         let member = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(self.id))
@@ -1253,7 +1241,7 @@ impl Community {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_user_admin(&self, user_id: i32) -> bool {
+    pub fn is_user_admin(&self, user_id: i32) -> bool { 
         use crate::schema::communities_memberships::dsl::communities_memberships;
 
         let _connection = establish_connection();
