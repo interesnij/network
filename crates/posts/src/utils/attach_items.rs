@@ -28,7 +28,7 @@ pub struct AttachPostCommentResp {
     pub data:      AttachPostComment,      // данные коммента
 }
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone())]
 pub struct AttachOwner {
     pub id:         i32,
     pub first_name: String,
