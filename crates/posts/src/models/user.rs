@@ -1109,6 +1109,7 @@ impl User {
 
     pub fn delete_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
         /*
         любые изменения пользователей и сообществ копий должны проверять, 
         есть ли этот пользователь/сообщество в таблицах item_users/item_communitys,
@@ -1129,8 +1130,7 @@ impl User {
 
         let some_item_user = item_users
             .filter(schema::item_users::user_id.eq(self.user_id))
-            .select(schema::item_users::id)
-            .first::<i32>(&_connection);
+            .first::<ItemUser>(&_connection);
         if some_item_user.is_ok() {
             let i_e = some_item_user.expect("E.");
             let _i = diesel::update(&i_e)
@@ -1234,7 +1234,7 @@ impl User {
     }
     pub fn unsuspend_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
-        
+
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {

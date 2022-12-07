@@ -14,7 +14,7 @@ use crate::utils::{
     get_owner,
     AttachPostCommentResp,
     AttachPostResp, AttachPostListResp,
-    ErrorParams, ObjectData,
+    ErrorParams, ObjectData, ItemParams,
 };
 use serde::Deserialize;
 
@@ -140,7 +140,7 @@ pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<i16>,
 }
 
 // manager send!
-pub async fn delele_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn delete_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
@@ -151,6 +151,26 @@ pub async fn delele_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         if data.token.as_deref().unwrap() == TOKEN {
             let user = get_user(data.id.unwrap()).except("E.");
             let _res = block(move || user.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn delete_community(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let community = get_community(data.id.unwrap()).except("E.");
+            let _res = block(move || community.delete_item()).await?;
             Ok(Json(_res))
         }
         else {
