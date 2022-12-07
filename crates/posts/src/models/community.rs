@@ -191,7 +191,7 @@ impl Community {
                 .execute(&_connection)
                 .expect("E."),
             _ => 0,
-            };
+        };
 
         if is_ie_mode {
             // нужно удалить из списка тех, кто был туда внесен
@@ -680,7 +680,7 @@ impl Community {
                 let _i = diesel::update(&i_e)
                     .set(schema::item_communitys::types.eq(_case))
                     .execute(&_connection);
-
+            }
             if o.is_ok() {
                 return 1;
             }
@@ -720,7 +720,7 @@ impl Community {
                 let _i = diesel::update(&i_e)
                     .set(schema::item_communitys::types.eq(_case))
                     .execute(&_connection);
-
+            }
             if o.is_ok() {
                 return 1;
             }
@@ -760,7 +760,7 @@ impl Community {
                 let _i = diesel::update(&i_e)
                     .set(schema::item_communitys::types.eq(_case))
                     .execute(&_connection);
-
+            }
             if o.is_ok() {
                 return 1;
             }
@@ -800,7 +800,7 @@ impl Community {
                 let _i = diesel::update(&i_e)
                     .set(schema::item_communitys::types.eq(_case))
                     .execute(&_connection);
-
+            }
             if o.is_ok() {
                 return 1;
             }
@@ -840,7 +840,7 @@ impl Community {
                 let _i = diesel::update(&i_e)
                     .set(schema::item_communitys::types.eq(_case))
                     .execute(&_connection);
-
+            }
             if o.is_ok() {
                 return 1;
             }
