@@ -154,16 +154,6 @@ impl User {
             .set(schema::users::last_activity.eq(&_now))
             .execute(&_connection)
             .expect("E.");
-
-        let some_item_user = item_users
-            .filter(schema::item_users::user_id.eq(self.user_id))
-            .first::<ItemUser>(&_connection);
-        if some_item_user.is_ok() {
-            let i_e = some_item_user.expect("E.");
-            let _i = diesel::update(&i_e)
-                .set(schema::item_users::last_activity.eq(&_now))
-                .execute(&_connection);
-        }
         return 1;
     }
     pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
@@ -209,7 +199,7 @@ impl User {
         if some_item_user.is_ok() {
             let i_e = some_item_user.expect("E.");
             let _i = diesel::update(&i_e)
-                .set(schema::item_users::link.eq(link)
+                .set(schema::item_users::link.eq(link))
                 .execute(&_connection);
         }
         return 1;
@@ -254,15 +244,15 @@ impl User {
         let _update_field = match field {
             "see_all" => {
                 diesel::update(self)
-                .set(schema::users::see_all.eq(value))
-                .execute(&_connection)
-                .expect("E.");
+                    .set(schema::users::see_all.eq(value))
+                    .execute(&_connection)
+                    .expect("E.");
                 let some_item_user = item_users
                     .filter(schema::item_users::user_id.eq(self.user_id))
                     .first::<ItemUser>(&_connection);
                 if some_item_user.is_ok() {
                     let i_e = some_item_user.expect("E.");
-                    let _i = diesel::update(&i_e)
+                    diesel::update(&i_e)
                         .set(schema::item_users::see_all.eq(value))
                         .execute(&_connection);
                 }
