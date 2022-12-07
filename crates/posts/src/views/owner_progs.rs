@@ -220,14 +220,14 @@ pub async fn edit_user_link(data: Json<UserLinkParams>) -> Result<Json<i16>, Err
 }
 
 #[derive(Deserialize)]
-pub struct UserLinkParams {
+pub struct UserAvatarParams {
     pub token:        Option<String>,
     pub user_id:      Option<i32>,
     pub id:           Option<i32>,
     pub avatar:       Option<String>,
 }
 // manager send!
-pub async fn edit_user_avatar(data: Json<UserLinkParams>) -> Result<Json<i16>, Error> {
+pub async fn edit_user_avatar(data: Json<UserAvatarParams>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
@@ -377,14 +377,14 @@ pub async fn edit_community_link(data: Json<CommunityLinkParams>) -> Result<Json
 }
 
 #[derive(Deserialize)]
-pub struct CommunityLinkParams {
+pub struct CommunityAvatarParams {
     pub token:        Option<String>,
     pub community_id: Option<i32>,
     pub id:           Option<i32>,
     pub avatar:       Option<String>,
 }
 // manager send!
-pub async fn edit_community_avatar(data: Json<CommunityLinkParams>) -> Result<Json<i16>, Error> {
+pub async fn edit_community_avatar(data: Json<CommunityAvatarParams>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
