@@ -1159,6 +1159,16 @@ impl User {
             .set(schema::users::types.eq(_case))
             .execute(&_connection);
 
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::types.eq(_case))
+                .execute(&_connection);
+        }
+
         if o.is_ok() {
             return 1;
         }
@@ -1182,6 +1192,16 @@ impl User {
             .set(schema::users::types.eq(_case))
             .execute(&_connection);
 
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::types.eq(_case))
+                .execute(&_connection);
+        }
+
         if o.is_ok() {
             return 1;
         }
@@ -1203,6 +1223,17 @@ impl User {
         let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
             .execute(&_connection);
+
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::types.eq(_case))
+                .execute(&_connection);
+        }
+
         if o.is_ok() {
             return 1;
         }
@@ -1225,6 +1256,16 @@ impl User {
             .set(schema::users::types.eq(_case))
             .execute(&_connection);
 
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::types.eq(_case))
+                .execute(&_connection);
+        }
+
         if o.is_ok() {
             return 1;
         }
@@ -1246,6 +1287,17 @@ impl User {
         let o = diesel::update(self)
             .set(schema::users::types.eq(close_case))
             .execute(&_connection);
+        
+            let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::types.eq(_case))
+                .execute(&_connection);
+        }
+        
         if o.is_ok() {
             return 1;
         }
