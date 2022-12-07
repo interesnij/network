@@ -242,6 +242,9 @@ impl User {
         value:  i16, 
         _users: Option<Vec<AttachOwner>>
     ) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
+
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
         if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
             return 0;
@@ -249,10 +252,21 @@ impl User {
 
         let _connection = establish_connection();
         let _update_field = match field {
-            "see_all" => diesel::update(self)
+            "see_all" => {
+                diesel::update(self)
                 .set(schema::users::see_all.eq(value))
                 .execute(&_connection)
-                .expect("E."),
+                .expect("E.");
+                let some_item_user = item_users
+                    .filter(schema::item_users::user_id.eq(self.user_id))
+                    .first::<ItemUser>(&_connection);
+                if some_item_user.is_ok() {
+                    let i_e = some_item_user.expect("E.");
+                    let _i = diesel::update(&i_e)
+                        .set(schema::item_users::see_all.eq(value))
+                        .execute(&_connection);
+                }
+            },
             "see_el" => diesel::update(self)
                 .set(schema::users::see_el.eq(value))
                 .execute(&_connection)
