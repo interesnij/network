@@ -27,7 +27,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, AttachOwner};
 
 
-#[derive(Serialize, Identifiable)]
+#[derive(Serialize, Identifiable, Queryable)]
 pub struct ItemUser {
     pub id:         i32,
     pub user_id:    i32,
@@ -36,7 +36,7 @@ pub struct ItemUser {
     pub types:      i16,
     pub link:       String,
     pub s_avatar:   Option<String>,
-    pub see_all:    i16,
+    pub see_all:    i16, 
 }
 impl ItemUser {
     pub fn check_or_create(user: &AttachOwner) -> () {
