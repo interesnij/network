@@ -637,7 +637,7 @@ impl Community {
         }
         return 1;
     }
-    pub fn edit_link(&self, name: &str) -> i16 {
+    pub fn edit_link(&self, link: &str) -> i16 {
         use crate::schema::item_communitys::dsl::item_communitys;
         use crate::models::ItemCommunity;
 
@@ -662,7 +662,7 @@ impl Community {
         }
         return 1;
     }
-    pub fn edit_avatar(&self, name: &str) -> i16 {
+    pub fn edit_avatar(&self, avatar: &str) -> i16 {
         use crate::schema::item_communitys::dsl::item_communitys;
         use crate::models::ItemCommunity;
 
