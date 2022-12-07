@@ -12,6 +12,7 @@ use crate::models::{
 use crate::errors::Error;
 use crate::utils::{
     get_owner,
+    get_user, get_community,
     AttachPostCommentResp,
     AttachPostResp, AttachPostListResp,
     ErrorParams, ObjectData, ItemParams,
