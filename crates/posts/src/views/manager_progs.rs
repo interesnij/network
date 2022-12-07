@@ -55,6 +55,7 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/edit_member_staff/", web::post().to(edit_member_staff));
     config.route("/edit_user_private/", web::post().to(edit_user_private));
     config.route("/edit_community_private/", web::post().to(edit_community_private));
+    config.route("/edit_list_private/", web::post().to(edit_list_private));
 }
 
 #[derive(Deserialize)]

@@ -1106,111 +1106,15 @@ impl User {
             .expect("E.");
         return _follows;
     }
-    pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let _connection = establish_connection();
-        let mut users_ids = Vec::new();
-        let v: Vec<&str> = users.split(", ").collect();
-        for item in v.iter() {
-            if !item.is_empty() {
-                let pk: i32 = item.parse().unwrap();
-                users_ids.push(pk);
-            }
-        }
-
-        // нужно удалить из списка тех, кто был туда внесен
-        // с противоположными правами.
-        match types {
-            1 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(11))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            11 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(1))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            2 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(12))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            12 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(2))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            3 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(13))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            13 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(3))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            4 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(14))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            14 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(4))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            5 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(15))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            15 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(5))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            _ => 0,
-        };
-        for user_id in users_ids.iter() {
-            let _new_perm = NewUserVisiblePerm {
-                user_id:   self.user_id,
-                target_id: *user_id,
-                types:     types,
-            };
-            diesel::insert_into(schema::user_visible_perms::table)
-                .values(&_new_perm)
-                .execute(&_connection)
-                .expect("Error.");
-        }
-        return true;
-    }
 
     pub fn delete_item(&self) -> i16 {
-        //use crate::models::hide_wall_notify_items;
-
+        use crate::schema::item_users::dsl::item_users;
+        /*
+        любые изменения пользователей и сообществ копий должны проверять, 
+        есть ли этот пользователь/сообщество в таблицах item_users/item_communitys,
+        ведь пользователь может быть и там тоже, в качестве владельца, например, 
+        прикрепляемых элементов.
+        */
         let _connection = establish_connection();
         let user_types = self.types;
         let _case = match user_types {
@@ -1223,6 +1127,16 @@ impl User {
             .set(schema::users::types.eq(_case))
             .execute(&_connection);
 
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .select(schema::item_users::id)
+            .first::<i32>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::users::types.eq(_case))
+                .execute(&_connection);
+        }
         if o.is_ok() {
             return 1;
         }
@@ -1231,7 +1145,7 @@ impl User {
         }
     }
     pub fn restore_item(&self) -> i16 {
-        //use crate::models::hide_wall_notify_items;
+        use crate::schema::item_users::dsl::item_users;
 
         let _connection = establish_connection();
         let user_types = self.types;
@@ -1254,6 +1168,8 @@ impl User {
     }
 
     pub fn close_item(&self) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+
         let _connection = establish_connection();
         let user_types = self.types;
         let _case = match user_types {
@@ -1274,7 +1190,7 @@ impl User {
         }
     }
     pub fn unclose_item(&self) -> i16 {
-        //use crate::models::show_wall_notify_items;
+        use crate::schema::item_users::dsl::item_users;
 
         let _connection = establish_connection();
         let user_types = self.types;
@@ -1295,6 +1211,8 @@ impl User {
         }
     }
     pub fn suspend_item(&self) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+
         let _connection = establish_connection();
         let user_types = self.types;
         let _case = match user_types {
@@ -1315,6 +1233,8 @@ impl User {
         }
     }
     pub fn unsuspend_item(&self) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+        
         let _connection = establish_connection();
         let user_types = self.types;
         let close_case = match user_types {
