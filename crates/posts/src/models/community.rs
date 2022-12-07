@@ -612,6 +612,82 @@ impl Community {
         };
     }
 
+    pub fn edit_name(&self, name: &str) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::communitys::name.eq(name),
+            ))
+            .execute(&_connection)
+            .expect("E.");
+
+        let some_item_community = item_communitys
+            .filter(schema::item_communitys::community_id.eq(self.community_id))
+            .first::<ItemCommunity>(&_connection);
+        if some_item_community.is_ok() {
+            let i_e = some_item_community.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set((  
+                    schema::item_communitys::name.eq(name),
+                ))
+                .execute(&_connection);
+        }
+        return 1;
+    }
+    pub fn edit_link(&self, name: &str) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::communitys::link.eq(link),
+            ))
+            .execute(&_connection)
+            .expect("E.");
+
+        let some_item_community = item_communitys
+            .filter(schema::item_communitys::community_id.eq(self.community_id))
+            .first::<ItemCommunity>(&_connection);
+        if some_item_community.is_ok() {
+            let i_e = some_item_community.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set((  
+                    schema::item_communitys::link.eq(link),
+                ))
+                .execute(&_connection);
+        }
+        return 1;
+    }
+    pub fn edit_avatar(&self, name: &str) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::communitys::s_avatar.eq(avatar),
+            ))
+            .execute(&_connection)
+            .expect("E.");
+
+        let some_item_community = item_communitys
+            .filter(schema::item_communitys::community_id.eq(self.community_id))
+            .first::<ItemCommunity>(&_connection);
+        if some_item_community.is_ok() {
+            let i_e = some_item_community.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set((  
+                    schema::item_communitys::s_avatar.eq(avatar),
+                ))
+                .execute(&_connection);
+        }
+        return 1;
+    }
+
     pub fn delete_item(&self) -> i16 {
         use crate::schema::item_communitys::dsl::item_communitys;
         use crate::models::ItemCommunity;
