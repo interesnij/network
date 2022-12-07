@@ -14,7 +14,7 @@ use crate::utils::{
     get_user_permission,
     get_user_owner_data,
     get_owner_data,
-    ErrorParams,
+    ErrorParams, AttachOwner,
 };
 use crate::models::ModeratedLog;
 use crate::errors::Error;
@@ -53,6 +53,8 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
 
     config.route("/edit_user_staff/", web::post().to(edit_user_staff));
     config.route("/edit_member_staff/", web::post().to(edit_member_staff));
+    config.route("/edit_user_private/", web::post().to(edit_user_private));
+    config.route("/edit_community_private/", web::post().to(edit_community_private));
 }
 
 #[derive(Deserialize)]
@@ -1084,7 +1086,7 @@ pub async fn edit_member_staff(data: Json<CStaffParams>) -> Result<Json<i16>, Er
     else if user_id < 1 && community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
-    else if data.community_id.is_none() {
+    else if data.community_id.is_none() && community_id < 1 {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'community_id' is required!".to_string(),
         }).unwrap();
@@ -1114,6 +1116,177 @@ pub async fn edit_member_staff(data: Json<CStaffParams>) -> Result<Json<i16>, Er
         }
         else {
             Err(Error::BadRequest("Permission Denied".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct UPrivateParams {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub field:   Option<String>,
+    pub value:   Option<i16>,
+    pub users:   Option<AttachOwner>,
+}
+
+pub async fn edit_user_private(data: Json<UPrivateParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 21);
+    if err.is_some() {
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if user_id < 1 {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if data.field.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'field' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.value.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'value' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let request_user = get_user(user_id).expect("E.");
+        let _res = block (
+            move || request_user.edit_private(
+                data.field.as_deref().unwrap(),
+                data.value.unwrap(),
+                data.users,
+            )
+        ).await?;
+        Ok(Json(_res))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct CPrivateParams {
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub field:        Option<String>,
+    pub value:        Option<i16>,
+    pub users:        Option<AttachOwner>,
+}
+
+pub async fn edit_community_private(data: Json<CPrivateParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    if err.is_some() {
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if user_id < 1 && community_id < 1 {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if data.field.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'field' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.community_id.is_none() && community_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'community_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.value.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'value' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = data.community_id.unwrap();
+        }
+        let community = get_community(c_id).expect("E.");
+        let _res = block (
+            move || community.edit_private(
+                data.field.as_deref().unwrap(),
+                data.value.unwrap(),
+                data.users,
+            )
+        ).await?;
+        Ok(Json(_res))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct LPrivateParams {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub list_id: Option<i32>,
+    pub field:   Option<String>,
+    pub value:   Option<i16>,
+    pub users:   Option<AttachOwner>,
+}
+
+pub async fn edit_list_private(data: Json<LPrivateParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    if err.is_some() {
+        Err(Error::BadRequest(err.unwrap()))
+    }
+    else if user_id < 1 && community_id < 1 {
+        Err(Error::BadRequest("Permission Denied".to_string()))
+    }
+    else if data.field.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'field' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.list_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'list_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.value.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'value' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let list = get_post_list(data.list_id.unwrap()).expect("E.");
+        if list.community_id.is_some() {
+            let c_id = list.community_id.unwrap();
+            let community = get_community(c_id);
+            if community_id == c_id || community.is_user_admin(user_id) {
+                let _res = block (
+                    move || list.edit_private(
+                        data.field.as_deref().unwrap(),
+                        data.value.unwrap(),
+                        data.users,
+                    )
+                ).await?;
+                Ok(Json(_res))
+            }
+            else {
+                Err(Error::BadRequest("Permission Denied".to_string()))
+            }
+        }
+        else {
+            if user_id = list.user_id {
+                let _res = block (
+                    move || list.edit_private(
+                        data.field.as_deref().unwrap(),
+                        data.value.unwrap(),
+                        data.users,
+                )
+                ).await?;
+                Ok(Json(_res))
+            }
+            else {
+                Err(Error::BadRequest("Permission Denied".to_string()))
+            }
         }
     }
 }
