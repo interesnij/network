@@ -36,6 +36,7 @@ pub struct ItemUser {
     pub types:      i16,
     pub link:       String,
     pub s_avatar:   Option<String>,
+    pub see_all:    i16,
 }
 impl ItemUser {
     pub fn check_or_create(user: &AttachOwner) -> () {
@@ -54,6 +55,7 @@ impl ItemUser {
                 types:      user.types,
                 link:       user.link.clone(),
                 s_avatar:   user.s_avatar.clone(),
+                see_all:    user.see_all,
             };
             let _new = diesel::insert_into(schema::item_users::table)
                 .values(&new_form)
@@ -72,6 +74,7 @@ pub struct NewItemUser {
     pub types:      i16,
     pub link:       String,
     pub s_avatar:   Option<String>,
+    pub see_all:    i16,
 }
 
 /////// ItemCommunity //////
