@@ -145,9 +145,6 @@ pub struct NewUserJson {
 
 impl User {
     pub fn update_last_activity(&self) -> i16 {
-        use crate::schema::item_users::dsl::item_users;
-        use crate::models::ItemUser;
-
         let _now = chrono::Local::now().naive_utc();
         let _connection = establish_connection();
         let _o = diesel::update(self)
@@ -255,6 +252,7 @@ impl User {
                     diesel::update(&i_e)
                         .set(schema::item_users::see_all.eq(value))
                         .execute(&_connection)
+                        .expect("E.")
                 }
                 else {
                     0
