@@ -145,14 +145,31 @@ pub struct NewUserJson {
 
 impl User {
     pub fn update_last_activity(&self) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
+
+        let _now = chrono::Local::now().naive_utc();
         let _connection = establish_connection();
         let _o = diesel::update(self)
-            .set(schema::users::last_activity.eq(chrono::Local::now().naive_utc()))
+            .set(schema::users::last_activity.eq(&_now))
             .execute(&_connection)
             .expect("E.");
+
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::last_activity.eq(&_now))
+                .execute(&_connection);
+        }
         return 1;
     }
     pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
+
         let _connection = establish_connection();
         let _o = diesel::update(self)
             .set((  
@@ -161,22 +178,61 @@ impl User {
             ))
             .execute(&_connection)
             .expect("E.");
+
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set((  
+                    schema::item_users::first_name.eq(first_name),
+                    schema::item_users::last_name.eq(last_name)
+                ))
+                .execute(&_connection);
+        }
         return 1;
     }
     pub fn edit_link(&self, link: &str) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
+
         let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(schema::users::link.eq(link))
             .execute(&_connection)
             .expect("E.");
+
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::link.eq(link)
+                .execute(&_connection);
+        }
         return 1;
     }
     pub fn edit_avatar(&self, s_avatar: &str) -> i16 {
+        use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
+
         let _connection = establish_connection();
         let _o = diesel::update(self)
             .set(schema::users::s_avatar.eq(s_avatar))
             .execute(&_connection)
             .expect("E.");
+
+        let some_item_user = item_users
+            .filter(schema::item_users::user_id.eq(self.user_id))
+            .first::<ItemUser>(&_connection);
+        if some_item_user.is_ok() {
+            let i_e = some_item_user.expect("E.");
+            let _i = diesel::update(&i_e)
+                .set(schema::item_users::s_avatar.eq(s_avatar))
+                .execute(&_connection);
+        }
         return 1;
     }
 

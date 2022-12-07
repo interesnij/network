@@ -672,6 +672,15 @@ impl Community {
                 .set(schema::communitys::types.eq(_case))
                 .execute(&_connection);
 
+            let some_item_community = item_communitys
+                .filter(schema::item_communitys::community_id.eq(self.community_id))
+                .first::<ItemCommunity>(&_connection);
+            if some_item_community.is_ok() {
+                let i_e = some_item_community.expect("E.");
+                let _i = diesel::update(&i_e)
+                    .set(schema::item_communitys::types.eq(_case))
+                    .execute(&_connection);
+
             if o.is_ok() {
                 return 1;
             }
@@ -702,6 +711,15 @@ impl Community {
             let o = diesel::update(self)
                 .set(schema::communitys::types.eq(_case))
                 .execute(&_connection);
+
+            let some_item_community = item_communitys
+                .filter(schema::item_communitys::community_id.eq(self.community_id))
+                .first::<ItemCommunity>(&_connection);
+            if some_item_community.is_ok() {
+                let i_e = some_item_community.expect("E.");
+                let _i = diesel::update(&i_e)
+                    .set(schema::item_communitys::types.eq(_case))
+                    .execute(&_connection);
 
             if o.is_ok() {
                 return 1;
@@ -734,6 +752,15 @@ impl Community {
                 .set(schema::communitys::types.eq(_case))
                 .execute(&_connection);
 
+            let some_item_community = item_communitys
+                .filter(schema::item_communitys::community_id.eq(self.community_id))
+                .first::<ItemCommunity>(&_connection);
+            if some_item_community.is_ok() {
+                let i_e = some_item_community.expect("E.");
+                let _i = diesel::update(&i_e)
+                    .set(schema::item_communitys::types.eq(_case))
+                    .execute(&_connection);
+
             if o.is_ok() {
                 return 1;
             }
@@ -765,6 +792,15 @@ impl Community {
                 .set(schema::communitys::types.eq(_case))
                 .execute(&_connection);
 
+            let some_item_community = item_communitys
+                .filter(schema::item_communitys::community_id.eq(self.community_id))
+                .first::<ItemCommunity>(&_connection);
+            if some_item_community.is_ok() {
+                let i_e = some_item_community.expect("E.");
+                let _i = diesel::update(&i_e)
+                    .set(schema::item_communitys::types.eq(_case))
+                    .execute(&_connection);
+
             if o.is_ok() {
                 return 1;
             }
@@ -795,6 +831,15 @@ impl Community {
             let o = diesel::update(self)
                 .set(schema::communitys::types.eq(_case))
                 .execute(&_connection);
+
+            let some_item_community = item_communitys
+                .filter(schema::item_communitys::community_id.eq(self.community_id))
+                .first::<ItemCommunity>(&_connection);
+            if some_item_community.is_ok() {
+                let i_e = some_item_community.expect("E.");
+                let _i = diesel::update(&i_e)
+                    .set(schema::item_communitys::types.eq(_case))
+                    .execute(&_connection);
 
             if o.is_ok() {
                 return 1;
