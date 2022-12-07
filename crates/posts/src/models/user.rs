@@ -1134,7 +1134,7 @@ impl User {
         if some_item_user.is_ok() {
             let i_e = some_item_user.expect("E.");
             let _i = diesel::update(&i_e)
-                .set(schema::users::types.eq(_case))
+                .set(schema::item_users::types.eq(_case))
                 .execute(&_connection);
         }
         if o.is_ok() {
