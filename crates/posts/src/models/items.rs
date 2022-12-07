@@ -27,7 +27,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{establish_connection, AttachOwner};
 
 
-#[derive(Serialize, Identifiable, Queryable)]
+#[derive(Serialize, Identifiable)]
 pub struct ItemUser {
     pub id:         i32,
     pub user_id:    i32,

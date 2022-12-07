@@ -150,7 +150,7 @@ pub async fn delete_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            let user = get_user(data.id.unwrap()).except("E.");
+            let user = get_user(data.id.unwrap()).expect("E.");
             let _res = block(move || user.delete_item()).await?;
             Ok(Json(_res))
         }
@@ -170,7 +170,7 @@ pub async fn delete_community(data: Json<ItemParams>) -> Result<Json<i16>, Error
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            let community = get_community(data.id.unwrap()).except("E.");
+            let community = get_community(data.id.unwrap()).expect("E.");
             let _res = block(move || community.delete_item()).await?;
             Ok(Json(_res))
         }
