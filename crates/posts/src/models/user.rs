@@ -254,7 +254,10 @@ impl User {
                     let i_e = some_item_user.expect("E.");
                     diesel::update(&i_e)
                         .set(schema::item_users::see_all.eq(value))
-                        .execute(&_connection);
+                        .execute(&_connection)
+                }
+                else {
+                    0
                 }
             },
             "see_el" => diesel::update(self)
