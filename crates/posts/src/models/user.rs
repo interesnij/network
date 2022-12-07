@@ -320,7 +320,7 @@ impl User {
             и в других подобных случаях.
             */
             use crate::models::ItemUser;
-            for _user in _users.iter() {
+            for _user in _users.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
                     target_id: _user.id,
