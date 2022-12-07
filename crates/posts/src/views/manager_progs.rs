@@ -1126,7 +1126,7 @@ pub struct UPrivateParams {
     pub user_id: Option<i32>,
     pub field:   Option<String>,
     pub value:   Option<i16>,
-    pub users:   Option<AttachOwner>,
+    pub users:   Option<Vec<AttachOwner>>,
 }
 
 pub async fn edit_user_private(data: Json<UPrivateParams>) -> Result<Json<i16>, Error> {
@@ -1169,7 +1169,7 @@ pub struct CPrivateParams {
     pub community_id: Option<i32>,
     pub field:        Option<String>,
     pub value:        Option<i16>,
-    pub users:        Option<AttachOwner>,
+    pub users:        Option<Vec<AttachOwner>>,
 }
 
 pub async fn edit_community_private(data: Json<CPrivateParams>) -> Result<Json<i16>, Error> {
@@ -1225,7 +1225,7 @@ pub struct LPrivateParams {
     pub list_id: Option<i32>,
     pub field:   Option<String>,
     pub value:   Option<i16>,
-    pub users:   Option<AttachOwner>,
+    pub users:   Option<Vec<AttachOwner>>,
 }
 
 pub async fn edit_list_private(data: Json<LPrivateParams>) -> Result<Json<i16>, Error> {
@@ -1258,7 +1258,7 @@ pub async fn edit_list_private(data: Json<LPrivateParams>) -> Result<Json<i16>, 
         let list = get_post_list(data.list_id.unwrap()).expect("E.");
         if list.community_id.is_some() {
             let c_id = list.community_id.unwrap();
-            let community = get_community(c_id);
+            let community = get_community(c_id).expect("E.");
             if community_id == c_id || community.is_user_admin(user_id) {
                 let _res = block (
                     move || list.edit_private(
@@ -1274,7 +1274,7 @@ pub async fn edit_list_private(data: Json<LPrivateParams>) -> Result<Json<i16>, 
             }
         }
         else {
-            if user_id = list.user_id {
+            if user_id == list.user_id {
                 let _res = block (
                     move || list.edit_private(
                         data.field.as_deref().unwrap(),
