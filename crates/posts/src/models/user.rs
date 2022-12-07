@@ -1146,6 +1146,7 @@ impl User {
     }
     pub fn restore_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
 
         let _connection = establish_connection();
         let user_types = self.types;
@@ -1179,6 +1180,7 @@ impl User {
 
     pub fn close_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
 
         let _connection = establish_connection();
         let user_types = self.types;
@@ -1211,17 +1213,18 @@ impl User {
     }
     pub fn unclose_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
 
         let _connection = establish_connection();
         let user_types = self.types;
-        let close_case = match user_types {
+        let _case = match user_types {
             41 => 1,
             46 => 6,
             47 => 7,
             _ => 1,
         };
         let o = diesel::update(self)
-            .set(schema::users::types.eq(close_case))
+            .set(schema::users::types.eq(_case))
             .execute(&_connection);
 
         let some_item_user = item_users
@@ -1243,6 +1246,7 @@ impl User {
     }
     pub fn suspend_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
 
         let _connection = establish_connection();
         let user_types = self.types;
@@ -1275,17 +1279,18 @@ impl User {
     }
     pub fn unsuspend_item(&self) -> i16 {
         use crate::schema::item_users::dsl::item_users;
+        use crate::models::ItemUser;
 
         let _connection = establish_connection();
         let user_types = self.types;
-        let close_case = match user_types {
+        let _case = match user_types {
             51 => 1,
             56 => 6,
             57 => 7,
             _ => 1,
         };
         let o = diesel::update(self)
-            .set(schema::users::types.eq(close_case))
+            .set(schema::users::types.eq(_case))
             .execute(&_connection);
         
             let some_item_user = item_users
@@ -1297,7 +1302,7 @@ impl User {
                 .set(schema::item_users::types.eq(_case))
                 .execute(&_connection);
         }
-        
+
         if o.is_ok() {
             return 1;
         }
