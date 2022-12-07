@@ -184,10 +184,10 @@ impl User {
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<AttachOwner>>
+        _users: Vec<AttachOwner>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
-        if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
+        if value < 1 || value > 13 || (is_ie_mode && _users.is_empty()) {
             return 0;
         }
 
@@ -312,7 +312,7 @@ impl User {
                 _ => 0,
             };
         };
-        if _users.is_some() && is_ie_mode {
+        if !_users.is_empty() && is_ie_mode {
             /*
             это сервис не пользователей, потому мы добавим всех 
             включенных / исключенных пользователей для приватности в таблицу 
@@ -320,7 +320,7 @@ impl User {
             и в других подобных случаях.
             */
             use crate::models::ItemUser;
-            for _user in _users.unwrap().iter() {
+            for _user in _users.iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
                     target_id: _user.id,
