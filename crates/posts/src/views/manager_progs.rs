@@ -1155,7 +1155,7 @@ pub async fn edit_user_private(data: Json<UPrivateParams>) -> Result<Json<i16>, 
             move || request_user.edit_private(
                 data.field.as_deref().unwrap(),
                 data.value.unwrap(),
-                data.users.clone(),
+                data.users.as_ref(),
             )
         ).await?;
         Ok(Json(_res))
