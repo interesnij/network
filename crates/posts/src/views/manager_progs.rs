@@ -1155,7 +1155,7 @@ pub async fn edit_user_private(data: Json<UPrivateParams>) -> Result<Json<i16>, 
             move || request_user.edit_private(
                 data.field.as_deref().unwrap(),
                 data.value.unwrap(),
-                data.users,
+                data.users.clone(),
             )
         ).await?;
         Ok(Json(_res))
@@ -1211,7 +1211,7 @@ pub async fn edit_community_private(data: Json<CPrivateParams>) -> Result<Json<i
             move || community.edit_private(
                 data.field.as_deref().unwrap(),
                 data.value.unwrap(),
-                data.users,
+                data.users.clone(),
             )
         ).await?;
         Ok(Json(_res))
@@ -1264,7 +1264,7 @@ pub async fn edit_list_private(data: Json<LPrivateParams>) -> Result<Json<i16>, 
                     move || list.edit_private(
                         data.field.as_deref().unwrap(),
                         data.value.unwrap(),
-                        data.users,
+                        data.users.clone(),
                     )
                 ).await?;
                 Ok(Json(_res))
@@ -1279,7 +1279,7 @@ pub async fn edit_list_private(data: Json<LPrivateParams>) -> Result<Json<i16>, 
                     move || list.edit_private(
                         data.field.as_deref().unwrap(),
                         data.value.unwrap(),
-                        data.users,
+                        data.users.clone(),
                 )
                 ).await?;
                 Ok(Json(_res))
