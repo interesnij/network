@@ -22,6 +22,8 @@ use serde::Deserialize;
 pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/create_user/", web::post().to(create_user));
     config.route("/create_community/", web::post().to(create_community));
+    config.route("/delete_user/", web::post().to(delete_user));
+    config.route("/delete_community/", web::post().to(delete_community));
 
     config.route("/get_attach_post_lists/", web::get().to(get_attach_post_lists));
     config.route("/get_attach_posts/", web::get().to(get_attach_posts));
@@ -136,6 +138,27 @@ pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<i16>,
         }
     }
 }
+
+// manager send!
+pub async fn delele_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).except("E.");
+            let _res = block(move || user.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
 
 #[derive(Deserialize)]
 pub struct VecIdsParams {
