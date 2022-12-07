@@ -613,6 +613,9 @@ impl Community {
     }
 
     pub fn delete_item(&self) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
         let _connection = establish_connection();
         let _case = match self.types {
             1 => 21,
@@ -631,6 +634,16 @@ impl Community {
                 .set(schema::communitys::types.eq(_case))
                 .execute(&_connection);
 
+            let some_item_community = item_communitys
+                .filter(schema::item_communitys::community_id.eq(self.community_id))
+                .first::<ItemCommunity>(&_connection);
+            if some_item_community.is_ok() {
+                let i_e = some_item_community.expect("E.");
+                let _i = diesel::update(&i_e)
+                    .set(schema::item_communitys::types.eq(_case))
+                    .execute(&_connection);
+        }
+
             if o.is_ok() {
                 return 1;
             }
@@ -638,6 +651,9 @@ impl Community {
         return 0;
     }
     pub fn restore_item(&self) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
         let _connection = establish_connection();
         let _case = match self.types {
             21 => 1,
@@ -666,6 +682,9 @@ impl Community {
         return 0;
     }
     pub fn close_item(&self) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
         let _connection = establish_connection();
         let _case = match self.types {
             1 => 61,
@@ -694,6 +713,9 @@ impl Community {
         return 0;
     }
     pub fn unclose_item(&self) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
         let _connection = establish_connection();
         let _case = match self.types {
             61 => 1,
@@ -722,6 +744,9 @@ impl Community {
         return 0;
     }
     pub fn suspend_item(&self) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
         let _connection = establish_connection();
         let _case = match self.types {
             1 => 81,
@@ -750,6 +775,9 @@ impl Community {
         return 0;
     }
     pub fn unsuspend_item(&self) -> i16 {
+        use crate::schema::item_communitys::dsl::item_communitys;
+        use crate::models::ItemCommunity;
+
         let _connection = establish_connection();
         let _case = match self.types {
             81 => 1,
