@@ -319,7 +319,7 @@ impl User {
             пользователей item_users, чтобы выводить сведения при изменении приватности
             и в других подобных случаях.
             */
-            use crate::models::{NewUserVisiblePerm, ItemUser};
+            use crate::models::ItemUser;
             for _user in _users.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
