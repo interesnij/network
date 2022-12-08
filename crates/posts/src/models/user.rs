@@ -2030,7 +2030,7 @@ impl User {
                 .filter(schema::users::user_id.eq(user_id))
                 .first::<User>(&_connection);
             if target_user.is_ok() {
-                _target_user = target_user.expect("E.");
+                let _target_user = target_user.expect("E.");
                 is_user_see_all = _target_user.see_all;
             }
             if is_user_see_all {
@@ -2065,13 +2065,12 @@ impl User {
                 )
                 .execute(&_connection);
             if del.is_ok() {
-                if target_user = users
+                if users
                     .filter(schema::users::user_id.eq(user_id))
                     .first::<User>(&_connection)
                     .is_ok() {
-                    _target_user = target_user.expect("E.");
-                    is_user_see_all = _target_user.see_all;
-                    if is_user_see_all {
+                    let _target_user = target_user.expect("E.");
+                    if _target_user.see_all {
                         self.delete_new_subscriber(user_id);
                     }
                 }
@@ -2117,7 +2116,7 @@ impl User {
                 .filter(schema::users::user_id.eq(user_id))
                 .first::<User>(&_connection);
             if target_user.is_ok() {
-                _target_user = target_user.expect("E.");
+                let _target_user = target_user.expect("E.");
                 is_user_see_all = _target_user.see_all;
             }
 
@@ -2161,10 +2160,9 @@ impl User {
             let mut is_user_see_all = false;
             let target_user = users
                 .filter(schema::users::user_id.eq(user_id))
-                .first::<User>(&_connection)
-                .expect("E.");
+                .first::<User>(&_connection);
             if target_user.is_ok() {
-                _target_user = target_user.expect("E.");
+                let _target_user = target_user.expect("E.");
                 is_user_see_all = _target_user.see_all;
             }
             if !is_user_see_all {
