@@ -1910,7 +1910,7 @@ impl User {
 
         if !friends_ids.is_empty() {
             for friend_id in friends_ids.iter() {
-                if self.is_connected_with_user_with_id(friend_id) && !featured_user_communities
+                if self.is_connected_with_user_with_id(*friend_id) && !featured_user_communities
                     .filter(schema::featured_user_communities::owner.eq(self.user_id))
                     .filter(schema::featured_user_communities::user_id.eq(friend_id))
                     .select(schema::featured_user_communities::id)
@@ -1919,7 +1919,7 @@ impl User {
                     let new_featured = NewFeaturedUserCommunitie {
                         owner: self.user_id,
                         list_id: None,
-                        user_id: Some(friend_id),
+                        user_id: Some(*friend_id),
                         community_id: None,
                         mute: false,
                         sleep: None,
@@ -1933,7 +1933,7 @@ impl User {
         }
         if !communities_ids.is_empty() {
             for community_id in communities_ids.iter() {
-                if self.is_member_of_community(community_id) && !featured_user_communities
+                if self.is_member_of_community(*community_id) && !featured_user_communities
                     .filter(schema::featured_user_communities::owner.eq(self.user_id))
                     .filter(schema::featured_user_communities::community_id.eq(community_id))
                     .select(schema::featured_user_communities::id)
@@ -1943,7 +1943,7 @@ impl User {
                         owner: self.user_id,
                         list_id: None,
                         user_id: None,
-                        community_id: Some(community_id),
+                        community_id: Some(*community_id),
                         mute: false,
                         sleep: None,
                     };
@@ -2012,6 +2012,9 @@ impl User {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return 0;
         }
+        use crate::schema::{
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let _new_follow = NewFollow {
@@ -2032,7 +2035,7 @@ impl User {
             }
             if is_user_see_all {
                 self.add_new_user_subscriber(user_id);
-                self.get_or_create_featured_objects(user_id, _connection);
+                self.get_or_create_featured_objects(user_id, &mut _connection);
             }
             return 1;
         }
@@ -2045,7 +2048,10 @@ impl User {
         if self.user_id == user_id || !self.is_following_user_with_id(user_id) {
             return 0;
         }
-        use crate::schema::follows::dsl::follows;
+        use crate::schema::{
+            follows::dsl::follows,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         if follows
@@ -2083,7 +2089,10 @@ impl User {
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
             return 0;
         }
-        use crate::schema::follows::dsl::follows;
+        use crate::schema::{
+            follows::dsl::follows,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
         let _new_friend = NewFriend {
@@ -2115,7 +2124,7 @@ impl User {
             self.delete_user_featured_object(user_id);
             if !is_user_see_all {
                 self.add_new_user_subscriber(user_id);
-                self.get_or_create_featured_objects(user_id, _connection);
+                self.get_or_create_featured_objects(user_id, &mut _connection);
             }
             return 1;
         }
@@ -2127,7 +2136,10 @@ impl User {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
             return 0;
         }
-        use crate::schema::friends::dsl::friends;
+        use crate::schema::{
+            friends::dsl::friends,
+            users::dsl::users,
+        };
 
         let _connection = establish_connection();
 
@@ -2157,7 +2169,7 @@ impl User {
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
             }
-            self.get_or_create_featured_objects(user_id, _connection);
+            self.get_or_create_featured_objects(user_id, &mut _connection);
             return 1;
         }
         else {
