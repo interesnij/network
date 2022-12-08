@@ -11,6 +11,7 @@ use crate::utils::{
     RegListData,
     CardUserJson,
     ErrorParams,
+    USERS_URL,
 };
 use crate::errors::Error;
 
@@ -25,7 +26,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn all_users_page(req: HttpRequest) -> Json<String> {
-    let users = reqwest::get("http://194.58.90.123:9001/all-users?".to_owned() + &req.query_string()).await;
+    let users = reqwest::get(USERS_URL.to_owned() + &"/all-users?".to_string() + &req.query_string()).await;
     match users {
         Ok(_ok) => {
             println!("status {}", _ok.status().as_str());

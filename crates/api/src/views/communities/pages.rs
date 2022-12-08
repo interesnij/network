@@ -10,6 +10,7 @@ use crate::utils::{
     RegListData,
     CardCommunityJson,
     ErrorParams,
+    COMMUNITIES_URL,
 };
 use crate::errors::Error;
 
@@ -20,7 +21,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn all_communities_page(req: HttpRequest) -> Json<String> {
-    let communities = reqwest::get("http:194.58.90.123:9002/all-communities")
+    let communities = reqwest::get(COMMUNITIES_URL.to_owned() + &"/all-communities".to_string())
         .await
         .expect("E.")
         .text()
