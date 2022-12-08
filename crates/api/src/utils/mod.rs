@@ -17,12 +17,12 @@ static COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
 static USERS_SERVICES: Vec<&str> = [
     "194.58.90.123:9002",
     "194.58.90.123:9003",
-];
+].to_vec();
 
 // список url сервисов, на которых присутствуют копии сообществ.
 static COMMUNITIES_SERVICES: Vec<&str> = [
     "194.58.90.123:9003",
-];
+].to_vec();
 
 pub fn get_error_response(_error: reqwest::Error) -> String {
     //if _error.is_status() {
