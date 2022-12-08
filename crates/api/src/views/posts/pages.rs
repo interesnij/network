@@ -10,6 +10,7 @@ use crate::utils::{
     RegListData,
     CardPostListJson,
     ErrorParams,
+    POSTS_URL,
 };
 use crate::errors::Error;
 
@@ -20,7 +21,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 }
 
 pub async fn all_postlists_page(req: HttpRequest) -> Json<String> {
-    let postlists = reqwest::get("http:194.58.90.123:9003/all-postlists")
+    let postlists = reqwest::get(POSTS_URL + &"/all-postlists".to_string())
         .await
         .expect("E.")
         .text()
