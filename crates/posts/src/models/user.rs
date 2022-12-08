@@ -2031,7 +2031,7 @@ impl User {
                 .first::<User>(&_connection);
             if target_user.is_ok() {
                 let _target_user = target_user.expect("E.");
-                is_user_see_all = _target_user.see_all;
+                is_user_see_all = _target_user.is_user_see_all(user_id);
             }
             if is_user_see_all {
                 self.add_new_user_subscriber(user_id);
@@ -2070,7 +2070,7 @@ impl User {
                     .first::<User>(&_connection)
                     .is_ok() {
                     let _target_user = target_user.expect("E.");
-                    if _target_user.see_all {
+                    if _target_user.is_user_see_all(user_id) {
                         self.delete_new_subscriber(user_id);
                     }
                 }
@@ -2117,7 +2117,7 @@ impl User {
                 .first::<User>(&_connection);
             if target_user.is_ok() {
                 let _target_user = target_user.expect("E.");
-                is_user_see_all = _target_user.see_all;
+                is_user_see_all = _target_user.is_user_see_all(user_id);
             }
 
             self.delete_user_featured_object(user_id);
@@ -2163,7 +2163,7 @@ impl User {
                 .first::<User>(&_connection);
             if target_user.is_ok() {
                 let _target_user = target_user.expect("E.");
-                is_user_see_all = _target_user.see_all;
+                is_user_see_all = _target_user.is_user_see_all(user_id);
             }
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
