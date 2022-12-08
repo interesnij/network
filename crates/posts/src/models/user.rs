@@ -2030,8 +2030,8 @@ impl User {
                 .filter(schema::users::user_id.eq(user_id))
                 .first::<User>(&_connection);
             if target_user.is_ok() {
-                target_user = target_user.expect("E.");
-                is_user_see_all = target_user.see_all;
+                _target_user = target_user.expect("E.");
+                is_user_see_all = _target_user.see_all;
             }
             if is_user_see_all {
                 self.add_new_user_subscriber(user_id);
@@ -2069,8 +2069,8 @@ impl User {
                     .filter(schema::users::user_id.eq(user_id))
                     .first::<User>(&_connection)
                     .is_ok() {
-                    target_user = target_user.expect("E.");
-                    is_user_see_all = target_user.see_all;
+                    _target_user = target_user.expect("E.");
+                    is_user_see_all = _target_user.see_all;
                     if is_user_see_all {
                         self.delete_new_subscriber(user_id);
                     }
@@ -2117,8 +2117,8 @@ impl User {
                 .filter(schema::users::user_id.eq(user_id))
                 .first::<User>(&_connection);
             if target_user.is_ok() {
-                target_user = target_user.expect("E.");
-                is_user_see_all = target_user.see_all;
+                _target_user = target_user.expect("E.");
+                is_user_see_all = _target_user.see_all;
             }
 
             self.delete_user_featured_object(user_id);
@@ -2161,10 +2161,11 @@ impl User {
             let mut is_user_see_all = false;
             let target_user = users
                 .filter(schema::users::user_id.eq(user_id))
-                .first::<User>(&_connection);
+                .first::<User>(&_connection)
+                .expect("E.");
             if target_user.is_ok() {
-                target_user = target_user.expect("E.");
-                is_user_see_all = target_user.see_all;
+                _target_user = target_user.expect("E.");
+                is_user_see_all = _target_user.see_all;
             }
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
