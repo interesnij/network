@@ -3,6 +3,7 @@ use crate::utils::{
     establish_connection,
     get_limit_offset,
     CardUserJson,
+    CardCommunityJson,
 };
 use diesel::{
     Queryable,
@@ -25,27 +26,39 @@ use crate::schema::{
 6 пославший запрос на идентификацию
 7 идентифицированный
 
-11 удаленный стандартный
-16 удаленный пославший запрос на идентификацию
-17 удаленный идентифицированный
+10 TRAINEE_MODERATOR
+11 MODERATOR
+12 HIGH_MODERATOR
+13 TEAMLEAD_MODERATOR
+14 TRAINEE_MANAGER 
+15 MANAGER
+16 HIGH_MANAGER
+17 TEAMLEAD_MANAGER
+18 ADVERTISER
+19 HIGH_ADVERTISER
+20 TEAMLEAD_ADVERTISER
+21 ADMINISTRATOR
+22 HIGH_ADMINISTRATOR
+23 TEAMLEAD_ADMINISTRATOR
+25 SUPERMANAGER
 
-21 закрытый стандартный
-26 закрытый пославший запрос на идентификацию
-27 закрытый идентифицированный
+31 удаленный стандартный
+36 удаленный пославший запрос на идентификацию
+37 удаленный идентифицированный
 
-31 приостановленный стандартный
-36 приостановленный пославший запрос на идентификацию
-37 приостановленный идентифицированный
+41 закрытый стандартный
+46 закрытый пославший запрос на идентификацию
+47 закрытый идентифицированный
 
-41 закрытый баннером стандартный
-46 закрытый баннером пославший запрос на идентификацию
-47 закрытый баннером идентифицированный
+51 приостановленный стандартный
+56 приостановленный пославший запрос на идентификацию
+57 приостановленный идентифицированный
 
+61 закрытый баннером стандартный
+66 закрытый баннером пославший запрос на идентификацию
+67 закрытый баннером идентифицированный
 
-эти объекты нужны только для связывания пользователей
-сервиса сообществ с пользователями сервиса пользователей.
-Эти объекты копируются при надобности с объектов
-пользователей сервиса пользователей
+приватность
 1 Все пользователи
 2 Все друзья и все подписчики
 3 Все друзья и подписчики, кроме
@@ -61,6 +74,7 @@ use crate::schema::{
 12 Некоторые подписчики
 13 Только я
 */
+
 #[derive(Serialize, Identifiable, Queryable)]
 pub struct User {
     pub id:            i32,
@@ -102,11 +116,219 @@ pub struct NewUserJson {
     pub link:       String,
     pub s_avatar:   Option<String>,
     pub see_all:    i16,
-    pub friends:    Option<Vec<i32>>,  // список id друзей пользователя
-    pub follows:    Option<Vec<i32>>,  // список id подписчтков пользователя
 }
 
 impl User {
+    pub fn get_communities (
+        &self, 
+        limit:  Option<i64>,
+        offset: Option<i64>
+    ) -> Vec<CardCommunityJson> {
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            communitys::dsl::communitys,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let communities_ids = communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .order(schema::communities_memberships::visited.desc())
+            .select(schema::communities_memberships::user_id)
+            .limit(_limit)
+            .offset(_offset)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        return communitys
+            .filter(schema::communitys::id.eq_any(communities_ids))
+            .filter(schema::communitys::types.lt(20))
+            .select((
+                schema::users::user_id,
+                schema::users::name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+                schema::users::count,
+            ))
+            .load::<CardCommunityJson>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_limit_communities(&self, limit: Option<i64>) -> Vec<CardCommunityJson> {
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            communitys::dsl::communitys,
+        };
+
+        let _limit = get_limit(limit, 20);
+        let _connection = establish_connection();
+        let communities_ids = communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .order(schema::communities_memberships::visited.desc())
+            .select(schema::communities_memberships::user_id)
+            .limit(_limit)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        return communitys
+            .filter(schema::communitys::id.eq_any(communities_ids))
+            .filter(schema::communitys::types.lt(20))
+            .select((
+                schema::users::user_id,
+                schema::users::name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+                schema::users::count,
+            ))
+            .load::<CardCommunityJson>(&_connection)
+            .expect("E.");
+    }
+    pub fn search_communities (
+        &self,
+        q:      &String,
+        limit:  Option<i64>,
+        offset: Option<i64>
+    ) -> Vec<CardCommunityJson> {
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            communitys::dsl::communitys,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let communities_ids = communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .order(schema::communities_memberships::visited.desc())
+            .select(schema::communities_memberships::user_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        return communitys
+            .filter(schema::communitys::id.eq_any(communities_ids))
+            .filter(schema::communitys::name.ilike(&q))
+            .filter(schema::communitys::types.lt(20))
+            .limit(_limit)
+            .offset(_offset)
+            .select((
+                schema::users::user_id,
+                schema::users::name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+                schema::users::count,
+            ))
+            .load::<CardCommunityJson>(&_connection)
+            .expect("E.");
+    }
+    pub fn update_last_activity(&self) -> i16 {
+        let _now = chrono::Local::now().naive_utc();
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::last_activity.eq(&_now))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_name(&self, first_name: &str, last_name: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::users::first_name.eq(first_name),
+                schema::users::last_name.eq(last_name)
+            ))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_link(&self, link: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::link.eq(link))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_avatar(&self, s_avatar: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::s_avatar.eq(s_avatar))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+
+    pub fn edit_private (
+        &self, 
+        field:  &str, 
+        value:  i16, 
+        _users: Option<Vec<i32>>
+    ) -> i16 {
+        let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
+        if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
+            return 0; 
+        }
+
+        let _connection = establish_connection();
+        let _update_field = match field {
+            "see_all" => { diesel::update(self)
+                .set(schema::users::see_all.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            "see_community" => diesel::update(self)
+                .set(schema::users::see_community.eq(value))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+            }; 
+
+        if is_ie_mode {
+            // нужно удалить из списка тех, кто был туда внесен
+            // с противоположными правами.
+            use crate::schema::user_visible_perms::dsl::user_visible_perms;
+            match value { 
+                0 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(10))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                1 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(11))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                10 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(0))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                11 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(1))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                _ => 0,
+            };
+        };
+        if _users.is_some() && is_ie_mode {
+            for _user in _users.unwrap().iter() {
+                let _new_perm = NewUserVisiblePerm {
+                    user_id:   self.user_id,
+                    target_id: *_user,
+                    types:     value,
+                };
+                diesel::insert_into(schema::user_visible_perms::table)
+                    .values(&_new_perm)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
+        }
+        
+        return 1;
+    }
+
     pub fn is_supermanager(&self) -> bool {
         return self.types == 25;
     }
@@ -177,7 +399,7 @@ impl User {
         return false;
     }
 
-    pub fn get_or_create_user(user: NewUserJson) -> Result<User, diesel::result::Error> {
+    pub fn create_user(user: NewUserJson) -> i32 {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
@@ -186,9 +408,7 @@ impl User {
             .select(schema::users::id)
             .first::<i32>(&_connection)
             .is_ok() {
-                return Ok(users
-                    .filter(schema::users::user_id.eq(user.user_id))
-                    .first::<User>(&_connection)?);
+                return 0;
         }
         let new_form = NewUser {
             user_id:       user.user_id,
@@ -205,59 +425,8 @@ impl User {
         };
         let new_user = diesel::insert_into(schema::users::table)
             .values(&new_form)
-            .get_result::<User>(&_connection);
-
-        let new_user_id = match &new_user {
-             Ok(_ok) => _ok.id,
-             Err(_error) => 0,
-        };
-
-        if new_user_id > 0 && user.friends.is_some() {
-            use crate::schema::friends::dsl::friends;
-
-            // user_id кто дружит
-            // target_id с кем дружит
-            for user_id in user.friends.unwrap() {
-                if friends
-                    .filter(schema::friends::user_id.eq(new_user_id))
-                    .filter(schema::friends::target_id.eq(user_id))
-                    .select(schema::friends::id)
-                    .first::<i32>(&_connection)
-                    .is_err() {
-                        let new_form = NewFriend {
-                            user_id:   new_user_id,
-                            target_id: user_id,
-                        };
-                        diesel::insert_into(schema::friends::table)
-                            .values(&new_form)
-                            .get_result::<Friend>(&_connection)
-                            .expect("Error.");
-                }
-            }
-        }
-        if new_user_id > 0 && user.follows.is_some() {
-            use crate::schema::follows::dsl::follows;
-            // user_id на кого подписан
-            // target_id кто подписан
-            for user_id in user.follows.unwrap() {
-                if follows
-                    .filter(schema::follows::user_id.eq(new_user_id))
-                    .filter(schema::follows::target_id.eq(user_id))
-                    .select(schema::follows::id)
-                    .first::<i32>(&_connection)
-                    .is_err() {
-                        let new_form = NewFollow {
-                            user_id:   new_user_id,
-                            target_id: user_id,
-                        };
-                        diesel::insert_into(schema::follows::table)
-                            .values(&new_form)
-                            .get_result::<Follow>(&_connection)
-                            .expect("Error.");
-                }
-            }
-        }
-        return new_user;
+            .execute(&_connection);
+        return 1;
     }
     pub fn get_full_name(&self) -> String {
         self.first_name.clone() + &" ".to_string() + &self.last_name.clone()
@@ -473,9 +642,6 @@ impl User {
     }
 
     pub fn get_friends_ids(&self) -> Vec<i32> {
-        // в местные таблицы друзей и подписчиков мы записываем
-        // id пользователей с сервиса пользователей, чтобы было
-        // корректнее их сравнивать.
         use crate::schema::friends::dsl::friends;
 
         let _connection = establish_connection();
@@ -496,51 +662,6 @@ impl User {
             .load::<i32>(&_connection)
             .expect("E.");
         return _follows;
-    }
-    pub fn set_user_visible_perms(&self, users: String, types: i16) -> bool {
-        use crate::schema::user_visible_perms::dsl::user_visible_perms;
-
-        let _connection = establish_connection();
-        let mut users_ids = Vec::new();
-        let v: Vec<&str> = users.split(", ").collect();
-        for item in v.iter() {
-            if !item.is_empty() {
-                let pk: i32 = item.parse().unwrap();
-                users_ids.push(pk);
-            }
-        }
-
-        // нужно удалить из списка тех, кто был туда внесен
-        // с противоположными правами.
-        match types {
-            1 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(11))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            11 => diesel::delete (
-                    user_visible_perms
-                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(1))
-                )
-                .execute(&_connection)
-                .expect("E"),
-            _ => 0,
-        };
-        for user_id in users_ids.iter() {
-            let _new_perm = NewUserVisiblePerm {
-                user_id:   self.user_id,
-                target_id: *user_id,
-                types:     types,
-            };
-            diesel::insert_into(schema::user_visible_perms::table)
-                .values(&_new_perm)
-                .get_result::<UserVisiblePerm>(&_connection)
-                .expect("Error.");
-        }
-        return true;
     }
 
     pub fn delete_item(&self) -> i16 {
@@ -770,9 +891,12 @@ impl User {
     pub fn is_anon_user_see_community(&self) -> bool {
         return self.see_community == 1;
     }
-    pub fn follow_user(&self, user_id: i32) -> bool {
+    pub fn is_anon_user_see_all(&self) -> bool {
+        return self.see_all == 1;
+    }
+    pub fn follow_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
-            return false;
+            return 0;
         }
 
         let _connection = establish_connection();
@@ -784,15 +908,15 @@ impl User {
             .values(&_new_follow)
             .execute(&_connection);
         if new_follow.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn unfollow_user(&self, user_id: i32) -> bool {
+    pub fn unfollow_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_following_user_with_id(user_id) {
-            return false;
+            return 0;
         }
         use crate::schema::follows::dsl::follows;
 
@@ -809,24 +933,24 @@ impl User {
                 .execute(&_connection);
 
             if del.is_ok() {
-                return true;
+                return 1;
             }
             else {
-                return false;
+                return 0;
             }
         }
         else {
-            return false;
+            return 0;
         }
     }
 
-    pub fn frend_user(&self, user_id: i32) -> bool {
+    pub fn frend_user(&self, user_id: i32) -> i16 {
         // тут друзья создаются всего в одном экземпляре, где
         // self.user_id - это id создающего, а user_id -
         // id создаваемого. Это нужно для фильтрации приватности по
         // друзьям.
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
-            return false;
+            return 0;
         }
         use crate::schema::follows::dsl::follows;
 
@@ -849,15 +973,15 @@ impl User {
             .execute(&_connection);
 
         if del.is_ok() && new_friend.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn unfrend_user(&self, user_id: i32) -> bool {
+    pub fn unfrend_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
-            return false;
+            return 0;
         }
         use crate::schema::friends::dsl::friends;
 
@@ -879,15 +1003,15 @@ impl User {
             .execute(&_connection);
 
         if del.is_ok() && new_follow.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
-    pub fn block_user(&self, user_id: i32) -> bool {
+    pub fn block_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || self.is_user_in_block(user_id) {
-            return false;
+            return 0;
         }
         let _connection = establish_connection();
 
@@ -928,13 +1052,13 @@ impl User {
         };
         diesel::insert_into(schema::user_visible_perms::table)
             .values(&_user_block)
-            .get_result::<UserVisiblePerm>(&_connection)
+            .execute(&_connection)
             .expect("Error.");
-        return true;
+        return 1;
     }
-    pub fn unblock_user(&self, user_id: i32) -> bool {
+    pub fn unblock_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_user_in_block(user_id) {
-            return false;
+            return 0;
         }
         use crate::schema::user_visible_perms::dsl::user_visible_perms;
 
@@ -947,10 +1071,10 @@ impl User {
             .execute(&_connection);
 
         if del.is_ok() {
-            return true;
+            return 1;
         }
         else {
-            return false;
+            return 0;
         }
     }
     pub fn get_gender_a(&self) -> String {
@@ -1044,9 +1168,11 @@ pub struct NewFriend {
     pub target_id: i32,
 }
 
-/////// Follow //////
-// id подписчиков пользователя, для приватности
-// записываем id пользователей основного сервиса пользователей.
+/*
+Follow
+id подписчиков пользователя, для приватности
+записываем id пользователей основного сервиса пользователей.
+*/
 #[derive(Debug, Queryable, Serialize, Identifiable, Associations)]
 pub struct Follow {
     pub id:        i32,

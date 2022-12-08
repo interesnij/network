@@ -91,9 +91,10 @@ pub struct NewCommunityJson {
 #[derive(Serialize, Queryable)]
 pub struct CardCommunityJson {
     pub id:    i32,
-    pub name:  String,
+    pub name:  String, 
     pub link:  String,
     pub image: Option<String>,
+    pub count: i32,
 }
 
 ////////

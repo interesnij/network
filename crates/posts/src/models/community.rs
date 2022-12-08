@@ -149,7 +149,6 @@ pub struct NewCommunityJson {
     pub types:        Option<i16>,
     pub link:         Option<String>,
     pub s_avatar:     Option<String>,
-    pub follows:      Option<Vec<(i32, i16)>>,  // список id подписчтков сообщества (1) и их права (2)
 }
 
 impl Community {
@@ -962,7 +961,6 @@ impl Community {
         types:        i16,
         link:         String,  
         s_avatar:     Option<String>,
-        follows_ids:  Option<Vec<(i32, i16)>>
     ) -> i16 {
         use crate::schema::communitys::dsl::communitys;
 
@@ -997,29 +995,6 @@ impl Community {
             .values(&new_community_form)
             .execute(&_connection)
             .expect("Error.");
-
-        if follows_ids.is_some() {
-            use crate::schema::communities_memberships::dsl::communities_memberships;
-
-            for (user_id, level) in follows_ids.unwrap() {
-                if communities_memberships
-                    .filter(schema::communities_memberships::user_id.eq(user_id))
-                    .filter(schema::communities_memberships::community_id.eq(community_id))
-                    .select(schema::communities_memberships::id)
-                    .first::<i32>(&_connection)
-                    .is_ok() {
-                        let new_form = NewCommunitiesMembership {
-                            user_id:      user_id,
-                            community_id: community_id,
-                            level:        level,
-                        };
-                        diesel::insert_into(schema::communities_memberships::table)
-                            .values(&new_form)
-                            .execute(&_connection)
-                            .expect("Error.");
-                }
-            }
-        }
         return 1;
     }
 
