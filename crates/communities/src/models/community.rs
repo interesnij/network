@@ -234,6 +234,7 @@ pub struct Community {
     pub s_avatar:    Option<String>,
     pub category_id: i32,
     pub user_id:     i32,
+    pub members:     i16,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="communitys"]
@@ -243,6 +244,7 @@ pub struct NewCommunity {
     pub link:        String,
     pub category_id: i32,
     pub user_id:     i32,
+    pub members:     i16,
 }
 
 impl Community {
@@ -568,10 +570,9 @@ impl Community {
 
     pub fn plus_members(&self, count: i32) -> () {
         let _connection = establish_connection();
-        let profile = self.get_info_model();
         match profile {
           Ok(_ok) => diesel::update(&_ok)
-              .set(schema::community_infos::members.eq(_ok.members + count))
+              .set(schema::communitys::members.eq(_ok.members + count))
               .execute(&_connection)
               .expect("Error."),
           Err(_error) => 0,
@@ -579,10 +580,9 @@ impl Community {
     }
     pub fn minus_members(&self, count: i32) -> () {
         let _connection = establish_connection();
-        let profile = self.get_info_model();
         match profile {
           Ok(_ok) => diesel::update(&_ok)
-              .set(schema::community_infos::members.eq(_ok.members - count))
+              .set(schema::communitys::members.eq(_ok.members - count))
               .execute(&_connection)
               .expect("Error."),
           Err(_error) => 0,
@@ -675,6 +675,7 @@ impl Community {
                 link:        link,
                 category_id: category_id,
                 user_id:     user_id,
+                members:     0,
             };
         let new_community = diesel::insert_into(schema::communitys::table)
             .values(&new_community_form)
@@ -707,7 +708,6 @@ impl Community {
             cover:        None,
             created:      chrono::Local::now().naive_utc(),
             description:  None,
-            members:      0,
         };
         diesel::insert_into(schema::community_infos::table)
             .values(&_info)
@@ -739,11 +739,7 @@ impl Community {
     }
 
     pub fn count_members(&self) -> i32 {
-        let profile = self.get_info_model();
-        return match profile {
-          Ok(_ok) => _ok.members,
-          Err(_error) => 0,
-        };
+        return self.members;
     }
     pub fn count_members_ru(&self) -> String {
         use crate::utils::get_count_for_ru;

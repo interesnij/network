@@ -14,6 +14,7 @@ use diesel::{
     ExpressionMethods,
     QueryDsl,
     PgTextExpressionMethods,
+    PgConnection,
 };
 
 use crate::schema;
@@ -139,8 +140,6 @@ pub struct NewUserJson {
     pub is_man:     Option<i16>,
     pub link:       Option<String>,
     pub s_avatar:   Option<String>,
-    pub friends:    Option<Vec<i32>>,  // список id друзей пользователя
-    pub follows:    Option<Vec<i32>>,  // список id подписчтков пользователя
 }
 
 impl User {
@@ -380,7 +379,7 @@ impl User {
             пользователей item_users, чтобы выводить сведения при изменении приватности
             и в других подобных случаях.
             */
-            use crate::models::ItemUser;
+
             for _user in _users.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
@@ -710,8 +709,6 @@ impl User {
         link:        String,
         s_avatar:    Option<String>,
         see_all:     i16,
-        friends_ids: Option<Vec<i32>>,
-        follows_ids: Option<Vec<i32>>
     ) -> i16 {
         use crate::schema::users::dsl::users;
 
@@ -746,49 +743,6 @@ impl User {
             .values(&new_form)
             .execute(&_connection)
             .expect("Error.");
-
-        if friends_ids.is_some() {
-            use crate::schema::friends::dsl::friends;
-
-            for _user_id in friends_ids.unwrap() {
-                if friends
-                    .filter(schema::friends::user_id.eq(user_id))
-                    .filter(schema::friends::target_id.eq(_user_id))
-                    .select(schema::friends::id)
-                    .first::<i32>(&_connection).is_err() {
-                        let new_form = NewFriend {
-                            user_id:   user_id,
-                            target_id: _user_id,
-                        };
-                        diesel::insert_into(schema::friends::table)
-                            .values(&new_form)
-                            .execute(&_connection)
-                            .expect("Error.");
-                }
-            }
-        }
-        if follows_ids.is_some() {
-            use crate::schema::follows::dsl::follows;
-
-            for _user_id in follows_ids.unwrap() {
-                if follows
-                    .filter(schema::follows::user_id.eq(user_id))
-                    .filter(schema::follows::target_id.eq(_user_id))
-                    .select(schema::follows::id)
-                    .first::<i32>(&_connection)
-                    .is_err() {
-                        let new_form = NewFollow {
-                            user_id:   user_id,
-                            target_id: _user_id,
-                        };
-                        diesel::insert_into(schema::follows::table)
-                            .values(&new_form)
-                            .execute(&_connection)
-                            .expect("Error.");
-                }
-            }
-        }
-
         return 1;
     }
     pub fn get_full_name(&self) -> String {
@@ -1931,20 +1885,36 @@ impl User {
 
     pub fn get_or_create_featured_objects (
         &self,
-        friends_ids: Option<Vec<i32>>,
-        communities_ids: Option<Vec<i32>>
+        user_id: i32,
+        conn:    &mut PgConnection
     ) -> () {
         use crate::models::NewFeaturedUserCommunitie;
-        use crate::schema::featured_user_communities::dsl::featured_user_communities;
+        use crate::schema::{
+            featured_user_communities::dsl::featured_user_communities,
+            friends::dsl::friends,
+            follows::dsl::follows,
+        };
 
-        let _connection = establish_connection();
-        if friends_ids.is_some() {
-            for friend_id in friends_ids.unwrap() {
-                if !self.is_connected_with_user_with_id(friend_id) && !featured_user_communities
+        let friends_ids = friends
+            .filter(schema::friends::user_id.eq(user_id))
+            .limit(6)
+            .select(schema::friends::target_id)
+            .load::<i32>(conn)
+            .expect("E.");
+        let communities_ids = communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .limit(6)
+            .select(schema::communities_memberships::community_id)
+            .load::<i32>(conn)
+            .expect("E.");
+
+        if !friends_ids.is_empty() {
+            for friend_id in friends_ids.iter() {
+                if self.is_connected_with_user_with_id(friend_id) && !featured_user_communities
                     .filter(schema::featured_user_communities::owner.eq(self.user_id))
                     .filter(schema::featured_user_communities::user_id.eq(friend_id))
                     .select(schema::featured_user_communities::id)
-                    .load::<i32>(&_connection).is_ok() {
+                    .first::<i32>(conn).is_err() {
 
                     let new_featured = NewFeaturedUserCommunitie {
                         owner: self.user_id,
@@ -1956,18 +1926,18 @@ impl User {
                     };
                     diesel::insert_into(schema::featured_user_communities::table)
                         .values(&new_featured)
-                        .execute(&_connection)
+                        .execute(conn)
                         .expect("Error.");
                     }
             }
         }
-        if communities_ids.is_some() {
-            for community_id in communities_ids.unwrap() {
-                if !self.is_member_of_community(community_id) && !featured_user_communities
+        if !communities_ids.is_empty() {
+            for community_id in communities_ids.iter() {
+                if self.is_member_of_community(community_id) && !featured_user_communities
                     .filter(schema::featured_user_communities::owner.eq(self.user_id))
                     .filter(schema::featured_user_communities::community_id.eq(community_id))
                     .select(schema::featured_user_communities::id)
-                    .load::<i32>(&_connection).is_ok() {
+                    .first::<i32>(conn).is_err() {
 
                     let new_featured = NewFeaturedUserCommunitie {
                         owner: self.user_id,
@@ -1979,7 +1949,7 @@ impl User {
                     };
                     diesel::insert_into(schema::featured_user_communities::table)
                         .values(&new_featured)
-                        .execute(&_connection)
+                        .execute(conn)
                         .expect("Error.");
                 }
             }
@@ -2038,13 +2008,7 @@ impl User {
             .is_ok();
     }
 
-    pub fn follow_user (
-        &self,
-        user_id: i32,
-        is_user_see_all: bool,
-        friends_ids: Option<Vec<i32>>,
-        communities_ids: Option<Vec<i32>>
-    ) -> i16 {
+    pub fn follow_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return 0;
         }
@@ -2058,9 +2022,17 @@ impl User {
             .values(&_new_follow)
             .execute(&_connection);
         if new_follow.is_ok() {
+            let mut is_user_see_all = false;
+            let target_user = users
+                .filter(schema::users::user_id.eq(user_id))
+                .first::<User>(&_connection);
+            if target_user.is_ok() {
+                target_user = target_user.expect("E.");
+                is_user_see_all = target_user.see_all;
+            }
             if is_user_see_all {
                 self.add_new_user_subscriber(user_id);
-                self.get_or_create_featured_objects(friends_ids, communities_ids);
+                self.get_or_create_featured_objects(user_id, _connection);
             }
             return 1;
         }
@@ -2103,17 +2075,7 @@ impl User {
         return 0;
     }
 
-    pub fn frend_user (
-        &self,
-        user_id: i32,
-        is_user_see_all: bool,
-        friends_ids: Option<Vec<i32>>,
-        communities_ids: Option<Vec<i32>>
-    ) -> i16 {
-        // тут друзья создаются всего в одном экземпляре, где
-        // self.user_id - это id создающего, а user_id -
-        // id создаваемого. Это нужно для фильтрации приватности по
-        // друзьям.
+    pub fn frend_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
             return 0;
         }
@@ -2137,10 +2099,19 @@ impl User {
             )
             .execute(&_connection);
         if del.is_ok() && new_friend.is_ok() {
+            let mut is_user_see_all = false;
+            let target_user = users
+                .filter(schema::users::user_id.eq(user_id))
+                .first::<User>(&_connection);
+            if target_user.is_ok() {
+                target_user = target_user.expect("E.");
+                is_user_see_all = target_user.see_all;
+            }
+
             self.delete_user_featured_object(user_id);
             if !is_user_see_all {
                 self.add_new_user_subscriber(user_id);
-                self.get_or_create_featured_objects(friends_ids, communities_ids);
+                self.get_or_create_featured_objects(user_id, _connection);
             }
             return 1;
         }
@@ -2178,7 +2149,7 @@ impl User {
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
             }
-            self.get_or_create_featured_objects(Some(vec!(user_id)), None);
+            self.get_or_create_featured_objects(user_id, _connection);
             return 1;
         }
         else {
@@ -2378,6 +2349,7 @@ pub struct Follow {
     pub user_id:   i32,
     pub target_id: i32,
 }
+
 #[derive(Deserialize, Insertable)]
 #[table_name="follows"]
 pub struct NewFollow {

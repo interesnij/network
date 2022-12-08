@@ -56,6 +56,7 @@ CREATE TABLE communitys (
     s_avatar    VARCHAR(500),           -- маленький аватар
     category_id INT NOT NULL,           -- id категории
     user_id     INT NOT NULL,           -- id создателя
+    members     INT NOT NULL,
 
     UNIQUE(link)
 );
@@ -68,7 +69,9 @@ CREATE INDEX communitys_user_id_idx ON communitys (user_id);
 3 редактор
 4 рекламщик
 5 администратор
-6 забанен
+
+6 забанен - нужен для инфы о заблокированном пользователе, есил он не состоит в 
+подписчиках. Также для бана людей без их изгнания из сообщества
 */
 CREATE TABLE communities_memberships (
     id                SERIAL PRIMARY KEY,          -- id объекта
@@ -90,8 +93,7 @@ CREATE TABLE community_infos (
     level        SMALLINT NOT NULL DEFAULT 100,
     cover        VARCHAR(500),
     created      TIMESTAMP NOT NULL,
-    description  VARCHAR(500),
-    members      INT NOT NULL
+    description  VARCHAR(500)
 );
 CREATE UNIQUE INDEX community_infos_unq ON community_infos (community_id, id);
 
