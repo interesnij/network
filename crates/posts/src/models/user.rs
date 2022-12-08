@@ -1891,6 +1891,7 @@ impl User {
         use crate::models::NewFeaturedUserCommunitie;
         use crate::schema::{
             featured_user_communities::dsl::featured_user_communities,
+            communities_memberships::dsl::communities_memberships,
             friends::dsl::friends,
             follows::dsl::follows,
         };
@@ -2065,10 +2066,10 @@ impl User {
                 )
                 .execute(&_connection);
             if del.is_ok() {
-                if users
+                let target_user = users
                     .filter(schema::users::user_id.eq(user_id))
-                    .first::<User>(&_connection)
-                    .is_ok() {
+                    .first::<User>(&_connection);
+                if target_user.is_ok() {
                     let _target_user = target_user.expect("E.");
                     if _target_user.is_user_see_all(user_id) {
                         self.delete_new_subscriber(user_id);
