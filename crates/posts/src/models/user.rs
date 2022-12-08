@@ -1886,7 +1886,7 @@ impl User {
     pub fn get_or_create_featured_objects (
         &self,
         user_id: i32,
-        conn:    &mut PgConnection
+        conn:    &PgConnection
     ) -> () {
         use crate::models::NewFeaturedUserCommunitie;
         use crate::schema::{
@@ -2036,7 +2036,7 @@ impl User {
             }
             if is_user_see_all {
                 self.add_new_user_subscriber(user_id);
-                self.get_or_create_featured_objects(user_id, &mut _connection);
+                self.get_or_create_featured_objects(user_id, &_connection);
             }
             return 1;
         }
@@ -2124,7 +2124,7 @@ impl User {
             self.delete_user_featured_object(user_id);
             if !is_user_see_all {
                 self.add_new_user_subscriber(user_id);
-                self.get_or_create_featured_objects(user_id, &mut _connection);
+                self.get_or_create_featured_objects(user_id, &_connection);
             }
             return 1;
         }
@@ -2169,7 +2169,7 @@ impl User {
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
             }
-            self.get_or_create_featured_objects(user_id, &mut _connection);
+            self.get_or_create_featured_objects(user_id, &_connection);
             return 1;
         }
         else {
