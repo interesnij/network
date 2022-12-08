@@ -1893,7 +1893,6 @@ impl User {
             featured_user_communities::dsl::featured_user_communities,
             communities_memberships::dsl::communities_memberships,
             friends::dsl::friends,
-            follows::dsl::follows,
         };
 
         let friends_ids = friends
@@ -2010,14 +2009,24 @@ impl User {
     }
 
     pub fn follow_user(&self, user_id: i32) -> i16 {
+        use crate::schema::{
+            users::dsl::users,
+            follows::dsl::follows,
+        };
+        
+        let _connection = establish_connection();
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return 0;
         }
-        use crate::schema::{
-            users::dsl::users,
-        };
+        else if follows
+            .filter(schema::follows::user_id.eq(self.user_id))
+            .filter(schema::follows::target_id.eq(user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection)
+            .is_ok() {
+                return 0;
+        }
 
-        let _connection = establish_connection();
         let _new_follow = NewFollow {
             user_id:   self.user_id,
             target_id: user_id,
