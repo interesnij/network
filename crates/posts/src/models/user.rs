@@ -2041,11 +2041,7 @@ impl User {
         }
 
     }
-    pub fn unfollow_user (
-        &self,
-        user_id: i32,
-        is_user_see_all: bool,
-    ) -> i16 {
+    pub fn unfollow_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_following_user_with_id(user_id) {
             return 0;
         }
@@ -2063,9 +2059,17 @@ impl User {
                 )
                 .execute(&_connection);
             if del.is_ok() {
-                if is_user_see_all {
-                    self.delete_new_subscriber(user_id);
+                if target_user = users
+                    .filter(schema::users::user_id.eq(user_id))
+                    .first::<User>(&_connection)
+                    .is_ok() {
+                    target_user = target_user.expect("E.");
+                    is_user_see_all = target_user.see_all;
+                    if is_user_see_all {
+                        self.delete_new_subscriber(user_id);
+                    }
                 }
+                
                 return 1;
             }
             else {
@@ -2119,11 +2123,7 @@ impl User {
             return 0;
         }
     }
-    pub fn unfrend_user (
-        &self,
-        user_id: i32,
-        is_user_see_all: bool,
-    ) -> i16 {
+    pub fn unfrend_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
             return 0;
         }
@@ -2146,6 +2146,14 @@ impl User {
             .values(&_new_follow)
             .execute(&_connection);
         if del.is_ok() && new_follow.is_ok() {
+            let mut is_user_see_all = false;
+            let target_user = users
+                .filter(schema::users::user_id.eq(user_id))
+                .first::<User>(&_connection);
+            if target_user.is_ok() {
+                target_user = target_user.expect("E.");
+                is_user_see_all = target_user.see_all;
+            }
             if !is_user_see_all {
                 self.delete_new_subscriber(user_id);
             }

@@ -115,8 +115,6 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
                 data.link.as_deref().unwrap().to_string(),
                 data.s_avatar.clone(),
                 data.see_all.unwrap(),
-                data.friends.clone(),
-                data.friends.clone(),
             )).await?;
             Ok(Json(_res))
         }
@@ -379,7 +377,7 @@ pub async fn delete_follow(data: Json<AddTargetParams>) -> Result<Json<i16>, Err
         if data.token.as_deref().unwrap() == TOKEN {
             let user = get_user(data.user_id.unwrap()).expect("E.");
             let _res = block(move || user.unfollow_user(
-                data.target_id.unwrap(),
+                data.target_id.unwrap(), 
             )).await?;
             Ok(Json(_res))
         }
@@ -445,7 +443,6 @@ pub async fn create_community(data: Json<NewCommunityJson>) -> Result<Json<i16>,
                 data.types.unwrap(),
                 data.link.as_deref().unwrap().to_string(),
                 data.s_avatar.clone(),
-                data.follows.clone(), 
             )).await?;
             Ok(Json(_res))
         }
