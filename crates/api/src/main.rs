@@ -29,12 +29,20 @@ pub struct AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    use crate::routes::routes;
+    use chrono::Duration;
+    use actix_extensible_rate_limit::{
+        backend::SimpleInputFunctionBuilder,
+        RateLimiter,
+    };
+    use actix_redis::RedisBackend;
+
     dotenv().ok();
     let backend = RedisBackend::builder().build();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
-    use crate::routes::routes;
+
     HttpServer::new(move || {
         let input = SimpleInputFunctionBuilder::new(Duration::from_secs(60), 5)
             .real_ip_key()
