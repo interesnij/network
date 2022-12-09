@@ -34,9 +34,9 @@ async fn main() -> std::io::Result<()> {
     use actix_extensible_rate_limit::{
         backend::{
             SimpleInputFunctionBuilder,
+            memory::InMemoryBackend,
         },
         RateLimiter,
-        //InMemoryBackend,
     };
 
     dotenv().ok();
