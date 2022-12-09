@@ -30,13 +30,14 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
-    use chrono::Duration;
+    use std::time::Duration;
     use actix_extensible_rate_limit::{
         backend::{
             SimpleInputFunctionBuilder,
-            RedisBackend,
+            redis::RedisBackend,
         },
         RateLimiter,
+        redis::RedisBackend,
     };
 
     dotenv().ok();
@@ -46,7 +47,7 @@ async fn main() -> std::io::Result<()> {
     };
 
     HttpServer::new(move || {
-        let input = SimpleInputFunctionBuilder::new(Duration::seconds(60), 5)
+        let input = SimpleInputFunctionBuilder::new(Duration::from_secs(60), 5)
             .real_ip_key() 
             .build();
         let limit_middleware = RateLimiter::builder(backend.clone(), input)
