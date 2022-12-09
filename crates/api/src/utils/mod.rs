@@ -14,18 +14,18 @@ static COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
 
 // список url сервисов, на которых присутствуют копии пользователей.
 // нужно, к примеру, для синхронизации данных пользователей.
-let USERS_SERVICES: Vec<&str> = [
+static USERS_SERVICES: Vec<&str> = [
     "194.58.90.123:9002",
     "194.58.90.123:9003",
 ].to_vec();
 
 // список url сервисов, на которых присутствуют копии сообществ.
-let COMMUNITIES_SERVICES: Vec<&str> = [
+static COMMUNITIES_SERVICES: Vec<&str> = [
     "194.58.90.123:9003",
 ].to_vec();
 
 // список url сервисов, на которых присутствуют копии элементов для прикрепов и папок.
-let ATTACH_SERVICES: Vec<&str> = [
+static ATTACH_SERVICES: Vec<&str> = [
     "194.58.90.123:9003".to_string(),
 ].to_vec();
 
