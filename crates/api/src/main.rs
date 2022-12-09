@@ -39,7 +39,7 @@ async fn main() -> std::io::Result<()> {
     };
 
     dotenv().ok();
-    let backend = actix_extensible_rate_limit::RedisBackend::builder().build();
+    let backend = actix_extensible_rate_limit::backend::redis::RedisBackend::builder().build();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
