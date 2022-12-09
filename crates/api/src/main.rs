@@ -34,13 +34,13 @@ async fn main() -> std::io::Result<()> {
     use actix_extensible_rate_limit::{
         backend::{
             SimpleInputFunctionBuilder,
-            memory::InMemoryBackend,
+            memory::RedisBackend,
         },
         RateLimiter,
     };
 
     dotenv().ok();
-    let backend = InMemoryBackend::builder().build();
+    let backend = RedisBackend::builder().build();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
