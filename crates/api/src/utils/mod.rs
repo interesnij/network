@@ -8,9 +8,9 @@ use diesel::{
 };
 
 // url серверов, куда шлем запросы
-let POSTS_URL: &str = "http:194.58.90.123:9003";
-let USERS_URL: &str = "http:194.58.90.123:9001";
-let COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
+static POSTS_URL: &str = "http:194.58.90.123:9003";
+static USERS_URL: &str = "http:194.58.90.123:9001";
+static COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
 
 // список url сервисов, на которых присутствуют копии пользователей.
 // нужно, к примеру, для синхронизации данных пользователей.
