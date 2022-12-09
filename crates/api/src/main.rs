@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
         backend::{
             SimpleInputFunctionBuilder,
             memory::InMemoryBackend,
-            redis::RedisBackend,
+            //redis::RedisBackend,
         },
         RateLimiter,
     };
