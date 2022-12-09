@@ -41,16 +41,16 @@ async fn main() -> std::io::Result<()> {
     };
 
     dotenv().ok();
-    let backend = InMemoryBackend::builder().build();
+    let limit_backend = InMemoryBackend::builder().build();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
 
     HttpServer::new(move || {
-        let input = SimpleInputFunctionBuilder::new(Duration::from_secs(60), 5)
+        let limit_input = SimpleInputFunctionBuilder::new(Duration::from_secs(1), 5)
             .real_ip_key() 
             .build();
-        let limit_middleware = RateLimiter::builder(backend.clone(), input)
+        let limit_middleware = RateLimiter::builder(limit_backend.clone(), limit_input)
             .add_headers()
             .build();
         let cors = Cors::default()
