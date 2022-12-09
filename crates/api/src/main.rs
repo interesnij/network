@@ -34,7 +34,7 @@ async fn main() -> std::io::Result<()> {
     use actix_extensible_rate_limit::{
         backend::{
             SimpleInputFunctionBuilder,
-            RedisBackend
+            redis::RedisBackend,
         },
         RateLimiter,
     };
@@ -46,8 +46,8 @@ async fn main() -> std::io::Result<()> {
     };
 
     HttpServer::new(move || {
-        let input = SimpleInputFunctionBuilder::new(Duration::from_secs(60), 5)
-            .real_ip_key()
+        let input = SimpleInputFunctionBuilder::new(Duration::secs(60), 5)
+            .real_ip_key() 
             .build();
         let limit_middleware = RateLimiter::builder(backend.clone(), input)
             .add_headers()
