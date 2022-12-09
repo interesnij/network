@@ -30,11 +30,18 @@ pub struct AppState {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
+    let backend = RedisBackend::builder().build();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
     use crate::routes::routes;
     HttpServer::new(move || {
+        let input = SimpleInputFunctionBuilder::new(Duration::from_secs(60), 5)
+            .real_ip_key()
+            .build();
+        let limit_middleware = RateLimiter::builder(backend.clone(), input)
+            .add_headers()
+            .build();
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8100")
             .allowed_methods(vec!["GET", "POST"])
@@ -45,6 +52,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::JsonConfig::default().limit(4096))
             .app_data(guard::Header("content-type", "application/json"))
             .wrap(cors)
+            .wrap(limit_middleware)
             .configure(routes)
 
     })
