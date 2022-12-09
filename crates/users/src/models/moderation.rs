@@ -174,6 +174,9 @@ impl Owner {
             owner_services_items::dsl::owner_services_items,
         };
 
+        if types == 0 {
+            return true;
+        }
         let _connection = establish_connection();
         let items_ids = owner_services_items
             .filter(schema::owner_services_items::owner_id.eq(self.id))
