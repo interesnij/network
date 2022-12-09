@@ -31,7 +31,7 @@ pub struct AppState {
 async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use chrono::Duration;
-    use crate::actix_extensible_rate_limit::{
+    use actix_extensible_rate_limit::{
         backend::{
             SimpleInputFunctionBuilder,
             RedisBackend,
