@@ -25,8 +25,8 @@ pub static COMMUNITIES_SERVICES: Vec<&str> = [
 ].to_vec();
 
 // список url сервисов, на которых присутствуют копии элементов для прикрепов и папок.
-pub static ATTACH_SERVICES: Vec<&str> = [
-    "194.58.90.123:9003",
+pub static ATTACH_SERVICES: Vec<String> = [
+    "194.58.90.123:9003".to_string(),
 ].to_vec();
 
 pub fn get_error_response(_error: reqwest::Error) -> String {
