@@ -88,7 +88,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
                     error: "permission denied!".to_string(),
                 }).unwrap();
                 Err(Error::BadRequest(body))
-            };
+            }
         }
     }
     else {
