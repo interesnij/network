@@ -73,6 +73,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
                 ipaddr = val.ip().to_string();
                 if ipaddr.contains(&"194.58.90.123".to_string()) {
                     println!("permission ok");
+                    println!("ip {:?}", ipaddr);
                     let _res = block(move || User::get_users(params.limit, params.offset)).await?;
                     Ok(Json(_res))
                 }
