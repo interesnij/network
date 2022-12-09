@@ -36,7 +36,7 @@ async fn main() -> std::io::Result<()> {
             SimpleInputFunctionBuilder,
         },
         RateLimiter,
-        InMemoryBackend,
+        //InMemoryBackend,
     };
 
     dotenv().ok();
