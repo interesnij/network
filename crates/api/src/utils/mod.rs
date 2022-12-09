@@ -7,20 +7,25 @@ use diesel::{
     Connection,
 };
 
-// url сервера, куда шлем запросы сервиса записей
-pub static POSTS_URL: &str = "http:194.58.90.123:9003";
-pub static USERS_URL: &str = "http:194.58.90.123:9001";
-pub static COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
+// url серверов, куда шлем запросы
+pub const POSTS_URL: &str = "http:194.58.90.123:9003";
+pub const USERS_URL: &str = "http:194.58.90.123:9001";
+pub const COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
 
 // список url сервисов, на которых присутствуют копии пользователей.
 // нужно, к примеру, для синхронизации данных пользователей.
-pub static USERS_SERVICES: Vec<&str> = [
+pub const USERS_SERVICES: Vec<&str> = [
     "194.58.90.123:9002",
     "194.58.90.123:9003",
 ].to_vec();
 
 // список url сервисов, на которых присутствуют копии сообществ.
-static COMMUNITIES_SERVICES: Vec<&str> = [
+pub const COMMUNITIES_SERVICES: Vec<&str> = [
+    "194.58.90.123:9003",
+].to_vec();
+
+// список url сервисов, на которых присутствуют копии элементов для прикрепов и папок.
+pub const ATTACH_SERVICES: Vec<&str> = [
     "194.58.90.123:9003",
 ].to_vec();
 
