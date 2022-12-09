@@ -34,8 +34,8 @@ async fn main() -> std::io::Result<()> {
     use actix_extensible_rate_limit::{
         backend::SimpleInputFunctionBuilder,
         RateLimiter,
+        RedisBackend,
     };
-    use actix_redis::RedisBackend;
 
     dotenv().ok();
     let backend = RedisBackend::builder().build();
