@@ -8,24 +8,24 @@ use diesel::{
 };
 
 // url серверов, куда шлем запросы
-pub static POSTS_URL: &str = "http:194.58.90.123:9003";
-pub static USERS_URL: &str = "http:194.58.90.123:9001";
-pub static COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
+let POSTS_URL: &str = "http:194.58.90.123:9003";
+let USERS_URL: &str = "http:194.58.90.123:9001";
+let COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
 
 // список url сервисов, на которых присутствуют копии пользователей.
 // нужно, к примеру, для синхронизации данных пользователей.
-pub USERS_SERVICES: Vec<&str> = [
+let USERS_SERVICES: Vec<&str> = [
     "194.58.90.123:9002",
     "194.58.90.123:9003",
 ].to_vec();
 
 // список url сервисов, на которых присутствуют копии сообществ.
-pub COMMUNITIES_SERVICES: Vec<&str> = [
+let COMMUNITIES_SERVICES: Vec<&str> = [
     "194.58.90.123:9003",
 ].to_vec();
 
 // список url сервисов, на которых присутствуют копии элементов для прикрепов и папок.
-pub ATTACH_SERVICES: Vec<&str> = [
+let ATTACH_SERVICES: Vec<&str> = [
     "194.58.90.123:9003".to_string(),
 ].to_vec();
 
