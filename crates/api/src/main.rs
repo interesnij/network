@@ -35,9 +35,9 @@ async fn main() -> std::io::Result<()> {
         backend::{
             SimpleInputFunctionBuilder,
             memory::InMemoryBackend,
+            redis::RedisBackend,
         },
         RateLimiter,
-        RedisBackend,
     };
 
     dotenv().ok();
