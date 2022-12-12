@@ -439,7 +439,7 @@ impl Community {
                     for i in items.iter() {
                         _count += 1;
                         if _count < _limit {
-                            photos_json.push ( i.get_photo_json(user_id, reactions_list.clone()) )
+                            photos_json.push(i.get_photo_json());
                         }
                         else {
                             break;

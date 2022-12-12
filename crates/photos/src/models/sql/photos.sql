@@ -139,7 +139,7 @@ CREATE INDEX photo_lists_community_id_idx ON photo_lists (community_id);
 
 
 -- фото -------
-CREATE TABLE photos (
+CREATE TABLE photos ( 
     id            SERIAL PRIMARY KEY,
     community_id  INT,                           -- id сообщества (которое выше)
     user_id       INT NOT NULL,                  -- id пользователя (которое выше)
@@ -147,7 +147,7 @@ CREATE TABLE photos (
     types         SMALLINT NOT NULL,             -- тип (активен, удален, закрыт...)
     preview       VARCHAR(500) NOT NULL,         -- preview
     file          VARCHAR(500) NOT NULL,         -- file
-    description   VARCHAR(500) NOT NULL,         -- description
+    description   VARCHAR(500),                  -- description
     comments_on   BOOLEAN NOT NULL DEFAULT true, -- комменты разрешены
     created       TIMESTAMP NOT NULL,            -- время создания
     
