@@ -12,7 +12,6 @@ use crate::schema::{
     community_photo_list_collections,
     community_photo_list_positions,
     photo_list_perms,
-    item_rephotos,
     photo_counter_reactions,
     photo_comment_counter_reactions,
     photo_reactions,
