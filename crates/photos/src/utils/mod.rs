@@ -1,8 +1,11 @@
 mod items;
 mod attach_items;
+mod proxy;
+
 pub use self::{
     attach_items::*,
     items::*,
+    proxy::*,
 };
 
 use diesel::{
