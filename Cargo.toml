@@ -4,6 +4,7 @@ members = [
   "crates/posts",
   "crates/users",
   "crates/communities",
+  "crates/photos",
+  "crates/photo_files",
   "crates/api",
-  "crates/files",
 ]

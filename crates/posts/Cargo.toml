@@ -7,7 +7,7 @@ edition = "2021"
 actix-web = "4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-diesel = { version = "1.4.4", features = ["chrono", "postgres", "r2d2", "uuidv07", "serde_json"] }
+diesel = { version = "1.4.4", features = ["chrono", "postgres", "serde_json"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4", features = ["serde"] }
 futures = "0.3.21"
