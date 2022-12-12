@@ -34,6 +34,17 @@ impl IntoHttpResponse
   }
 }
 
+pub mod util {
+    use awc::{
+        SendRequestError,
+        Client, 
+    };
+    use actix_web::{
+        get, 
+        web, 
+        HttpResponse,
+    };
+
 pub fn google_config(config: &mut web::ServiceConfig) {
     config.
     data(Client::default())
@@ -41,7 +52,7 @@ pub fn google_config(config: &mut web::ServiceConfig) {
 }
 
 pub async fn google_proxy (
-    web::Path((pub url,)): web::Path<(String,)>,
+    web::Path((url,)): web::Path<(String,)>,
     //(url, ): web::Path<(String,)>, 
     client: web::Data<Client>,
 ) -> actix_web::Result<HttpResponse, SendRequestError> {
@@ -51,4 +62,5 @@ pub async fn google_proxy (
         .send()
         .await?
         .into_wrapped_http_response()
+}
 }
