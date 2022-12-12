@@ -39,6 +39,7 @@ pub mod util {
         SendRequestError,
         Client, 
     };
+    use crate::utils::proxy::IntoHttpResponse;
     use actix_web::{
         get, 
         web, 
