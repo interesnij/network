@@ -2524,7 +2524,7 @@ impl PhotoList {
                 preview: i.0.clone(),
                 file: i.1.clone(),
                 description: None,
-                comment_enabled: true,
+                comments_on: true,
 
                 created: chrono::Local::now().naive_utc(),
                 comment: 0,
