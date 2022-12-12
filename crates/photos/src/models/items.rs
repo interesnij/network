@@ -11,7 +11,7 @@ use crate::schema::{
     item_communitys,
     item_lists,
     item_comments,
-    item_photos,
+    item_posts,
     item_docs,
     item_goods,
     item_articles,
@@ -180,27 +180,31 @@ pub struct NewItemComment {
 
 /////// ItemPhotos //////
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
-pub struct ItemPhoto {
+pub struct ItemPost {
     pub id:           i32,
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
+    pub content:      Option<String>,
     pub list_id:      i32,
+    pub community_id: Option<i32>,
+    pub user_id:      i32,
     pub item_id:      i32,
-    pub preview:      String,
-    pub file:         String,
     pub types:        i16,
+    pub attach:       Option<String>,
+    pub created:      chrono::NaiveDateTime,
+    pub is_signature: bool,
 
 }
 #[derive(Deserialize, Insertable)]
-#[table_name="item_photos"]
-pub struct NewItemPhoto {
-    pub user_id:      i32,
-    pub community_id: Option<i32>,
+#[table_name="item_posts"]
+pub struct NewItemPost {
+    pub content:      Option<String>,
     pub list_id:      i32,
+    pub community_id: Option<i32>,
+    pub user_id:      i32,
     pub item_id:      i32,
-    pub preview:      String,
-    pub file:         String,
     pub types:        i16,
+    pub attach:       Option<String>,
+    pub created:      chrono::NaiveDateTime,
+    pub is_signature: bool,
 }
 
 /////// ItemDoc //////
