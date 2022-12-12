@@ -30,7 +30,7 @@ impl IntoHttpResponse
 }
 
 pub mod util {
-  use actix_web::client::{Client, SendRequestError};
+  use awc::{Client, SendRequestError};
   use actix_web::{get, web, HttpResponse};
 
   use super::IntoHttpResponse;
