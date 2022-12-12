@@ -8,7 +8,7 @@ use actix_web::{
     web, 
     HttpResponse,
 };
-use awc::error::SendRequestError;
+
 
 pub trait IntoHttpResponse {
   fn into_http_response(self) -> HttpResponse;
@@ -36,9 +36,9 @@ impl IntoHttpResponse
 
 pub mod util {
     use awc::{
-        SendRequestError,
         Client, 
     };
+    use awc::error::SendRequestError;
     use crate::utils::proxy::IntoHttpResponse;
     use actix_web::{
         get, 
