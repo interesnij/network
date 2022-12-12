@@ -8,7 +8,7 @@ use actix_web::{
     web, 
     HttpResponse,
 };
-
+use awc::error::SendRequestError;
 
 pub trait IntoHttpResponse {
   fn into_http_response(self) -> HttpResponse;
@@ -41,7 +41,7 @@ pub fn google_config(config: &mut web::ServiceConfig) {
 }
 
 pub async fn google_proxy (
-    web::Path((url,)): web::Path<(String,)>,
+    web::Path((pub url,)): web::Path<(String,)>,
     //(url, ): web::Path<(String,)>, 
     client: web::Data<Client>,
 ) -> actix_web::Result<HttpResponse, SendRequestError> {
