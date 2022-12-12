@@ -599,7 +599,7 @@ impl Photo {
         return CardPhotoJson {
                 id:       self.id,
                 preview:  self.preview.clone(),
-                file:     creator.file.clone(),
+                file:     self.file.clone(),
                 position: self.position,
             };
     }
@@ -937,7 +937,7 @@ impl Photo {
               .expect("Error.");
         }
         diesel::update(self)
-          .set(schema::photos::copy.eq(self.copy + count.parse().unwrap()))
+          .set(schema::photos::copy.eq(self.copy + count as i32))
           .execute(&_connection)
           .expect("Error."); 
         return 1;

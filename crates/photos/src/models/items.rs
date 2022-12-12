@@ -11,7 +11,7 @@ use crate::schema::{
     item_communitys,
     item_lists,
     item_comments,
-    item_photos,
+    //item_posts,
     item_docs,
     item_goods,
     item_articles,

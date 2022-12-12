@@ -216,19 +216,20 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
     }
     else {
         let list = get_photo_list(data.list_id.unwrap()).expect("E.");
+        let c_id: Option<i32>;
+        if community_id > 0 {
+            c_id = Some(community_id);
+        }
+        else {
+            c_id = list.community_id;
+        }
+
         if list.community_id.is_some() {
             let community = list.get_community().expect("E.");
             if community_id > 0 && list.community_id.unwrap() == community_id
                 ||
                 user_id > 0 && (list.is_user_create_el(user_id) || community.is_user_create_el(user_id))
             {
-                let c_id: Option<i32>;
-                if community_id > 0 {
-                    c_id = Some(community_id);
-                }
-                else {
-                    c_id = list.community_id;
-                }
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,

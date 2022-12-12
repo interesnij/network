@@ -791,7 +791,7 @@ impl PhotoList {
         let _connection = establish_connection();
         return photos
             .filter(schema::photos::photo_list_id.eq(self.id))
-            .filter(schema::photo::types.lt(10))
+            .filter(schema::photos::types.lt(10))
             .order(schema::photos::created.desc())
             .load::<Photo>(&_connection)
             .expect("E.");
@@ -2508,6 +2508,7 @@ impl PhotoList {
         files: Vec<(String, String)>) -> Vec<RespPhoto> {
         // file.0 - preview, file.1 - file
         use crate::utils::get_user;
+        use crate::models::NewPhoto;
 
         let _connection = establish_connection();
         let creator = get_user(user_id);
