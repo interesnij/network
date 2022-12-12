@@ -8,7 +8,7 @@ use actix_web::{
     web, 
     HttpResponse,
 };
-use crate::errors::Error;
+
 
 pub trait IntoHttpResponse {
   fn into_http_response(self) -> HttpResponse;
@@ -44,11 +44,11 @@ pub async fn google_proxy (
     web::Path((url,)): web::Path<(String,)>,
     //(url, ): web::Path<(String,)>, 
     client: web::Data<Client>,
-) -> actix_web::Result<HttpResponse, Error> {
+) -> actix_web::Result<HttpResponse, SendRequestError> {
     let url = format!("https://www.google.com/{}", url);
     client
         .get(&url)
         .send()
-        .await
+        .await?
         .into_wrapped_http_response()
 }
