@@ -16,6 +16,7 @@ async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer, web::JsonConfig};
     use actix_cors::Cors;
     use crate::routes::routes;
+    use crate::utils::google_config;
 
     HttpServer::new(|| {
         let cors = Cors::default()
@@ -26,6 +27,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
+            .configure(google_config)
     })
     .bind("194.58.90.123:9004")?
     .run()
