@@ -34,13 +34,15 @@ impl IntoHttpResponse
   }
 }
 
-pub fn google_config(cfg: &mut web::ServiceConfig) {
-    cfg.data(Client::default()).service(google_proxy);
+pub fn google_config(config: &mut web::ServiceConfig) {
+    config.
+    data(Client::default())
+    .route("/{url:.*}", web::get().to(google_proxy))
 }
 
-#[get("/{url:.*}")]
-pub async fn google_proxy(
+pub async fn google_proxy (
     web::Path((url,)): web::Path<(String,)>,
+    //(url, ): web::Path<(String,)>, 
     client: web::Data<Client>,
 ) -> actix_web::Result<HttpResponse, SendRequestError> {
     let url = format!("https://www.google.com/{}", url);
