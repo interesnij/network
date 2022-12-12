@@ -46,12 +46,13 @@ pub mod util {
         HttpResponse,
     };
 
-pub fn google_config(config: &mut web::ServiceConfig) {
-    config.
-    data(Client::default())
-    .route("/{url:.*}", web::get().to(google_proxy));
-}
+    pub fn google_config(cfg: &mut web::ServiceConfig) {
+        cfg.data(Client::default())
+        .service(google_proxy);
+    }
 
+    
+#[get("/{url:.*}")]
 pub async fn google_proxy (
     web::Path((url,)): web::Path<(String,)>,
     //(url, ): web::Path<(String,)>, 
