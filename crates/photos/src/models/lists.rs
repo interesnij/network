@@ -1648,8 +1648,8 @@ impl PhotoList {
                 list_id:      new_list.id,
                 position:     PhotoList::get_community_photo_lists_new_position(community_pk),
                 types:        1,
-            };ositions::table)
-            let _photos_list_position = diesel::insert_into(schema::community_photo_list_positions)
+            };
+            let _photos_list_position = diesel::insert_into(schema::community_photo_list_positions::table)
                 .values(&_new_photos_list_position)
                 .execute(&_connection)
                 .expect("Error.");
