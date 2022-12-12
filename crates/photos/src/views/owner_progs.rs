@@ -678,7 +678,7 @@ pub struct VecIdsParams {
 
 // manager send!
 // выдаем данные для закрепления списков записей в других сервисах
-pub async fn get_attach_photo_lists(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostListResp>>, Error> {
+pub async fn get_attach_photo_lists(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPhotoListResp>>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }

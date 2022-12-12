@@ -428,7 +428,7 @@ impl Community {
                     let reactions_list = list.get_reactions_list();
                     let items = photos
                         .filter(schema::photos::photo_list_id.eq(list.id))
-                        .filter(schema::photos::content.ilike(&q))
+                        .filter(schema::photos::description.ilike(&q))
                         .filter(schema::photos::types.lt(11))
                         .limit(__limit)
                         .offset(_offset)

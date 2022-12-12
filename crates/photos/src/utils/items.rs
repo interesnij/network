@@ -21,7 +21,7 @@ pub struct ItemParams {
 }
 #[derive(Deserialize)]
 pub struct DataCopyPhoto {
-    pub topken:   Otion<String>,
+    pub token:   Option<String>,
     pub user_id: Option<i32>,
     pub item_id: Option<i32>,
     pub lists:   Vec<i32>,
