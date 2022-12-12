@@ -7,6 +7,7 @@ use actix_web::{
     get, 
     web, 
     HttpResponse,
+    Responder,
 };
 
 
@@ -57,7 +58,8 @@ pub async fn google_proxy (
     param: web::Path<(String,)>,
     //(url, ): web::Path<(String,)>, 
     client: web::Data<Client>,
-) -> actix_web::Result<HttpResponse, SendRequestError> {
+//) -> actix_web::Result<HttpResponse, SendRequestError> {
+) -> Responder {
     let _url: String = param.0.clone();
     let url = format!("https://www.google.com/{}", _url);
     client
