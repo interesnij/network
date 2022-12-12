@@ -511,7 +511,7 @@ impl PhotoList {
 
         let mut photos_json = Vec::new();
         for i in photos.iter() {
-            photos_json.push ( i.get_photo_json(0, reactions_list.clone()) );
+            photos_json.push(i.get_photo_json());
         }
 
         let data = PhotoListDetailJson {
@@ -608,7 +608,7 @@ impl PhotoList {
 
         let mut photos_json = Vec::new();
         for i in photos.iter() {
-            photos_json.push ( i.get_photo_json(0, reactions_list.clone()) );
+            photos_json.push(i.get_photo_json());
         }
 
         let data = PhotoListDetailJson {
@@ -824,7 +824,7 @@ impl PhotoList {
         let mut photos_json = Vec::new();
         let items = photos
             .filter(schema::photos::photo_list_id.eq(self.id))
-            .filter(schema::photos::content.ilike(&q))
+            .filter(schema::photos::description.ilike(&q))
             .filter(schema::photos::types.lt(11))
             .limit(_limit)
             .offset(_offset)
@@ -2540,7 +2540,7 @@ impl PhotoList {
 
             resp_list.push (RespPhoto {
                 id:           new_photo.id,
-                list_id:      new_photo.list_id,
+                list_id:      new_photo.photo_list_id,
                 user_id:      new_photo.user_id,
                 community_id: new_photo.community_id,
                 preview:      new_photo.preview,

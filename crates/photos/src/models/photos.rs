@@ -225,7 +225,7 @@ impl Photo {
             _step += _limit;
 
             let items = photos
-                .filter(schema::photos::content.ilike(&q))
+                .filter(schema::photos::description.ilike(&q))
                 .filter(schema::photos::types.lt(11))
                 .limit(_step)
                 .offset(_offset)
@@ -586,7 +586,6 @@ impl Photo {
                 view:                 self.view,
                 repost:               self.repost,
                 reactions:            self.reactions,
-                types:                self.get_code(),
                 reactions_list:       self.get_reactions_json(user_id, reactions_list.clone()),
                 prev:                 prev,
                 next:                 next,
@@ -917,7 +916,7 @@ impl Photo {
                 preview: self.preview.clone(),
                 file: self.file.clone(),
                 description: self.description.clone(),
-                comment_enabled: self.comment_enabled,
+                comments_on: self.comments_on,
 
                 created: self.created,
                 comment: self.comment,
@@ -938,9 +937,9 @@ impl Photo {
               .expect("Error.");
         }
         diesel::update(self)
-          .set(schema::photos::copy.eq(self.copy + count))
+          .set(schema::photos::copy.eq(self.copy + count.parse().unwrap()))
           .execute(&_connection)
-          .expect("Error.");
+          .expect("Error."); 
         return 1;
     }
 
@@ -1134,11 +1133,11 @@ impl Photo {
         }
     }
     pub fn get_format_text(&self) -> String {
-        if self.content.is_some() {
-            let unwrap = self.content.as_ref().unwrap();
+        if self.description.is_some() {
+            let unwrap = self.description.as_ref().unwrap();
             let split_unwrap: Vec<&str> = unwrap.split(" ").collect();
             if split_unwrap.len() <= 20 {
-                return self.content.as_ref().unwrap().to_string();
+                return self.description.as_ref().unwrap().to_string();
             }
             else {
                 let mut string = String::new();

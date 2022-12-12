@@ -419,7 +419,7 @@ pub async fn close_list(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         Err(Error::BadRequest(body))
     }
     else {
-        let item = get_post_list(data.item_id.unwrap()).expect("E.");
+        let item = get_photo_list(data.item_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
         if manager.is_moderator() {
             let _res = block (

@@ -243,7 +243,11 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
         else {
             let owner = get_user(list.user_id).expect("E.");
             if community_id < 1 || user_id > 0 && (list.is_user_create_el(user_id) || owner.is_user_create_el(user_id)) {
-                let _res = block(move || list.create_post(Some(owner), None, data)).await?;
+                let _res = block(move || list.create_photos (
+                    c_id,
+                    user_id,
+                    data.files.as_deref().unwrap().to_vec()
+                )).await?;
                 Ok(Json(_res))
             }
             else {
@@ -278,13 +282,13 @@ pub async fn edit_photo(data: Json<DataEditPhoto>) -> Result<Json<i16>, Error> {
                 Err(Error::BadRequest("Permission Denied".to_string()))
             }
             else {
-                let _res = block(move || item.edit_post(data.position.clone())).await?;
+                let _res = block(move || item.edit_photo(data.description.clone())).await?;
                 Ok(Json(_res))
             }
         }
         else {
             if community_id < 1 && item.user_id == user_id {
-                let _res = block(move || item.edit_post(data)).await?;
+                let _res = block(move || item.edit_photo(data.description.clone())).await?;
                 Ok(Json(_res))
             }
             else {
