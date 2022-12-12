@@ -1,4 +1,4 @@
-use aws::ClientResponse;
+use awc::ClientResponse;
 use actix_web::{dev, HttpResponse};
 
 pub trait IntoHttpResponse {
@@ -29,23 +29,21 @@ impl IntoHttpResponse
   }
 }
 
-pub mod util {
-  use awc::{Client, error::SendRequestError};
-  use actix_web::{get, web, HttpResponse};
+use awc::{Client, error::SendRequestError};
+use actix_web::{get, web, HttpResponse};
 
-  use super::IntoHttpResponse;
+use super::IntoHttpResponse;
 
-  pub fn google_config(cfg: &mut web::ServiceConfig) {
-    cfg.data(Client::default()).service(google_proxy);
-  }
+pub fn google_config(cfg: &mut web::ServiceConfig) {
+cfg.data(Client::default()).service(google_proxy);
+}
 
-  #[get("/{url:.*}")]
-  pub async fn google_proxy(
-    web::Path((url,)): web::Path<(String,)>,
-    client: web::Data<Client>,
-  ) -> actix_web::Result<HttpResponse, SendRequestError> {
+#[get("/{url:.*}")]
+pub async fn google_proxy(
+web::Path((url,)): web::Path<(String,)>,
+client: web::Data<Client>,
+) -> actix_web::Result<HttpResponse, SendRequestError> {
     let url = format!("https://www.google.com/{}", url);
 
     client.get(&url).send().await?.into_wrapped_http_response()
-  }
 }
