@@ -7,7 +7,6 @@ use actix_web::{
     get, 
     web, 
     HttpResponse,
-    Responder,
 };
 
 
@@ -45,6 +44,7 @@ pub mod util {
         get, 
         web, 
         HttpResponse,
+        Responder,
     };
 
     pub fn google_config(cfg: &mut web::ServiceConfig) {
