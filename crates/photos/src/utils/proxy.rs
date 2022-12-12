@@ -1,4 +1,4 @@
-use actix_web::client::ClientResponse;
+use aws::ClientResponse;
 use actix_web::{dev, HttpResponse};
 
 pub trait IntoHttpResponse {
@@ -30,7 +30,7 @@ impl IntoHttpResponse
 }
 
 pub mod util {
-  use awc::{Client, SendRequestError};
+  use awc::{Client, error::SendRequestError};
   use actix_web::{get, web, HttpResponse};
 
   use super::IntoHttpResponse;
