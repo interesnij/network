@@ -37,7 +37,7 @@ impl IntoHttpResponse
 pub fn google_config(config: &mut web::ServiceConfig) {
     config.
     data(Client::default())
-    .route("/{url:.*}", web::get().to(google_proxy))
+    .route("/{url:.*}", web::get().to(google_proxy));
 }
 
 pub async fn google_proxy (
