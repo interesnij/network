@@ -1,5 +1,15 @@
-use awc::ClientResponse;
-use actix_web::{dev, HttpResponse};
+use awc::{
+    ClientResponse,
+    Client, 
+    error::SendRequestError,
+};
+use actix_web::{
+    dev, 
+    HttpResponse,
+    get, 
+    web, 
+    HttpResponse,
+};
 
 pub trait IntoHttpResponse {
   fn into_http_response(self) -> HttpResponse;
@@ -29,13 +39,8 @@ impl IntoHttpResponse
   }
 }
 
-use awc::{Client, error::SendRequestError};
-use actix_web::{get, web, HttpResponse};
-
-use super::IntoHttpResponse;
-
 pub fn google_config(cfg: &mut web::ServiceConfig) {
-cfg.data(Client::default()).service(google_proxy);
+    cfg.data(Client::default()).service(google_proxy);
 }
 
 #[get("/{url:.*}")]
