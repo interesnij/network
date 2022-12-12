@@ -51,14 +51,15 @@ pub mod util {
         .service(google_proxy);
     }
 
-    
+
 #[get("/{url:.*}")]
 pub async fn google_proxy (
-    web::Path((url,)): web::Path<(String,)>,
+    param: web::Path<(String,)>,
     //(url, ): web::Path<(String,)>, 
     client: web::Data<Client>,
 ) -> actix_web::Result<HttpResponse, SendRequestError> {
-    let url = format!("https://www.google.com/{}", url);
+    let _url: String = param.1.clone();
+    let url = format!("https://www.google.com/{}", _url);
     client
         .get(&url)
         .send()
