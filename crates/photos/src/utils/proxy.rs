@@ -46,5 +46,9 @@ pub async fn google_proxy (
     client: web::Data<Client>,
 ) -> actix_web::Result<HttpResponse, Error> {
     let url = format!("https://www.google.com/{}", url);
-    client.get(&url).send().await?.into_wrapped_http_response()
+    client
+        .get(&url)
+        .send()
+        .await
+        .into_wrapped_http_response()
 }
