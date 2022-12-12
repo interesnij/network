@@ -464,7 +464,7 @@ impl PhotoList {
 
         let mut photos_json = Vec::new();
         for i in photos.iter() {
-            photos_json.push ( i.get_photo_json(user_id, reactions_list.clone()) )
+            photos_json.push(i.get_photo_json());
         }
 
         let data = PhotoListDetailJson {
@@ -561,7 +561,7 @@ impl PhotoList {
 
         let mut photos_json = Vec::new();
         for i in photos.iter() {
-            photos_json.push ( i.get_photo_json(user_id, reactions_list.clone()) );
+            photos_json.push(i.get_photo_json());
         }
 
         let data = PhotoListDetailJson {
@@ -833,7 +833,7 @@ impl PhotoList {
             .expect("E.");
 
         for i in items.iter() {
-            photos_json.push ( i.get_photo_json(user_id, reactions_list.clone()) )
+            photos_json.push(i.get_photo_json());
         }
 
         return photos_json;
