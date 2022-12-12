@@ -34,7 +34,7 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin("194.58.90.123:8100")
+            .allowed_origin("194.58.90.123:8000")
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
 
@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
             //.configure(routes)
 
     })
-    .bind("194.58.90.123:8050")?
+    .bind("194.58.90.123:9050")?
     .run()
     .await
 }
