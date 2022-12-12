@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer, web::JsonConfig};
     use actix_cors::Cors;
     use crate::routes::routes;
-    use crate::util::google_config;
+    use crate::utils::util::google_config;
 
     HttpServer::new(|| {
         let cors = Cors::default()
