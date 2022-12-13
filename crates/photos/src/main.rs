@@ -47,8 +47,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
-            .service(web::resource("/upload/{path:.*}").to(proxy_to_static_server))
-            .service(web::resource("/all-users/{path:.*}").to(proxy_to_user_server))
+            .service(web::resource("/static{path:.*}").to(proxy_to_static_server))
+            .service(web::resource("/all-users{path:.*}").to(proxy_to_user_server))
     })
     .bind("194.58.90.123:9004")?
     .run()
