@@ -18,6 +18,8 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use crate::utils::{proxy, Config};
     use env_logger::Env;
+    use clap::Parser;
+    use actix_rt::Builder;
 
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
