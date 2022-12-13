@@ -16,7 +16,7 @@ async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer, web::JsonConfig, web, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
-    use crate::utils::{proxy_to_static_server, ConfigToStaticServer};
+    use crate::utils::{proxy_to_static_server, ConfigToStaticServer, ConfigToUserServer};
     use env_logger::Env;
     use clap::Parser;
     use log::info;
@@ -24,6 +24,7 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let config_to_static_server = ConfigToStaticServer::parse();
+    let config_to_user_server = ConfigToUserServer::parse();
     //let ConfigToStaticServer { address, port, to } = config_to_static_server.clone();
     //info!("Listening on {address}:{port}");
     //info!("Proxying requests to static_server {to}");
@@ -41,7 +42,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
-            .service(web::resource("{path:.*}").to(proxy_to_static_server))
+            .service(web::resource("/upload/{path:.*}").to(proxy_to_static_server))
+            .service(web::resource("/all-users/{path:.*}").to(proxy_to_user_server))
     })
     .bind("194.58.90.123:9004")?
     .run()
