@@ -24,9 +24,9 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let config_to_static_server = ConfigToStaticServer::parse();
-    let ConfigToStaticServer { address, port, to } = config_to_static_server.clone();
-    info!("Listening on {address}:{port}");
-    info!("Proxying requests to static_server {to}");
+    //let ConfigToStaticServer { address, port, to } = config_to_static_server.clone();
+    //info!("Listening on {address}:{port}");
+    //info!("Proxying requests to static_server {to}");
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
