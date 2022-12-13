@@ -9,11 +9,11 @@ use futures::TryStreamExt;
 
 #[derive(Clone, Parser)]
 pub struct Config {
-    #[clap(short, long, default_value = "127.0.0.1")]
+    #[clap(short, long, default_value = "194.58.90.123")]
     pub address: String,
-    #[clap(short, long, default_value = "4242")]
+    #[clap(short, long, default_value = "9004")]
     pub port: u16,
-    #[clap(short, long, default_value = "http://localhost:8000")]
+    #[clap(short, long, default_value = "https://google.com")]
     pub to: String,
 }
 
