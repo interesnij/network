@@ -10,8 +10,10 @@ serde_json = "1.0"
 diesel = { version = "1.4.4", features = ["chrono", "postgres", "serde_json"] }
 dotenv = "0.15.0"
 chrono = { version = "0.4", features = ["serde"] }
-futures = "0.3.21"
+futures = "0.3"
 actix-cors = "0.6.1"
 derive_more = "0.99.5"
 actix-rt = "^1.1.1"
-awc = { version = "3.0.0-beta.11", features = [ "openssl" ] }
+awc = { version = "3", features = ["rustls"] }
+clap = { version = "3", features = ["derive"] }
+log = "0.4"

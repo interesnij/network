@@ -1,71 +1,50 @@
-use awc::{
-    ClientResponse,
-    Client, 
-};
-use actix_web::{
-    dev, 
-    get, 
-    web, 
-    HttpResponse,
-};
+use actix_web::{web, HttpRequest, HttpResponse, Responder};
+use awc::http::StatusCode;
+use clap::Parser;
+use env_logger::Env;
+use futures_util::stream::TryStreamExt;
+use log::{debug, info, warn};
 
 
-pub trait IntoHttpResponse {
-  fn into_http_response(self) -> HttpResponse;
-
-  fn into_wrapped_http_response<E>(self) -> Result<HttpResponse, E>
-  where
-    Self: Sized,
-  {
-    Ok(self.into_http_response())
-  }
+#[derive(Clone, Parser)]
+struct Config {
+    #[clap(short, long, default_value = "127.0.0.1")]
+    address: String,
+    #[clap(short, long, default_value = "4242")]
+    port: u16,
+    #[clap(short, long, default_value = "http://localhost:8000")]
+    to: String,
 }
 
-impl IntoHttpResponse
-  for ClientResponse<dev::Decompress<dev::Payload>>
-{
-  fn into_http_response(self) -> HttpResponse {
-    let mut response = HttpResponse::build(self.status());
-
-    self.headers().iter().for_each(|(k, v)| {
-      response.set_header(k, v.clone());
-    });
-    response.streaming(self)
-  }
-}
-
-pub mod util {
-    use awc::{
-        Client, 
-    };
-    use awc::error::SendRequestError;
-    use crate::utils::proxy::IntoHttpResponse;
-    use actix_web::{
-        get, 
-        web, 
-        HttpResponse,
-        Responder,
-    };
-
-    pub fn google_config(cfg: &mut web::ServiceConfig) {
-        cfg.data(Client::default())
-        .service(google_proxy);
+pub async fn proxy (
+    req: HttpRequest,
+    body: web::Payload,
+    config: Data<Config>,
+    http_client: Data<awc::Client>,
+) -> impl Responder {
+    let url = format!(
+        "{to}{path}",
+        to = config.to,
+        path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
+    );
+    debug!("=> {url}");
+    match http_client
+        .request_from(&url, req.head())
+        .send_stream(body)
+        .await
+    {
+        Ok(resp) => {
+            let status = resp.status();
+            debug!("<= [{status}] {url}", status = status.as_u16());
+            let mut resp_builder = HttpResponse::build(status);
+            for header in resp.headers() {
+                resp_builder.insert_header(header);
+            }
+            resp_builder.streaming(resp.into_stream())
+        }
+        Err(err) => {
+            warn!("{url}: {err:?}");
+            HttpResponse::build(StatusCode::BAD_GATEWAY).body("Bad Gateway")
+        }
     }
-
-
-#[get("/{url:.*}")]
-pub async fn google_proxy (
-    param: web::Path<(String,)>,
-    //(url, ): web::Path<(String,)>, 
-    client: web::Data<Client>,
-//) -> actix_web::Result<HttpResponse, SendRequestError> {
-) -> Responder {
-    let _url: String = param.0.clone();
-    let url = format!("https://www.google.com/{}", _url);
-    client
-        .get(&url)
-        .send()
-        .await?
-        .into_wrapped_http_response()
-}
 }
