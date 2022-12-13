@@ -37,9 +37,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(config.clone()))
             .app_data(Data::new(http_client))
-            .app_data(JsonConfig::default().limit(4096))
-            .wrap(cors)
-            .configure(routes)
+            //.app_data(JsonConfig::default().limit(4096))
+            //.wrap(cors)
+            //.configure(routes)
             .service(web::resource("{path:.*}").to(proxy))
     })
     .bind("194.58.90.123:9004")?
