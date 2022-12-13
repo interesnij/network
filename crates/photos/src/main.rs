@@ -42,7 +42,7 @@ async fn main() -> std::io::Result<()> {
             //.configure(routes)
             .service(web::resource("{path:.*}").to(proxy))
     })
-    .bind(address, port)?
+    .bind("194.58.90.123::9004")?
     .run()
     .await
 }
