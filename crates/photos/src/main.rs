@@ -13,7 +13,7 @@ mod views;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use actix_web::{App, HttpServer, web::JsonConfig};
+    use actix_web::{App, HttpServer, web::JsonConfig, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
     use crate::utils::{proxy, Config};
