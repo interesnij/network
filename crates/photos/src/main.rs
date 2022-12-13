@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
     let config_to_static_server = ConfigToStaticServer::parse();
     let ConfigToStaticServer { address, port, to } = config_to_static_server.clone();
     info!("Listening on {address}:{port}");
-    info!("Proxying requests to static_server {to_static_server}");
+    info!("Proxying requests to static_server {to}");
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
