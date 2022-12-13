@@ -1,4 +1,4 @@
-use actix_web::{web, HttpRequest, HttpResponse, Responder};
+use actix_web::{web, HttpRequest, HttpResponse, Responder, web::Data};
 use awc::http::StatusCode;
 use clap::Parser;
 use env_logger::Env;
