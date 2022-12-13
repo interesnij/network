@@ -8,19 +8,19 @@ use futures::TryStreamExt;
 
 
 #[derive(Clone, Parser)]
-pub struct Config {
-    #[clap(short, long, default_value = "194.58.90.123")]
+pub struct ConfigToStaticServer {
+    #[clap(short, long, default_value = "194.58.90.123")]             // наш ip
     pub address: String,
-    #[clap(short, long, default_value = "9004")]
+    #[clap(short, long, default_value = "9004")]                      // наш порт
     pub port: u16,
-    #[clap(short, long, default_value = "http://194.58.90.123:9001")]
+    #[clap(short, long, default_value = "http://194.58.90.123:9050")] // адрес, на который будем перенаправлять запросы
     pub to: String,
-}
+} 
 
-pub async fn proxy (
+pub async fn proxy_to_static_server (
     req: HttpRequest,
     body: web::Payload,
-    config: Data<Config>,
+    config: Data<ConfigToStaticServer>,
     http_client: Data<awc::Client>,
 ) -> impl Responder {
     let url = format!(
