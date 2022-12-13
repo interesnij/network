@@ -16,17 +16,17 @@ async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer, web::JsonConfig, web, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
-    use crate::utils::{proxy, Config};
+    use crate::utils::{proxy_to_static_server, ConfigToStaticServer};
     use env_logger::Env;
     use clap::Parser;
     use log::info;
 
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let config = Config::parse();
-    let Config { address, port, to } = config.clone();
-    info!("Listening on {address}:{port}");
-    info!("Proxying requests to {to}");
+    let config_to_static_server = ConfigToStaticServer::parse();
+    let ConfigToStaticServer { my_address, my_port, to_static_server } = config_to_static_server.clone();
+    info!("Listening on {my_address}:{my_port}");
+    info!("Proxying requests to static_server {to_static_server}");
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
@@ -36,12 +36,12 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
         App::new()
-            .app_data(Data::new(config.clone()))
+            .app_data(Data::new(config_to_static_server.clone()))
             .app_data(Data::new(http_client))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
-            .service(web::resource("{path:.*}").to(proxy))
+            .service(web::resource("{path:.*}").to(proxy_to_static_server))
     })
     .bind("194.58.90.123:9004")?
     .run()
