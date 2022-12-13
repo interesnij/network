@@ -13,7 +13,7 @@ pub struct Config {
     pub address: String,
     #[clap(short, long, default_value = "9004")]
     pub port: u16,
-    #[clap(short, long, default_value = "http://194.58.90.123:9001")]
+    #[clap(short, long, default_value = "www.vc.com")]
     pub to: String,
 }
 
