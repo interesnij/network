@@ -2,18 +2,19 @@ use actix_web::{web, HttpRequest, HttpResponse, Responder, web::Data};
 use awc::http::StatusCode;
 use clap::Parser;
 use env_logger::Env;
-use futures_util::stream::TryStreamExt;
+//use futures_util::stream::TryStreamExt;
 use log::{debug, info, warn};
+use futures::TryStreamExt;
 
 
 #[derive(Clone, Parser)]
-struct Config {
+pub struct Config {
     #[clap(short, long, default_value = "127.0.0.1")]
-    address: String,
+    pub address: String,
     #[clap(short, long, default_value = "4242")]
-    port: u16,
+    pub port: u16,
     #[clap(short, long, default_value = "http://localhost:8000")]
-    to: String,
+    pub to: String,
 }
 
 pub async fn proxy (

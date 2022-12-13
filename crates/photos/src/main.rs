@@ -13,10 +13,11 @@ mod views;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use actix_web::{App, HttpServer, web::JsonConfig, web::Data};
+    use actix_web::{App, HttpServer, web::JsonConfig, web, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
     use crate::utils::{proxy, Config};
+    use env_logger::Env;
 
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
