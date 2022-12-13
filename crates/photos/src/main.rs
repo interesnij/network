@@ -32,14 +32,15 @@ async fn main() -> std::io::Result<()> {
         let http_client = awc::Client::default();
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8000")
+            .allowed_origin("194.58.90.123:9050")
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
         App::new()
             .app_data(Data::new(config.clone()))
             .app_data(Data::new(http_client))
-            //.app_data(JsonConfig::default().limit(4096))
-            //.wrap(cors)
-            //.configure(routes)
+            .app_data(JsonConfig::default().limit(4096))
+            .wrap(cors)
+            .configure(routes)
             .service(web::resource("{path:.*}").to(proxy))
     })
     .bind("194.58.90.123:9004")?
