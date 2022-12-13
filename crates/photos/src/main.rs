@@ -16,7 +16,12 @@ async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer, web::JsonConfig, web, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
-    use crate::utils::{proxy_to_static_server, ConfigToStaticServer, ConfigToUserServer};
+    use crate::utils::{
+        proxy_to_static_server, 
+        proxy_to_user_server,
+        ConfigToStaticServer, 
+        ConfigToUserServer
+    };
     use env_logger::Env;
     use clap::Parser;
     use log::info;
