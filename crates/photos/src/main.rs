@@ -28,7 +28,7 @@ async fn main() -> std::io::Result<()> {
     info!("Listening on {address}:{port}");
     info!("Proxying requests to {to}");
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         let http_client = awc::Client::default();
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8000")
