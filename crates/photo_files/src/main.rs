@@ -29,12 +29,12 @@ pub async fn index_page() -> impl Responder {
     let width = id.resolution.width;
     let height = id.resolution.height;
     let format = id.format;
-    let interlace = id.interlace.to_string();
+    //let interlace = id.interlace.to_string();
     let text = format!("<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
         <p style='text-align: center'>
-            {}<br />{}<br />{}<br />{}
+            {}<br />{}<br />{}
         </p>
-    </div>", width, height, format, interlace);
+    </div>", width, height, format);
     HttpResponse::Ok().body (
         text
     )
