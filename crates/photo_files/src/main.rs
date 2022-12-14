@@ -21,7 +21,7 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
 
 pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     use std::path::Path;
-    use image_convert::{ImageResource, identify, WEBPConfig , to_webp};
+    use image_convert::{ImageResource, identify, JPGConfig , to_jpg};
 
     let input = ImageResource::from_path("static/service_cat.jpg");
     let mut output = None;
@@ -32,16 +32,16 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     let format = id.format;
     
     let source_image_path = Path::new("static/bus.jpg");
-    let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_webp.webp");
+    let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_webp.jpg");
     
-    let mut config = WEBPConfig::new();
+    let mut config = JPGConfig::new();
     config.width = width as u16;
     config.height = height as u16;
     config.quality = 10;
 
     let input = ImageResource::from_path(source_image_path);
     let mut output = ImageResource::from_path(target_image_path.clone());
-    to_webp(&mut output, &input, &config).unwrap();
+    to_jpg(&mut output, &input, &config).unwrap();
 
     Ok(NamedFile::open(target_image_path)?)
 }
