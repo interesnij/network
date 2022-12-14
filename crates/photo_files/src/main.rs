@@ -16,7 +16,7 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
 }
 
 pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) -> 
-    Result<Json<Vec<String>> {
+    Result<Json<Vec<String>>> {
         use crate::utils::files_form;
 
         let form = files_form(payload.borrow_mut(), list_id).await;
