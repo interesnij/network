@@ -8,7 +8,7 @@ use actix_cors::Cors;
 use actix_files::NamedFile;
 use std::path::PathBuf;
 use actix_multipart::Multipart;
-
+use std::borrow::BorrowMut;
 mod utils;
 
 
@@ -21,7 +21,7 @@ pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) ->
     Result<Json<Vec<String>>> {
         use crate::utils::files_form;
 
-        let form = files_form(payload.borrow_mut(), list_id).await;
+        let form = files_form(payload.borrow_mut(), *list_id).await;
         Ok(Json(form.files))
 }
 
