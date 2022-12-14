@@ -17,6 +17,27 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
     Ok(NamedFile::open(path)?)
 }
 
+pub async fn index_page() -> impl Responder {
+    use image_convert::{ImageResource, InterlaceType, identify};
+
+    let input = ImageResource::from_path("./static/service_cat.jpg");
+    let mut output = None;
+    let id = identify(&mut output, &input).unwrap();
+
+    let width = id.resolution.width;
+    let height = id.resolution.height;
+    let format = id.format;
+    let interlace = id.interlace;
+    let text = format!("<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
+        <p style='text-align: center'>
+            {}<br />{}<br />{}<br />{}
+        </p>
+    </div>", width, height, format, interlace);
+    HttpResponse::Ok().body (
+        text
+    )
+}
+
 pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) -> 
     Result<Json<Vec<String>>> {
         use crate::utils::files_form;
@@ -37,8 +58,9 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
+            .route("/", web::get().to(index))
+            .route("/create_files/{list_id}", web::get().to(create_files))
             .route("/{filename:.*}", web::post().to(get_file))
-            .route("/create_files/{list_id}", web::get().to(get_file))
 
     })
     .bind("194.58.90.123:9050")?
