@@ -19,8 +19,9 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
     Ok(NamedFile::open(path)?)
 }
 
-pub async fn index_page() -> impl Responder {
-    use image_convert::{ImageResource, InterlaceType, identify};
+pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
+    use std::path::Path;
+    use image_convert::{ImageResource, identify, JPGConfig, to_jpg};
 
     let input = ImageResource::from_path("static/service_cat.jpg");
     let mut output = None;
@@ -29,13 +30,19 @@ pub async fn index_page() -> impl Responder {
     let width = id.resolution.width;
     let height = id.resolution.height;
     let format = id.format;
-    //let interlace = id.interlace.to_string();
-    let text = format!("<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
-        <p style='text-align: center'>
-            {}<br />{}<br />{}
-        </p>
-    </div>", width, height, format);
-    HttpResponse::Ok().body(text)
+    
+    let source_image_path = Path::new("static/bus.jpg");
+    let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_output.png");
+    
+    let mut config = JPGConfig::new();
+    config.width = width;
+    config.height = height;
+
+    let input = ImageResource::from_path(source_image_path);
+    let mut output = ImageResource::from_path(target_image_path);
+    to_jpg(&mut output, &input, &config).unwrap();
+
+    Ok(NamedFile::open(target_image_path)?)
 }
 
 pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) -> 
