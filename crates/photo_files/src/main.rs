@@ -22,7 +22,7 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
 pub async fn index_page() -> impl Responder {
     use image_convert::{ImageResource, InterlaceType, identify};
 
-    let input = ImageResource::from_path("./static/service_cat.jpg");
+    let input = ImageResource::from_path("../static/service_cat.jpg");
     let mut output = None;
     let id = identify(&mut output, &input).unwrap();
 
