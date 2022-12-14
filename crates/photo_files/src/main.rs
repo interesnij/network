@@ -21,7 +21,7 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
 
 pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     use std::path::Path;
-    use image_convert::{ImageResource, identify, WEBPConfig , to_jpg};
+    use image_convert::{ImageResource, identify, WEBPConfig , to_webp};
 
     let input = ImageResource::from_path("static/service_cat.jpg");
     let mut output = None;
