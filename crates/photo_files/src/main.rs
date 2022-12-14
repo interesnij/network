@@ -22,21 +22,21 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
 pub async fn index_page() -> impl Responder {
     use image_convert::{ImageResource, InterlaceType, identify};
 
-    let input = ImageResource::from_path("./service_cat.jpg");
-    let mut output = None;
-    let id = identify(&mut output, &input).unwrap();
+    //let input = ImageResource::from_path("./service_cat.jpg");
+    //let mut output = None;
+    //let id = identify(&mut output, &input).unwrap();
 
-    let width = id.resolution.width;
-    let height = id.resolution.height;
-    let format = id.format;
+    //let width = id.resolution.width;
+    //let height = id.resolution.height;
+    //let format = id.format;
     //let interlace = id.interlace.to_string();
-    let text = format!("<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
-        <p style='text-align: center'>
-            {}<br />{}<br />{}
-        </p>
-    </div>", width, height, format);
+    //let text = format!("<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
+    //    <p style='text-align: center'>
+    //        {}<br />{}<br />{}
+    //    </p>
+    //</div>", width, height, format);
     HttpResponse::Ok().body (
-        text
+        "text".to_string()
     )
 }
 
