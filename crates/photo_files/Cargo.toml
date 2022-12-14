@@ -14,7 +14,7 @@ actix-multipart = "0.4.0-beta.12"
 actix-form-data = "0.6.2"
 futures = "0.3.5"
 derive_more = "0.99.5"
-image_compressor = "1.2.3"
+image-convert = "0.12.1"
 
 
 [dependencies.uuid]
