@@ -39,7 +39,7 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     config.height = height as u16;
 
     let input = ImageResource::from_path(source_image_path);
-    let mut output = ImageResource::from_path(target_image_path);
+    let mut output = ImageResource::from_path(target_image_path.clone());
     to_jpg(&mut output, &input, &config).unwrap();
 
     Ok(NamedFile::open(target_image_path)?)
