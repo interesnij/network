@@ -1,6 +1,8 @@
 use actix_web::{
     Result,
     HttpRequest,
+    HttpResponse,
+    Responder,
     web,
     web::Json,
 };
@@ -58,7 +60,7 @@ async fn main() -> std::io::Result<()> {
 
         App::new()
             .wrap(cors)
-            .route("/", web::get().to(index))
+            .route("/", web::get().to(index_page))
             .route("/create_files/{list_id}", web::get().to(create_files))
             .route("/{filename:.*}", web::post().to(get_file))
 
