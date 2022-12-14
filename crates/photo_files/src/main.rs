@@ -35,8 +35,8 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_output.png");
     
     let mut config = JPGConfig::new();
-    config.width = width;
-    config.height = height;
+    config.width = width as u16;
+    config.height = height as u16;
 
     let input = ImageResource::from_path(source_image_path);
     let mut output = ImageResource::from_path(target_image_path);
