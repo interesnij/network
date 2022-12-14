@@ -32,7 +32,7 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     let format = id.format;
     
     let source_image_path = Path::new("static/bus.jpg");
-    let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_output.webp");
+    let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_output.WEBP");
     
     let mut config = WEBPConfig::new();
     config.width = width as u16;
