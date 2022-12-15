@@ -23,7 +23,7 @@ pub fn get_static_server(value: Option<i16>) -> String {
     2. Если номера нет, тогда выдаем свободный сервер (для загрузки)
     */
     if value.is_some() {
-        _value = value.unwrap();
+        let _value = value.unwrap();
         match _value {
             1 => "http://194.58.90.123:9050".to_string(),
             2 => "http://194.58.90.123:9051".to_string(),
