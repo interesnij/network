@@ -16,16 +16,18 @@ async fn main() -> std::io::Result<()> {
     use actix_web::{App, HttpServer, web::JsonConfig, web, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
+    use clap::Parser;
     use crate::utils::{
         proxy_to_static_server, 
         ConfigToStaticServer, 
     };
     
-    let proxy_server = ConfigToStaticServer {
-        address: "http://194.58.90.123:9004".to_string(),
-        port:    9004,
-        to:      "http://194.58.90.123:9050".to_string(),
-    };
+    //let proxy_server = ConfigToStaticServer {
+    //    address: "http://194.58.90.123:9004".to_string(),
+    //    port:    9004,
+    //    to:      "http://194.58.90.123:9050".to_string(),
+    //};
+    let proxy_server = ConfigToStaticServer::parse();
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
