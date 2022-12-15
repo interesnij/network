@@ -18,9 +18,7 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use crate::utils::{
         proxy_to_static_server, 
-        proxy_to_user_server,
         ConfigToStaticServer, 
-        ConfigToUserServer
     };
     use env_logger::Env;
     use clap::Parser;
@@ -29,10 +27,6 @@ async fn main() -> std::io::Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let config_to_static_server = ConfigToStaticServer::parse();
-    let config_to_user_server = ConfigToUserServer::parse();
-    //let ConfigToStaticServer { address, port, to } = config_to_static_server.clone();
-    //info!("Listening on {address}:{port}");
-    //info!("Proxying requests to static_server {to}");
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
@@ -48,7 +42,6 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .configure(routes)
             .service(web::resource("/static{path:.*}").to(proxy_to_static_server))
-            .service(web::resource("/all-users{path:.*}").to(proxy_to_user_server))
     })
     .bind("194.58.90.123:9004")?
     .run()
