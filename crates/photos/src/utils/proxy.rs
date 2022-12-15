@@ -50,6 +50,7 @@ pub async fn get_file (
 ) -> impl Responder {
     let _path = path.clone();
 
+    let params_some = web::Query::<LoadPhotoParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let mut is_open = false;
         let params = params_some.unwrap();
@@ -173,7 +174,7 @@ pub async fn get_file (
                 let body = serde_json::to_string(&ErrorParams {
                     error: "server not found!".to_string(),
                 }).unwrap();
-                HttpResponse::Ok().body(body)
+                return HttpResponse::Ok().body(body);
             }
             let url = format!(
                 "{to}{path}",
