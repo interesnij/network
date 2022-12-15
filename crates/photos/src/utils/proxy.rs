@@ -3,6 +3,7 @@ use awc::http::StatusCode;
 use clap::Parser;
 use env_logger::Env;
 use futures::TryStreamExt;
+use log::{debug, info, warn};
 
 
 #[derive(Clone, Parser)]
