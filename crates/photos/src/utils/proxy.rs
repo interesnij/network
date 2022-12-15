@@ -45,7 +45,7 @@ pub struct LoadPhotoParams {
 pub async fn get_file (
     req:         HttpRequest,
     body:        web::Payload,
-    path:        web::Path<String>
+    path:        web::Path<String>,
     http_client: Data<awc::Client>,
 ) -> impl Responder {
     let _path = path.clone();
@@ -64,13 +64,13 @@ pub async fn get_file (
             let body = serde_json::to_string(&ErrorParams {
                 error: "Field 'server_id' is required!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            return HttpResponse::Ok().body(body);
         }
         else if params.photo_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Field 'photo_id' is required!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            return HttpResponse::Ok().body(body);
         }
         else {
             let item: Photo;
