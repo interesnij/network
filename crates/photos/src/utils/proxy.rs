@@ -5,10 +5,6 @@ use env_logger::Env;
 use futures::TryStreamExt;
 
 
-pub const SERVERS: [String] = [
-    "194.58.90.123:9050".to_string(),
-];
-
 #[derive(Clone, Parser)]
 pub struct ConfigToStaticServer {
     #[clap(short, long, default_value = "194.58.90.123")]             // наш ip
