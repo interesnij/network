@@ -182,7 +182,7 @@ pub async fn get_file (
                 path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
             );
             debug!("=> {url}");
-            match http_client
+            return match http_client
                 .request_from(&url, req.head())
                 .send_stream(body)
                 .await
