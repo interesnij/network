@@ -25,8 +25,13 @@ async fn main() -> std::io::Result<()> {
     use log::info;
 
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-
-    let config_to_static_server = ConfigToStaticServer{to:"http://194.58.90.123:9050".to_string()}::parse(); 
+    
+    let proxy_server = ConfigToStaticServer {
+        address: "http://194.58.90.123:9050".to_string(),
+        post:    9004,
+        to:      "http://194.58.90.123:9050".to_string(),
+    };
+    let config_to_static_server = proxy_server::parse(); 
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
