@@ -21,14 +21,12 @@ async fn main() -> std::io::Result<()> {
         proxy_to_static_server,
         get_static_server,
         proxy_to_users_server,
-        ConfigToStaticServer, 
+        ConfigToStaticServer,
+        ConfigToUserServer,
     };
 
-    let proxy_server = ConfigToStaticServer {
-        address: "http://194.58.90.123:9004".to_string(),
-        port:    9004,
-        to:      get_static_server(Some(2)),
-    };
+    let proxy_to_static_server = ConfigToStaticServer::parse();
+    let proxy_to_user_server = ConfigToUserServer::parse();
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
@@ -44,7 +42,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .configure(routes)
             .service(web::resource("/static{path:.*}").to(proxy_to_static_server))
-            .service(web::resource("/u{path:.*}").to(proxy_to_users_server))
+            .service(web::resource("/all-users{path:.*}").to(proxy_to_user_server))
             
     })
     .bind("194.58.90.123:9004")?
