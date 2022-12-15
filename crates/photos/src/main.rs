@@ -26,7 +26,7 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let config_to_static_server = ConfigToStaticServer::parse();
+    let config_to_static_server = ConfigToStaticServer{to:"http://194.58.90.123:9050".to_string()}::parse(); 
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
