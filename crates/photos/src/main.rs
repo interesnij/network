@@ -24,8 +24,8 @@ async fn main() -> std::io::Result<()> {
         ConfigToUserServer,
     };
 
-    let proxy_to_static_server = ConfigToStaticServer::parse();
-    let proxy_to_user_server = ConfigToUserServer::parse();
+    let config_to_static_server = ConfigToStaticServer::parse();
+    //let config_to_user_server = ConfigToUserServer::parse();
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
@@ -35,7 +35,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
         App::new()
-            .app_data(Data::new(proxy_to_static_server.clone()))
+            .app_data(Data::new(config_to_static_server.clone()))
             .app_data(Data::new(http_client))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
