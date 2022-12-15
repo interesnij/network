@@ -74,7 +74,6 @@ pub async fn proxy_to_users_server (
 ) -> impl Responder {
     let url = format!(
         "194.58.90.123:9001{path}",
-        to = config.to,
         path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
     );
 
