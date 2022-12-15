@@ -202,6 +202,12 @@ pub async fn get_file (
                 }
             }
         }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            HttpResponse::Ok().body(body)
+        }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
