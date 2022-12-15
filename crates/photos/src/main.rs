@@ -28,7 +28,7 @@ async fn main() -> std::io::Result<()> {
     
     let proxy_server = ConfigToStaticServer {
         address: "http://194.58.90.123:9050".to_string(),
-        post:    9004,
+        port:    9004,
         to:      "http://194.58.90.123:9050".to_string(),
     };
     let config_to_static_server = proxy_server::parse(); 
