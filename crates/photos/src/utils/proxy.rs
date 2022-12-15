@@ -65,3 +65,34 @@ pub async fn proxy_to_static_server (
         }
     }
 }
+
+pub async fn proxy_to_users_server (
+    req: HttpRequest,
+    body: web::Payload,
+    config: Data<ConfigToStaticServer>,
+    http_client: Data<awc::Client>,
+) -> impl Responder {
+    let url = format!(
+        "194.58.90.123:9001{path}",
+        to = config.to,
+        path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
+    );
+
+    match http_client
+        .request_from(&url, req.head())
+        .send_stream(body)
+        .await
+    {
+        Ok(resp) => {
+            let status = resp.status();
+            let mut resp_builder = HttpResponse::build(status);
+            for header in resp.headers() {
+                resp_builder.insert_header(header);
+            }
+            resp_builder.streaming(resp.into_stream())
+        }
+        Err(err) => {
+            HttpResponse::build(StatusCode::BAD_GATEWAY).body("Bad Gateway")
+        }
+    }
+}
