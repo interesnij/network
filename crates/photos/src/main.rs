@@ -19,7 +19,7 @@ async fn main() -> std::io::Result<()> {
     use clap::Parser;
     use crate::utils::{
         get_file,
-        upload_files,
+        //upload_files,
         ConfigToStaticServer,
     };
 
