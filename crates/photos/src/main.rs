@@ -19,8 +19,7 @@ async fn main() -> std::io::Result<()> {
     use clap::Parser;
     use crate::utils::{
         proxy_to_static_server,
-        get_static_server,
-        proxy_to_users_server,
+        proxy_to_user_server,
         ConfigToStaticServer,
         ConfigToUserServer,
     };
