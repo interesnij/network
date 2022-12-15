@@ -367,7 +367,7 @@ INSERT INTO owner_services (id, types, name)
 VALUES (30, 45, 'Управление планировщиком') ON CONFLICT DO NOTHING;
 
 -- ключи доступа / токены пользователей или приложений -------
-CREATE TABLE owners (
+CREATE TABLE owners ( 
     id           SERIAL PRIMARY KEY,     -- id
     user_id      INT NOT NULL,           -- id создателя или владельца
     name         VARCHAR(100) NOT NULL,  -- название

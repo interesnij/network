@@ -198,7 +198,7 @@ pub fn get_owner_data (
         let owner_res = owners
             .filter(schema::owners::service_key.eq(token.unwrap()))
             .first::<Owner>(&_connection);
-        if owner_res.is_ok() {
+        if owner_res.is_ok() { 
             let owner = owner_res.expect("E");
             if service_types < 1 || !owner.is_service_types_ok(service_types) {
                 return (Some("This role is not allowed in this service!".to_string()), 0, 0);
