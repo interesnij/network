@@ -15,6 +15,26 @@ pub struct ConfigToStaticServer {
     pub to: String,
 }
 
+
+pub fn get_static_server(value: Option<i16>) -> String {
+    /*
+    нам надо выдать адрес сервера для проксирования:
+    1. Если указан номер, то выдаем нужный сервер
+    2. Если номера нет, тогда выдаем свободный сервер (для загрузки)
+    */
+    if value.is_some() {
+        _value = value.unwrap();
+        match _value {
+            1 => "http://194.58.90.123:9050".to_string(),
+            2 => "http://194.58.90.123:9051".to_string(),
+            _ => "http://194.58.90.123:9050".to_string(),
+        }
+    }
+    else {
+        "http://194.58.90.123:9050".to_string()
+    }
+}
+
 pub async fn proxy_to_static_server (
     req: HttpRequest,
     body: web::Payload,
