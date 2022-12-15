@@ -54,7 +54,7 @@ pub async fn get_file (
     if params_some.is_ok() {
         let mut is_open = false;
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 8);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
