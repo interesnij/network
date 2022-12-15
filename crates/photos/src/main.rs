@@ -18,14 +18,12 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use clap::Parser;
     use crate::utils::{
-        proxy_to_static_server,
-        proxy_to_user_server,
+        get_file,
+        upload_files,
         ConfigToStaticServer,
-        ConfigToUserServer,
     };
 
     let config_to_static_server = ConfigToStaticServer::parse();
-    let config_to_user_server = ConfigToUserServer::parse();
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
@@ -36,13 +34,13 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .app_data(Data::new(config_to_static_server.clone()))
-            .app_data(Data::new(config_to_user_server.clone()))
+            //.app_data(Data::new(config_to_user_server.clone()))
             .app_data(Data::new(http_client))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
-            .service(web::resource("/static{path:.*}").to(proxy_to_static_server))
-            .service(web::resource("/all-users{path:.*}").to(proxy_to_user_server))
+            .service(web::resource("/static{path:.*}").to(get_file))
+            //.service(web::resource("/u/{path:.*}").to(upload_files))
             
     })
     .bind("194.58.90.123:9004")?
