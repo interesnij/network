@@ -69,7 +69,7 @@ pub async fn proxy_to_static_server (
 pub async fn proxy_to_users_server (
     req: HttpRequest,
     body: web::Payload,
-    config: Data<ConfigToStaticServer>,
+    //config: Data<ConfigToStaticServer>,
     http_client: Data<awc::Client>,
 ) -> impl Responder {
     let url = format!(

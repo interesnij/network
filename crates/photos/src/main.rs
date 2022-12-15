@@ -50,7 +50,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .configure(routes)
             .service(web::resource("/static{path:.*}").to(proxy_to_static_server))
-            .service(web::resource("/all-{path:.*}").to(proxy_to_users_server))
+            .service(web::resource("/u{path:.*}").to(proxy_to_users_server))
+            
     })
     .bind("194.58.90.123:9004")?
     .run()
