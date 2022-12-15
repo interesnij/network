@@ -207,6 +207,6 @@ pub async fn get_file (
         let body = serde_json::to_string(&ErrorParams {
             error: "Parametrs not found!".to_string(),
         }).unwrap();
-        HttpResponse::Ok().body(body)
+        return HttpResponse::Ok().body(body);
     }
 }
