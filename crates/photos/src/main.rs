@@ -24,8 +24,8 @@ async fn main() -> std::io::Result<()> {
         ConfigToUserServer,
     };
 
-    let proxy_to_static_server = ConfigToStaticServer::parse();
-    let proxy_to_user_server = ConfigToUserServer::parse();
+    let config_to_static_server = ConfigToStaticServer::parse();
+    //let config_to_user_server = ConfigToUserServer::parse();
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
