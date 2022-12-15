@@ -28,7 +28,12 @@ async fn main() -> std::io::Result<()> {
         address: "http://194.58.90.123:9004".to_string(),
         port:    9004,
         to:      get_static_server(None),
-    }; 
+    };
+    let users_server = ConfigToStaticServer {
+        address: "http://194.58.90.123:9004".to_string(),
+        port:    9004,
+        to:      "http://194.58.90.123:9001".to_string(),
+    };
 
     HttpServer::new(move || {
         let http_client = awc::Client::default();
@@ -39,6 +44,7 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .app_data(Data::new(proxy_server.clone()))
+            .app_data(Data::new(users_server.clone()))
             .app_data(Data::new(http_client))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
