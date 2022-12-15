@@ -39,7 +39,6 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .app_data(Data::new(proxy_server.clone()))
-            .app_data(Data::new(users_server.clone()))
             .app_data(Data::new(http_client))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
