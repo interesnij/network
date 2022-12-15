@@ -26,7 +26,7 @@ pub fn get_static_server(value: Option<i16>) -> String {
         let _value = value.unwrap();
         match _value {
             1 => "http://194.58.90.123:9050".to_string(),
-            2 => "http://194.58.90.123:9051".to_string(),
+            2 => "http://194.58.90.123:9001".to_string(),
             _ => "http://194.58.90.123:9050".to_string(),
         }
     }
