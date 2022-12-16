@@ -41,10 +41,19 @@ impl UploadedFiles {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
+pub struct FileVars {
+    pub original: String, // Путь к оригиналу загруженного фото
+    pub file:     String, // Путь к оптимизированному варианту
+    pub preview:  String, // Путь к миниатюре
+}
+
+#[derive(Deserialize, Serialize, Debug)]
 pub struct FileForm {
-    pub files: Vec<String>,
+    pub files: Vec<FileVars>,
 }
 pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
+    use std::path::Path;
+    use image_convert::{ImageResource, identify, JPGConfig , to_jpg};
     use uuid::Uuid;
 
     //let mut _files: Vec<UploadedFiles> = Vec::new();
@@ -57,8 +66,10 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
         let mut field: Field = item.expect("split_payload err");
 
         if field.name() == "files[]" {
-            let _new_path = format!("{}.jpg", Uuid::new_v4());
+            let _uuid = Uuid::new_v4();
+            let _new_path = _uuid.to_string() + &".jpg".to_string();
             if _new_path != "" { 
+
                 let file = UploadedFiles::new(_new_path.to_string(), list_id);
                 let file_path = file.path.clone();
                 let mut f = web::block(move || std::fs::File::create(file_path).expect("E"))
@@ -72,7 +83,44 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                         .expect("E");
                 };
                 //_files.push(file.clone());
-                form.files.push(file.path.clone().replace("./","/"));
+
+                let input = ImageResource::from_path(file.path.clone());
+                let mut output = None;
+                let id = identify(&mut output, &input).unwrap();
+
+                let width = id.resolution.width;
+                let height = id.resolution.height;
+
+                let source_image_path = Path::new(file.path.clone());
+                let thumb_p = "thumb-".to_string() + &_new_path;
+                let thumb_image_path = Path::join(source_image_path.parent().unwrap(), &thumb_p);
+                let mut config = JPGConfig::new();
+                config.width = (width / 10) as u16;
+                config.height = (height / 10) as u16;
+                config.quality = 0;
+                let input = ImageResource::from_path(source_image_path);
+                let mut output = ImageResource::from_path(thumb_image_path.clone());
+                to_jpg(&mut output, &input, &config).unwrap();
+
+                let source_image_path = Path::new(file.path.clone());
+                let cur_p = "thumb-".to_string() + &_new_path;
+                let cur_image_path = Path::join(source_image_path.parent().unwrap(), &cur_p);
+    
+                let mut config = JPGConfig::new();
+                config.width = width as u16;
+                config.height = height as u16;
+                config.quality = 99;
+                let input = ImageResource::from_path(source_image_path);
+                let mut output = ImageResource::from_path(cur_image_path.clone());
+                to_jpg(&mut output, &input, &config).unwrap();
+
+                form.files.push (
+                    FileVars {
+                        original: file.path.clone().replace("./","/"),
+                        file:     cur_p.replace("./","/"),
+                        preview:  thumb_p.replace("./","/"),
+                    }
+                );
             }
         }
     }
