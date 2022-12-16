@@ -167,52 +167,52 @@ pub async fn get_file (
                 }
             }
         }
+    }
 
-        if is_open {
-            let to: String; 
-            if server_id == 1 {
-                to = "http://194.58.90.123:9050".to_string();
-            }
-            else if server_id == 2 {
-                to = "http://194.58.90.123:9051".to_string();
-            }
-            else {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "server not found!".to_string(),
-                }).unwrap();
-                return HttpResponse::Ok().body(body);
-            }
-            let url = format!(
-                "{to}{path}",
-                to = to,
-                path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
-            );
-            debug!("=> {url}");
-            return match http_client
-                .request_from(&url, req.head())
-                .send_stream(body)
-                .await
-            {
-                Ok(resp) => {
-                    let status = resp.status();
-                    debug!("<= [{status}] {url}", status = status.as_u16());
-                    let mut resp_builder = HttpResponse::build(status);
-                    for header in resp.headers() {
-                        resp_builder.insert_header(header);
-                    }
-                    resp_builder.streaming(resp.into_stream())
-                }
-                Err(err) => {
-                    warn!("{url}: {err:?}");
-                    HttpResponse::build(StatusCode::BAD_GATEWAY).body("Bad Gateway")
-                }
-            }
+    if is_open {
+        let to: String; 
+        if server_id == 1 {
+            to = "http://194.58.90.123:9050".to_string();
+        }
+        else if server_id == 2 {
+            to = "http://194.58.90.123:9051".to_string();
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
-                error: "Permission Denied!".to_string(),
+                error: "server not found!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            return HttpResponse::Ok().body(body);
         }
+        let url = format!(
+            "{to}{path}",
+            to = to,
+            path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
+        );
+        debug!("=> {url}");
+        return match http_client
+            .request_from(&url, req.head())
+            .send_stream(body)
+            .await
+        {
+            Ok(resp) => {
+                let status = resp.status();
+                debug!("<= [{status}] {url}", status = status.as_u16());
+                let mut resp_builder = HttpResponse::build(status);
+                for header in resp.headers() {
+                    resp_builder.insert_header(header);
+                }
+                resp_builder.streaming(resp.into_stream())
+            }
+            Err(err) => {
+                warn!("{url}: {err:?}");
+                HttpResponse::build(StatusCode::BAD_GATEWAY).body("Bad Gateway")
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
     }
 }
