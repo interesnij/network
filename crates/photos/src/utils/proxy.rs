@@ -73,7 +73,7 @@ pub async fn get_file (
     for (i, _f) in f.iter().enumerate() {
         if i == 0 {
             let photo_id_some = _f.parse();
-            if photo_id_some.is_some() {
+            if photo_id_some.is_ok() {
                 photo_id = photo_id_some.unwrap();
             }
             break;
