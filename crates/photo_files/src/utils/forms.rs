@@ -117,7 +117,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             }
             else if height > width {
                 if width > 960 {
-                    сonfig.width = 960;
+                    config.width = 960;
                 }
                 if height > 1280 {
                     config.height = 1280;
@@ -125,8 +125,8 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             }
             else if height == width {
                 if width > 1000 {
-                    сonfig.width = 1000;
-                    сonfig.height = 1000;
+                    config.width = 1000;
+                    config.height = 1000;
                 }
             }
             else {
