@@ -69,7 +69,7 @@ pub async fn get_file (
         }
     };
     let filename = v.last().unwrap();
-    let f: Vec<&str> = _path.split("-").collect();
+    let f: Vec<&str> = filename.split("-").collect();
     for (i, _f) in f.iter().enumerate() {
         if i == 0 {
             photo_id = _f.parse().unwrap();
