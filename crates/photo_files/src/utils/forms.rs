@@ -134,7 +134,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                 config.height = height as u16;
             }
 
-            config.quality = 99;
+            //config.quality = 99;
             let input = ImageResource::from_path(source_image_path);
             let mut output = ImageResource::from_path(cur_image_path.clone());
             to_jpg(&mut output, &input, &config).unwrap();
