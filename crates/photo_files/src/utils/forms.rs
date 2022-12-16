@@ -91,7 +91,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                 let width = id.resolution.width;
                 let height = id.resolution.height;
 
-                let source_image_path = Path::new(file.path.clone());
+                let source_image_path = file.path.clone();
                 let thumb_p = "thumb-".to_string() + &_new_path;
                 let thumb_image_path = Path::join(source_image_path.parent().unwrap(), &thumb_p);
                 let mut config = JPGConfig::new();
@@ -102,7 +102,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                 let mut output = ImageResource::from_path(thumb_image_path.clone());
                 to_jpg(&mut output, &input, &config).unwrap();
 
-                let source_image_path = Path::new(file.path.clone());
+                let source_image_path = file.path.clone();
                 let cur_p = "thumb-".to_string() + &_new_path;
                 let cur_image_path = Path::join(source_image_path.parent().unwrap(), &cur_p);
     
