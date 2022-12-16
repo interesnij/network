@@ -110,7 +110,7 @@ pub async fn get_file (
                     }).unwrap();
                     return HttpResponse::Ok().body(body);
                 }
-                else if community_id > 0 && c_id != community_id {
+                else if community_id > 0 && community.id != community_id {
                     is_open = false;
                 }
 
