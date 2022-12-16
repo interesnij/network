@@ -19,7 +19,7 @@ use crate::utils::{
     CardPhotoListJson, CardPhotoJson,
 };
 use crate::models::{
-    Photo,
+    Photo, PhotoList,
 };
 
 
@@ -54,14 +54,8 @@ pub async fn get_file (
     if params_some.is_ok() {
         let mut is_open = false;
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 8);
-        if err.is_some() {
-            let body = serde_json::to_string(&ErrorParams {
-                error: err.unwrap(),
-            }).unwrap();
-            return HttpResponse::Ok().body(body);
-        }
-        else if params.server_id.is_none() {
+        
+        if params.server_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Field 'server_id' is required!".to_string(),
             }).unwrap();
@@ -73,44 +67,103 @@ pub async fn get_file (
             }).unwrap();
             return HttpResponse::Ok().body(body);
         }
+
+        let item: Photo;
+        let list: PhotoList;
+        let item_res = get_photo(params.photo_id.unwrap());
+        if item_res.is_ok() {
+            item = item_res.expect("E");
+            list = item.get_list().expect("E");
+        }
         else {
-            let item: Photo;
-            let item_res = get_photo(params.photo_id.unwrap());
-            if item_res.is_ok() {
-                item = item_res.expect("E");
-            }
-            else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "photo not found!".to_string(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+
+        if item.community_id.is_some() {
+            let community = item.get_community().expect("E.");
+            let _tuple = get_anon_community_permission(&community);
+            if _tuple.0 == false {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "photo not found!".to_string(),
+                    error: _tuple.1.to_string(),
                 }).unwrap();
                 return HttpResponse::Ok().body(body);
             }
+            else if community.is_anon_user_see_el() && list.is_anon_user_see_el() {
+                is_open = true;
+            }
+            else {
+                if params.token.is_none() {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Field 'token' is required!".to_string(),
+                    }).unwrap();
+                    return HttpResponse::Ok().body(body);
+                }
+        
+                let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 8);
+                
+                if err.is_some() {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: err.unwrap(),
+                    }).unwrap();
+                    return HttpResponse::Ok().body(body);
+                }
+                else if community_id > 0 && c_id != community_id {
+                    is_open = false;
+                }
 
-            if user_id > 0 {
-                if item.community_id.is_some() {
-                    let c_id = item.community_id.unwrap();
-                    if community_id > 0 && c_id != community_id {
+                if user_id > 0 {
+                    let _tuple = get_community_permission(&community, user_id);
+                    if _tuple.0 == false {
                         let body = serde_json::to_string(&ErrorParams {
-                            error: "Permission Denied.".to_string(),
+                            error: _tuple.1.to_string(),
                         }).unwrap();
                         return HttpResponse::Ok().body(body);
                     }
+                    else if community.is_user_see_el(user_id) && list.is_user_see_el(user_id) {
+                        is_open = true;
+                    }
                     else {
-                        let community = item.get_community().expect("E.");
-                        let _tuple = get_community_permission(&community, user_id);
-                        if _tuple.0 == false {
-                            let body = serde_json::to_string(&ErrorParams {
-                                error: _tuple.1.to_string(),
-                            }).unwrap();
-                            return HttpResponse::Ok().body(body);
-                        }
-                        else {
-                            is_open = true;
-                        }
+                        is_open = false;
                     }
                 }
-                else {
-                    let owner = item.get_creator().expect("E.");
+            }
+        }
+        else {
+            let owner = item.get_creator().expect("E.");
+            let _tuple = get_anon_user_permission(&owner);
+            if _tuple.0 == false {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: _tuple.1.to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+            else if owner.is_anon_user_see_el() && list.is_anon_user_see_el() {
+                is_open = true;
+            }
+            else {
+                if params.token.is_none() {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Field 'token' is required!".to_string(),
+                    }).unwrap();
+                    return HttpResponse::Ok().body(body);
+                }
+        
+                let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 8);
+                
+                if err.is_some() {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: err.unwrap(),
+                    }).unwrap();
+                    return HttpResponse::Ok().body(body);
+                }
+                if community_id > 0 {
+                    is_open = false;
+                }
+
+                if user_id > 0 {
                     let _tuple = get_user_permission(&owner, user_id);
                     if _tuple.0 == false {
                         let body = serde_json::to_string(&ErrorParams {
@@ -118,57 +171,24 @@ pub async fn get_file (
                         }).unwrap();
                         return HttpResponse::Ok().body(body);
                     }
-                    else {
+                    else if owner.is_user_see_el(user_id) && list.is_user_see_el(user_id) {
                         is_open = true;
                     }
-                }
-            }
-            else {
-                if item.community_id.is_some() {
-                    let c_id = item.community_id.unwrap();
-                    if community_id > 0 && c_id != community_id {
-                        let body = serde_json::to_string(&ErrorParams {
-                            error: "Permission Denied.".to_string(),
-                        }).unwrap();
-                        return HttpResponse::Ok().body(body);
-                    }
                     else {
-                        let community = item.get_community().expect("E.");
-                        let _tuple = get_anon_community_permission(&community);
-                        if _tuple.0 == false {
-                            let body = serde_json::to_string(&ErrorParams {
-                                error: _tuple.1.to_string(),
-                            }).unwrap();
-                            return HttpResponse::Ok().body(body);
-                        }
-                        else {
-                            is_open = true;
-                        }
-                    }
-                }
-                else {
-                    let owner = item.get_creator().expect("E.");
-                    let _tuple = get_anon_user_permission(&owner);
-                    if _tuple.0 == false {
-                        let body = serde_json::to_string(&ErrorParams {
-                            error: _tuple.1.to_string(),
-                        }).unwrap();
-                        return HttpResponse::Ok().body(body);
-                    }
-                    else {
-                        is_open = true;
+                        is_open = false;
                     }
                 }
             }
         }
+
         if is_open {
             let _server_id = params.server_id.unwrap();
             let to: String; 
-            if _server_id == 0 {
+            if _server_id == 1 {
                 to = "http://194.58.90.123:9050".to_string();
             }
-            else if _server_id == 1 {
-                to = "http://194.58.90.123:9050".to_string();
+            else if _server_id == 2 {
+                to = "http://194.58.90.123:9051".to_string();
             }
             else {
                 let body = serde_json::to_string(&ErrorParams {
