@@ -65,7 +65,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
     while let Some(item) = payload.next().await {
         let mut field: Field = item.expect("split_payload err");
 
-        if field.name() == "files[]" {
+        //if field.name() == "files[]" {
             let _uuid = Uuid::new_v4();
             let _new_path = _uuid.to_string() + &".jpg".to_string();
             if _new_path != "" { 
@@ -122,7 +122,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                     }
                 );
             }
-        }
+       // }
     }
     form
 }
