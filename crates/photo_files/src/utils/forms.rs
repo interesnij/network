@@ -121,8 +121,8 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             form.files.push (
                 FileVars {
                     original: file.path.clone(),
-                    file:     cur_image_path.to_string(),
-                    preview:  thumb_image_path.to_string(),
+                    file:     folder + &cur_p,
+                    preview:  folder + &thumb_p,
                 }
             );
         }
