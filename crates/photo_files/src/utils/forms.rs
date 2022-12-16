@@ -22,7 +22,7 @@ impl UploadedFiles {
 
         let now = chrono::Local::now().naive_utc();
         let format_folder = format!(
-            "./media/ser1/{}/{}/{}/{}/",
+            "./media/ser1/{}/",
             list_id.to_string(),
             //now.year().to_string(),
             //now.month().to_string(),
