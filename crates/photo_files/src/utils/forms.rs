@@ -20,7 +20,7 @@ impl UploadedFiles {
     ) -> UploadedFiles {
         use chrono::Datelike;
 
-        let now = chrono::Local::now().naive_utc();
+        //let now = chrono::Local::now().naive_utc();
         let format_folder = format!(
             "./media/ser1/{}/",
             list_id.to_string(),
@@ -47,7 +47,7 @@ pub struct FileForm {
 pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
     use uuid::Uuid;
 
-    let mut _files: Vec<UploadedFiles> = Vec::new();
+    //let mut _files: Vec<UploadedFiles> = Vec::new();
 
     let mut form: FileForm = FileForm {
         files: Vec::new(),
@@ -71,7 +71,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                         .unwrap()
                         .expect("E");
                 };
-                _files.push(file.clone());
+                //_files.push(file.clone());
                 form.files.push(file.path.clone().replace("./","/"));
             }
         }
