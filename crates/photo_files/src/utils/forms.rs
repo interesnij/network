@@ -82,7 +82,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                     .expect("E");
             };
 
-            let folder_path = "media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
+            let folder_path = "/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
             let folder = Path::new(&folder_path);
 
             let input = ImageResource::from_path(file.path.clone());
@@ -103,7 +103,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             let mut output = ImageResource::from_path(thumb_image_path.clone());
 
             println!("input {:?}", source_image_path.clone());
-            println!("output {:?}", thumb_image_path.clone());
+            println!("output {:?}", thumb_image_path.clone()); 
             to_jpg(&mut output, &input, &config).unwrap();
 
             let source_image_path = Path::new(&file.path);
