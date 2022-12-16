@@ -81,6 +81,8 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                     .expect("E");
             };
 
+            let folder = "media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
+
             let input = ImageResource::from_path(file.path.clone());
             let mut output = None;
             let id = identify(&mut output, &input).unwrap();
@@ -90,7 +92,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
 
             let source_image_path = Path::new(&file.path);
             let thumb_p = "thumb-".to_string() + &_new_path;
-            let thumb_image_path = Path::join(source_image_path, &thumb_p);
+            let thumb_image_path = Path::join(folder, &thumb_p);
             let mut config = JPGConfig::new();
             config.width = (width / 10) as u16;
             config.height = (height / 10) as u16;
@@ -101,7 +103,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
 
             let source_image_path = Path::new(&file.path);
             let cur_p = "thumb-".to_string() + &_new_path;
-            let cur_image_path = Path::join(source_image_path, &cur_p);
+            let cur_image_path = Path::join(folder, &cur_p);
     
             let mut config = JPGConfig::new();
             config.width = width as u16;
