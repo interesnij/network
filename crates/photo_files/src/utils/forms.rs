@@ -107,7 +107,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             to_jpg(&mut output, &input, &config).unwrap();
 
             let source_image_path = Path::new(&file.path);
-            let cur_p = "thumb-".to_string() + &_new_path;
+            let cur_p = "cur-".to_string() + &_new_path;
             let cur_image_path = Path::join(folder, &cur_p);
     
             let mut config = JPGConfig::new();
