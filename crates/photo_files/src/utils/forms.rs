@@ -22,11 +22,11 @@ impl UploadedFiles {
 
         let now = chrono::Local::now().naive_utc();
         let format_folder = format!(
-            "./media/{}/{}/{}/{}/",
+            "./media/ser1/{}/{}/{}/{}/",
             list_id.to_string(),
-            now.year().to_string(),
-            now.month().to_string(),
-            now.day().to_string(),
+            //now.year().to_string(),
+            //now.month().to_string(),
+            //now.day().to_string(),
         );
         let format_path = format_folder.clone() + &filename.to_string();
         //let create_path = format_folder.replace("./", "/my/"); // вариант для https
@@ -72,7 +72,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                         .expect("E");
                 };
                 _files.push(file.clone());
-                form.files.push(file.path.clone().replace("./","/"));
+                form.files.push(&file_path.replace("./","/"));
             }
         }
     }
