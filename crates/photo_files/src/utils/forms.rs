@@ -68,8 +68,9 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
         if _new_path != "" { 
             let file = UploadedFiles::new(_new_path.to_string(), list_id);
             let file_path = file.path.clone();
+            println!("=============");
             println!("path {:?}", file.path.clone());
-            println!("name {:?}", file.name.clone());
+            println!("=============");
             let mut f = web::block(move || std::fs::File::create(&file_path).expect("E"))
                 .await
                 .unwrap();
@@ -98,8 +99,11 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             config.width = (width / 10) as u16;
             config.height = (height / 10) as u16;
             config.quality = 0;
-            let input = ImageResource::from_path(source_image_path);
+            let input = ImageResource::from_path(source_image_path.clone());
             let mut output = ImageResource::from_path(thumb_image_path.clone());
+
+            println!("input {:?}", source_image_path.clone());
+            println!("output {:?}", thumb_image_path.clone());
             to_jpg(&mut output, &input, &config).unwrap();
 
             let source_image_path = Path::new(&file.path);
