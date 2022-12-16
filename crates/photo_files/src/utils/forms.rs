@@ -72,7 +72,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                         .expect("E");
                 };
                 _files.push(file.clone());
-                form.files.push(&file_path.replace("./","/"));
+                form.files.push(file_path.clone().replace("./","/"));
             }
         }
     }
