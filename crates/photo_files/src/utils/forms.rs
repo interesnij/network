@@ -22,7 +22,7 @@ impl UploadedFiles {
 
         //let now = chrono::Local::now().naive_utc();
         let format_folder = format!(
-            "/media/ser1/{}/",
+            "/network/crates/photo_files/media/ser1/{}/",
             list_id.to_string(),
             //now.year().to_string(),
             //now.month().to_string(),
@@ -82,7 +82,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                     .expect("E");
             };
 
-            let folder_path = "/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
+            let folder_path = "/network/crates/photo_files/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
             let folder = Path::new(&folder_path);
 
             let input = ImageResource::from_path(file.path.clone());
