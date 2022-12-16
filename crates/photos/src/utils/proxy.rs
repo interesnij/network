@@ -70,7 +70,7 @@ pub async fn get_file (
     };
     let filename = v.last().unwrap();
     let f: Vec<&str> = _path.split("-").collect();
-    photo_id = (f.split_first().unwrap().parse()).unwrap();
+    photo_id = (f.split_first().unwrap()).parse().unwrap();
 
     let item: Photo;
     let list: PhotoList;
