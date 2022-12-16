@@ -61,7 +61,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             if _new_path != "" { 
                 let file = UploadedFiles::new(_new_path.to_string(), list_id);
                 let file_path = file.path.clone();
-                let mut f = web::block(move || std::fs::File::create(file.path.clone()).expect("E"))
+                let mut f = web::block(move || std::fs::File::create(file_path).expect("E"))
                     .await
                     .unwrap();
                 while let Some(chunk) = field.next().await {
