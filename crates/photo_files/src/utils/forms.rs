@@ -81,7 +81,8 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                     .expect("E");
             };
 
-            let folder = Path::new("media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string());
+            let folder_path = "media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
+            let folder = Path::new(folder_path);
 
             let input = ImageResource::from_path(file.path.clone());
             let mut output = None;
