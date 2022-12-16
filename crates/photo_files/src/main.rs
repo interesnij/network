@@ -30,7 +30,6 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
 
     let width = id.resolution.width;
     let height = id.resolution.height;
-    let format = id.format;
     
     let source_image_path = Path::new("static/service_cat.jpg");
     let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_small.jpg");
