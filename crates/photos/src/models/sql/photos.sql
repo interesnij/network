@@ -571,14 +571,14 @@ CREATE TABLE owner_services_items (
     id          SERIAL PRIMARY KEY, -- id
     owner_id    INT NOT NULL,       -- id токена-владельца
     service_id  INT NOT NULL        -- id сервиса
-);
+); 
 CREATE UNIQUE INDEX owner_services_items_unq ON owner_services_items (owner_id, service_id);
 
 -- создадим варианты для токенов, чтобы сто раз не добавлять
-INSERT INTO owner_services (id, types, name)
-VALUES (1, 8, 'Фотографии') ON CONFLICT DO NOTHING;
-INSERT INTO owner_services (id, types, name)
-VALUES (2, 38, 'Управление фотографиями') ON CONFLICT DO NOTHING;
+INSERT INTO owner_services_items (id, owner_id, service_id)
+VALUES (1, 0, 8) ON CONFLICT DO NOTHING;
+INSERT INTO owner_services_items (id, owner_id, service_id)
+VALUES (2, 0, 38) ON CONFLICT DO NOTHING;
 
 /*
 объекты других сервисов
