@@ -120,9 +120,9 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
 
             form.files.push (
                 FileVars {
-                    original: file.path.clone().replace("./","/"),
-                    file:     cur_p.replace("./","/"),
-                    preview:  thumb_p.replace("./","/"),
+                    original: file.path.clone(),
+                    file:     cur_image_path,
+                    preview:  thumb_image_path,
                 }
             );
         }
