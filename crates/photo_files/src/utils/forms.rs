@@ -77,8 +77,9 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
                     .expect("E");
             };
 
-            let folder_path = "/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
+            let folder_path = "/network/crates/photo_files/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
             let folder = Path::new(&folder_path);
+            let cur_path = "/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string();
 
             let input = ImageResource::from_path(file.path.clone());
             let mut output = None;
@@ -116,8 +117,8 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             form.files.push (
                 FileVars {
                     original: "/media/ser1/".to_owned() + &list_id.to_string() + &"/".to_string() + &_new_path,
-                    file:     folder_path.clone() + &cur_p,
-                    preview:  folder_path.clone() + &thumb_p,
+                    file:     cur_path.clone() + &cur_p,
+                    preview:  cur_path.clone() + &thumb_p,
                 }
             );
         }
