@@ -72,7 +72,7 @@ pub async fn get_file (
     let f: Vec<&str> = filename.split("-").collect();
     for (i, _f) in f.iter().enumerate() {
         if i == 0 {
-            photo_id_some = _f.parse();
+            let photo_id_some = _f.parse();
             if photo_id_some.is_some() {
                 photo_id = photo_id_some.unwrap();
             }
