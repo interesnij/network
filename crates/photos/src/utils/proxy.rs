@@ -293,7 +293,8 @@ pub async fn upload_files (
         is_open = false;
     }
     else {
-        let list = get_photo_list(*path).expect("E.");
+        let list_id = path.replace("/", "");
+        let list = get_photo_list(*list_id).expect("E.");
         let c_id: Option<i32>;
         if community_id > 0 { 
             c_id = Some(community_id);
