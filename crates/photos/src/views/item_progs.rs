@@ -12,7 +12,7 @@ use crate::utils::{
     get_user_permission,
     get_owner_data,
     ItemParams, ErrorParams,
-    DataCopyPhoto, DataNewPhoto, DataEditPhoto, RespPhoto,
+    DataCopyPhoto, DataNewPhotos, DataEditPhoto, RespPhoto,
     ReactionData, JsonItemReactions,
 };
 use crate::errors::Error;
@@ -197,7 +197,7 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<RespPhoto>>, Error> {
+pub async fn add_photos_in_list(data: Json<DataNewPhotos>) -> Result<Json<Vec<RespPhoto>>, Error> {
     let (err, user_id, community_id) = get_owner_data(Some(data.token.clone()), Some(data.user_id), 21);
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
