@@ -574,6 +574,7 @@ impl Photo {
                 };
         } else {
             return PhotoDetailJson {
+                server_id:            self.server_id,
                 file:                 self.file.clone(),
                 description:          self.description.clone(),
                 owner_name:           creator.name.clone(),
