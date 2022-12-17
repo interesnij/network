@@ -285,7 +285,7 @@ pub async fn upload_files (
     let form = files_form(payload.borrow_mut()).await;
     let mut is_open = false;
 
-    let (err, user_id, community_id) = get_owner_data(Some(form.token.clone()), Some(form.user_id), 21);
+    let (err, user_id, community_id) = get_owner_data(form.token.clone(), form.user_id, 21);
     if err.is_some() { 
         is_open = false;
     }
