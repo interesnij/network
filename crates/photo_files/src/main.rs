@@ -53,8 +53,8 @@ pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) ->
         let form = files_form(payload.borrow_mut(), *list_id).await;
         Ok(Json(
             NewFilesResp {
-                pub files:      form.files,
-                pub service_id: 1,
+                files:      form.files,
+                service_id: 1,
             }
         ))
 }
