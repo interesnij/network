@@ -239,7 +239,7 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,
-                    server_id.unwrap(),
+                    data.server_id.unwrap(),
                     data.files.as_deref().unwrap().to_vec()
                 )).await?;
                 Ok(Json(_res))
@@ -254,7 +254,7 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,
-                    server_id.unwrap(),
+                    data.server_id.unwrap(),
                     data.files.as_deref().unwrap().to_vec()
                 )).await?;
                 Ok(Json(_res))
