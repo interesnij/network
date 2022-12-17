@@ -96,10 +96,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             config.height = (height / 10) as u16;
             config.quality = 0;
             let input = ImageResource::from_path(source_image_path.clone());
-            let mut output = ImageResource::from_path(thumb_image_path.clone());
-
-            println!("input {:?}", source_image_path.clone());
-            println!("output {:?}", thumb_image_path.clone()); 
+            let mut output = ImageResource::from_path(thumb_image_path);
             to_jpg(&mut output, &input, &config).unwrap();
 
             let source_image_path = Path::new(&file.path);
@@ -136,7 +133,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
 
             //config.quality = 99;
             let input = ImageResource::from_path(source_image_path);
-            let mut output = ImageResource::from_path(cur_image_path.clone());
+            let mut output = ImageResource::from_path(cur_image_path);
             to_jpg(&mut output, &input, &config).unwrap();
 
             form.files.push (
