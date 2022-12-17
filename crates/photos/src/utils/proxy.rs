@@ -60,14 +60,7 @@ pub async fn get_file (
     let params_some = web::Query::<LoadPhotoParams>::from_query(&req.query_string());
 
     let mut photo_id: i32 = 0;
-    let mut server_id: i16 = 0;
-    let v: Vec<&str> = _path.split("/").collect();
-    for _v in v.iter() {
-        if _v.contains("ser") {
-            server_id = _v[3..].parse().unwrap();
-            break;
-        }
-    };
+    let server_id: i32;
     let filename = v.last().unwrap();
     let f: Vec<&str> = filename.split("-").collect();
     for (i, _f) in f.iter().enumerate() {
@@ -86,6 +79,7 @@ pub async fn get_file (
     if item_res.is_ok() {
         item = item_res.expect("E");
         list = item.get_list().expect("E");
+        server_id = item.server_id;
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
