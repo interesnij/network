@@ -12,7 +12,7 @@ use std::path::PathBuf;
 use actix_multipart::Multipart;
 use std::borrow::BorrowMut;
 mod utils;
-use crate::utils::FileVars;
+use crate::utils::NewFilesResp;
 
 
 async fn get_file(req: HttpRequest) -> Result<NamedFile> {
@@ -47,11 +47,16 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
 }
 
 pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) -> 
-    Result<Json<Vec<FileVars>>> {
+    Result<Json<NewFilesResp>> {
         use crate::utils::files_form;
 
         let form = files_form(payload.borrow_mut(), *list_id).await;
-        Ok(Json(form.files))
+        Ok(Json(
+            NewFilesResp {
+                pub files:      form.files,
+                pub service_id: 1,
+            }
+        ))
 }
 
 #[actix_web::main]

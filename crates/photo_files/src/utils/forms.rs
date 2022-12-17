@@ -36,16 +36,15 @@ impl UploadedFiles {
 }
 
 #[derive(Deserialize, Serialize, Debug)]
-pub struct FileVars {
-    pub original: String, // Путь к оригиналу загруженного фото
-    pub file:     String, // Путь к оптимизированному варианту
-    pub preview:  String, // Путь к миниатюре
-}
-
-#[derive(Deserialize, Serialize, Debug)]
 pub struct FileForm {
-    pub files: Vec<FileVars>,
+    pub files: Vec<String>,
 }
+#[derive(Serialize, Debug)]
+pub struct NewFilesResp {
+    pub files:      Vec<String>,
+    pub service_id: i16,
+} 
+
 pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
     use std::path::Path;
     use image_convert::{ImageResource, JPGConfig, identify, to_jpg};
@@ -94,7 +93,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             let mut config = JPGConfig::new();
             config.width = (width / 10) as u16;
             config.height = (height / 10) as u16;
-            config.quality = 0;
+            config.quality = 30;
             let input = ImageResource::from_path(source_image_path.clone());
             let mut output = ImageResource::from_path(thumb_image_path);
             to_jpg(&mut output, &input, &config).unwrap();
@@ -136,13 +135,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
             let mut output = ImageResource::from_path(cur_image_path);
             to_jpg(&mut output, &input, &config).unwrap();
 
-            form.files.push (
-                FileVars {
-                    original: cur_path.clone() + &_new_path,
-                    file:     cur_path.clone() + &cur_p,
-                    preview:  cur_path.clone() + &thumb_p,
-                }
-            );
+            form.files.push(_new_path);
         }
     }
     form
