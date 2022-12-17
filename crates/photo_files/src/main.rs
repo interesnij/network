@@ -20,30 +20,13 @@ async fn get_file(req: HttpRequest) -> Result<NamedFile> {
     Ok(NamedFile::open(path)?)
 }
 
-pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
-    use std::path::Path;
-    use image_convert::{ImageResource, identify, JPGConfig , to_jpg};
-
-    let input = ImageResource::from_path("static/service_cat.jpg");
-    let mut output = None;
-    let id = identify(&mut output, &input).unwrap();
-
-    let width = id.resolution.width;
-    let height = id.resolution.height;
-    
-    let source_image_path = Path::new("static/service_cat.jpg");
-    let target_image_path = Path::join(source_image_path.parent().unwrap(), "bus_small.jpg");
-    
-    let mut config = JPGConfig::new();
-    config.width = (width / 10) as u16;
-    config.height = (height / 10) as u16;
-    config.quality = 0;
-
-    let input = ImageResource::from_path(source_image_path);
-    let mut output = ImageResource::from_path(target_image_path.clone());
-    to_jpg(&mut output, &input, &config).unwrap();
-
-    Ok(NamedFile::open(target_image_path)?)
+pub async fn index_page() -> impl Responder {
+    HttpResponse::Ok().body(
+        "<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
+            <p style='text-align: center'>
+                hello, I media server #1.
+            </p>
+        </div>")
 }
 
 
