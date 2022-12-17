@@ -2526,7 +2526,7 @@ impl PhotoList {
                 photo_list_id: self.id,
                 types: 1,
                 server_id: server_id,
-                file: i.1.clone(),
+                file: i.clone(),
                 description: None,
                 comments_on: true,
 
