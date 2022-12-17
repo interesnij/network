@@ -288,6 +288,7 @@ pub async fn upload_files (
     let (err, user_id, community_id) = get_owner_data(form.token.clone(), form.user_id, 21);
     if err.is_some() { 
         is_open = false;
+        println!("проблема с токеном!");
     }
     else if user_id < 1 && community_id < 1 {
         is_open = false;
