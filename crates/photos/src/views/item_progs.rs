@@ -198,7 +198,7 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn add_photos_in_list(data: Json<DataNewPhotos>) -> Result<Json<Vec<RespPhoto>>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(data.token.clone(), Some(data.user_id), 21);
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
     }

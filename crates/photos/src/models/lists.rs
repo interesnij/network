@@ -19,7 +19,7 @@ use crate::utils::{
     CardUserJson, CardOwnerJson,
     CardCommentJson, EditListJson,
     RespListJson, DataListJson,
-    DataNewPhoto, RespPhoto, CardPhotoJson,
+    DataNewPhotos, RespPhoto, CardPhotoJson,
     AttachPhotoListResp, CardPhotoListJson,
     AttachOwner,
 };
