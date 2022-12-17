@@ -686,7 +686,7 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
 }
 
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize)]
 pub struct ItemParams {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
