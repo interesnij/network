@@ -26,7 +26,7 @@ use crate::models::{
     User, Community, 
     SearchAllPhotos, SearchAllComments,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use crate::errors::Error;
 
 
