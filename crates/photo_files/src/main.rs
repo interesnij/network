@@ -12,7 +12,7 @@ use std::path::PathBuf;
 use actix_multipart::Multipart;
 use std::borrow::BorrowMut;
 mod utils;
-use crate::utils::NewFilesResp;
+use crate::utils::DataNewPhotos;
 
 
 async fn get_file(req: HttpRequest) -> Result<NamedFile> {
@@ -46,17 +46,25 @@ pub async fn index_page(req: HttpRequest) -> Result<NamedFile> {
     Ok(NamedFile::open(target_image_path)?)
 }
 
-pub async fn create_files(mut payload: Multipart, list_id: web::Path<i32>) -> 
-    Result<Json<NewFilesResp>> {
+
+pub async fn create_files (
+    mut payload: Multipart,
+    list_id: web::Path<i32>
+) -> Result<Json<i16>> {
         use crate::utils::files_form;
 
         let form = files_form(payload.borrow_mut(), *list_id).await;
-        Ok(Json(
-            NewFilesResp {
-                files:      form.files,
-                service_id: 1,
-            }
-        ))
+        let client = reqwest::Client::new();
+        let res = client.post("194.58.90.123:9004/add_photos_in_list")
+            .body(DataNewPhotos {
+                list_id:      *list_id,
+                server_id:    1,
+                user_id:      form.user_id,
+                community_id: form.community_id,
+                files:        form.files,
+            })
+            .send()
+            .await?;
 }
 
 #[actix_web::main]
@@ -73,8 +81,8 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .route("/", web::get().to(index_page))
             .route("/{filename:.*}", web::get().to(get_file))
-            .route("/create_files/{list_id}", web::post().to(create_files))
-    })
+            .route("{list_id}", web::post().to(create_files))
+    }) 
     .bind("194.58.90.123:9050")?
     .run()
     .await

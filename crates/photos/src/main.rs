@@ -19,7 +19,7 @@ async fn main() -> std::io::Result<()> {
     use clap::Parser;
     use crate::utils::{
         get_file,
-        //upload_files,
+        upload_files,
         ConfigToStaticServer,
     };
 
@@ -39,8 +39,12 @@ async fn main() -> std::io::Result<()> {
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
+
+            // прокси на серверы медиа для открытия фото.
             .service(web::resource("/static{path:.*}").to(get_file))
-            //.service(web::resource("/u/{path:.*}").to(upload_files))
+
+            // прокси на серверы медиа для сохранения фото.
+            .service(web::resource("/create_files{path:.*}").to(upload_files))
             
     })
     .bind("194.58.90.123:9004")?
