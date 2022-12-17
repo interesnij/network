@@ -9,6 +9,7 @@ use crate::utils::{
     get_community,
     get_user,
     get_photo,
+    get_photo_list,
     get_user_permission,
     get_anon_user_permission,
     get_community_permission,
@@ -233,10 +234,6 @@ pub struct FileForm {
 }
 
 pub async fn files_form(payload: &mut Multipart) -> FileForm {
-    use std::path::Path;
-    use image_convert::{ImageResource, JPGConfig, identify, to_jpg};
-    use uuid::Uuid;
-
     let mut form: FileForm = FileForm {
         token: None,
         user_id: None,
@@ -329,22 +326,9 @@ pub async fn upload_files (
     }
 
     if is_open {
-        let to: String; 
-        if server_id == 1 {
-            to = "http://194.58.90.123:9050".to_string();
-        }
-        else if server_id == 2 {
-            to = "http://194.58.90.123:9051".to_string();
-        }
-        else {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "server not found!".to_string(),
-            }).unwrap();
-            return HttpResponse::Ok().body(body);
-        }
         let url = format!(
             "{to}{path}",
-            to = to,
+            to = "http://194.58.90.123:9050".to_string(),
             path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
         );
         debug!("=> {url}");
