@@ -553,6 +553,7 @@ impl Photo {
         };
         if user_id > 0 {
             return PhotoDetailJson {
+                    server_id:            self.server_id,
                     file:                 self.file.clone(),
                     description:          self.description.clone(),
                     owner_name:           creator.name.clone(),
@@ -596,7 +597,7 @@ impl Photo {
     pub fn get_photo_json (&self) -> CardPhotoJson {
         return CardPhotoJson {
                 id:        self.id,
-                server_id: self.id,
+                server_id: self.server_id,
                 file:      self.file.clone(),
                 position:  self.position,
             };
