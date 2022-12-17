@@ -4,7 +4,7 @@ use clap::Parser;
 use env_logger::Env;
 use futures::TryStreamExt;
 use log::{debug, info, warn};
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use crate::utils::{
     get_community,
     get_user,
@@ -293,9 +293,9 @@ pub async fn upload_files (
         is_open = false;
     }
     else {
-        let list = get_photo_list(path).expect("E.");
+        let list = get_photo_list(*path).expect("E.");
         let c_id: Option<i32>;
-        if community_id > 0 {
+        if community_id > 0 { 
             c_id = Some(community_id);
         }
         else {
