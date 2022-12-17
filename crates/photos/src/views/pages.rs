@@ -692,6 +692,10 @@ pub struct ItemParams {
     pub user_id: Option<i32>,
     pub item_id: Option<i32>,
 }
+#[derive(Debug, Deserialize)]
+pub struct DescriptionResp {
+    pub description: Option<String>,
+}
 
 pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
     let params_some = web::Query::<ItemParams>::from_query(&req.query_string());
@@ -735,7 +739,11 @@ pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
                 ||
                 (list.is_user_create_el(user_id) && item.user_id == user_id)
              {
-                 let body = serde_json::to_string(&item.description.as_deref().unwrap()).unwrap();
+                 let body = serde_json::to_string (
+                    DescriptionResp {
+                        description: &item.description.as_deref().unwrap()
+                    }
+                ).unwrap(),
                  HttpResponse::Ok().body(body)
              }
              else {
