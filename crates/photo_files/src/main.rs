@@ -57,6 +57,7 @@ pub async fn create_files (
         let client = reqwest::Client::new();
         let res = client.post("194.58.90.123:9004/add_photos_in_list")
             .body(DataNewPhotos {
+                token:        form.token.clone(),
                 list_id:      *list_id,
                 server_id:    1,
                 user_id:      form.user_id,
@@ -65,6 +66,7 @@ pub async fn create_files (
             })
             .send()
             .await?;
+        return 1;
 }
 
 #[actix_web::main]
