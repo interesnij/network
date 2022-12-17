@@ -743,8 +743,8 @@ pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
                     DescriptionResp {
                         description: &item.description.as_deref().unwrap()
                     }
-                ).unwrap(),
-                 HttpResponse::Ok().body(body)
+                ).unwrap();
+                HttpResponse::Ok().body(body)
              }
              else {
                  let body = serde_json::to_string(&ErrorParams {
