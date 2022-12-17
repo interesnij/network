@@ -210,7 +210,13 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
             error: "Field 'list_id' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
-    } 
+    }
+    else if data.server_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'server_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
     else if data.files.is_none() {
         Err(Error::BadRequest("Field 'file' is required!".to_string()))
     }
@@ -233,6 +239,7 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,
+                    server_id.unwrap(),
                     data.files.as_deref().unwrap().to_vec()
                 )).await?;
                 Ok(Json(_res))
@@ -247,6 +254,7 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,
+                    server_id.unwrap(),
                     data.files.as_deref().unwrap().to_vec()
                 )).await?;
                 Ok(Json(_res))
