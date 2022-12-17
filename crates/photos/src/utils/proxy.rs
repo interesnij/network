@@ -249,6 +249,7 @@ pub async fn files_form(payload: &mut Multipart) -> FileForm {
                 let data = chunk.expect("split_payload err chunk");
                 if let Ok(s) = str::from_utf8(&data) {
                     let data_string = s.to_string();
+                    println!("token {}", &data_string);
                     form.token = Some(data_string);
                 }
             }
