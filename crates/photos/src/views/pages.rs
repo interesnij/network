@@ -735,7 +735,7 @@ pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
                 ||
                 (list.is_user_create_el(user_id) && item.user_id == user_id)
              {
-                 let body = serde_json::to_string(&item.get_edit_data_json()).unwrap();
+                 let body = serde_json::to_string(&item.description.as_deref().unwrap()).unwrap();
                  HttpResponse::Ok().body(body)
              }
              else {
