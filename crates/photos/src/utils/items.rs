@@ -99,7 +99,7 @@ pub struct DataListJson {
 pub struct DataNewPhoto {
     pub token:        Option<String>,
     pub list_id:      Option<i32>,
-    pub server_id:    Option<i32>,
+    pub server_id:    Option<i16>,
     pub user_id:      Option<i32>,
     pub community_id: Option<i32>,
     pub files:        Option<Vec<String>>,
