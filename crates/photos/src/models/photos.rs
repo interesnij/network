@@ -79,7 +79,7 @@ pub struct Photo {
     pub user_id:       i32,
     pub photo_list_id: i32,
     pub types:         i16,
-    pub preview:       String,
+    pub server_id:     i16,
     pub file:          String,
     pub description:   Option<String>,
     pub comments_on:   bool,
@@ -99,7 +99,7 @@ pub struct NewPhoto {
     pub user_id:       i32,
     pub photo_list_id: i32, 
     pub types:         i16,
-    pub preview:       String,
+    pub server_id:     i16,
     pub file:          String,
     pub description:   Option<String>,
     pub comments_on:   bool,
@@ -184,9 +184,9 @@ impl Photo {
                 copy_el:      list.copy_el,
             };
             let data = AttachPhoto {
-                id:      i.id,
-                preview: i.preview.clone(),
-                file:    i.file.clone(),
+                id:        i.id,
+                server_id: i.server_id,
+                file:      i.file.clone(),
             };
             stack.push (AttachPhotoResp {
                 owner:     u_resp,
@@ -553,7 +553,6 @@ impl Photo {
         };
         if user_id > 0 {
             return PhotoDetailJson {
-                    preview:              self.preview.clone(),
                     file:                 self.file.clone(),
                     description:          self.description.clone(),
                     owner_name:           creator.name.clone(),
@@ -574,7 +573,6 @@ impl Photo {
                 };
         } else {
             return PhotoDetailJson {
-                preview:              self.preview.clone(),
                 file:                 self.file.clone(),
                 description:          self.description.clone(),
                 owner_name:           creator.name.clone(),
@@ -597,10 +595,10 @@ impl Photo {
     }
     pub fn get_photo_json (&self) -> CardPhotoJson {
         return CardPhotoJson {
-                id:       self.id,
-                preview:  self.preview.clone(),
-                file:     self.file.clone(),
-                position: self.position,
+                id:        self.id,
+                server_id: self.id,
+                file:      self.file.clone(),
+                position:  self.position,
             };
     }
 
@@ -913,7 +911,7 @@ impl Photo {
                 user_id: self.user_id,
                 photo_list_id: self.photo_list_id,
                 types: self.types,
-                preview: self.preview.clone(),
+                server_id: self.server_id,
                 file: self.file.clone(),
                 description: self.description.clone(),
                 comments_on: self.comments_on,

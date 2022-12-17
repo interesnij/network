@@ -145,8 +145,8 @@ CREATE TABLE photos (
     user_id       INT NOT NULL,                  -- id пользователя (которое выше)
     photo_list_id INT NOT NULL,                  -- id спискм записей
     types         SMALLINT NOT NULL,             -- тип (активен, удален, закрыт...)
-    preview       VARCHAR(500) NOT NULL,         -- preview
-    file          VARCHAR(500) NOT NULL,         -- file
+    server_id     SMALLINT NOT NULL,             -- id сервера-хранилища
+    file          VARCHAR(500) NOT NULL,         -- file 
     description   VARCHAR(500),                  -- description
     comments_on   BOOLEAN NOT NULL DEFAULT true, -- комменты разрешены
     created       TIMESTAMP NOT NULL,            -- время создания
@@ -739,7 +739,7 @@ CREATE TABLE item_photos (
     community_id INT,
     list_id      INT NOT NULL,        -- id списка (а тип и так понятен)
     item_id      INT NOT NULL,
-    preview      VARCHAR(500) NOT NULL,
+    server_id    SMALLINT NOT NULL,
     file         VARCHAR(500) NOT NULL,
     types        SMALLINT NOT NULL
 );

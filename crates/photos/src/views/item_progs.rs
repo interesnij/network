@@ -212,7 +212,7 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
         Err(Error::BadRequest(body))
     } 
     else if data.files.is_none() {
-        Err(Error::BadRequest("Field 'preview/file' is required!".to_string()))
+        Err(Error::BadRequest("Field 'file' is required!".to_string()))
     }
     else {
         let list = get_photo_list(data.list_id.unwrap()).expect("E.");

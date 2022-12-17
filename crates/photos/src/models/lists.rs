@@ -2504,9 +2504,13 @@ impl PhotoList {
         }
     }
 
-    pub fn create_photos(&self, community_id: Option<i32>, user_id: i32,
-        files: Vec<(String, String)>) -> Vec<RespPhoto> {
-        // file.0 - preview, file.1 - file
+    pub fn create_photos(
+        &self,
+        community_id: Option<i32>,
+        user_id: i32,
+        server_id: i16,
+        files: Vec<String>
+    ) -> Vec<RespPhoto> {
         use crate::utils::get_user;
         use crate::models::NewPhoto;
 
@@ -2521,7 +2525,7 @@ impl PhotoList {
                 user_id: user_id,
                 photo_list_id: self.id,
                 types: 1,
-                preview: i.0.clone(),
+                server_id: server_id,
                 file: i.1.clone(),
                 description: None,
                 comments_on: true,
@@ -2544,7 +2548,6 @@ impl PhotoList {
                 list_id:      new_photo.photo_list_id,
                 user_id:      new_photo.user_id,
                 community_id: new_photo.community_id,
-                preview:      new_photo.preview,
                 file:         new_photo.file,
                 position:     count,
             });
