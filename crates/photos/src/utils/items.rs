@@ -99,9 +99,10 @@ pub struct DataListJson {
 pub struct DataNewPhoto {
     pub token:        Option<String>,
     pub list_id:      Option<i32>,
+    pub server_id:    Option<i32>,
     pub user_id:      Option<i32>,
     pub community_id: Option<i32>,
-    pub files:        Option<Vec<(String, String)>>,
+    pub files:        Option<Vec<String>>,
 }
 #[derive(Deserialize)]
 // принимаем параметры для редактируемого фото
@@ -118,7 +119,7 @@ pub struct RespPhoto {
     pub list_id:      i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
-    pub preview:      String,
+    pub server_id:    i16,
     pub file:         String,
     pub position:     i16, 
 }
@@ -285,18 +286,18 @@ pub struct PhotosJson {
 #[derive(Serialize)]
 // это запись для API, выдавать для создания прикрепов в других сервисах
 pub struct AttachPhoto {
-    pub id:      i32, 
-    pub preview: String,
-    pub file:    String,
+    pub id:        i32, 
+    pub server_id: i16,
+    pub file:      String,
 }
 
 #[derive(Serialize)]
 // это карточка фото
 pub struct CardPhotoJson { 
-    pub id:       i32, 
-    pub preview:  String,
-    pub file:     String,
-    pub position: i16,
+    pub id:        i32, 
+    pub server_id: i16,
+    pub file:      String,
+    pub position:  i16,
 }
 
 #[derive(Serialize)]
@@ -307,7 +308,7 @@ pub struct EditPhotoJson {
 #[derive(Serialize)]
 // это фото
 pub struct PhotoDetailJson {
-    pub preview:              String, 
+    pub server_id:            i16, 
     pub file:                 String,
     pub description:          Option<String>,
     pub owner_name:           String, 

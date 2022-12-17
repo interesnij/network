@@ -115,7 +115,7 @@ pub struct PhotoAttach {
     pub community_id: Option<i32>,
     pub list_id:      i32,
     pub item_id:      i32,
-    pub preview:      String,
+    pub server_id:    i16,
     pub file:         String,
 }
 #[derive(Serialize, Deserialize)]
