@@ -279,10 +279,13 @@ pub async fn files_form(payload: &mut Multipart) -> FileForm {
 }
 
 pub async fn upload_files (
-    mut payload: Multipart,
-    path: web::Path<String>,
+    //mut payload: Multipart,
+    body:        web::Payload,
+    path:        web::Path<String>,
+    http_client: Data<awc::Client>,
+    req:         HttpRequest,
 ) -> impl Responder {
-    let form = files_form(payload.borrow_mut()).await;
+    let form = files_form(body.borrow_mut()).await;
     let mut is_open = false;
 
     let (err, user_id, community_id) = get_owner_data(form.token.clone(), form.user_id, 21);
