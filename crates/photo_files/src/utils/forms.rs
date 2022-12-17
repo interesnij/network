@@ -48,7 +48,7 @@ pub struct FileForm {
 }
 pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
     use std::path::Path;
-    use image_convert::{ImageResource, identify, JPGConfig , to_jpg};
+    use image_convert::{ImageResource, JPGConfig , to_jpg};
     use uuid::Uuid;
 
     let mut form: FileForm = FileForm {
