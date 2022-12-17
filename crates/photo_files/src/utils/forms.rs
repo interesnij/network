@@ -59,6 +59,7 @@ pub async fn files_form(payload: &mut Multipart, list_id: i32) -> FileForm {
     use uuid::Uuid;
 
     let mut form: FileForm = FileForm {
+        token: "".to_string(),
         user_id: 0,
         community_id: None,
         files: Vec::new(),
