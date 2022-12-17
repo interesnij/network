@@ -522,7 +522,7 @@ impl Photo {
     }
 
     pub fn get_file(&self) -> String {
-        let _path = self.photo_list_id.to_string() + &"/cur-".to_string() + &self.file;
+        let _path = self.photo_list_id.to_string() + &"/stand-".to_string() + &self.file;
 
         return match self.server_id {
             1 => "http://194.58.90.123:9050/photo_files/media/".to_owned() + &_path,

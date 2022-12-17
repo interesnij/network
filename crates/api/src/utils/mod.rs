@@ -12,18 +12,6 @@ pub const POSTS_URL: &str = "http:194.58.90.123:9003";
 pub const USERS_URL: &str = "http:194.58.90.123:9001";
 pub const COMMUNITIES_URL: &str = "http:194.58.90.123:9002";
 
-// список url сервисов, на которых присутствуют копии пользователей.
-// нужно, к примеру, для синхронизации данных пользователей.
-pub const USERS_SERVICES: &'static [&'static str] = &[
-    "194.58.90.123:9002",
-    "194.58.90.123:9003",
-];
-
-// список url сервисов, на которых присутствуют копии сообществ.
-pub const COMMUNITIES_SERVICES: &'static [&'static str] = &[
-    "194.58.90.123:9003",
-];
-
 // список url сервисов, на которых присутствуют копии элементов для прикрепов и папок.
 pub const ATTACH_SERVICES: &'static [&'static str] = &[
     "194.58.90.123:9003",

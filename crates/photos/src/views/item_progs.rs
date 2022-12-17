@@ -23,7 +23,7 @@ pub fn item_urls(config: &mut web::ServiceConfig) {
     config.route("/recover_photo/", web::post().to(recover_photo));
     config.route("/on_comment/", web::post().to(on_comment));
     config.route("/off_comment/", web::post().to(off_comment));
-    config.route("/add_photos_in_list/", web::post().to(add_photos_in_list));
+    config.route("/add_photos_in_list", web::post().to(add_photos_in_list));
     config.route("/edit_photo/", web::put().to(edit_photo));
     config.route("/send_reaction_photo/", web::post().to(send_reaction_photo));
     config.route("/copy_photo/", web::post().to(copy_photo));
@@ -198,30 +198,15 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
 }
 
 pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<RespPhoto>>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(Some(data.token.clone()), Some(data.user_id), 21);
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
     }
     else if user_id < 1 && community_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
-    else if data.list_id.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'list_id' is required!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
-    else if data.server_id.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'server_id' is required!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
-    else if data.files.is_none() {
-        Err(Error::BadRequest("Field 'file' is required!".to_string()))
-    }
     else {
-        let list = get_photo_list(data.list_id.unwrap()).expect("E.");
+        let list = get_photo_list(data.list_id).expect("E.");
         let c_id: Option<i32>;
         if community_id > 0 {
             c_id = Some(community_id);
@@ -239,8 +224,8 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,
-                    data.server_id.unwrap(),
-                    data.files.as_deref().unwrap().to_vec()
+                    data.server_id,
+                    data.files.clone(),
                 )).await?;
                 Ok(Json(_res))
             }
@@ -254,8 +239,8 @@ pub async fn add_photos_in_list(data: Json<DataNewPhoto>) -> Result<Json<Vec<Res
                 let _res = block(move || list.create_photos (
                     c_id,
                     user_id,
-                    data.server_id.unwrap(),
-                    data.files.as_deref().unwrap().to_vec()
+                    data.server_id,
+                    data.files.clone(),
                 )).await?;
                 Ok(Json(_res))
             }

@@ -96,13 +96,13 @@ pub struct DataListJson {
 
 #[derive(Deserialize)]
 // принимаем параметры для новых фото
-pub struct DataNewPhoto {
-    pub token:        Option<String>,
-    pub list_id:      Option<i32>,
-    pub server_id:    Option<i16>,
-    pub user_id:      Option<i32>,
-    pub community_id: Option<i32>,
-    pub files:        Option<Vec<String>>,
+pub struct DataNewPhoto { 
+    pub token:        String,
+    pub list_id:      i32,
+    pub server_id:    i16,
+    pub user_id:      i32,
+    pub community_id: Option<i32>, 
+    pub files:        Vec<String>,
 }
 #[derive(Deserialize)]
 // принимаем параметры для редактируемого фото

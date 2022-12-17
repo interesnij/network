@@ -2,6 +2,14 @@ use serde::{Serialize, Deserialize};
 use crate::models::OwnerService;
 
 
+// список url сервисов, на которых присутствуют копии пользователей.
+// нужно, к примеру, для синхронизации данных пользователей.
+pub const USERS_SERVICES: &'static [&'static str] = &[
+    "194.58.90.123:9002",
+    "194.58.90.123:9003",
+    "194.58.90.123:9004",
+];
+
 #[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {

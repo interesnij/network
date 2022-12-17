@@ -1,6 +1,13 @@
 use serde::{Serialize, Deserialize};
 use crate::models::OwnerService;
 
+
+// список url сервисов, на которых присутствуют копии сообществ.
+pub const COMMUNITIES_SERVICES: &'static [&'static str] = &[
+    "194.58.90.123:9003",
+    "194.58.90.123:9004",
+];
+
 ////////
 #[derive(Serialize)]
 // универсальный сериализатор для списков пользователей
