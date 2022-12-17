@@ -65,8 +65,8 @@ pub async fn create_files (
                 files:        form.files,
             })
             .send()
-            .await?;
-        return Ok(1);
+            .await;
+        return Ok(Json(1));
 }
 
 #[actix_web::main]
