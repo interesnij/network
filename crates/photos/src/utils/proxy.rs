@@ -294,7 +294,7 @@ pub async fn upload_files (
     }
     else {
         let list_id: i32 = path.replace("/", "").parse().unwrap();
-        let list = get_photo_list(*list_id).expect("E.");
+        let list = get_photo_list(list_id).expect("E.");
         let c_id: Option<i32>;
         if community_id > 0 { 
             c_id = Some(community_id);
