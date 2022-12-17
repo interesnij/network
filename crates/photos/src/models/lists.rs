@@ -2548,6 +2548,7 @@ impl PhotoList {
                 list_id:      new_photo.photo_list_id,
                 user_id:      new_photo.user_id,
                 community_id: new_photo.community_id,
+                server_id:    new_photo.server_id,
                 file:         new_photo.file,
                 position:     count,
             });
