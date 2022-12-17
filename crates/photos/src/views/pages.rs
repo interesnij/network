@@ -718,7 +718,7 @@ pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Field 'item_id' is required!".to_string(),
             }).unwrap();
-            HttpResponse::Ok().body(body)
+            return HttpResponse::Ok().body(body);
         }
         else {
             let item: Photo;
@@ -741,7 +741,7 @@ pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
              {
                  let body = serde_json::to_string (
                     &DescriptionResp {
-                        description: &item.description.as_deref().unwrap()
+                        description: item.description.clone(),
                     }
                 ).unwrap();
                 HttpResponse::Ok().body(body)
