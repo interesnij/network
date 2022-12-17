@@ -60,7 +60,7 @@ pub async fn get_file (
     let params_some = web::Query::<LoadPhotoParams>::from_query(&req.query_string());
 
     let mut photo_id: i32 = 0;
-    let server_id: i32;
+    let server_id: i16;
     let v: Vec<&str> = _path.split("/").collect();
     let filename = v.last().unwrap();
     let f: Vec<&str> = filename.split("-").collect();
