@@ -119,7 +119,7 @@ pub struct RespPhoto {
     pub list_id:      i32,
     pub user_id:      i32,
     pub community_id: Option<i32>,
-    pub server_id:    i16,
+    pub server_id:    i16, 
     pub file:         String,
     pub position:     i16, 
 }
@@ -307,8 +307,7 @@ pub struct EditPhotoJson {
 }
 #[derive(Serialize)]
 // это фото
-pub struct PhotoDetailJson {
-    pub server_id:            i16, 
+pub struct PhotoDetailJson { 
     pub file:                 String,
     pub description:          Option<String>,
     pub owner_name:           String, 

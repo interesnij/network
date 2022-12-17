@@ -521,10 +521,13 @@ impl Photo {
         return reactions_blocks;
     }
 
-    pub fn get_edit_data_json(&self) -> EditPhotoJson {
-        return EditPhotoJson {
-            description:  self.description.clone(),
-            comments_on:  self.comments_on,
+    pub fn get_file(&self) -> String {
+        let _path = self.photo_list_id.to_string() + &"/cur-".to_string() + &self.file;
+
+        return match self.server_id {
+            1 => "http://194.58.90.123:9050/photo_files/media/".to_owned() + &_path,
+            2 => "http://194.58.90.123:9051/photo_files_2/media/".to_owned() + &_path,
+            _ => "".to_string(),
         };
     }
     pub fn get_detail_photo_json (
@@ -553,8 +556,7 @@ impl Photo {
         };
         if user_id > 0 {
             return PhotoDetailJson {
-                    server_id:            self.server_id,
-                    file:                 self.file.clone(),
+                    file:                 self.get_file(),
                     description:          self.description.clone(),
                     owner_name:           creator.name.clone(),
                     owner_link:           creator.link.clone(),
@@ -574,8 +576,7 @@ impl Photo {
                 };
         } else {
             return PhotoDetailJson {
-                server_id:            self.server_id,
-                file:                 self.file.clone(),
+                file:                 self.get_file(),
                 description:          self.description.clone(),
                 owner_name:           creator.name.clone(),
                 owner_link:           creator.link.clone(),
