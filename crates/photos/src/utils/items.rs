@@ -95,9 +95,9 @@ pub struct DataListJson {
 }
 
 #[derive(Deserialize)]
-// принимаем параметры для новых фото
-pub struct DataNewPhoto { 
-    pub token:        String,
+// принимаем параметры с сервера медиа для новых фото
+pub struct DataNewPhotos { 
+    pub token:        Option<String>, 
     pub list_id:      i32,
     pub server_id:    i16,
     pub user_id:      i32,
