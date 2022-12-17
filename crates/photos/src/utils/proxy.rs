@@ -61,6 +61,7 @@ pub async fn get_file (
 
     let mut photo_id: i32 = 0;
     let server_id: i32;
+    let v: Vec<&str> = _path.split("/").collect();
     let filename = v.last().unwrap();
     let f: Vec<&str> = filename.split("-").collect();
     for (i, _f) in f.iter().enumerate() {
