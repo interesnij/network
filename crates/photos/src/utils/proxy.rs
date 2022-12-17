@@ -354,6 +354,7 @@ pub async fn upload_files (
         }
     }
     else {
+        println!("ой-ёй");
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
