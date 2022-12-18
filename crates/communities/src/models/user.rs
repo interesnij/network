@@ -424,7 +424,7 @@ impl User {
             see_community: 1,
             communities:   0,
         };
-        let new_user = diesel::insert_into(schema::users::table)
+        let _new_user = diesel::insert_into(schema::users::table)
             .values(&new_form)
             .execute(&_connection);
         return 1;
