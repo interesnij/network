@@ -288,7 +288,7 @@ impl Community {
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
         if is_ie_mode && is_ie_mode {
-            use crate::schema::user_visible_perms::dsl::user_visible_perms;
+            use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
             match value {
                 1 => diesel::delete (
@@ -570,23 +570,19 @@ impl Community {
 
     pub fn plus_members(&self, count: i32) -> () {
         let _connection = establish_connection();
-        match profile {
-          Ok(_ok) => diesel::update(&_ok)
-              .set(schema::communitys::members.eq(_ok.members + count))
-              .execute(&_connection)
-              .expect("Error."),
-          Err(_error) => 0,
-        };
+        diesel::update(self)
+            .set(schema::communitys::members.eq(self.members + count))
+            .execute(&_connection)
+            .expect("Error.");
     }
     pub fn minus_members(&self, count: i32) -> () {
-        let _connection = establish_connection();
-        match profile {
-          Ok(_ok) => diesel::update(&_ok)
-              .set(schema::communitys::members.eq(_ok.members - count))
-              .execute(&_connection)
-              .expect("Error."),
-          Err(_error) => 0,
-        };
+        if (self.members + count) >= 0 {
+            let _connection = establish_connection();
+            diesel::update(self)
+                .set(schema::communitys::members.eq(self.members - count))
+                .execute(&_connection)
+                .expect("Error.");
+        }
     }
     pub fn is_deleted(&self) -> bool {
         return self.types > 20 || self.types < 40;
@@ -708,6 +704,7 @@ impl Community {
             cover:        None,
             created:      chrono::Local::now().naive_utc(),
             description:  None,
+            members:      0,
         };
         diesel::insert_into(schema::community_infos::table)
             .values(&_info)
@@ -1941,7 +1938,6 @@ pub struct CommunityInfo {
     pub cover:        Option<String>,
     pub created:      chrono::NaiveDateTime,
     pub description:  Option<String>,
-    pub members:      i32,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="community_infos"]
@@ -1954,7 +1950,6 @@ pub struct NewCommunityInfo {
     pub cover:        Option<String>,
     pub created:      chrono::NaiveDateTime,
     pub description:  Option<String>,
-    pub members:      i32,
 }
 
 /*
