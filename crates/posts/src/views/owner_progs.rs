@@ -97,10 +97,8 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
                 data.user_id.unwrap(),
                 data.first_name.as_deref().unwrap().to_string(),
                 data.last_name.as_deref().unwrap().to_string(),
-                data.types.unwrap(),
                 is_man,
                 data.link.as_deref().unwrap().to_string(),
-                data.s_avatar.clone(),
             )).await?;
             Ok(Json(_res))
         }
