@@ -459,6 +459,22 @@ pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
             data.first_name.as_deref().unwrap(),
             data.last_name.as_deref().unwrap()
         )).await?;
+
+        let copy_user = EditNameData {
+            token:      Some(TOKEN.to_string()),
+            user_id:    Some(user_id),
+            first_name: first_name,
+            last_name:  last_name,
+        };
+    
+        for link in USERS_SERVICES.iter() {
+            let client = reqwest::Client::new();
+            let res = client.post(link.to_string() + &"/edit_user_name".to_string())
+                .form(&copy_user)
+                .send()
+                .await;
+        }
+
         Ok(Json(body))
     }
 }
@@ -565,12 +581,31 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
         
         let field = data.field.clone();
         let users = data.users.clone();
+        let value = data.value;
+        let _users = data.users.clone();
 
         let body = block(move || owner.edit_private ( 
             data.field.as_deref().unwrap(),
             data.value.unwrap(),
             data.users.clone()
         )).await?;
+
+        let copy_user = EditPrivateData {
+            token:   Some(TOKEN.to_string()),
+            user_id: Some(user_id),
+            field:   field,
+            value:   value,
+            _users:  _users,
+        };
+    
+        for link in USERS_SERVICES.iter() {
+            let client = reqwest::Client::new();
+            let res = client.post(link.to_string() + &"/edit_user_name".to_string())
+                .form(&copy_user)
+                .send()
+                .await;
+        }
+
         Ok(Json(body))
     }
 }

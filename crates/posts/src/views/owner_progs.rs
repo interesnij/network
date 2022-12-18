@@ -11,7 +11,7 @@ use crate::models::{
 };
 use crate::errors::Error;
 use crate::utils::{
-    get_owner,
+    get_owner, TOKEN,
     get_user, get_community,
     AttachPostCommentResp,
     AttachPostResp, AttachPostListResp,
@@ -52,16 +52,6 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/edit_token", web::post().to(edit_token));
     config.route("/delete_token", web::post().to(delete_token));
 } 
-
-/* 
-токен апи-шлюза. Когда надо произвести доп изменения в сервисах, 
-причастных к какому-либо изменению в базах данных. Например, создание токенов
-приложений, к которым хочет аппелировать owner.
-Или изменение названия сообщества, которое потянет такие изменения на всех
-сервисах, в которых участвует сообщество. Такие зависимости пользователей и сообществ
-пропишутся в сервисе апи шлюза для более удобного взаимодействия П. и С. с сервисами.
-*/
-static TOKEN: &str = "111";
 
 #[derive(Deserialize)]
 pub struct AddTargetParams {
