@@ -135,10 +135,8 @@ pub struct NewUserJson {
     pub user_id:    Option<i32>,
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
-    pub types:      Option<i16>,
     pub is_man:     Option<i16>,
     pub link:       Option<String>,
-    pub s_avatar:   Option<String>,
 }
 
 impl User {
@@ -673,10 +671,8 @@ impl User {
         user_id:    i32,
         first_name: String,
         last_name:  String,
-        types:      i16,
         is_man:     bool,
         link:       String,
-        s_avatar:   Option<String>,
     ) -> i16 {
         use crate::schema::users::dsl::users;
 
@@ -692,10 +688,10 @@ impl User {
             user_id:        user_id,
             first_name:     first_name.clone(),
             last_name:      last_name.clone(),
-            types:          types,
+            types:          1,
             is_man:         is_man,
             link:           link.clone(),
-            s_avatar:       s_avatar.clone(),
+            s_avatar:       None,
             last_activity:  chrono::Local::now().naive_utc(),
             see_all:        1,
             see_el:         1,

@@ -105,7 +105,7 @@ pub struct NewUserForm {
     pub token:      Option<String>,
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
-    pub is_man:     Option<i16>,
+    pub is_man:     Option<i16>, 
     pub password:   Option<String>,
     pub phone:      Option<String>,
 }
@@ -118,6 +118,19 @@ pub struct NewUserDetailJson {
     pub link:       String,
 }
 
+// данные для создания копий пользователя на других сервисах
+#[derive(Serialize)]
+pub struct NewUserData {
+    pub token:      Option<String>,
+    pub user_id:    Option<i32>,
+    pub first_name: Option<String>,
+    pub last_name:  Option<String>,
+    pub types:      Option<i16>,
+    pub is_man:     Option<i16>,
+    pub link:       Option<String>,
+    pub s_avatar:   Option<String>,
+}
+
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
     use crate::models::{
         NewUserLocation, NewIpUser,
@@ -126,6 +139,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     };
     use crate::schema::phone_codes::dsl::phone_codes;
     use chrono::Duration;
+    use crate::utils::{TOKEN, USERS_SERVICES};
 
     let _connection = establish_connection();
     let (err, _) = get_user_owner_data(data.token.clone(), None, 0);
@@ -266,6 +280,19 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         .values(&_user_notification)
         .execute(&_connection)
         .expect("Error saving user_notification.");
+
+    let copy_user = NewUserData {
+        token:      Some(TOKEN),
+        user_id:    Some(_new_user.user_id),
+        first_name: Some(_new_user.first_name.clone()),
+        last_name:  Some(_new_user.last_name.clone()),
+        is_man:     Some(_new_user.is_man),
+        link:       Some(_new_user.link.clone()),
+    }
+
+    for link in USERS_SERVICES.iter() {
+        println!("111");
+    }
 
     Ok(Json(NewUserDetailJson {
         id:         _new_user.id,
