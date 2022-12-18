@@ -11,6 +11,8 @@ use diesel::{
     RunQueryDsl,
     ExpressionMethods,
     QueryDsl,
+    PgTextExpressionMethods,
+    NullableExpressionMethods,
 };
 use crate::schema;
 use crate::schema::{
