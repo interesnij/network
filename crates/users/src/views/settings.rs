@@ -349,19 +349,17 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
             user_id: Some(user_id),
             link:    data.link.clone(),
         };
-        let body = block(move || 
-            {
-                owner.edit_link(data.link.as_deref().unwrap());
-                for link in USERS_SERVICES.iter() {
-                    let client = reqwest::Client::new();
-                    let res = client.post(link.to_string() + &"/edit_user_link".to_string())
-                        .form(&copy_user)
-                        .send()?;
-                }
+        let body = block(move || owner.edit_link(data.link.as_deref().unwrap())).await?;
+        if body == 1 {
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/edit_user_link".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
             }
-        ).await?;
+        }
     
-        
         Ok(Json(body))
     }
 }
