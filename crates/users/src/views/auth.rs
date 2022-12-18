@@ -280,7 +280,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         .expect("Error saving user_notification.");
 
     let copy_user = NewUserData {
-        token:      Some(TOKEN),
+        token:      Some(TOKEN.to_string()),
         user_id:    Some(_new_user.id),
         first_name: Some(_new_user.first_name.clone()),
         last_name:  Some(_new_user.last_name.clone()),
