@@ -6,7 +6,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_user, get_moderation, get_user_owner_data,
-    get_user_permission,
+    get_user_permission, TOKEN,
     ErrorParams, KeyValue, CardUserJson,
 };
 use crate::models::ModeratedLog;
@@ -37,6 +37,7 @@ pub struct ReportParams {
     pub types:       Option<i16>,
     pub description: Option<String>,
 }
+
 #[derive(Deserialize)]
 pub struct CloseParams {
     pub token:       Option<String>,
@@ -44,6 +45,16 @@ pub struct CloseParams {
     pub target_id:   Option<i32>,
     pub description: Option<String>,
 }
+
+// для отправки на другие сервисы с пользователями
+#[derive(Serialize)]
+pub struct DataCloseParams {
+    pub token:       Option<String>,
+    pub user_id:     Option<i32>,
+    pub item_id:     Option<i32>,
+    pub description: Option<String>,
+}
+
 #[derive(Deserialize)]
 pub struct ModerationParams {
     pub token:       Option<String>,
@@ -52,6 +63,16 @@ pub struct ModerationParams {
     pub description: Option<String>,
     pub expiration:  Option<chrono::NaiveDateTime>,
 }
+// для отправки на другие сервисы с пользователями
+#[derive(Serialize)]
+pub struct DataModerationParams {
+    pub token:       Option<String>,
+    pub user_id:     Option<i32>,
+    pub target_id:   Option<i32>,
+    pub description: Option<String>,
+    pub expiration:  Option<chrono::NaiveDateTime>,
+}
+
 #[derive(Serialize)]
 pub struct ReportResp {
     pub options: Vec<KeyValue>,
@@ -221,7 +242,7 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
-    else if user_id < 1 {
+    else if user_id < 1 { 
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
     else if data.target_id.is_none() {
@@ -246,6 +267,22 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
                     item.close_item()
                 }
             ).await?;
+            
+            let copy_user = DataCloseParams {
+                token:       Some(TOKEN.to_string()),
+                user_id:     data.user_id,
+                item_id:     data.target_id,
+                description: data.description.clone(),
+            };
+        
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/close_user".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
         else {
@@ -284,6 +321,22 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
                     item.close_item()
                 }
             ).await?;
+
+            let copy_user = DataCloseParams {
+                token:       Some(TOKEN.to_string()),
+                user_id:     data.user_id,
+                item_id:     data.target_id,
+                description: data.description.clone(),
+            };
+        
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/unclose_user".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
         else {
@@ -322,6 +375,23 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
                     item.suspend_item()
                 }
             ).await?;
+
+            let copy_user = DataModerationParams {
+                token:       Some(TOKEN.to_string()),
+                user_id:     data.user_id,
+                item_id:     data.target_id,
+                description: data.description.clone(),
+                expiration:  data.expiration,
+            };
+        
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/suspend_user".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
         else {
@@ -360,7 +430,24 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
                     );
                     item.unsuspend_item()
                 }
-            ).await?;
+            ).await?; 
+
+            let copy_user = DataModerationParams {
+                token:       Some(TOKEN.to_string()),
+                user_id:     data.user_id,
+                item_id:     data.target_id,
+                description: data.description.clone(),
+                expiration:  data.expiration,
+            };
+        
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/unsuspend_user".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
         else {
