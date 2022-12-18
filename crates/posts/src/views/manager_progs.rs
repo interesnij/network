@@ -1174,9 +1174,9 @@ pub struct AllPrivateData {
 }
 
 pub async fn edit_user_all_private(data: Json<AllPrivateData>) -> Result<Json<i16>, Error> {
-    if data.value.is_none() || data.user_id.is_none() {
+    if data.token.is_none() || data.value.is_none() || data.user_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Fields 'value' and 'user_id' is required!".to_string(),
+            error: "Fields 'value', 'user_id', 'token' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
