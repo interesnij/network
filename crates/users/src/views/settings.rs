@@ -595,8 +595,8 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
                 token:   Some(TOKEN.to_string()),
                 user_id: Some(user_id),
                 field:   Some("see_all".to_string()),
-                value:   value,
-                users:   _users,
+                value:   value.clone(),
+                users:   _users.clone(),
             };
     
             for link in USERS_SERVICES.iter() { 
