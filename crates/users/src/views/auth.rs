@@ -302,7 +302,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         last_name:  _new_user.last_name.clone(),
         is_man:     _new_user.is_man,
         link:       _new_user.link.clone(),
-    }))
+    })) 
 }
 
 #[derive(Deserialize)]

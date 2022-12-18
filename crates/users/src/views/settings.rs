@@ -588,6 +588,19 @@ pub async fn delete_account(data: Json<MinimalData>) -> Result<Json<i16>, Error>
         }
         
         let body = block(move || owner.delete_item()).await?;
+
+        let copy_user = MinimalData {
+            token:   Some(TOKEN.to_string()),
+            user_id: data.user_id,
+        };
+    
+        for link in USERS_SERVICES.iter() {
+            let client = reqwest::Client::new();
+            let res = client.post(link.to_string() + &"/delete_user".to_string())
+                .form(&copy_user)
+                .send()
+                .await;
+        }
         Ok(Json(body))
     }
 }
@@ -619,6 +632,20 @@ pub async fn restore_account(data: Json<MinimalData>) -> Result<Json<i16>, Error
         }
         
         let body = block(move || owner.restore_item()).await?;
+
+        let copy_user = MinimalData {
+            token:   Some(TOKEN.to_string()),
+            user_id: data.user_id,
+        };
+    
+        for link in USERS_SERVICES.iter() {
+            let client = reqwest::Client::new();
+            let res = client.post(link.to_string() + &"/delete_user".to_string())
+                .form(&copy_user)
+                .send()
+                .await;
+        }
+        
         Ok(Json(body))
     }
 }
