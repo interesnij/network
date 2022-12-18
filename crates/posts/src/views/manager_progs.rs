@@ -1171,7 +1171,7 @@ pub struct AllPrivateData {
     pub user_id: Option<i32>,
     pub value:   Option<i16>,
     pub users:   Option<Vec<AttachOwner>>,
-}
+} 
 
 pub async fn edit_user_all_private(data: Json<AllPrivateData>) -> Result<Json<i16>, Error> {
     if data.token.is_none() || data.value.is_none() || data.user_id.is_none() {
