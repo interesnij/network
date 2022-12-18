@@ -290,7 +290,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
 
     for link in USERS_SERVICES.iter() {
         let client = reqwest::Client::new();
-        let res = client.post(link.to_owned() + &"/create_user".to_string())
+        let res = client.post(link.to_string() + &"/create_user".to_string())
             .form(&copy_user)
             .send()
             .await;
