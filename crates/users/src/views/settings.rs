@@ -12,7 +12,7 @@ use crate::utils::{
 };
 use crate::models::{User, };
 use crate::errors::Error;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 
 pub fn settings_urls(config: &mut web::ServiceConfig) {
