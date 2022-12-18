@@ -356,8 +356,7 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
                     let client = reqwest::Client::new();
                     let res = client.post(link.to_string() + &"/edit_user_link".to_string())
                         .form(&copy_user)
-                        .send()
-                        .await;
+                        .send();
                 }
             }
         ).await?;
