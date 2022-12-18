@@ -583,13 +583,6 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
         let users = data.users.clone();
         let value = data.value;
         let _users = data.users.clone();
-
-        let body = block(move || owner.edit_private ( 
-            data.field.as_deref().unwrap(),
-            data.value.unwrap(),
-            data.users.clone()
-        )).await?;
-
         if &field == &"see_all" {
             let copy_user = EditPrivateData {
                 token:   Some(TOKEN.to_string()),
@@ -607,6 +600,12 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
                     .await;
             }
         }
+        
+        let body = block(move || owner.edit_private ( 
+            data.field.as_deref().unwrap(),
+            data.value.unwrap(),
+            data.users.clone()
+        )).await?;
         Ok(Json(body))
     }
 }
