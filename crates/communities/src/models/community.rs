@@ -227,14 +227,14 @@ Community
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct Community {
     pub id:          i32,
-    pub name:        String,
+    pub name:        String, 
     pub status:      Option<String>,
     pub types:       i16,
     pub link:        String,
     pub s_avatar:    Option<String>,
     pub category_id: i32,
     pub user_id:     i32,
-    pub members:     i16,
+    pub members:     i32,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="communitys"]
@@ -244,7 +244,7 @@ pub struct NewCommunity {
     pub link:        String,
     pub category_id: i32,
     pub user_id:     i32,
-    pub members:     i16,
+    pub members:     i32,
 }
 
 impl Community {
