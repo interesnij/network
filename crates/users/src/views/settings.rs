@@ -590,13 +590,13 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
             data.users.clone()
         )).await?;
 
-        if &field == "see_all" {
+        if &field == &"see_all" {
             let copy_user = EditPrivateData {
                 token:   Some(TOKEN.to_string()),
                 user_id: Some(user_id),
-                field:   "see_all".to_string(),
+                field:   Some("see_all".to_string()),
                 value:   value,
-                _users:  _users,
+                users:   _users,
             };
     
             for link in USERS_SERVICES.iter() { 
