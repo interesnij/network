@@ -362,6 +362,7 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
     else {
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
+        let target_id = data.target_id;
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -378,8 +379,8 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
 
             let copy_user = DataModerationParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     user_id,
-                item_id:     data.target_id,
+                user_id:     Some(user_id),
+                item_id:     target_id,
                 description: data.description.clone(),
                 expiration:  data.expiration,
             };
@@ -417,6 +418,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
     else {
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
+        let target_id = data.target_id;
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -434,7 +436,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
             let copy_user = DataModerationParams {
                 token:       Some(TOKEN.to_string()),
                 user_id:     Some(user_id),
-                item_id:     data.target_id,
+                item_id:     target_id,
                 description: data.description.clone(),
                 expiration:  data.expiration,
             };
