@@ -113,6 +113,7 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
                     name:  target.name,
                     link:  target.link,
                     image: target.s_avatar,
+                    count: target.members,
                 };
                 list.push(KeyValue {
                     value: 1,

@@ -559,7 +559,6 @@ impl Community {
             cover:        None,
             created:      chrono::Local::now().naive_utc(),
             description:  None,
-            members:      0,
         };
         let _community_info = diesel::insert_into(schema::community_infos::table)
             .values(&_new_community_info)
@@ -704,7 +703,6 @@ impl Community {
             cover:        None,
             created:      chrono::Local::now().naive_utc(),
             description:  None,
-            members:      0,
         };
         diesel::insert_into(schema::community_infos::table)
             .values(&_info)
