@@ -78,9 +78,6 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     else if data.last_name.is_none() {
         Err(Error::BadRequest("Field 'last_name' is required!".to_string()))
     }
-    else if data.types.is_none() {
-        Err(Error::BadRequest("Field 'types' is required!".to_string()))
-    }
     else if data.link.is_none() {
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
     }
