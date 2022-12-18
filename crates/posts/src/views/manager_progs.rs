@@ -1177,15 +1177,15 @@ pub async fn edit_user_all_private(data: Json<AllPrivateData>) -> Result<Json<i1
     if user_id < 1 {
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
-    else if data.value.is_none() {
+    if data.value.is_none() || data.user_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'value' is required!".to_string(),
+            error: "Fields 'value' and 'user_id' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN { 
-            let request_user = get_user(user_id).expect("E.");
+            let request_user = get_user(data.user_id.unwrap()).expect("E.");
             let _res = block (
                 move || request_user.edit_private (
                     "see_all",
