@@ -18,11 +18,11 @@ use crate::errors::Error;
 
 
 pub fn comment_urls(config: &mut web::ServiceConfig) {
-    config.route("/add_comment/", web::post().to(add_comment));
-    config.route("/edit_comment/", web::put().to(edit_comment));
-    config.route("/delete_comment/", web::post().to(delete_comment));
-    config.route("/recover_comment/", web::post().to(recover_comment));
-    config.route("/send_reaction_comment/", web::post().to(send_reaction_comment));
+    config.route("/add_comment", web::post().to(add_comment));
+    config.route("/edit_comment", web::put().to(edit_comment));
+    config.route("/delete_comment", web::post().to(delete_comment));
+    config.route("/recover_comment", web::post().to(recover_comment));
+    config.route("/send_reaction_comment", web::post().to(send_reaction_comment));
 }
 
 

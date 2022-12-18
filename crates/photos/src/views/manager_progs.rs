@@ -22,40 +22,40 @@ use serde::Deserialize;
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
-    config.route("/create_claim_list/", web::post().to(create_claim_list));
-    config.route("/create_claim_photo/", web::post().to(create_claim_photo));
-    config.route("/create_claim_comment/", web::post().to(create_claim_comment));
+    config.route("/create_claim_list", web::post().to(create_claim_list));
+    config.route("/create_claim_photo", web::post().to(create_claim_photo));
+    config.route("/create_claim_comment", web::post().to(create_claim_comment));
 
-    config.route("/close_community/", web::post().to(close_community));
-    config.route("/close_user/", web::post().to(close_user));
-    config.route("/close_list/", web::post().to(close_list));
-    config.route("/close_photo/", web::post().to(close_photo));
-    config.route("/close_comment/", web::post().to(close_comment));
-    config.route("/unclose_community/", web::post().to(unclose_community));
-    config.route("/unclose_user/", web::post().to(unclose_user));
-    config.route("/unclose_list/", web::post().to(unclose_list));
-    config.route("/unclose_photo/", web::post().to(unclose_photo));
-    config.route("/unclose_comment/", web::post().to(unclose_comment));
+    config.route("/close_community", web::post().to(close_community));
+    config.route("/close_user", web::post().to(close_user));
+    config.route("/close_list", web::post().to(close_list));
+    config.route("/close_photo", web::post().to(close_photo));
+    config.route("/close_comment", web::post().to(close_comment));
+    config.route("/unclose_community", web::post().to(unclose_community));
+    config.route("/unclose_user", web::post().to(unclose_user));
+    config.route("/unclose_list", web::post().to(unclose_list));
+    config.route("/unclose_photo", web::post().to(unclose_photo));
+    config.route("/unclose_comment", web::post().to(unclose_comment));
 
-    config.route("/suspend_community/", web::post().to(suspend_community));
-    config.route("/suspend_user/", web::post().to(suspend_user));
-    config.route("/suspend_list/", web::post().to(suspend_list));
-    config.route("/unsuspend_community/", web::post().to(unsuspend_community));
-    config.route("/unsuspend_user/", web::post().to(unsuspend_user));
-    config.route("/unsuspend_list/", web::post().to(unsuspend_list));
+    config.route("/suspend_community", web::post().to(suspend_community));
+    config.route("/suspend_user", web::post().to(suspend_user));
+    config.route("/suspend_list", web::post().to(suspend_list));
+    config.route("/unsuspend_community", web::post().to(unsuspend_community));
+    config.route("/unsuspend_user", web::post().to(unsuspend_user));
+    config.route("/unsuspend_list", web::post().to(unsuspend_list));
 
-    config.route("/suspend_moderation/", web::post().to(suspend_moderation));
-    config.route("/close_moderation/", web::post().to(close_moderation));
-    config.route("/unclose_moderation/", web::post().to(unclose_moderation));
-    config.route("/unsuspend_moderation/", web::post().to(unsuspend_moderation));
-    config.route("/unverify_moderation/", web::post().to(unverify_moderation));
-    config.route("/reject_moderation/", web::post().to(reject_moderation));
+    config.route("/suspend_moderation", web::post().to(suspend_moderation));
+    config.route("/close_moderation", web::post().to(close_moderation));
+    config.route("/unclose_moderation", web::post().to(unclose_moderation));
+    config.route("/unsuspend_moderation", web::post().to(unsuspend_moderation));
+    config.route("/unverify_moderation", web::post().to(unverify_moderation));
+    config.route("/reject_moderation", web::post().to(reject_moderation));
 
-    config.route("/edit_user_staff/", web::post().to(edit_user_staff));
-    config.route("/edit_member_staff/", web::post().to(edit_member_staff));
-    config.route("/edit_user_private/", web::post().to(edit_user_private));
-    config.route("/edit_community_private/", web::post().to(edit_community_private));
-    config.route("/edit_list_private/", web::post().to(edit_list_private));
+    config.route("/edit_user_staff", web::post().to(edit_user_staff));
+    config.route("/edit_member_staff", web::post().to(edit_member_staff));
+    config.route("/edit_user_private", web::post().to(edit_user_private));
+    config.route("/edit_community_private", web::post().to(edit_community_private));
+    config.route("/edit_list_private", web::post().to(edit_list_private));
 }
 
 #[derive(Deserialize)]

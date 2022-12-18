@@ -18,17 +18,17 @@ use crate::errors::Error;
 
 
 pub fn list_urls(config: &mut web::ServiceConfig) {
-    config.route("/add_list_in_user_collection/", web::post().to(add_list_in_user_collection));
-    config.route("/add_list_in_community_collection/", web::post().to(add_list_in_community_collection));
-    config.route("/delete_list_from_user_collection/", web::post().to(delete_list_from_user_collection));
-    config.route("/delete_list_from_community_collection/", web::post().to(delete_list_from_community_collection));
-    config.route("/add_user_list/", web::post().to(add_user_list));
-    config.route("/edit_user_list/", web::post().to(edit_user_list));
-    config.route("/add_community_list/", web::post().to(add_community_list));
-    config.route("/edit_community_list/", web::post().to(edit_community_list));
-    config.route("/delete_list/", web::post().to(delete_list));
-    config.route("/recover_list/", web::post().to(recover_list));
-    config.route("/copy_list/", web::put().to(copy_list));
+    config.route("/add_list_in_user_collection", web::post().to(add_list_in_user_collection));
+    config.route("/add_list_in_community_collection", web::post().to(add_list_in_community_collection));
+    config.route("/delete_list_from_user_collection", web::post().to(delete_list_from_user_collection));
+    config.route("/delete_list_from_community_collection", web::post().to(delete_list_from_community_collection));
+    config.route("/add_user_list", web::post().to(add_user_list));
+    config.route("/edit_user_list", web::post().to(edit_user_list));
+    config.route("/add_community_list", web::post().to(add_community_list));
+    config.route("/edit_community_list", web::post().to(edit_community_list));
+    config.route("/delete_list", web::post().to(delete_list));
+    config.route("/recover_list", web::post().to(recover_list));
+    config.route("/copy_list", web::put().to(copy_list));
 }
 
 pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
