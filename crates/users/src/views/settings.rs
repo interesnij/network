@@ -579,7 +579,7 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
             return Err(Error::BadRequest(body));
         }
         
-        let field = data.field.clone();
+        let field = data.field.as_deref().unwrap();
         let users = data.users.clone();
         let value = data.value;
         let _users = data.users.clone();
@@ -590,22 +590,23 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
             data.users.clone()
         )).await?;
 
-        let copy_user = EditPrivateData {
-            token:   Some(TOKEN.to_string()),
-            user_id: Some(user_id),
-            field:   field,
-            value:   value,
-            _users:  _users,
-        };
+        if &field == "see_all" {
+            let copy_user = EditPrivateData {
+                token:   Some(TOKEN.to_string()),
+                user_id: Some(user_id),
+                field:   "see_all".to_string(),
+                value:   value,
+                _users:  _users,
+            };
     
-        for link in USERS_SERVICES.iter() {
-            let client = reqwest::Client::new();
-            let res = client.post(link.to_string() + &"/edit_user_name".to_string())
-                .form(&copy_user)
-                .send()
-                .await;
+            for link in USERS_SERVICES.iter() { 
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/edit_user_all_private".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
         }
-
         Ok(Json(body))
     }
 }

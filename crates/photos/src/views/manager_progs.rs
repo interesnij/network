@@ -54,6 +54,7 @@ pub fn manager_urls(config: &mut web::ServiceConfig) {
     config.route("/edit_user_staff", web::post().to(edit_user_staff));
     config.route("/edit_member_staff", web::post().to(edit_member_staff));
     config.route("/edit_user_private", web::post().to(edit_user_private));
+    config.route("/edit_user_all_private", web::post().to(edit_user_all_private));
     config.route("/edit_community_private", web::post().to(edit_community_private));
     config.route("/edit_list_private", web::post().to(edit_list_private));
 }
@@ -1160,6 +1161,38 @@ pub async fn edit_user_private(data: Json<UPrivateParams>) -> Result<Json<i16>, 
             )
         ).await?;
         Ok(Json(_res))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct AllPrivateData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub value:   Option<i16>,
+    pub users:   Option<Vec<AttachOwner>>,
+} 
+
+pub async fn edit_user_all_private(data: Json<AllPrivateData>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() || data.value.is_none() || data.user_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Fields 'value', 'user_id', 'token' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN { 
+            let request_user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block (
+                move || request_user.edit_private (
+                    "see_all",
+                    data.value.unwrap(),
+                    data.users.clone(),
+                )
+                ).await?;
+            Ok(Json(_res))
+        } else {
+            Err(Error::BadRequest("Permission Denied".to_string()))
+        }
     }
 }
 
