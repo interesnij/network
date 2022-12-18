@@ -376,10 +376,9 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
                 }
             ).await?;
 
-            let data_user_id = data.user_id;
             let copy_user = DataModerationParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     data_user_id,
+                user_id:     user_id,
                 item_id:     data.target_id,
                 description: data.description.clone(),
                 expiration:  data.expiration,
@@ -432,10 +431,9 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
                 }
             ).await?; 
 
-            let data_user_id = data.user_id;
             let copy_user = DataModerationParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     data_user_id,
+                user_id:     Some(user_id),
                 item_id:     data.target_id,
                 description: data.description.clone(),
                 expiration:  data.expiration,
