@@ -266,7 +266,7 @@ impl User {
 
         let _connection = establish_connection();
         let _update_field = match field {
-            "see_all" => { diesel::update(self)
+            "see_all" => diesel::update(self)
                 .set(schema::users::see_all.eq(value))
                 .execute(&_connection)
                 .expect("E."),
@@ -275,8 +275,7 @@ impl User {
                 .execute(&_connection)
                 .expect("E."),
             _ => 0,
-            }; 
-        }
+        }; 
         if is_ie_mode {
             // нужно удалить из списка тех, кто был туда внесен
             // с противоположными правами.
