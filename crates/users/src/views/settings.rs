@@ -344,12 +344,13 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
+        let data_link = data.link.clone();
         let body = block(move || owner.edit_link(data.link.as_deref().unwrap())).await?;
         
         let copy_user = EditLinkData {
             token:   Some(TOKEN.to_string()),
             user_id: Some(user_id),
-            link:    data.link.clone(),
+            link:    data_link,
         };
     
         for link in USERS_SERVICES.iter() {
@@ -363,7 +364,7 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 pub struct EditPhoneData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
@@ -452,6 +453,8 @@ pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
+        let first_name = data.first_name.clone();
+        let last_name = data.last_name.clone();
         let body = block(move || owner.edit_name (
             data.first_name.as_deref().unwrap(),
             data.last_name.as_deref().unwrap()
@@ -560,6 +563,9 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
             return Err(Error::BadRequest(body));
         }
         
+        let field = data.field.clone();
+        let users = data.users.clone();
+
         let body = block(move || owner.edit_private ( 
             data.field.as_deref().unwrap(),
             data.value.unwrap(),
