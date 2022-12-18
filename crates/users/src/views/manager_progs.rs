@@ -272,7 +272,7 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
             
             let copy_user = DataCloseParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     user_id,
+                user_id:     Some(user_id),
                 item_id:     target_id,
                 description: description.clone(),
             };
@@ -328,7 +328,7 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 
             let copy_user = DataCloseParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     user_id,
+                user_id:     Some(user_id),
                 item_id:     target_id,
                 description: description.clone(),
             };
