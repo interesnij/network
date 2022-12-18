@@ -19,14 +19,14 @@ use crate::errors::Error;
 
 
 pub fn item_urls(config: &mut web::ServiceConfig) {
-    config.route("/delete_photo/", web::post().to(delete_photo));
-    config.route("/recover_photo/", web::post().to(recover_photo));
-    config.route("/on_comment/", web::post().to(on_comment));
-    config.route("/off_comment/", web::post().to(off_comment));
+    config.route("/delete_photo", web::post().to(delete_photo));
+    config.route("/recover_photo", web::post().to(recover_photo));
+    config.route("/on_comment", web::post().to(on_comment));
+    config.route("/off_comment", web::post().to(off_comment));
     config.route("/add_photos_in_list", web::post().to(add_photos_in_list));
-    config.route("/edit_photo/", web::put().to(edit_photo));
-    config.route("/send_reaction_photo/", web::post().to(send_reaction_photo));
-    config.route("/copy_photo/", web::post().to(copy_photo));
+    config.route("/edit_photo", web::put().to(edit_photo));
+    config.route("/send_reaction_photo", web::post().to(send_reaction_photo));
+    config.route("/copy_photo", web::post().to(copy_photo));
 }
 
 

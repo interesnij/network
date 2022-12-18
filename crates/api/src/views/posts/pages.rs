@@ -17,7 +17,7 @@ use crate::errors::Error;
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
     //config.route("/", web::get().to(index_page));
-    config.route("/all-postlists/", web::get().to(all_postlists_page));
+    config.route("/all-postlists", web::get().to(all_postlists_page));
 }
 
 pub async fn all_postlists_page(req: HttpRequest) -> Json<String> {

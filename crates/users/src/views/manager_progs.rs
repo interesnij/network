@@ -15,18 +15,18 @@ use serde::{Deserialize, Serialize};
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
-    config.route("/get_claim/", web::get().to(get_claim_page));
-    config.route("/create_claim_user/", web::post().to(create_claim_user));
-    config.route("/close_user/", web::post().to(close_user));
-    config.route("/unclose_user/", web::post().to(unclose_user));
-    config.route("/suspend_user/", web::post().to(suspend_user));
-    config.route("/unsuspend_user/", web::post().to(unsuspend_user));
-    config.route("/suspend_moderation/", web::post().to(suspend_moderation));
-    config.route("/close_moderation/", web::post().to(close_moderation));
-    config.route("/unclose_moderation/", web::post().to(unclose_moderation));
-    config.route("/unsuspend_moderation/", web::post().to(unsuspend_moderation));
-    config.route("/unverify_moderation/", web::post().to(unverify_moderation));
-    config.route("/reject_moderation/", web::post().to(reject_moderation));
+    config.route("/get_claim", web::get().to(get_claim_page));
+    config.route("/create_claim_user", web::post().to(create_claim_user));
+    config.route("/close_user", web::post().to(close_user));
+    config.route("/unclose_user", web::post().to(unclose_user));
+    config.route("/suspend_user", web::post().to(suspend_user));
+    config.route("/unsuspend_user", web::post().to(unsuspend_user));
+    config.route("/suspend_moderation", web::post().to(suspend_moderation));
+    config.route("/close_moderation", web::post().to(close_moderation));
+    config.route("/unclose_moderation", web::post().to(unclose_moderation));
+    config.route("/unsuspend_moderation", web::post().to(unsuspend_moderation));
+    config.route("/unverify_moderation", web::post().to(unverify_moderation));
+    config.route("/reject_moderation", web::post().to(reject_moderation));
 }
 
 #[derive(Deserialize)]

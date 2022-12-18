@@ -21,32 +21,32 @@ use serde::Deserialize;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
-    config.route("/create_user/", web::post().to(create_user));
-    config.route("/delete_user/", web::post().to(delete_user));
-    config.route("/edit_user_name/", web::post().to(edit_user_name));
-    config.route("/update_last_activity/", web::post().to(update_last_activity));
-    config.route("/edit_user_link/", web::post().to(edit_user_link));
-    config.route("/edit_user_avatar/", web::post().to(edit_user_avatar));
-    config.route("/create_friend/", web::post().to(create_friend));
-    config.route("/create_follow/", web::post().to(create_follow));
-    config.route("/create_block_user/", web::post().to(create_block_user));
-    config.route("/delete_friend/", web::post().to(delete_friend));
-    config.route("/delete_follow/", web::post().to(delete_follow));
-    config.route("/delete_block_user/", web::post().to(delete_block_user));
+    config.route("/create_user", web::post().to(create_user));
+    config.route("/delete_user", web::post().to(delete_user));
+    config.route("/edit_user_name", web::post().to(edit_user_name));
+    config.route("/update_last_activity", web::post().to(update_last_activity));
+    config.route("/edit_user_link", web::post().to(edit_user_link));
+    config.route("/edit_user_avatar", web::post().to(edit_user_avatar));
+    config.route("/create_friend", web::post().to(create_friend));
+    config.route("/create_follow", web::post().to(create_follow));
+    config.route("/create_block_user", web::post().to(create_block_user));
+    config.route("/delete_friend", web::post().to(delete_friend));
+    config.route("/delete_follow", web::post().to(delete_follow));
+    config.route("/delete_block_user", web::post().to(delete_block_user));
     
-    config.route("/create_community/", web::post().to(create_community));
-    config.route("/delete_community/", web::post().to(delete_community));
-    config.route("/edit_community_name/", web::post().to(edit_community_name));
-    config.route("/edit_community_link/", web::post().to(edit_community_link));
-    config.route("/edit_community_avatar/", web::post().to(edit_community_avatar));
-    config.route("/create_member/", web::post().to(create_member));
-    config.route("/create_ban_user/", web::post().to(create_ban_user));
-    config.route("/delete_member/", web::post().to(delete_member));
-    config.route("/delete_ban_user/", web::post().to(delete_ban_user));
+    config.route("/create_community", web::post().to(create_community));
+    config.route("/delete_community", web::post().to(delete_community));
+    config.route("/edit_community_name", web::post().to(edit_community_name));
+    config.route("/edit_community_link", web::post().to(edit_community_link));
+    config.route("/edit_community_avatar", web::post().to(edit_community_avatar));
+    config.route("/create_member", web::post().to(create_member));
+    config.route("/create_ban_user", web::post().to(create_ban_user));
+    config.route("/delete_member", web::post().to(delete_member));
+    config.route("/delete_ban_user", web::post().to(delete_ban_user));
 
-    config.route("/get_attach_photo_lists/", web::get().to(get_attach_photo_lists));
-    config.route("/get_attach_photos/", web::get().to(get_attach_photos));
-    config.route("/get_attach_photo_comments/", web::get().to(get_attach_photo_comments));
+    config.route("/get_attach_photo_lists", web::get().to(get_attach_photo_lists));
+    config.route("/get_attach_photos", web::get().to(get_attach_photos));
+    config.route("/get_attach_photo_comments", web::get().to(get_attach_photo_comments));
 
     config.route("/create_token", web::post().to(create_token));
     config.route("/edit_token", web::post().to(edit_token));

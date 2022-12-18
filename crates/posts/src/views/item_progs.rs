@@ -19,18 +19,18 @@ use crate::errors::Error;
 
 
 pub fn item_urls(config: &mut web::ServiceConfig) {
-    config.route("/user_fixed/", web::post().to(user_fixed));
-    config.route("/user_unfixed/", web::post().to(user_unfixed));
-    config.route("/community_fixed/", web::post().to(community_fixed));
-    config.route("/community_unfixed/", web::post().to(community_unfixed));
-    config.route("/delete_post/", web::post().to(delete_post));
-    config.route("/recover_post/", web::post().to(recover_post));
-    config.route("/on_comment/", web::post().to(on_comment));
-    config.route("/off_comment/", web::post().to(off_comment));
-    config.route("/add_post_in_list/", web::post().to(add_post_in_list));
-    config.route("/edit_post/", web::put().to(edit_post));
-    config.route("/send_reaction_post/", web::post().to(send_reaction_post));
-    config.route("/copy_post/", web::post().to(copy_post));
+    config.route("/user_fixed", web::post().to(user_fixed));
+    config.route("/user_unfixed", web::post().to(user_unfixed));
+    config.route("/community_fixed", web::post().to(community_fixed));
+    config.route("/community_unfixed", web::post().to(community_unfixed));
+    config.route("/delete_post", web::post().to(delete_post));
+    config.route("/recover_post", web::post().to(recover_post));
+    config.route("/on_comment", web::post().to(on_comment));
+    config.route("/off_comment", web::post().to(off_comment));
+    config.route("/add_post_in_list", web::post().to(add_post_in_list));
+    config.route("/edit_post", web::put().to(edit_post));
+    config.route("/send_reaction_post", web::post().to(send_reaction_post));
+    config.route("/copy_post", web::post().to(copy_post));
 }
 
 

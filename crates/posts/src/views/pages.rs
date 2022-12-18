@@ -32,30 +32,30 @@ use crate::errors::Error;
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
-    config.route("/edit_user_list/", web::get().to(edit_user_list_page));
-    config.route("/edit_community_list/", web::get().to(edit_community_list_page));
-    config.route("/edit_post/", web::get().to(edit_post_page));
+    config.route("/edit_user_list", web::get().to(edit_user_list_page));
+    config.route("/edit_community_list", web::get().to(edit_community_list_page));
+    config.route("/edit_post", web::get().to(edit_post_page));
 
-    config.route("/load_list/", web::get().to(load_list_page));
-    config.route("/load_post/", web::get().to(load_post_page));
-    config.route("/load_comments/", web::get().to(load_comments_page));
-    config.route("/post_reactions/", web::get().to(post_reactions_page));
-    config.route("/comment_reactions/", web::get().to(comment_reactions_page));
+    config.route("/load_list", web::get().to(load_list_page));
+    config.route("/load_post", web::get().to(load_post_page));
+    config.route("/load_comments", web::get().to(load_comments_page));
+    config.route("/post_reactions", web::get().to(post_reactions_page));
+    config.route("/comment_reactions", web::get().to(comment_reactions_page));
 
-    config.route("/search_lists/", web::get().to(search_lists_page));
-    config.route("/search_user_lists/", web::get().to(search_user_lists_page));
-    config.route("/search_community_lists/", web::get().to(search_community_lists_page));
+    config.route("/search_lists", web::get().to(search_lists_page));
+    config.route("/search_user_lists", web::get().to(search_user_lists_page));
+    config.route("/search_community_lists", web::get().to(search_community_lists_page));
 
-    config.route("/search_posts/", web::get().to(search_posts_page));
-    config.route("/search_user_posts/", web::get().to(search_user_posts_page));
-    config.route("/search_community_posts/", web::get().to(search_community_posts_page));
-    config.route("/search_list_posts/", web::get().to(search_list_posts_page));
+    config.route("/search_posts", web::get().to(search_posts_page));
+    config.route("/search_user_posts", web::get().to(search_user_posts_page));
+    config.route("/search_community_posts", web::get().to(search_community_posts_page));
+    config.route("/search_list_posts", web::get().to(search_list_posts_page));
 
-    config.route("/search_comments/", web::get().to(search_comments_page));
-    config.route("/search_user_comments/", web::get().to(search_user_comments_page));
-    config.route("/search_community_comments/", web::get().to(search_community_comments_page));
-    config.route("/search_list_comments/", web::get().to(search_list_comments_page));
-    config.route("/search_post_comments/", web::get().to(search_post_comments_page));
+    config.route("/search_comments", web::get().to(search_comments_page));
+    config.route("/search_user_comments", web::get().to(search_user_comments_page));
+    config.route("/search_community_comments", web::get().to(search_community_comments_page));
+    config.route("/search_list_comments", web::get().to(search_list_comments_page));
+    config.route("/search_post_comments", web::get().to(search_post_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {

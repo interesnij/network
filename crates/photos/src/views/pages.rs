@@ -32,30 +32,30 @@ use crate::errors::Error;
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/", web::get().to(index_page));
-    config.route("/edit_user_list/", web::get().to(edit_user_list_page));
-    config.route("/edit_community_list/", web::get().to(edit_community_list_page));
-    config.route("/edit_photo/", web::get().to(edit_photo_page));
+    config.route("/edit_user_list", web::get().to(edit_user_list_page));
+    config.route("/edit_community_list", web::get().to(edit_community_list_page));
+    config.route("/edit_photo", web::get().to(edit_photo_page));
 
-    config.route("/load_list/", web::get().to(load_list_page));
-    config.route("/load_photo/", web::get().to(load_photo_page));
-    config.route("/load_comments/", web::get().to(load_comments_page));
-    config.route("/photo_reactions/", web::get().to(photo_reactions_page));
-    config.route("/comment_reactions/", web::get().to(comment_reactions_page));
+    config.route("/load_list", web::get().to(load_list_page));
+    config.route("/load_photo", web::get().to(load_photo_page));
+    config.route("/load_comments", web::get().to(load_comments_page));
+    config.route("/photo_reactions", web::get().to(photo_reactions_page));
+    config.route("/comment_reactions", web::get().to(comment_reactions_page));
 
-    config.route("/search_lists/", web::get().to(search_lists_page));
-    config.route("/search_user_lists/", web::get().to(search_user_lists_page));
-    config.route("/search_community_lists/", web::get().to(search_community_lists_page));
+    config.route("/search_lists", web::get().to(search_lists_page));
+    config.route("/search_user_lists", web::get().to(search_user_lists_page));
+    config.route("/search_community_lists", web::get().to(search_community_lists_page));
 
-    config.route("/search_photos/", web::get().to(search_photos_page));
-    config.route("/search_user_photos/", web::get().to(search_user_photos_page));
-    config.route("/search_community_photos/", web::get().to(search_community_photos_page));
-    config.route("/search_list_photos/", web::get().to(search_list_photos_page));
+    config.route("/search_photos", web::get().to(search_photos_page));
+    config.route("/search_user_photos", web::get().to(search_user_photos_page));
+    config.route("/search_community_photos", web::get().to(search_community_photos_page));
+    config.route("/search_list_photos", web::get().to(search_list_photos_page));
 
-    config.route("/search_comments/", web::get().to(search_comments_page));
-    config.route("/search_user_comments/", web::get().to(search_user_comments_page));
-    config.route("/search_community_comments/", web::get().to(search_community_comments_page));
-    config.route("/search_list_comments/", web::get().to(search_list_comments_page));
-    config.route("/search_photo_comments/", web::get().to(search_photo_comments_page));
+    config.route("/search_comments", web::get().to(search_comments_page));
+    config.route("/search_user_comments", web::get().to(search_user_comments_page));
+    config.route("/search_community_comments", web::get().to(search_community_comments_page));
+    config.route("/search_list_comments", web::get().to(search_list_comments_page));
+    config.route("/search_photo_comments", web::get().to(search_photo_comments_page));
 }
 
 pub async fn index_page() -> impl Responder {

@@ -19,18 +19,18 @@ use crate::errors::Error;
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
-    config.route("/get_claim/", web::get().to(get_claim_page));
-    config.route("/create_claim_community/", web::post().to(create_claim_community));
-    config.route("/close_community/", web::post().to(close_community));
-    config.route("/unclose_community/", web::post().to(unclose_community));
-    config.route("/suspend_community/", web::post().to(suspend_community));
-    config.route("/unsuspend_community/", web::post().to(unsuspend_community));
-    config.route("/suspend_moderation/", web::post().to(suspend_moderation));
-    config.route("/close_moderation/", web::post().to(close_moderation));
-    config.route("/unclose_moderation/", web::post().to(unclose_moderation));
-    config.route("/unsuspend_moderation/", web::post().to(unsuspend_moderation));
-    config.route("/unverify_moderation/", web::post().to(unverify_moderation));
-    config.route("/reject_moderation/", web::post().to(reject_moderation));
+    config.route("/get_claim", web::get().to(get_claim_page));
+    config.route("/create_claim_community", web::post().to(create_claim_community));
+    config.route("/close_community", web::post().to(close_community));
+    config.route("/unclose_community", web::post().to(unclose_community));
+    config.route("/suspend_community", web::post().to(suspend_community));
+    config.route("/unsuspend_community", web::post().to(unsuspend_community));
+    config.route("/suspend_moderation", web::post().to(suspend_moderation));
+    config.route("/close_moderation", web::post().to(close_moderation));
+    config.route("/unclose_moderation", web::post().to(unclose_moderation));
+    config.route("/unsuspend_moderation", web::post().to(unsuspend_moderation));
+    config.route("/unverify_moderation", web::post().to(unverify_moderation));
+    config.route("/reject_moderation", web::post().to(reject_moderation));
 }
 
 #[derive(Deserialize)]
