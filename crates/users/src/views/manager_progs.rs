@@ -6,7 +6,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_user, get_moderation, get_user_owner_data,
-    get_user_permission, TOKEN,
+    get_user_permission, TOKEN, USERS_SERVICES,
     ErrorParams, KeyValue, CardUserJson,
 };
 use crate::models::ModeratedLog;
