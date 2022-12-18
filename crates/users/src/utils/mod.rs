@@ -20,6 +20,7 @@ use crate::models::{
     User, Owner, Moderated,
 };
 
+static TOKEN: &str = "111";
 
 pub fn get_limit (
     limit: Option<i64>,
