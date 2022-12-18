@@ -585,9 +585,9 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
         let _users = data.users.clone();
 
         let body = block(move || owner.edit_private ( 
-            field.clone(),
-            value.unwrap(),
-            _users.clone()
+            data.data.field.as_deref().unwrap(),
+            data.value.unwrap(),
+            data.users.clone()
         )).await?;
 
         if &field == &"see_all" {
