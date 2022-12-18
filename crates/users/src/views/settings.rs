@@ -306,7 +306,7 @@ pub async fn edit_phone_page(req: HttpRequest) -> Result<Json<EditPhoneResp>, Er
 }
 
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct EditLinkData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
@@ -363,7 +363,7 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct EditPhoneData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
@@ -406,7 +406,7 @@ pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
     }
 }
 
-#[derive(Deserialize)] 
+#[derive(Serialize, Deserialize)] 
 pub struct EditNameData {
     pub token:      Option<String>,
     pub user_id:    Option<i32>,
@@ -513,7 +513,7 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct EditPrivateData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
