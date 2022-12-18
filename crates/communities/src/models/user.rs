@@ -144,11 +144,11 @@ impl User {
             .filter(schema::communitys::id.eq_any(communities_ids))
             .filter(schema::communitys::types.lt(20))
             .select((
-                schema::users::user_id,
-                schema::users::name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-                schema::users::count,
+                schema::communitys::user_id,
+                schema::communitys::name,
+                schema::communitys::link,
+                schema::communitys::s_avatar.nullable(),
+                schema::communitys::members,
             ))
             .load::<CardCommunityJson>(&_connection)
             .expect("E.");
@@ -172,11 +172,11 @@ impl User {
             .filter(schema::communitys::id.eq_any(communities_ids))
             .filter(schema::communitys::types.lt(20))
             .select((
-                schema::users::user_id,
-                schema::users::name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-                schema::users::count,
+                schema::communitys::user_id,
+                schema::communitys::name,
+                schema::communitys::link,
+                schema::communitys::s_avatar.nullable(),
+                schema::communitys::members,
             ))
             .load::<CardCommunityJson>(&_connection)
             .expect("E.");
@@ -207,11 +207,11 @@ impl User {
             .limit(_limit)
             .offset(_offset)
             .select((
-                schema::users::user_id,
-                schema::users::name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-                schema::users::count,
+                schema::communitys::user_id,
+                schema::communitys::name,
+                schema::communitys::link,
+                schema::communitys::s_avatar.nullable(),
+                schema::communitys::members,
             ))
             .load::<CardCommunityJson>(&_connection)
             .expect("E.");
