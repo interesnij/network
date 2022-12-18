@@ -419,7 +419,8 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
         let target_id = data.target_id;
-        let description = data.description;
+        let description = data.description.clone();
+        let expiration = data.expiration;
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -439,7 +440,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
                 user_id:     Some(user_id),
                 item_id:     target_id,
                 description: description.clone(),
-                expiration:  data.expiration,
+                expiration:  expiration,
             };
         
             for link in USERS_SERVICES.iter() {
@@ -475,12 +476,13 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
     else {
         let item = get_moderation(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
-        let description = data.description;
+        let description = data.description.clone();
+        let expiration = data.expiration;
         if manager.is_administrator() {
             let _res = block ( move || {
                 item.create_suspend (
                     manager.id,
-                    data.expiration,
+                    expiration,
                     description.clone(),
                 );
                 ModeratedLog::create (
@@ -488,7 +490,7 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
                     item.id,
                     1,
                     description.clone(),
-                    data.expiration,
+                    expiration,
                 )
             }).await?;
             Ok(Json(_res))
