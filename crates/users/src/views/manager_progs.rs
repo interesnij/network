@@ -68,7 +68,7 @@ pub struct ModerationParams {
 pub struct DataModerationParams {
     pub token:       Option<String>,
     pub user_id:     Option<i32>,
-    pub target_id:   Option<i32>,
+    pub item_id:     Option<i32>,
     pub description: Option<String>,
     pub expiration:  Option<chrono::NaiveDateTime>,
 }

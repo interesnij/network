@@ -555,7 +555,7 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
     }
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct MinimalData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
@@ -645,7 +645,7 @@ pub async fn restore_account(data: Json<MinimalData>) -> Result<Json<i16>, Error
                 .send()
                 .await;
         }
-        
+
         Ok(Json(body))
     }
 }
