@@ -115,7 +115,6 @@ pub struct NewUserJson {
     pub is_man:     bool,
     pub link:       String,
     pub s_avatar:   Option<String>,
-    pub see_all:    i16,
 }
 
 impl User {
@@ -419,7 +418,7 @@ impl User {
             link:          user.link.clone(),
             s_avatar:      user.s_avatar.clone(),
             last_activity: chrono::Local::now().naive_utc(),
-            see_all:       user.see_all,
+            see_all:       1,
             see_community: 1,
             communities:   0,
         };
