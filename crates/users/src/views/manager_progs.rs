@@ -419,6 +419,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
         let target_id = data.target_id;
+        let description = data.description;
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -426,7 +427,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
                         manager.id,
                         item.id,
                         3,
-                        data.description.clone(),
+                        description.clone(),
                         data.expiration,
                     );
                     item.unsuspend_item()
@@ -437,7 +438,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
                 token:       Some(TOKEN.to_string()),
                 user_id:     Some(user_id),
                 item_id:     target_id,
-                description: data.description.clone(),
+                description: description.clone(),
                 expiration:  data.expiration,
             };
         
@@ -474,18 +475,19 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
     else {
         let item = get_moderation(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
+        let description = data.description;
         if manager.is_administrator() {
             let _res = block ( move || {
                 item.create_suspend (
                     manager.id,
                     data.expiration,
-                    data.description.clone(),
+                    description.clone(),
                 );
                 ModeratedLog::create (
                     manager.id,
                     item.id,
                     1,
-                    data.description.clone(),
+                    description.clone(),
                     data.expiration,
                 )
             }).await?;
