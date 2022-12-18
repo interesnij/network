@@ -94,9 +94,6 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     else if data.link.is_none() {
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
     }
-    else if data.see_all.is_none() {
-        Err(Error::BadRequest("Field 'see_all' is required!".to_string()))
-    }
     else {
         let is_man: bool;
         if data.is_man.unwrap() != 1 {
@@ -114,7 +111,6 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
                 is_man,
                 data.link.as_deref().unwrap().to_string(),
                 data.s_avatar.clone(),
-                data.see_all.unwrap(),
             )).await?;
             Ok(Json(_res))
         }
