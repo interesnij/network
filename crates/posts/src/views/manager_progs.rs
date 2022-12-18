@@ -1194,7 +1194,7 @@ pub async fn edit_user_all_private(data: Json<AllPrivateData>) -> Result<Json<i1
                 )
                 ).await?;
             Ok(Json(_res))
-        else {
+        } else {
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
     }

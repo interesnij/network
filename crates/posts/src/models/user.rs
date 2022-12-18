@@ -718,7 +718,7 @@ impl User {
             user_id:        user_id,
             first_name:     first_name.clone(),
             last_name:      last_name.clone(),
-            types:          types,
+            types:          1,
             is_man:         is_man,
             link:           link.clone(),
             s_avatar:       None,
