@@ -125,10 +125,8 @@ pub struct NewUserData {
     pub user_id:    Option<i32>,
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
-    pub types:      Option<i16>,
     pub is_man:     Option<i16>,
     pub link:       Option<String>,
-    pub s_avatar:   Option<String>,
 }
 
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
@@ -283,12 +281,12 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
 
     let copy_user = NewUserData {
         token:      Some(TOKEN),
-        user_id:    Some(_new_user.user_id),
+        user_id:    Some(_new_user.id),
         first_name: Some(_new_user.first_name.clone()),
         last_name:  Some(_new_user.last_name.clone()),
-        is_man:     Some(_new_user.is_man),
+        is_man:     data.is_man, 
         link:       Some(_new_user.link.clone()),
-    }
+    };
 
     for link in USERS_SERVICES.iter() {
         println!("111");
