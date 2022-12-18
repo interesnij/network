@@ -254,6 +254,8 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     else {
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
+        let target_id = data.target_id;
+        let description = data.description.clone();
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -270,9 +272,9 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
             
             let copy_user = DataCloseParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     data.user_id,
-                item_id:     data.target_id,
-                description: data.description.clone(),
+                user_id:     user_id,
+                item_id:     target_id,
+                description: description.clone(),
             };
         
             for link in USERS_SERVICES.iter() {
@@ -308,6 +310,8 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     else {
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
+        let target_id = data.target_id;
+        let description = data.description.clone();
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -324,9 +328,9 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
 
             let copy_user = DataCloseParams {
                 token:       Some(TOKEN.to_string()),
-                user_id:     data.user_id,
-                item_id:     data.target_id,
-                description: data.description.clone(),
+                user_id:     user_id,
+                item_id:     target_id,
+                description: description.clone(),
             };
         
             for link in USERS_SERVICES.iter() {
@@ -363,6 +367,8 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
         let item = get_user(data.target_id.unwrap()).expect("E.");
         let manager = get_user(user_id).expect("E.");
         let target_id = data.target_id;
+        let description = data.description.clone();
+        let expiration = data.expiration;
         if manager.is_administrator() {
             let _res = block (
                 move || {
@@ -381,8 +387,8 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
                 token:       Some(TOKEN.to_string()),
                 user_id:     Some(user_id),
                 item_id:     target_id,
-                description: data.description.clone(),
-                expiration:  data.expiration,
+                description: description.clone(),
+                expiration:  expiration,
             };
         
             for link in USERS_SERVICES.iter() {
@@ -428,7 +434,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
                         manager.id,
                         item.id,
                         3,
-                        description.clone(),
+                        data.description.clone(),
                         data.expiration,
                     );
                     item.unsuspend_item()
