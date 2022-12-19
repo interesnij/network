@@ -18,7 +18,7 @@ use utils::requests::*;
 
 
 #[function_component(App)]
-fn app() -> Html {
+fn app() -> Html { 
     {
         html! {
             <>
@@ -31,5 +31,5 @@ fn app() -> Html {
 //#[wasm_bindgen(start)]
 fn main() {
     wasm_logger::init(wasm_logger::Config::default());
-    yew::Renderer::<App>::new().render();
+    yew::Renderer::<App>::new().hydrate();
 }
