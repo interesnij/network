@@ -5,7 +5,7 @@ edition = "2021"
 path = "src/main.rs"
 
 [dependencies]
-yew = "0.19.3"
+yew = "0.19"
 yew-router = "0.16.0"
 yew-hooks = "0.1.56"
 wasm-logger = "0.2.0"
