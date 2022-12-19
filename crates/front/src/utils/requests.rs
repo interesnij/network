@@ -10,8 +10,6 @@ use std::result::Result;
 use std::sync::Arc;
 
 
-use crate::models::{medicines::MedicineInfo, user::*};
-
 struct ReqResult<T> {
     code: Arc<u16>,
     body: Arc<T>,
