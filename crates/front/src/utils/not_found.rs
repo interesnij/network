@@ -1,4 +1,4 @@
-use yew::{function_component, html, Component, Context, Properties};
+use yew::{function_component, Html, html, Component, Context, Properties};
 
 #[function_component(NotFound)]
 pub fn not_found() -> Html {
