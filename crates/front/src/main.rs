@@ -1,35 +1,58 @@
-#![recursion_limit = "640"]
-use async_std::task::current;
-use gloo_utils::history;
-//use models::user::{self, UserInfo};
-use wasm_bindgen::prelude::*;
-use yew::prelude::*;
-use yew::{Context, ContextProvider};
-use yew_hooks::{use_async, use_mount};
-use yew_router::prelude::*;
+use std::sync::Arc;
+use actix_web::{
+    web,
+    App,
+    HttpRequest,
+    HttpServer,
+    cookie::Key,
+};
+use actix_cors::Cors;
+use actix_identity::IdentityMiddleware;
+use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 
-//mod models;
-//mod pages;
-//mod sections;
-mod utils;
-//use pages::*;
-use utils::not_found::NotFound;
-use utils::requests::*;
+mod views;
+//mod utils;
+mod errors;
+mod routes;
 
-
-#[function_component(App)]
-fn app() -> Html { 
-    {
-        html! {
-            <>
-                {"hello"}
-            </>
-        }
-    }
+#[derive(Clone)]
+pub struct AppState {
+    key: Arc<String>,
 }
 
-//#[wasm_bindgen(start)]
-fn main() {
-    wasm_logger::init(wasm_logger::Config::default());
-    yew::Renderer::<App>::new().render();
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    use crate::routes::routes;
+    use actix_files::Files;
+
+    let app_state = AppState {
+        key: Arc::new(env::var("KEY").unwrap()),
+    };
+    let _files = Files::new("/static", "static/").show_files_listing();
+    let secret_key = Key::generate();
+    let redis_store = RedisSessionStore::new("redis://127.0.0.1:6379")
+        .await
+        .unwrap();
+
+    HttpServer::new(move || {
+        let cors = Cors::default()
+        //    .allowed_origin("194.58.90.123:8100")
+            .allowed_methods(vec!["GET", "POST"])
+            .max_age(3600);
+
+        App::new()
+            .app_data(web::Data::new(app_state.to_owned()))
+            .wrap(IdentityMiddleware::default())
+            .wrap(SessionMiddleware::new(
+                redis_store.clone(),
+                secret_key.clone()
+            ))
+            .wrap(cors)
+            .configure(routes)
+            .service(_files)
+
+    })
+    .bind("194.58.90.123:8100")?
+    .run()
+    .await
 }
