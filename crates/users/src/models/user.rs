@@ -130,7 +130,8 @@ impl User {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
-        return users
+        let mut user_stack = Vec::new();
+        let user_data =  users
             .filter(schema::users::id.eq_any(ids))
             .filter(schema::users::types.lt(31))
             .select((
@@ -140,10 +141,20 @@ impl User {
                 schema::users::types,
                 schema::users::link,
                 schema::users::s_avatar,
-                schema::users::see_all,
             ))
-            .load::<AttachUserResp>(&_connection)
+            .load::<(i32, String, String, i16, String, Option<String>)>(&_connection)
             .expect("E.");
+        user_stack.push( AttachUserResp {
+            user_id:    user_data.0,
+            first_name: user_data.1,
+            last_name:  user_data.2,
+            types:      user_data.3,
+            link:       user_data.4,
+            s_avatar:   user_data.5,
+            see_all:    self.get_private_model().expect("E.").see_all, 
+        })
+
+        return user_stack;
     }
 
     pub fn edit_private (
