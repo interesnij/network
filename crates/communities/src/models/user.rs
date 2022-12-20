@@ -408,7 +408,7 @@ impl User {
         is_man:     bool,
         password:   String,
         link:       String,
-    ) -> -> i32 {
+    ) -> i32 {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
