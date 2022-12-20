@@ -222,6 +222,16 @@ impl User {
         return 1;
     }
 
+    pub fn edit_password(&self, password: &str) -> i16 {
+
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::password.eq(password))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+
     pub fn edit_private (
         &self, 
         field:  &str, 
