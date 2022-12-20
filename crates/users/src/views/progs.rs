@@ -72,7 +72,7 @@ pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
     
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/create_block_user".to_string())
+                let _res = client.post(link.to_string() + &"/create_block_user".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -115,7 +115,22 @@ pub async fn user_unblock(data: Json<UsersData>) -> Result<Json<i16>, Error> {
         else {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
-            let _res = block(move || request_user.unblock_user (target_user)).await?;
+            let _res = block(move || request_user.unblock_user(target_user)).await?;
+
+            let copy_user = AddTargetParams {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                target_id: data.target_id,
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let _res = client.post(link.to_string() + &"/delete_block_user".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
     }
@@ -154,7 +169,22 @@ pub async fn user_friend(data: Json<UsersData>) -> Result<Json<i16>, Error> {
         else {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
-            let _res = block(move || request_user.frend_user (target_user)).await?;
+            let _res = block(move || request_user.frend_user(target_user)).await?;
+
+            let copy_user = AddTargetParams {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                target_id: data.target_id,
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let _res = client.post(link.to_string() + &"/create_friend".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
     }
@@ -193,6 +223,21 @@ pub async fn user_unfriend(data: Json<UsersData>) -> Result<Json<i16>, Error> {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
             let _res = block(move || request_user.unfrend_user (target_user)).await?;
+
+            let copy_user = AddTargetParams {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                target_id: data.target_id,
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let _res = client.post(link.to_string() + &"/delete_friend".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
     }
@@ -232,6 +277,21 @@ pub async fn user_follow(data: Json<UsersData>) -> Result<Json<i16>, Error> {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
             let _res = block(move || request_user.follow_user (target_user)).await?;
+
+            let copy_user = AddTargetParams {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                target_id: data.target_id,
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let _res = client.post(link.to_string() + &"/create_follow".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
     }
@@ -307,6 +367,21 @@ pub async fn user_unfollow(data: Json<UsersData>) -> Result<Json<i16>, Error> {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
             let _res = block(move || request_user.unfollow_user (target_user)).await?;
+
+            let copy_user = AddTargetParams {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                target_id: data.target_id,
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let _res = client.post(link.to_string() + &"/delete_follow".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
     }
