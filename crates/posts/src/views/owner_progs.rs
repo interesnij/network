@@ -248,7 +248,7 @@ pub async fn edit_user_avatar(data: Json<UserAvatarParams>) -> Result<Json<i16>,
     }
 }
 
-#[derive(Serialize)]
+#[derive(Deserialize, Serialize)]
 pub struct UserPasswordParams {
     pub token:    Option<String>,
     pub user_id:  Option<i32>,
