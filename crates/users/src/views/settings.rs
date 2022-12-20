@@ -524,11 +524,35 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        let body = block(move || owner.edit_password (
-            data.old_password.as_deref().unwrap(),
-            data.new_password.as_deref().unwrap()
-        )).await?;
-        Ok(Json(body))
+        use bcrypt::hash;
+
+        let old = hash(data.old_password.as_deref().unwrap(), 8).unwrap();
+        let new = hash(data.new_password.as_deref().unwrap(), 8).unwrap();
+
+        if owner.password == old && old != new {
+            let body = block(move || owner.edit_password(&new)).await?;
+
+            let copy_user = EditNameData {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                password:  new.clone(),
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/edit_user_password".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
     }
 }
 

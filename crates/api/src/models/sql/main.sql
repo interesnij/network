@@ -4,7 +4,7 @@ CREATE TABLE sticker_categories (
     position    SMALLINT NOT NULL DEFAULT 0,
     user_id     INT,
     description VARCHAR(200),
-    avatar      VARCHAR(500)
+    avatar      VARCHAR(100)
 );
 
 CREATE TABLE stickers (
@@ -12,7 +12,7 @@ CREATE TABLE stickers (
     name        VARCHAR(100) NOT NULL,
     position    SMALLINT NOT NULL DEFAULT 0,
     category_id INT NOT NULL,
-    image       VARCHAR(500) NOT NULL,
+    image       VARCHAR(100) NOT NULL,
 
     CONSTRAINT fk_stickers
         FOREIGN KEY(category_id)
@@ -32,7 +32,7 @@ CREATE TABLE smiles (
     name        VARCHAR(100) NOT NULL,
     position    SMALLINT NOT NULL DEFAULT 0,
     category_id INT NOT NULL,
-    image       VARCHAR(500) NOT NULL,
+    image       VARCHAR(100) NOT NULL,
 
     CONSTRAINT fk_smiles
         FOREIGN KEY(category_id)
@@ -51,7 +51,7 @@ CREATE TABLE user_populate_smiles (
     user_id  INT NOT NULL,
     smile_id INT NOT NULL,
     count    INT NOT NULL DEFAULT 0,
-    image    VARCHAR(500) NOT NULL
+    image    VARCHAR(100) NOT NULL
 );
 CREATE UNIQUE INDEX user_populate_smiles_unq ON user_populate_smiles (user_id, smile_id);
 
@@ -61,7 +61,7 @@ CREATE TABLE user_populate_stickers (
     user_id    INT NOT NULL,
     sticker_id INT NOT NULL,
     count      INT NOT NULL DEFAULT 0,
-    image      VARCHAR(500) NOT NULL
+    image      VARCHAR(100) NOT NULL
 );
 CREATE UNIQUE INDEX user_populate_stickers_unq ON user_populate_stickers (user_id, sticker_id);
 
@@ -69,8 +69,8 @@ CREATE UNIQUE INDEX user_populate_stickers_unq ON user_populate_stickers (user_i
 -- все реакции -------
 CREATE TABLE reactions (
   id        SERIAL PRIMARY KEY,            -- id записи
-  image     VARCHAR(500) NOT NULL,         -- изображение
-  gif       VARCHAR(500) NOT NULL,         -- гифка
+  image     VARCHAR(100) NOT NULL,         -- изображение
+  gif       VARCHAR(100) NOT NULL,         -- гифка
   name      VARCHAR(100) NOT NULL,         -- название
   is_active BOOLEAN NOT NULL DEFAULT true, -- активная реакция?
   position  SMALLINT NOT NULL              -- позиция

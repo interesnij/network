@@ -22,8 +22,9 @@ CREATE TABLE users (
     last_name     VARCHAR(100) NOT NULL,
     types         SMALLINT NOT NULL DEFAULT 1,
     is_man        BOOLEAN NOT NULL DEFAULT TRUE,
+    password      VARCHAR(500) NOT NULL,
     link          VARCHAR(100) NOT NULL,
-    s_avatar      VARCHAR(500),
+    s_avatar      VARCHAR(100),
     last_activity TIMESTAMP NOT NULL,
     see_all        SMALLINT NOT NULL,   -- кто может видеть открытый профиль
     see_community SMALLINT NOT NULL,    -- кто может видеть сообщества
@@ -34,7 +35,7 @@ CREATE TABLE users (
 CREATE TABLE community_categorys (
     id       SERIAL PRIMARY KEY,    -- id объекта
     name     VARCHAR(100) NOT NULL, -- название
-    avatar   VARCHAR(500),          -- аватар
+    avatar   VARCHAR(100),          -- аватар
     position SMALLINT NOT NULL      -- порядковый номер
 );
 
@@ -43,7 +44,7 @@ CREATE TABLE community_subcategorys (
     id          SERIAL PRIMARY KEY,    -- id объекта
     name        VARCHAR(100) NOT NULL, -- название
     category_id INT NOT NULL,          -- id категории
-    avatar      VARCHAR(500),          -- аватар
+    avatar      VARCHAR(100),          -- аватар
     position    SMALLINT NOT NULL      -- порядковый номер
 );
 
@@ -53,7 +54,7 @@ CREATE TABLE communitys (
     status      VARCHAR(100),           -- статус
     types       SMALLINT NOT NULL,      -- тип
     link        VARCHAR(100) NOT NULL,  -- красивая ссылка
-    s_avatar    VARCHAR(500),           -- маленький аватар
+    s_avatar    VARCHAR(100),           -- маленький аватар
     category_id INT NOT NULL,           -- id категории
     user_id     INT NOT NULL,           -- id создателя
     members     INT NOT NULL,
@@ -88,10 +89,10 @@ CREATE TABLE community_infos (
     id           SERIAL PRIMARY KEY,
     community_id INT NOT NULL,
     avatar_id    INT,
-    b_avatar     VARCHAR(500),
+    b_avatar     VARCHAR(100),
     status       VARCHAR(100),
     level        SMALLINT NOT NULL DEFAULT 100,
-    cover        VARCHAR(500),
+    cover        VARCHAR(100),
     created      TIMESTAMP NOT NULL,
     description  VARCHAR(500)
 );

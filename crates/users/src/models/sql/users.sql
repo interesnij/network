@@ -9,7 +9,7 @@ CREATE TABLE users (
     is_man        BOOLEAN NOT NULL DEFAULT TRUE,
     password      VARCHAR(500) NOT NULL,
     link          VARCHAR(100) NOT NULL,
-    s_avatar      VARCHAR(500),
+    s_avatar      VARCHAR(100),
     last_activity TIMESTAMP NOT NULL,
 
     UNIQUE(phone),
@@ -24,11 +24,11 @@ CREATE TABLE user_infos (
     language  VARCHAR(10) NOT NULL,
     email     VARCHAR(100),
     birthday  DATE,
-    b_avatar  VARCHAR(500),
+    b_avatar  VARCHAR(100),
     status    VARCHAR(100),
     city      VARCHAR(100),
     level     SMALLINT NOT NULL DEFAULT 100,
-    cover     VARCHAR(500),
+    cover     VARCHAR(100),
     created   TIMESTAMP NOT NULL,
     friends   INT NOT NULL,
     follows   INT NOT NULL

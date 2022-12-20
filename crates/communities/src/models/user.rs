@@ -86,6 +86,7 @@ pub struct User {
     pub last_name:     String,
     pub types:         i16,
     pub is_man:        bool,
+    pub password:      String,
     pub link:          String,
     pub s_avatar:      Option<String>,
     pub last_activity: chrono::NaiveDateTime,
@@ -109,14 +110,15 @@ pub struct NewUser {
     pub see_community: i16,
     pub communities:   i32,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct NewUserJson {
     pub token:      Option<String>,
-    pub user_id:    i32,
-    pub first_name: String,
-    pub last_name:  String,
+    pub user_id:    Option<i32>,
+    pub first_name: Option<String>,
+    pub last_name:  Option<String>,
     pub is_man:     Option<i16>,
-    pub link:       String,
+    pub password:   Option<String>,
+    pub link:       Option<String>,
 }
 
 impl User {
@@ -416,6 +418,7 @@ impl User {
             last_name:     user.last_name.clone(),
             types:         1,
             is_man:        user.is_man,
+            password:      user.password.clone(),
             link:          user.link.clone(),
             s_avatar:      None,
             last_activity: chrono::Local::now().naive_utc(),

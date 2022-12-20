@@ -24,8 +24,9 @@ CREATE TABLE users (
     last_name      VARCHAR(100) NOT NULL, -- фамилия пользователя
     types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
     is_man         BOOLEAN NOT NULL,      -- это мужчина?
+    password       VARCHAR(500) NOT NULL,
     link           VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
-    s_avatar       VARCHAR(500),          -- миниатюра
+    s_avatar       VARCHAR(100),          -- миниатюра
     last_activity  TIMESTAMP NOT NULL,    -- когда был в сети
 
     see_all        SMALLINT NOT NULL,     -- кто может видеть открытый профиль
@@ -62,7 +63,7 @@ CREATE TABLE communitys (
     name           VARCHAR(100) NOT NULL, -- название
     types          SMALLINT NOT NULL,     -- тип
     link           VARCHAR(100) NOT NULL, -- ссылка и связь с основной таблицей
-    s_avatar       VARCHAR(500),          -- миниатюра
+    s_avatar       VARCHAR(100),          -- миниатюра
 
     see_el         SMALLINT NOT NULL,     -- кто может видеть записи
     see_comment    SMALLINT NOT NULL,     -- кто может видеть комменты
@@ -112,7 +113,7 @@ CREATE TABLE post_lists (
     user_id        INT NOT NULL,          -- id пользователя (которое выше)
     types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
     description    VARCHAR(500),          -- описание
-    image          VARCHAR(500),          -- миниатюра
+    image          VARCHAR(100),          -- миниатюра
     created        TIMESTAMP NOT NULL,    -- время создания
 
     count          INT NOT NULL,          -- кол-во записей
