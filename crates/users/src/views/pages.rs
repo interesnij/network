@@ -68,7 +68,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
             Err(Error::BadRequest(body))
         }
         else {
-            let mut ipaddr: String = String::new();
+            let ipaddr: String;
             if let Some(val) = &req.peer_addr() {
                 ipaddr = val.ip().to_string();
                 if ipaddr.contains(&"194.58.90.123".to_string()) {

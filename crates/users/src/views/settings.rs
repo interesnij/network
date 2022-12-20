@@ -353,7 +353,7 @@ pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
         if body == 1 {
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/edit_user_link".to_string())
+                let _res = client.post(link.to_string() + &"/edit_user_link".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -469,7 +469,7 @@ pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
     
         for link in USERS_SERVICES.iter() {
             let client = reqwest::Client::new();
-            let res = client.post(link.to_string() + &"/edit_user_name".to_string())
+            let _res = client.post(link.to_string() + &"/edit_user_name".to_string())
                 .form(&copy_user)
                 .send()
                 .await;
@@ -548,7 +548,7 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
     
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/edit_user_password".to_string())
+                let _res = client.post(link.to_string() + &"/edit_user_password".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -626,7 +626,7 @@ pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Erro
     
             for link in USERS_SERVICES.iter() { 
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/edit_user_all_private".to_string())
+                let _res = client.post(link.to_string() + &"/edit_user_all_private".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -683,7 +683,7 @@ pub async fn delete_account(data: Json<MinimalData>) -> Result<Json<i16>, Error>
     
         for link in USERS_SERVICES.iter() {
             let client = reqwest::Client::new();
-            let res = client.post(link.to_string() + &"/delete_user".to_string())
+            let _res = client.post(link.to_string() + &"/delete_user".to_string())
                 .form(&copy_user)
                 .send()
                 .await;
@@ -727,7 +727,7 @@ pub async fn restore_account(data: Json<MinimalData>) -> Result<Json<i16>, Error
     
         for link in USERS_SERVICES.iter() {
             let client = reqwest::Client::new();
-            let res = client.post(link.to_string() + &"/delete_user".to_string())
+            let _res = client.post(link.to_string() + &"/delete_user".to_string())
                 .form(&copy_user)
                 .send()
                 .await;
