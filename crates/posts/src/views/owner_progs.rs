@@ -17,7 +17,7 @@ use crate::utils::{
     AttachPostResp, AttachPostListResp,
     ErrorParams, ObjectData, ItemParams,
 };
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
@@ -72,7 +72,7 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     }
     else if data.first_name.is_none() {
         Err(Error::BadRequest("Field 'first_name' is required!".to_string()))
-    }
+    } 
     else if data.is_man.is_none() {
         Err(Error::BadRequest("Field 'is_man' is required!".to_string()))
     }
