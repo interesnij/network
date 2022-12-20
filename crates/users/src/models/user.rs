@@ -269,21 +269,12 @@ impl User {
         &self, 
         password: &str,
     ) -> i16 {
-        use bcrypt::hash;
-
-        let old = hash(old_password, 8).unwrap();
-        let new = hash(new_password, 8).unwrap();
-        if self.password == old && old != new {
-            let _connection = establish_connection();
-            let _o = diesel::update(self)
-                .set(schema::users::password.eq(password))
-                .execute(&_connection)
-                .expect("E.");
-            return 1;
-        }
-        else {
-            return 0;
-        }
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::password.eq(password))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
     }
     
     pub fn get_private_field(value: i16) -> KeyValue {

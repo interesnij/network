@@ -486,6 +486,13 @@ pub struct EditPasswordData {
     pub old_password: Option<String>,
     pub new_password: Option<String>,
 }
+#[derive(Serialize)]
+pub struct EditPasswordResp {
+    pub token:    Option<String>,
+    pub user_id:  Option<i32>,
+    pub password: Option<String>,
+}
+
 pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
      if err.is_some() {
@@ -532,10 +539,10 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
         if owner.password == old && old != new {
             let body = block(move || owner.edit_password(&new)).await?;
 
-            let copy_user = EditNameData {
+            let copy_user = EditPasswordResp {
                 token:     Some(TOKEN.to_string()),
                 user_id:   Some(user_id),
-                password:  new.clone(),
+                password:  Some(new.clone()),
             };
     
             for link in USERS_SERVICES.iter() {
