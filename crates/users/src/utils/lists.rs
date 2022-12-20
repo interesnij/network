@@ -11,6 +11,17 @@ pub const USERS_SERVICES: &'static [&'static str] = &[
 ];
 
 #[derive(Serialize, Queryable)]
+pub struct AttachUserResp {
+    pub user_id:    i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub types:      i16,
+    pub link:       String,
+    pub s_avatar:   Option<String>,
+    pub see_all:    i16, 
+} 
+
+#[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
     pub id:         i32,

@@ -12,7 +12,8 @@ use crate::models::{
 use crate::utils::{
     establish_connection, get_limit_offset,
     EditNotifyResp, LocationJson, KeyValue,
-    CardUserJson, UserDetailJson, EditPrivateResp, 
+    CardUserJson, UserDetailJson, EditPrivateResp,
+    AttachUserResp,
 };
 use crate::schema::users;
 use crate::errors::Error;
@@ -124,7 +125,27 @@ pub struct GetSessionFields {
     pub password: String,
 }
 
-impl User { 
+impl User {
+    pub fn get_users_for_attach(ids: Vec<i32>) -> Vec<AttachUserResp> {
+        use crate::schema::users::dsl::users;
+
+        let _connection = establish_connection();
+        return users
+            .filter(schema::users::id.eq_any(ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::types,
+                schema::users::link,
+                schema::users::s_avatar,
+                schema::users::see_all,
+            ))
+            .load::<AttachUserResp>(&_connection)
+            .expect("E.");
+    }
+
     pub fn edit_private (
         &self, 
         field:     &str, 
