@@ -15,7 +15,7 @@ pub async fn index_page(user: Option<Identity>) -> impl Responder {
     if let Some(user) = user {
         println!("Welcome! {}", user.id().unwrap());
     } else {
-        println!("Welcome Anonymous!".to_owned());
+        println!("Welcome Anonymous!");
     }
     HttpResponse::Ok().body(
         "<div style='background: #ccc;position:absolute;top:0;left:0;right:0;bottom:0'>
