@@ -26,6 +26,7 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     CommunityCategoryJson, CardUserJson,
     CommunityPrivateJson, NewCommunityJson,
+    AttachCommunityResp, 
 };
 use crate::errors::Error;
 use crate::models::{
@@ -248,6 +249,24 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn get_communities_for_attach(ids: Vec<i32>) -> Vec<AttachCommunityResp> {
+        use crate::schema::communitys::dsl::communitys;
+
+        let _connection = establish_connection();
+        let mut communitys_stack = Vec::new();
+        return communitys
+            .filter(schema::communitys::id.eq_any(ids))
+            .filter(schema::communitys::types.lt(21))
+            .select((
+                schema::communitys::id,
+                schema::communitys::name,
+                schema::communitys::types,
+                schema::communitys::link,
+                schema::communitys::s_avatar,
+            ))
+            .load::<AttachCommunityResp>(&_connection)
+            .expect("E.");
+    }
     pub fn edit_private (
         &self, 
         field:     &str, 
