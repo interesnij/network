@@ -253,7 +253,7 @@ impl Community {
         use crate::schema::communitys::dsl::communitys;
 
         let _connection = establish_connection();
-        let mut communitys_stack = Vec::new();
+ 
         return communitys
             .filter(schema::communitys::id.eq_any(ids))
             .filter(schema::communitys::types.lt(21))
