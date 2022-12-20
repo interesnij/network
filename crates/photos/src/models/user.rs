@@ -89,6 +89,7 @@ pub struct User {
     pub last_name:      String,
     pub types:          i16,
     pub is_man:         bool,
+    pub password:       String,
     pub link:           String,
     pub s_avatar:       Option<String>,
     pub last_activity:  chrono::NaiveDateTime,
@@ -113,6 +114,7 @@ pub struct NewUser {
     pub last_name:      String,
     pub types:          i16,
     pub is_man:         bool,
+    pub password:       String,
     pub link:           String,
     pub s_avatar:       Option<String>,
     pub last_activity:  chrono::NaiveDateTime,
@@ -136,6 +138,7 @@ pub struct NewUserJson {
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
     pub is_man:     Option<i16>,
+    pub password:   Option<String>,
     pub link:       Option<String>,
 }
 
@@ -672,6 +675,7 @@ impl User {
         first_name: String,
         last_name:  String,
         is_man:     bool,
+        password:   String,
         link:       String,
     ) -> i16 {
         use crate::schema::users::dsl::users;
@@ -690,6 +694,7 @@ impl User {
             last_name:      last_name.clone(),
             types:          1,
             is_man:         is_man,
+            password:       password.clone(),
             link:           link.clone(),
             s_avatar:       None,
             last_activity:  chrono::Local::now().naive_utc(),
