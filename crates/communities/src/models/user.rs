@@ -401,7 +401,14 @@ impl User {
         return false;
     }
 
-    pub fn create_user(user: NewUserJson) -> i32 {
+    pub fn create_user (
+        user_id:    i32,
+        first_name: String,
+        last_name:  String,
+        is_man:     bool,
+        password:   String,
+        link:       String,
+    ) -> -> i32 {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
