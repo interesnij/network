@@ -31,9 +31,9 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         App::new() 
-            .app_data(web::Data::new(app_state.to_owned()))
-            //.wrap(IdentityMiddleware::default())
-            //.wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
+            //.app_data(web::Data::new(app_state.to_owned()))
+            .wrap(IdentityMiddleware::default())
+            .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
             .service(_files)
 
