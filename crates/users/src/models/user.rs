@@ -123,7 +123,7 @@ pub struct GetSessionFields {
     pub id:       i32,
     pub phone:    String,
     pub password: String,
-}
+} 
 
 impl User {
     pub fn get_users_for_attach(ids: Vec<i32>) -> Vec<AttachUserResp> {
