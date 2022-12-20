@@ -4,11 +4,9 @@ use actix_web::{
     web::Json,
 };
 use crate::utils::{
-    get_user,
-    get_user_owner_data,
-    ErrorParams, 
-    UsersData,
-    TOKEN,
+    get_user, get_user_owner_data,
+    ErrorParams, UsersData,
+    TOKEN, USERS_SERVICES,
 };
 use crate::models::User;
 use crate::errors::Error;
@@ -64,17 +62,17 @@ pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
         else {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
-            let _res = block(move || request_user.block_user (target_user)).await?;
+            let _res = block(move || request_user.block_user(target_user)).await?;
 
             let copy_user = AddTargetParams {
                 token:     Some(TOKEN.to_string()),
                 user_id:   Some(user_id),
-                password:  Some(new.clone()),
+                target_id: data.target_id,
             };
     
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/edit_user_password".to_string())
+                let res = client.post(link.to_string() + &"/create_block_user".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
