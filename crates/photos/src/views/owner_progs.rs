@@ -27,6 +27,7 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/update_last_activity", web::post().to(update_last_activity));
     config.route("/edit_user_link", web::post().to(edit_user_link));
     config.route("/edit_user_avatar", web::post().to(edit_user_avatar));
+    config.route("/edit_user_password", web::post().to(edit_user_password)); 
     config.route("/create_friend", web::post().to(create_friend));
     config.route("/create_follow", web::post().to(create_follow));
     config.route("/create_block_user", web::post().to(create_block_user));
@@ -259,6 +260,38 @@ pub async fn edit_user_avatar(data: Json<UserAvatarParams>) -> Result<Json<i16>,
         }
     }
 }
+
+#[derive(Serialize)]
+pub struct UserPasswordParams {
+    pub token:    Option<String>,
+    pub user_id:  Option<i32>,
+    pub password: Option<String>,
+}
+// manager send!
+pub async fn edit_user_password(data: Json<UserPasswordParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.password.is_none() {
+        Err(Error::BadRequest("Field 'password' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.edit_password (
+                data.password.as_deref().unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
 
 // manager send!
 pub async fn create_friend(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {

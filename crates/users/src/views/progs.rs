@@ -8,10 +8,11 @@ use crate::utils::{
     get_user_owner_data,
     ErrorParams, 
     UsersData,
+    TOKEN,
 };
 use crate::models::User;
 use crate::errors::Error;
-
+use serde::Serialize;
 
 
 pub fn progs_urls(config: &mut web::ServiceConfig) {
@@ -22,7 +23,14 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
     config.route("/progs/follow", web::post().to(user_follow));
     config.route("/progs/follow_view", web::post().to(user_follow_view));
     config.route("/progs/unfollow", web::post().to(user_unfollow));
-} 
+}  
+
+#[derive(Serialize)]
+pub struct AddTargetParams {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub target_id: Option<i32>,
+}
 
 pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
@@ -57,6 +65,21 @@ pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
             request_user = request_user_res.expect("E");
             target_user = target_user_res.expect("E");
             let _res = block(move || request_user.block_user (target_user)).await?;
+
+            let copy_user = AddTargetParams {
+                token:     Some(TOKEN.to_string()),
+                user_id:   Some(user_id),
+                password:  Some(new.clone()),
+            };
+    
+            for link in USERS_SERVICES.iter() {
+                let client = reqwest::Client::new();
+                let res = client.post(link.to_string() + &"/edit_user_password".to_string())
+                    .form(&copy_user)
+                    .send()
+                    .await;
+            }
+
             Ok(Json(_res))
         }
     }
