@@ -131,28 +131,22 @@ impl User {
 
         let _connection = establish_connection();
         let mut user_stack = Vec::new();
-        let user_data =  users
+        let user_data = users
             .filter(schema::users::id.eq_any(ids))
             .filter(schema::users::types.lt(31))
-            .select((
-                schema::users::id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::types,
-                schema::users::link,
-                schema::users::s_avatar,
-            ))
-            .load::<(i32, String, String, i16, String, Option<String>)>(&_connection)
+            .load::<User>(&_connection)
             .expect("E.");
-        user_stack.push( AttachUserResp {
-            user_id:    user_data.0,
-            first_name: user_data.1,
-            last_name:  user_data.2,
-            types:      user_data.3,
-            link:       user_data.4,
-            s_avatar:   user_data.5,
-            see_all:    self.get_private_model().expect("E.").see_all, 
-        })
+        for user in user_data.iter() {
+            user_stack.push( AttachUserResp {
+                user_id:    user.id,
+                first_name: user.first_name.clone(),
+                last_name:  user.last_name.clone(),
+                types:      user.types,
+                link:       user.link.clone(),
+                s_avatar:   user.s_avatar.clone(),
+                see_all:    user.get_private_model().expect("E.").see_all, 
+            });
+        }
 
         return user_stack;
     }
