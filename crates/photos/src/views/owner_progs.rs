@@ -17,7 +17,7 @@ use crate::utils::{
     AttachPhotoResp, AttachPhotoListResp,
     ErrorParams, ObjectData, ItemParams,
 };
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
