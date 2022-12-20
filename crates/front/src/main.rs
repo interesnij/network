@@ -12,7 +12,6 @@ use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 
 mod views;
 //mod utils;
-mod errors;
 mod routes;
 
 #[derive(Clone)]
@@ -26,7 +25,7 @@ async fn main() -> std::io::Result<()> {
     use actix_files::Files;
 
     let app_state = AppState {
-        key: Arc::new(env::var("KEY").unwrap()),
+        key: Arc::new("KEY".to_string()),
     };
     let _files = Files::new("/static", "static/").show_files_listing();
     let secret_key = Key::generate();
