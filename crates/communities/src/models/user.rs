@@ -103,6 +103,7 @@ pub struct NewUser {
     pub last_name:     String,
     pub types:         i16,
     pub is_man:        bool,
+    pub password:      String,
     pub link:          String,
     pub s_avatar:      Option<String>,
     pub last_activity: chrono::NaiveDateTime,
@@ -420,13 +421,13 @@ impl User {
                 return 0;
         }
         let new_form = NewUser {
-            user_id:       user.user_id,
-            first_name:    user.first_name.clone(),
-            last_name:     user.last_name.clone(),
+            user_id:       user_id,
+            first_name:    first_name.clone(),
+            last_name:     last_name.clone(),
             types:         1,
-            is_man:        user.is_man,
-            password:      user.password.clone(),
-            link:          user.link.clone(),
+            is_man:        is_man,
+            password:      password.clone(),
+            link:          link.clone(),
             s_avatar:      None,
             last_activity: chrono::Local::now().naive_utc(),
             see_all:       1,
