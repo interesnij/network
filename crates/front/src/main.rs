@@ -8,7 +8,8 @@ use actix_web::{
 };
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
+use actix_session::SessionMiddleware;
+use actix_redis::RedisSession;
 
 mod views;
 //mod utils;
@@ -28,10 +29,6 @@ async fn main() -> std::io::Result<()> {
         key: Arc::new("KEY".to_string()),
     };
     let _files = Files::new("/static", "static/").show_files_listing();
-    let secret_key = Key::generate();
-    let redis_store = RedisSessionStore::new("redis://127.0.0.1:6379")
-        .await
-        .unwrap();
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -39,13 +36,10 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
 
-        App::new()
+        App::new() 
             .app_data(web::Data::new(app_state.to_owned()))
             .wrap(IdentityMiddleware::default())
-            .wrap(SessionMiddleware::new(
-                redis_store.clone(),
-                secret_key.clone()
-            ))
+            .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .wrap(cors)
             .configure(routes)
             .service(_files)
