@@ -168,6 +168,8 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         }).unwrap();
         return Err(Error::BadRequest(body));
     }
+
+    // проверим, подтвержден ли телефон, который используется для регистрации
     let _phone_code: PhoneCode;
     let _phone_code_res = phone_codes
         .filter(schema::phone_codes::phone.eq(data.phone.as_deref().unwrap()))
@@ -225,7 +227,11 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     let _new_user = diesel::insert_into(schema::users::table)
         .values(&form_user)
         .get_result::<User>(&_connection)
-         .expect("Error saving user.");
+        .expect("Error saving user."); 
+    // удалим телефон из таблицы подтвержденных телефонов, чтобы он больше не использовался
+    let _del = diesel::delete(&_phone_code_res.expect("E."))
+        .execute(&_connection)
+        .expect("E.");
 
     // записываем местоположение нового пользователя
     let _geo_url = "http://api.sypexgeo.net/J5O6d/json/".to_owned() + &ipaddr;
