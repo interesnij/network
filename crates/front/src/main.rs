@@ -30,16 +30,10 @@ async fn main() -> std::io::Result<()> {
     let _files = Files::new("/static", "static/").show_files_listing();
 
     HttpServer::new(move || {
-        let cors = Cors::default()
-        //    .allowed_origin("194.58.90.123:8100")
-            .allowed_methods(vec!["GET", "POST"])
-            .max_age(3600);
-
         App::new() 
             .app_data(web::Data::new(app_state.to_owned()))
-            .wrap(IdentityMiddleware::default())
-            .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
-            .wrap(cors)
+            //.wrap(IdentityMiddleware::default())
+            //.wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
             .service(_files)
 
