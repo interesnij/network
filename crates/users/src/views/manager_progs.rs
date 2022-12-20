@@ -279,7 +279,7 @@ pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/close_user".to_string())
+                let _res = client.post(link.to_string() + &"/close_user".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -335,7 +335,7 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
         
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/unclose_user".to_string())
+                let _res = client.post(link.to_string() + &"/unclose_user".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -393,7 +393,7 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
         
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/suspend_user".to_string())
+                let _res = client.post(link.to_string() + &"/suspend_user".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
@@ -451,7 +451,7 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
         
             for link in USERS_SERVICES.iter() {
                 let client = reqwest::Client::new();
-                let res = client.post(link.to_string() + &"/unsuspend_user".to_string())
+                let _res = client.post(link.to_string() + &"/unsuspend_user".to_string())
                     .form(&copy_user)
                     .send()
                     .await;
