@@ -8,14 +8,14 @@ pub const COMMUNITIES_SERVICES: &'static [&'static str] = &[
     "194.58.90.123:9004", // сервис фотографий
 ];
 
-#[derive(Serialize)]
+#[derive(Serialize, Queryable)]
 pub struct AttachCommunityResp {
-    pub community_id: i32,
+    pub community_id: i32, 
     pub name:         String,
     pub types:        i16,
     pub link:         String,
     pub s_avatar:     Option<String>,
-}
+} 
 
 ////////
 #[derive(Serialize)]
