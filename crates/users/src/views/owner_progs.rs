@@ -11,7 +11,7 @@ use crate::models::{
 use crate::utils::{
     get_user_owner_data, get_user, get_owner,
     ErrorParams, ObjectData, SmallData,
-    EditTokenPageResp, TOKEN,
+    EditTokenPageResp, AttachUserResp, TOKEN,
 }; 
 use crate::models::{TokenDetailJson, TokenJson, };
 use crate::errors::Error;
@@ -594,7 +594,7 @@ pub struct VecIdsParams {
 
 // manager send!
 // выдаем данные для использования объектов пользователей в других сервисах
-pub async fn get_attach_users(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostListResp>>, Error> {
+pub async fn get_attach_users(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachUserResp>>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
