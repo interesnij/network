@@ -229,7 +229,11 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         .get_result::<User>(&_connection)
         .expect("Error saving user."); 
     // удалим телефон из таблицы подтвержденных телефонов, чтобы он больше не использовался
-    let _del = diesel::delete(&_phone_code_res.expect("E."))
+    let _del = diesel::delete(
+        phone_codes
+            .filter(schema::phone_codes::phone.eq(data.phone.as_deref().unwrap()))
+            .filter(schema::phone_codes::types.eq(1))
+        )
         .execute(&_connection)
         .expect("E.");
 
