@@ -11,7 +11,7 @@ use crate::models::{
 use crate::utils::{
     get_user_owner_data, get_user, get_owner,
     ErrorParams, ObjectData, SmallData,
-    EditTokenPageResp,
+    EditTokenPageResp, TOKEN,
 }; 
 use crate::models::{TokenDetailJson, TokenJson, };
 use crate::errors::Error;
@@ -34,6 +34,8 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
 
     config.route("/get_secret_key", web::get().to(get_secret_key));
     config.route("/get_service_key", web::get().to(get_service_key));
+
+    config.route("/get_attach_users", web::get().to(get_attach_users));
 }
 
  /*
@@ -582,4 +584,31 @@ pub async fn get_service_key(data: Json<ObjectData>) -> Result<Json<String>, Err
             Err(Error::BadRequest("Permission Denied".to_string()))
         }
     }
+}
+
+#[derive(Deserialize)]
+pub struct VecIdsParams {
+    token:   Option<String>,
+    pub ids: Option<Vec<i32>>,
+}
+
+// manager send!
+// выдаем данные для использования объектов пользователей в других сервисах
+pub async fn get_attach_users(data: Json<VecIdsParams>) -> Result<Json<Vec<AttachPostListResp>>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.ids.is_none() {
+        Err(Error::BadRequest("Field 'ids' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let _res = block(move || User::get_users_for_attach(data.ids.as_deref().unwrap().to_vec())).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+    
 }
