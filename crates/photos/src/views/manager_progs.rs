@@ -14,11 +14,11 @@ use crate::utils::{
     get_user_permission,
     get_user_owner_data,
     get_owner_data,
-    ErrorParams, AttachOwner,
+    ErrorParams, AttachOwner, TOKEN,
 };
 use crate::models::ModeratedLog;
 use crate::errors::Error;
-use serde::Deserialize; 
+use serde::{Serialize, Deserialize}; 
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {
