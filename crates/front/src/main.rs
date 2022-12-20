@@ -27,11 +27,11 @@ async fn main() -> std::io::Result<()> {
     let app_state = AppState {
         key: Arc::new(0),
     };
-    let _files = Files::new("/static", "static/").show_files_listing();
 
     HttpServer::new(move || {
+        let _files = Files::new("/static", "static/").show_files_listing();
         App::new() 
-            //.app_data(web::Data::new(app_state.to_owned()))
+            .app_data(web::Data::new(app_state.to_owned()))
             .wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
