@@ -535,8 +535,8 @@ pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Er
 
         let old = hash(data.old_password.as_deref().unwrap(), 8).unwrap();
         let new = hash(data.new_password.as_deref().unwrap(), 8).unwrap();
-        //let new_2 = old.clone();
-        let new_2 = &old;
+        let new_2 = old.clone();
+
         if owner.password == old && old != new {
             let body = block(move || owner.edit_password(&new_2)).await?;
 
