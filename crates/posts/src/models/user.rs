@@ -138,7 +138,7 @@ pub struct NewUserJson {
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
     pub is_man:     Option<i16>,
-    pub password:   String,
+    pub password:   Option<String>,
     pub link:       Option<String>,
 }
 
