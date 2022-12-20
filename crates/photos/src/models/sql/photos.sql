@@ -568,7 +568,7 @@ INSERT INTO owners (id, user_id, name, types, secret_key, service_key, is_active
 VALUES (1, 1, 'Браузерное приложение', 1, '%n%#Nv!|y9nU', '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', true ) ON CONFLICT DO NOTHING;
 
 -- связь сервисов токенов с токенами -------
-CREATE TABLE owner_services_items (
+CREATE TABLE owner_services_items ( 
     id          SERIAL PRIMARY KEY, -- id
     owner_id    INT NOT NULL,       -- id токена-владельца
     service_id  INT NOT NULL        -- id сервиса
