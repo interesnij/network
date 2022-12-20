@@ -8,7 +8,6 @@ use actix_web::{
 };
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
-use actix_session::SessionMiddleware;
 use actix_redis::RedisSession;
 
 mod views;
@@ -17,7 +16,7 @@ mod routes;
 
 #[derive(Clone)]
 pub struct AppState {
-    key: Arc<String>,
+    key: Arc<i32>,
 }
 
 #[actix_web::main]
@@ -26,7 +25,7 @@ async fn main() -> std::io::Result<()> {
     use actix_files::Files;
 
     let app_state = AppState {
-        key: Arc::new("KEY".to_string()),
+        key: Arc::new(0),
     };
     let _files = Files::new("/static", "static/").show_files_listing();
 
