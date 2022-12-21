@@ -44,13 +44,13 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
     use crate::utils::get_user_id;
 
     let _user = User::get_user_by_phone(&data.phone);
-    let mut id = 0;
-    for header in req.headers().into_iter() {
-        if header.0 == "token" {
-            let _val = format!("{:?}", header.1);
-            id = get_user_id(_val, state.key.as_ref()).await;
-        }
-    }; 
+    //let mut id = 0;
+    //for header in req.headers().into_iter() {
+    //    if header.0 == "token" {
+    //        let _val = format!("{:?}", header.1);
+    //        id = get_user_id(_val, state.key.as_ref()).await;
+    //    }
+    //}; 
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телефоном не найден!".to_string(),
@@ -62,7 +62,7 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
 
         if verify(data.password.as_str(), _user.password.as_str()).unwrap() {
                 let token = gen_jwt(_user.id, state.key.as_ref()).await;
-
+                let id = get_user_id(token, state.key.as_ref()).await;
                 match token {
                     Ok(token_str) => {
                         let body = serde_json::to_string(&InfoParams {
