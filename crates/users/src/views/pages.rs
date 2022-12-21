@@ -68,30 +68,8 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
             Err(Error::BadRequest(body))
         }
         else {
-            let ipaddr: String;
-            if let Some(val) = &req.peer_addr() {
-                ipaddr = val.ip().to_string();
-                if ipaddr.contains(&"194.58.90.123".to_string()) {
-                    println!("permission ok");
-                    println!("ip {:?}", ipaddr);
-                    let _res = block(move || User::get_users(params.limit, params.offset)).await?;
-                    Ok(Json(_res))
-                }
-                else {
-                    println!("permission not ok!!!");
-                    let body = serde_json::to_string(&ErrorParams {
-                        error: "permission denied!".to_string(),
-                    }).unwrap();
-                    Err(Error::BadRequest(body))
-                }
-            }
-            else {
-                println!("ipaddr not ok!!!");
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "permission denied!".to_string(),
-                }).unwrap();
-                Err(Error::BadRequest(body))
-            }
+            let _res = block(move || User::get_users(params.limit, params.offset)).await?;
+            Ok(Json(_res))
         }
     }
     else {
