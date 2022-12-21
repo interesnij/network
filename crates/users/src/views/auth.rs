@@ -47,7 +47,7 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
 
     for header in req.headers().into_iter() {
         if header.0 == "token".to_string() {
-            let id = get_user_id(header.1, state.key.as_ref());
+            let id = get_user_id(header.1.to_string(), state.key.as_ref());
             println!("id {:?}", id);
         }
     };
