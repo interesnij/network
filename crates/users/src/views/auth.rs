@@ -44,14 +44,20 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
     use crate::utils::get_user_id;
 
     let _user = User::get_user_by_phone(&data.phone);
-    //let mut id = 0;
-    //for header in req.headers().into_iter() {
-    //    if header.0 == "token" {
-    //        let _val = format!("{:?}", header.1);
-    //        id = get_user_id(_val, state.key.as_ref()).await;
-    //    }
-    //}; 
-    if _user.is_err() {
+    let mut id = 0;
+    for header in req.headers().into_iter() {
+        if header.0 == "token" {
+            let _val = format!("{:?}", header.1);
+            id = get_user_id(_val, state.key.as_ref()).await;
+        }
+    };
+    if id != 0 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Пользователь уже зарегистрирован!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    } 
+    else if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телефоном не найден!".to_string(),
         }).unwrap();
@@ -65,7 +71,6 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
                 
                 match token {
                     Ok(token_str) => {
-                        let id = get_user_id(token_str.clone(), state.key.as_ref()).await;
                         let body = serde_json::to_string(&InfoParams {
                             info: token_str.to_owned() + &"__id=".to_string() + &id.to_string(),
                         }).unwrap();
