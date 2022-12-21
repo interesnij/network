@@ -78,6 +78,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
                     Ok(Json(_res))
                 }
                 else {
+                    println!("permission not ok!!!");
                     let body = serde_json::to_string(&ErrorParams {
                         error: "permission denied!".to_string(),
                     }).unwrap();
@@ -85,6 +86,7 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
                 }
             }
             else {
+                println!("ipaddr not ok!!!");
                 let body = serde_json::to_string(&ErrorParams {
                     error: "permission denied!".to_string(),
                 }).unwrap();
