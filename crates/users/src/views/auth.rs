@@ -46,11 +46,12 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
     let _user = User::get_user_by_phone(&data.phone);
 
     for header in req.headers().into_iter() {
-        if header.0 == "token".to_string() {
-            let id = get_user_id(header.1.to_string(), state.key.as_ref());
+        if header.0 == "token" {
+            let _val = format!("{:?}", header.1);
+            let id = get_user_id(_val, state.key.as_ref());
             println!("id {:?}", id);
         }
-    };
+    }; 
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телефоном не найден!".to_string(),
