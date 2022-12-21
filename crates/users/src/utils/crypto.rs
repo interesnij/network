@@ -63,7 +63,7 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
     Ok(claims)
 }
 
-pub async fn get_user_id(_token: String, _secret: &String)-> i32 {
+pub async fn get_user_id(_token: String, _secret: &String) -> i32 {
     let jwt_key = _secret.clone();
     let claims = block(move || {
         let decoding_key = DecodingKey::from_secret(jwt_key.as_bytes());
