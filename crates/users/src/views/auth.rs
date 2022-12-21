@@ -41,12 +41,15 @@ pub struct LoginUser2 {
 }
 
 pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
+    use crate::utils::get_user_id;
+
     let _user = User::get_user_by_phone(&data.phone);
 
     for header in req.headers().into_iter() {
-        println!("header {:?}", header.0);
-        println!("value {:?}", header.1);
-        println!("===============");
+        if header.0 == "token".to_string() {
+            let id = get_user_id(header.1, state.key.as_ref());
+            println!("id {:?}", id);
+        }
     };
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
