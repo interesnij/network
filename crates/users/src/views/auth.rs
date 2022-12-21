@@ -50,7 +50,7 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
             let _val = format!("{:?}", header.1);
             id = get_user_id(_val, state.key.as_ref()).await;
         }
-    };
+    }; 
     if id != 0 {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь уже зарегистрирован!".to_string(),
