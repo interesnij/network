@@ -49,7 +49,6 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
     })
     .await
     .unwrap();
-    println!("claims {:?}", claims);
     if let Err(_) = claims {
         return Err(403);
     }
