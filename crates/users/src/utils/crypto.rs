@@ -78,7 +78,7 @@ pub async fn get_user_id(_token: String, _secret: &String) -> i32 {
 
     //log::info!("Headers: {:?}", claims.as_ref().unwrap().header);
     let claims = claims.unwrap().claims;
-
+    println!("claims {:?}", claims);
     if claims.exp < Utc::now().timestamp(){
         return 0;
     }
