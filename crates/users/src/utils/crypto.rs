@@ -62,3 +62,26 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
 
     Ok(claims)
 }
+
+pub async fn get_user_id(_token: String, _secret: &String)-> i32 {
+    let jwt_key = _secret.clone();
+    let claims = block(move || {
+        let decoding_key = DecodingKey::from_secret(jwt_key.as_bytes());
+
+        decode::<Claims>(&_token, &decoding_key, &Validation::default())
+    })
+    .await 
+    .unwrap();
+    if let Err(_) = claims {
+        return 0;
+    }
+
+    //log::info!("Headers: {:?}", claims.as_ref().unwrap().header);
+    let claims = claims.unwrap().claims;
+
+    if claims.exp < Utc::now().timestamp(){
+        return 0;
+    }
+
+    return claims.id;
+}
