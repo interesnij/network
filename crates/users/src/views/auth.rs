@@ -44,12 +44,11 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
     use crate::utils::get_user_id;
 
     let _user = User::get_user_by_phone(&data.phone);
-
+    let mut id = 0;
     for header in req.headers().into_iter() {
         if header.0 == "token" {
             let _val = format!("{:?}", header.1);
-            let id = get_user_id(_val, state.key.as_ref());
-            println!("id {:?}", id.to_string());
+            id = get_user_id(_val, state.key.as_ref());
         }
     }; 
     if _user.is_err() {
@@ -67,7 +66,7 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
                 match token {
                     Ok(token_str) => {
                         let body = serde_json::to_string(&InfoParams {
-                            info: token_str.to_string(),
+                            info: token_str.to_owned() + &"__id=".to_string() + &id.to_string(),
                         }).unwrap();
                         Ok(Json(body))
                     },
