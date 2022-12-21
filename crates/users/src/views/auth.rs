@@ -62,9 +62,10 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
 
         if verify(data.password.as_str(), _user.password.as_str()).unwrap() {
                 let token = gen_jwt(_user.id, state.key.as_ref()).await;
-                let id = get_user_id(token, state.key.as_ref()).await;
+                
                 match token {
                     Ok(token_str) => {
+                        let id = get_user_id(token_str.clone(), state.key.as_ref()).await;
                         let body = serde_json::to_string(&InfoParams {
                             info: token_str.to_owned() + &"__id=".to_string() + &id.to_string(),
                         }).unwrap();
