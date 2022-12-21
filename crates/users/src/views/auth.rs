@@ -49,7 +49,7 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
         if header.0 == "token" {
             let _val = format!("{:?}", header.1);
             let id = get_user_id(_val, state.key.as_ref());
-            println!("id {:?}", id);
+            println!("id {:?}", id.to_string());
         }
     }; 
     if _user.is_err() {
