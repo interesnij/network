@@ -40,9 +40,14 @@ pub struct LoginUser2 {
     pub password: String,
 }
 
-pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
+pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
 
+    for header in req.headers().into_iter() {
+        println!("header {:?}", header.0);
+        println!("value {:?}", header.1);
+        println!("===============");
+    };
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телефоном не найден!".to_string(),
