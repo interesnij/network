@@ -22,7 +22,6 @@ mod views;
 mod routes;
 
 
-#[derive(Clone)]
 pub struct AppState {
     key:   Arc<String>,
     token: Mutex<String>,
