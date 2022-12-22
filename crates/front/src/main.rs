@@ -46,9 +46,6 @@ async fn main() -> std::io::Result<()> {
                     token: Mutex::new("".to_string()),
                 }
             ))
-            .app_data(web::Data::new(AppState {
-                key: String::from("Actix Web"),
-            }))
             .wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
