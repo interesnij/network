@@ -40,7 +40,15 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new() 
-            .app_data(web::Data::new(app_state.to_owned()))
+            .app_data(web::Data::new (
+                AppState {
+                    key: Arc::new(env::var("KEY").unwrap()),
+                    token: Mutex::new("".to_string()),
+                }
+            ))
+            .app_data(web::Data::new(AppState {
+                key: String::from("Actix Web"),
+            }))
             .wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
