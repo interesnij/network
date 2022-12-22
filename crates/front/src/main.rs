@@ -18,7 +18,7 @@ use actix_web_httpauth::{
 use std::sync::Mutex;
 use std::env;
 mod views;
-//mod utils;
+mod utils;
 mod routes;
 
 
