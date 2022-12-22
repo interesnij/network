@@ -15,28 +15,17 @@ use actix_web_httpauth::{
     extractors::{bearer::{BearerAuth, Config}, AuthenticationError},
     middleware::HttpAuthentication,
 };
-
+use std::sync::Mutex;
 
 mod views;
 //mod utils;
 mod routes;
 
 
-async fn validator (
-    req: ServiceRequest,
-    credentials: BearerAuth,
-) -> Result<ServiceRequest, (Error, ServiceRequest)> {
-    let config = req.app_data::<Config>().cloned().unwrap_or_default();
-    match auth::get_token_data(credentials.token()).await {
-        Ok(_) => Ok(req),
-        Err(_) => Err((AuthenticationError::from(config).into(), req)),
-    }
-}
-
-
 #[derive(Clone)]
 pub struct AppState {
-    key: Arc<i32>,
+    key:   Arc<String>,
+    token: Mutex<String>,
 }
 
 #[actix_web::main]
@@ -45,16 +34,15 @@ async fn main() -> std::io::Result<()> {
     use actix_files::Files;
 
     let app_state = AppState {
-        key: Arc::new(0),
+        key: Arc::new(env::var("KEY").unwrap()),
+        token: Mutex::new("".to_string()),
     };
 
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
-        let auth = HttpAuthentication::bearer(validator);
         App::new() 
             .app_data(web::Data::new(app_state.to_owned()))
             .wrap(IdentityMiddleware::default())
-            .wrap(auth)
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
             .service(_files)
