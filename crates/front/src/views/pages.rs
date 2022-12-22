@@ -5,6 +5,7 @@ use actix_web::{
     web,
 };
 use actix_identity::Identity;
+use crate::utils::APIURL;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
@@ -24,3 +25,5 @@ pub async fn index_page(user: Option<Identity>) -> impl Responder {
             </p>
         </div>")
 }
+
+

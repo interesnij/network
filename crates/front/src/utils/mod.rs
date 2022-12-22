@@ -1,4 +1,3 @@
-pub mod not_found;
-pub mod requests;
-//pub mod image;
-pub mod error_to_str;
+
+
+pub const APIURL: &str = "http:194.58.90.123:8000";

@@ -12,12 +12,14 @@ mod lists;
 mod profile;
 mod crypto;
 mod auth;
+
 pub use self::{
     lists::*,
     profile::*,
     crypto::*,
     auth::*,
 };
+
 use crate::models::{
     User, Owner, Moderated,
 };
