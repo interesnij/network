@@ -1,0 +1,137 @@
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+a:hover{
+  color: #ffffff !important;
+}
+.switch:not(:checked) + label {
+  background-color: #ccc !important;
+}
+a {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+.slides_arrows label {
+  box-shadow: inset 2px -2px 0 1px rgba(255, 255, 255, 0.7) !important;
+}
+.slides_arrows label:hover {
+  box-shadow: inset 2px -2px 0 1px #ffffff !important;
+}
+.mt-0 a, .mt-0 p, .media-body p, .card-body p{color: rgba(255, 255, 255, 0.6) !important;}
+
+.form-control::placeholder{color: rgba(255, 255, 255, 0.6);font-style: italic;}
+.border{
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+.border_radius{
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+.border-right {
+  border-right: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+.border-bottom {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+.border-top {
+  border-top: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+.border-left {
+  border-left: 1px solid rgba(255, 255, 255, 0.7) !important;
+}
+.text_support a, .i_link {
+  color: #282C34 !important;
+  font-weight: 400;
+}
+.text_support a:hover, .pointer.i_link:hover {
+  border-bottom: 1px solid #282C34 !important;
+  color: #282C34 !important;
+}
+.i_link :hover {
+  color: #282C34 !important;
+}
+
+body {
+  background-color: #d32c2c;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.header-color-secondary {
+  color: rgba(255, 255, 255, 0.7);
+}
+.text-muted {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.media p, .media span {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.content-color-primary {
+  color: #ffffff;
+}
+.content-color-secondary {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.card .card-footer.bg-light-secondary,
+.bg-light-secondary {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.main-header {
+  background-color: #f84a58;
+}
+
+.card, .mobile_naw, .card_fullscreen, .current_color {
+  background-color: #da4e4e !important;
+}
+
+a.media:hover {
+  background-color: rgba(211, 44, 44, 0.4);
+}
+.switch + label {
+  background-color: #be2828;
+}
+
+.checkbox-user-check.active {
+  background: #7979ff;
+}
+.form-control, select {
+  background-color: #d63939;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+.form-control:focus, select:focus {
+  border-color: rgba(255, 255, 255, 0.5);
+  background-color: #dc5656;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.btn_default svg, .btn_default span{
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.btn_default .active{
+  color: rgba(255, 255, 255, 1) !important;
+}
+.btn_default button{
+  background-color: #DC5858 !important;
+}
+.svg_default {color: rgba(255, 255, 255, 0.6) !important}
+.btn_default svg:hover, .svg_default span:hover, .svg_default_30:hover{
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+.btn_success svg, .btn_success span{ color:#41cd52 !important;}
+.btn_danger svg, .btn_danger span{ color:#FF0000 !important}
+
+.svg_default_30, .svg_default_40, .svg_default_50, .svg_default_80{border: rgba(255, 255, 255, 0.6) solid 1px;}
+.dropdown-menu, .lite_color{color:rgba(255, 255, 255, 0.6) !important; background-color: #DC5858 !important}
+.dropdown-menu .dropdown-item:hover {
+    background-color: #D32C2C !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+.progress2:before{
+  background-color: #D32C2C !important;
+}
+.like_window, .repost_window, .custom_color, .switch.switch-sm + label:before {
+  background: #d53434 !important; color: rgba(255, 255, 255, 0.6) !important;
+}

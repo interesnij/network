@@ -1,0 +1,177 @@
+/* white */
+
+.minimalWhiteCategoriesType {
+  color: rgba(0, 0, 0, 0.7);
+}
+.minimalWhiteCategoriesTypeIn {
+	color: rgba(0, 0, 0, 0.7);
+}
+.minimalWhiteCategoriesDescription {
+  color: rgba(0, 0, 0, 0.7);
+}
+.boldWhite {
+  color: rgba(0, 0, 0, 0.7);
+}
+.minimalWhiteCategoriesTitle {
+  color: rgba(0, 0, 0, 0.9);
+}
+.minimalDarkCategoriesDescription {
+  color: rgba(rgba(0, 0, 0, 0.7));
+}
+
+.minimalDarkCategoriesTypeIn {
+	color: rgba(rgba(0, 0, 0, 0.7));
+}
+.minimalDarkCategoriesType {
+  color: rgba(rgba(0, 0, 0, 0.7));
+}
+.minimalDarkCategoriesTitle {
+  color: rgba(rgba(0, 0, 0, 0.9));
+}
+
+::-webkit-scrollbar-thumb {
+    background: #BFBFBF !important;
+}
+.switch:not(:checked) + label {
+  background-color: #ccc !important;
+}
+.switch:not(:checked) + label {
+  background-color: #fff !important;
+}
+
+a:hover{
+  color: black !important;
+}
+a {
+  color: rgba(0, 0, 0, 0.8) !important
+}
+.bg-dark a {
+  color: rgba(255, 255, 255, 0.9) !important
+}
+.bg-dark a:hover  {
+  color: rgba(255, 255, 255, 1) !important
+}
+.slides_arrows label {
+  box-shadow: inset 2px -2px 0 1px rgba(0, 0, 0, 0.8) !important;
+}
+.slides_arrows label:hover {
+  box-shadow: inset 2px -2px 0 1px black !important;
+}
+.border{
+  border: 1px solid rgba(127,127,127, 0.7) !important;
+}
+.border_radius{
+  border: 1px solid rgba(127,127,127, 0.7) !important;
+}
+.border-right {
+  border-right: 1px solid rgba(127, 127, 127, 0.7) !important;
+}
+.border-bottom {
+  border-bottom: 1px solid rgba(127, 127, 127, 0.7) !important;
+}
+.border-top {
+  border-top: 1px solid rgba(127, 127, 127, 0.7) !important;
+}
+.border-left {
+  border-left: 1px solid rgba(127, 127, 127, 0.7) !important;
+}
+.text_support a, .i_link {
+  color: #2a5885 !important;
+  font-weight: 400;
+}
+.text_support a:hover, .pointer.i_link:hover  {
+  border-bottom: 1px solid #2a5885 !important;
+  color: #2a5885 !important;
+}
+.i_link :hover {
+  color: #2a5885 !important;
+}
+
+.form-control::placeholder{color:rgba(0, 0, 0, 0.6);font-style: italic;}
+
+body {
+  background-color: #edeef0;
+  color: #000000 !important;
+}
+
+.header-color-secondary {
+  color: #888888;
+}
+.media p {
+  color: black !important;
+}
+.text-muted {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+.content-color-primary {
+  color: rgba(0, 0, 0, 0.7);
+}
+.content-color-secondary {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.card .card-footer.bg-light-secondary,
+.bg-light-secondary {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+.main-header {
+  background-color: #ffffff;
+}
+
+.card, .mobile_naw, .card_fullscreen, .current_color {
+  background-color: white !important;
+}
+
+a.media:hover {
+  background-color: rgba(240, 242, 246, 0.4);
+}
+.switch + label {
+  background-color: #e0e4ec;
+}
+.checkbox-user-check.active {
+  background: #7979ff;
+}
+.form-control, select {
+  background-color: #fafafc;
+  border-color: rgba(0, 0, 0, 0.2);
+  color: #000000;
+}
+.form-control:focus, select:focus {
+  border-color: rgba(0, 0, 0, 0.2);
+  background-color: white;
+  color: rgba(0, 0, 0, 1);
+}
+
+.svg_default {color:rgba(0, 0, 0, 0.5) !important}
+
+.btn_default svg{color:rgba(0, 0, 0, 0.5) !important}
+.btn_default .active{
+  color: rgba(0, 0, 0, 1) !important;
+}
+.btn_default span{color:rgba(0, 0, 0, 0.8) !important}
+.btn_default button{background-color: #F0F0F0 !important;}
+.btn_default svg:hover, .svg_default span:hover, .svg_default_30:hover{color: rgba(0, 0, 0, 0.7) !important;}
+.btn_success svg, .btn_success span{ color:#41cd52}
+.btn_danger svg, .btn_danger span{ color:#FF0000}
+
+.media p, .media span {
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+.switch.switch-sm + label:before {
+  background: #ccc !important;
+}
+.svg_default_30, .svg_default_40, .svg_default_50, .svg_default_80{border: #6C757D solid 1px;}
+.like_window, .repost_window, .custom_color {
+  background: #D6DAE1 !important; color: rgba(0, 0, 0, 0.8) !important;
+}
+.dropdown-menu {color:rgba(0, 0, 0, 0.9) !important; background-color: #f0f2f6 !important}
+.lite_color{color:rgba(0, 0, 0, 0.9) !important; background-color: #E0E0E0 !important}
+.dropdown-menu .dropdown-item:hover{
+    background-color: #F0F2F6 !important;
+    color: rgba(0, 0, 0) !important;
+}
+.progress2:before{
+  background-color: rgba(127,127,127, 0.5) !important;
+}
+.mt-0 a, .mt-0 p, .media-body p, .card-body p{color: rgba(0, 0, 0, 0.9) !important;}

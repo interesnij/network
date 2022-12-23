@@ -22,9 +22,7 @@
 </head>
 
   <body class="fixed-header">
-    <span class="span"></span>
-    <script>
-    
-    </script>
+    <span class="app"></span>
+    <script defer type="text/javascript" src="/static/scripts/anon_load.js?ver1"></script>
   </body>
 </html>

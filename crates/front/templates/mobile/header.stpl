@@ -1,0 +1,5 @@
+<% if is_ajax == 1 { %>
+    <div id="ajax" class="userpic" data-id="<%= request_user.id %>" data-pk="<%= request_user.link %>" data-device="mobile" data-name="<%= request_user.name %>" style="padding-right:0px; padding-left:0px;">
+        <span id="reload_block">
+
+<% } %>
