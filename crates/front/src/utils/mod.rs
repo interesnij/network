@@ -21,7 +21,7 @@ pub struct User {
     pub id:       i32,
     pub name:     String,
     pub link:     String,
-    pub s_avatar: Option<String>,
+    pub s_avatar: String,
 }
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
