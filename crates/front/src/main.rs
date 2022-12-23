@@ -23,7 +23,7 @@ pub struct AppState {
     user_name:  Mutex<String>, //
     user_link:  Mutex<String>, //
     user_id:    Mutex<i32>,    //
-    user_image: Mutex<Option<i32>>,    //
+    user_image: Mutex<Option<String>>,    //
 }
 
 #[actix_web::main]

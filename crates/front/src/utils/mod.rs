@@ -113,7 +113,7 @@ pub fn get_device_and_ajax_and_limit_offset (
             _offset = params.offset.unwrap();
         }
         else {
-            _offset = offset;
+            _offset = 0;
         }
     }
 
