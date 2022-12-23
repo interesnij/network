@@ -30,67 +30,67 @@
     </svg>
   </button>
   <div class="dropdown-menu theme-color anon_color_settings" style="top: -100px;">
-    <div class="custom-control custom-radio anon_color_change" data-color="a">
+    <div class="custom-control custom-radio anon_color_change" data-color="white">
         <input checked type="radio" id="color_white" class="custom-control-input">
         <label class="custom-control-label bg-white" for="color_white"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="b">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_blue">
         <input type="radio" id="color_dark_blue" class="custom-control-input">
         <label class="custom-control-label dark-blue" for="color_dark_blue"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="c">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_purple">
         <input type="radio" id="color_dark_purple" class="custom-control-input">
         <label class="custom-control-label dark-purple" for="color_dark_purple"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="d">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_maroon">
         <input type="radio" id="color_dark_maroon" class="custom-control-input">
         <label class="custom-control-label dark-maroon" for="color_dark_maroon"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="e">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_pink">
         <input type="radio" id="color_dark_pink" class="custom-control-input">
         <label class="custom-control-label dark-pink" for="color_dark_pink"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="f">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_brown">
         <input type="radio" id="color_dark_brown" class="custom-control-input">
         <label class="custom-control-label dark-brown" for="color_dark_brown"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="g">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_green">
         <input type="radio" id="color_dark_green" class="custom-control-input">
         <label class="custom-control-label dark-green" for="color_dark_green"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="h">
+    <div class="custom-control custom-radio anon_color_change" data-color="red">
         <input type="radio" id="color_red" class="custom-control-input">
         <label class="custom-control-label red" for="color_red"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="i">
+    <div class="custom-control custom-radio anon_color_change" data-color="purple">
         <input type="radio" id="color_purple" class="custom-control-input">
         <label class="custom-control-label purple" for="color_purple"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="j">
+    <div class="custom-control custom-radio anon_color_change" data-color="blue">
         <input type="radio" id="color_blue" class="custom-control-input">
         <label class="custom-control-label blue" for="color_blue"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="k">
+    <div class="custom-control custom-radio anon_color_change" data-color="skyblue">
         <input type="radio" id="color_skyblue" class="custom-control-input">
         <label class="custom-control-label skyblue" for="color_skyblue"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="l">
+    <div class="custom-control custom-radio anon_color_change" data-color="teal">
         <input type="radio" id="color_steal" class="custom-control-input">
         <label class="custom-control-label teal" for="color_steal"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="m">
+    <div class="custom-control custom-radio anon_color_change" data-color="orange">
         <input type="radio" id="color_orange" class="custom-control-input">
         <label class="custom-control-label orange" for="color_orange"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="n">
+    <div class="custom-control custom-radio anon_color_change" data-color="brown">
         <input type="radio" id="color_brown" class="custom-control-input">
         <label class="custom-control-label brown" for="color_brown"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="o">
+    <div class="custom-control custom-radio anon_color_change" data-color="grey">
         <input type="radio" id="color_grey" class="custom-control-input">
         <label class="custom-control-label grey" for="color_grey"></label>
     </div>
-    <div class="custom-control custom-radio anon_color_change" data-color="p">
+    <div class="custom-control custom-radio anon_color_change" data-color="dark">
         <input type="radio" id="color_dark" class="custom-control-input">
         <label class="custom-control-label dark" for="color_dark"></label>
     </div>

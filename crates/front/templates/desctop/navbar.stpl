@@ -24,7 +24,7 @@
 
                 <div class="dropdown text-hide-xs d-inline-block">
                     <a class="btn header-color-secondary username drop">
-                       <figure class="userpic" data-id="<%= request_user.id %>" data-pk="<%= request_user.link %>" data-name="<%= request_user.get_full_name() %>" data-device="comp">
+                       <figure class="userpic" data-id="<%= request_user.id %>" data-pk="<%= request_user.link %>" data-name="<%= request_user.name %>" data-device="comp">
                          <% if request_user.s_avatar.is_some() { %>
                             <img src="<%= request_user.s_avatar.as_deref().unwrap() %>" alt="img" />
                           <% } else { %>
