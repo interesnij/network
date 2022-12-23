@@ -1,0 +1,125 @@
+<div id="fullscreens_container"></div>
+<% if is_ajax == 1 { %>
+
+</span>
+</div>
+<br><br><br>
+
+<nav class="mobile_naw media">
+  <button href="/" class="icon border ajax">
+    <p class="small">Войти</p>
+    <svg class="svg_info svg_default" fill="currentColor" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none" fill-rule="evenodd"></path><g fill-rule="evenodd"><path d="M9 17l3-2.94c-.39-.04-.68-.06-1-.06-2.67 0-8 1.34-8 4v2h9l-3-3zm2-5c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4"></path><path d="M15.47 20.5L12 17l1.4-1.41 2.07 2.08 5.13-5.17 1.4 1.41z"></path></g></svg>
+  </button>
+  <button href="/quan/" class="icon border ajax">
+    <p class="small">Помощь</p>
+    <svg class="svg_info svg_default" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M0 0h24v24H0z" fill="none" />
+      <path fill="currentColor" d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+    </svg>
+  </button>
+  <button href="/about/" class="icon border ajax">
+    <p class="small">О сайте</p>
+    <svg class="svg_info svg_default" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M0 0h24v24H0z" fill="none"/><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z"/>
+    </svg>
+  </button>
+  <button class="icon border menu_drop">
+    <p class="small">Фон</p>
+    <svg class="svg_info svg_default" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M0 0h24v24H0z" fill="none"/>
+    </svg>
+  </button>
+  <div class="dropdown-menu theme-color anon_color_settings" style="top: -100px;">
+    <div class="custom-control custom-radio anon_color_change" data-color="white">
+        <input checked type="radio" id="color_white" class="custom-control-input">
+        <label class="custom-control-label bg-white" for="color_white"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_blue">
+        <input type="radio" id="color_dark_blue" class="custom-control-input">
+        <label class="custom-control-label dark-blue" for="color_dark_blue"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_purple">
+        <input type="radio" id="color_dark_purple" class="custom-control-input">
+        <label class="custom-control-label dark-purple" for="color_dark_purple"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_maroon">
+        <input type="radio" id="color_dark_maroon" class="custom-control-input">
+        <label class="custom-control-label dark-maroon" for="color_dark_maroon"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_pink">
+        <input type="radio" id="color_dark_pink" class="custom-control-input">
+        <label class="custom-control-label dark-pink" for="color_dark_pink"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_brown">
+        <input type="radio" id="color_dark_brown" class="custom-control-input">
+        <label class="custom-control-label dark-brown" for="color_dark_brown"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark_green">
+        <input type="radio" id="color_dark_green" class="custom-control-input">
+        <label class="custom-control-label dark-green" for="color_dark_green"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="red">
+        <input type="radio" id="color_red" class="custom-control-input">
+        <label class="custom-control-label red" for="color_red"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="purple">
+        <input type="radio" id="color_purple" class="custom-control-input">
+        <label class="custom-control-label purple" for="color_purple"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="blue">
+        <input type="radio" id="color_blue" class="custom-control-input">
+        <label class="custom-control-label blue" for="color_blue"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="skyblue">
+        <input type="radio" id="color_skyblue" class="custom-control-input">
+        <label class="custom-control-label skyblue" for="color_skyblue"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="teal">
+        <input type="radio" id="color_steal" class="custom-control-input">
+        <label class="custom-control-label teal" for="color_steal"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="orange">
+        <input type="radio" id="color_orange" class="custom-control-input">
+        <label class="custom-control-label orange" for="color_orange"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="brown">
+        <input type="radio" id="color_brown" class="custom-control-input">
+        <label class="custom-control-label brown" for="color_brown"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="grey">
+        <input type="radio" id="color_grey" class="custom-control-input">
+        <label class="custom-control-label grey" for="color_grey"></label>
+    </div>
+    <div class="custom-control custom-radio anon_color_change" data-color="dark">
+        <input type="radio" id="color_dark" class="custom-control-input">
+        <label class="custom-control-label dark" for="color_dark"></label>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+</nav>
+
+<div class='card video_fullscreen' style='display:none;'>
+<span class="video_btn_big" style="top: 30px; position: absolute;right: 12%;">
+ <span class="video_fullscreen_resize" title="Свернуть">
+   <svg class="svg_default svg_default_30" fill="currentColor" viewBox="0 0 24 24">
+     <path d="M0 0h24v24H0V0z" fill="none"/><path d="M6 19h12v2H6z"/>
+   </svg>
+ </span>
+ <span class="video_fullscreen_hide"title="Закрыть видео">
+   <svg class="svg_default svg_default_30" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+ </span>
+</span>
+<span class="video_btn_small" style="display:none;cursor:move" id="draggable-header">
+ <span class="video_fullscreen_normal" style="cursor:pointer" title="Развернуть" >
+   Развернуть
+ </span>
+ <span class="small_video_fullscreen_hide" title="Закрыть видео" style="cursor:pointer">
+   Закрыть
+ </span>
+</span>
+<div id="video_loader"></div>
+<div id="draggable-resize" class="resize"></div>
+</div>
+<div class="body_overlay pointer"></div>
+
+<% } %>

@@ -10,6 +10,10 @@ use actix_identity::Identity;
 use crate::AppState;
 use sailfish::TemplateOnce;
 
+pub mod reqwest;
+pub use self::{
+    reqwest::*,
+}
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
 pub const USERSURL: &str = "http:194.58.90.123:9001";

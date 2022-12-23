@@ -1,0 +1,12 @@
+<% if is_ajax == 1 { %>
+
+    <div class="wrapper">
+        <% include!("./navbar.stpl"); %>
+        <div class="row no-gutters">
+          <div class="col-md-1 col-lg-2 col-xl-2"></div>
+
+           <% include!("./desctop_nav.stpl"); %>
+
+          <div class="col-md-8 col-lg-7 col-xl-6 desctop_version mt-1" id="ajax">
+            <span id="reload_block">
+<% } %>

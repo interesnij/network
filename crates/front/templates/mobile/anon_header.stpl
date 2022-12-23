@@ -1,0 +1,4 @@
+<% if is_ajax == 1 { %>
+    <div id="ajax" class="desctop_version no_gutters">
+        <span id="reload_block">
+<% } %>
