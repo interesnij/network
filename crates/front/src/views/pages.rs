@@ -24,13 +24,13 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 pub async fn news_page (
     token: String, 
-    state: web::Data<AppState>, 
+    state: web::Data<&AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state, &req, 20);
     let _request_user: User;
     _request_user = User {
-        id:       state.user_id.lock().unwrap() as i32,
+        id:       *state.user_id.lock().unwrap(),
         name:     state.name.lock().unwrap(),
         link:     state.link.lock().unwrap(),
         s_avatar: state.s_avatar.lock().unwrap(),
@@ -97,7 +97,7 @@ pub async fn index_page (
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax) = get_device_and_ajax(state, &req);
     if ide.is_some() {
-        return news_page(ide.unwrap().id().unwrap(), state, req).await
+        return news_page(ide.unwrap().id().unwrap(), &state, req).await
     }
     else if is_ajax == 0 {
         get_first_load_page (
