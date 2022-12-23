@@ -1,57 +1,58 @@
 <div class="card mb-4">
-                  <div class="card-header border-bottom">
-                      <div class="media">
-                          <div class="icon-circle icon-40 bg-light-primary mr-3">
-                            <svg class="svg_info svg_default" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M0 0h24v24H0z" fill="none"/><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/>
-                            </svg>
-                          </div>
-                          <div class="media-body">
-                              <h6 class="my-0 content-color-primary">Основные вехи развития</h6>
-                              <p class="small mb-0">
-                                <a href="https://трезвый.рус/id1/" class="ajax underline">Администратор</a>,
-                                <a href="https://трезвый.рус/public1/" class="ajax underline">Сообщество</a>
-                              </p>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="card-body">
-                      <ul class="list-group list-group-flush w-100 log-information mt-2">
-                          <li class="list-group-item">
-                              <div class="avatar avatar-15 border-info"></div>
-                              <div class="media experience">
-                                  <div class="media-body">
-                                      <h6 class="my-0 content-color-primary">Идея</h6>
-                                      <p class="mb-2"><small class="content-color-secondary">01.09.2019</small></p>
-                                      <p>Картина развития нравственных движений, их взаимодействие между собой признаны отстающими
-                                      от сплава деструктивных сетей-гигантов в России. Взрослые и дети не защищены от вредной информации. Сергей Зубарев -
-                                      как веб-мастер - и Владимир Фахреев - как идейный вдохновитель - решают организовать аналог сети ВК, чтобы решить
-                                      эти важные проблемы.</p>
-                                  </div>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              <div class="avatar avatar-15 border-info"></div>
-                              <div class="media experience">
-                                  <div class="media-body">
-                                      <h6 class="my-0 content-color-primary">Развитие платформы</h6>
-                                      <p class="mb-2"><small class="content-color-secondary">01.09.2019 - 7.09.2020</small></p>
-                                      <p>За год упорных работ по строительству новой соцсети выполнена основная часть разделов сайта. Качество и количество программ и
-                                      их цепочек оценена как практически не отстающая от конкурентов, а где-то и превосходящая их.</p>
-                                  </div>
-                              </div>
-                          </li>
-                          <li class="list-group-item">
-                              <div class="avatar avatar-15 border-success"></div>
-                              <div class="media experience">
-                                  <div class="media-body">
-                                      <h6 class="my-0 content-color-primary">Закрытые тесты</h6>
-                                      <p class="mb-2"><small class="content-color-secondary">07.09.2019 - 1.10.2020</small></p>
-                                      <p>Несколько рядовых пользователей включаются в работу по пользованию сайта. Они совершают стандартные действия в сети,
-                                      полученный опыт используется в разработке. Параллельно дорабатываются недостающие радзелы</p>
-                                  </div>
-                              </div>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
+    <div class="card-header border-bottom">
+        <div class="media">
+            <div class="icon-circle icon-40 bg-light-primary mr-3">
+                <svg class="svg_info svg_default" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
+                </svg>
+            </div>
+            <div class="media-body">
+                <h6 class="my-0 content-color-primary">Основные вехи развития</h6>
+                <p class="small mb-0">
+                    <a href="https://трезвый.рус/id1/" class="ajax underline">Администратор</a>,
+                    <a href="https://трезвый.рус/public1/" class="ajax underline">Сообщество</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush w-100 log-information mt-2">
+            <li class="list-group-item">
+                <div class="avatar avatar-15 border-info"></div>
+                <div class="media experience">
+                    <div class="media-body">
+                        <h6 class="my-0 content-color-primary">Идея</h6>
+                        <p class="mb-2"><small class="content-color-secondary">01.09.2019</small></p>
+                        <p>Картина развития нравственных движений, их взаимодействие между собой признаны отстающими
+                            от сплава деструктивных сетей-гигантов в России. Взрослые и дети не защищены от вредной информации. Сергей Зубарев -
+                            как веб-мастер - и Владимир Фахреев - как идейный вдохновитель - решают организовать аналог сети ВК, чтобы решить
+                            эти важные проблемы.</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="avatar avatar-15 border-info"></div>
+                <div class="media experience">
+                    <div class="media-body">
+                        <h6 class="my-0 content-color-primary">Развитие платформы</h6>
+                        <p class="mb-2"><small class="content-color-secondary">01.09.2019 - 7.09.2020</small></p>
+                        <p>За год упорных работ по строительству новой соцсети выполнена основная часть разделов сайта. Качество и количество программ и
+                            их цепочек оценена как практически не отстающая от конкурентов, а где-то и превосходящая их.</p>
+                    </div>
+                </div>
+            </li>
+            <li class="list-group-item">
+                <div class="avatar avatar-15 border-success"></div>
+                <div class="media experience">
+                    <div class="media-body">
+                        <h6 class="my-0 content-color-primary">Закрытые тесты</h6>
+                        <p class="mb-2"><small class="content-color-secondary">07.09.2019 - 1.10.2020</small></p>
+                        <p>Несколько рядовых пользователей включаются в работу по пользованию сайта. Они совершают стандартные действия в сети,
+                            полученный опыт используется в разработке. Параллельно дорабатываются недостающие радзелы</p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

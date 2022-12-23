@@ -1,4 +1,4 @@
-<% include!("../../../base_block/anon_base_mobile_header.stpl"); %>
+<% include!("../../anon_header.stpl"); %>
 
 <div data-title="Трезвый.рус - вход" class="main-container wrapper h-100 h-sm-auto justify-content-center" style="height: 100vh !important;padding-top:0">
     <div class="container h-100 h-sm-auto">
@@ -36,4 +36,4 @@
     </div>
 </div>
 
-<% include!("../../../base_block/anon_base_mobile_footer.stpl"); %>
+<% include!("../../anon_footer.stpl"); %>

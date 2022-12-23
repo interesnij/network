@@ -1,0 +1,24 @@
+<% include!("../../anon_header.stpl"); %>
+
+<div class="main-container" data-title="Новости">
+    <div class="row">
+        <div class="col-md-8 mt-3">
+
+          <div class="input-group mb-3">
+            <input type="text" class="form-control form-control-sm" placeholder="Поиск">
+            <div class="input-group-append">
+              <button class="btn btn-sm border" type="button">Искать</button>
+            </div>
+          </div>
+
+          <span class="is_paginate">
+          
+          </span>
+        </div>
+        <div class="col-12 col-md-4">
+          <% include!("./menu.stpl"); %>
+        </div>
+    </div>
+</div>
+
+<% include!("../../anon_footer.stpl"); %>
