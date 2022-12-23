@@ -18,7 +18,7 @@ struct ReqResult<T> {
 
 pub fn get_token(ide: Option<Identity>)-> Option<String>{
     if let Some(user) = ide {
-        return Some(user.id);
+        return Some(user.id().unwrap());
     } else {
         return None;
     }
@@ -87,7 +87,7 @@ pub async fn request_delete<T>(url: String, ide: Identity) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::DELETE, &()).await
+    request(url, reqwest::Method::DELETE, &(), Some(ide)).await
 }
 
 /// Get request
@@ -95,7 +95,7 @@ pub async fn request_get<T>(url: String, ide: Identity) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::GET, &(), ide).await
+    request(url, reqwest::Method::GET, &(), Some(ide)).await
 }
 
 /// Post request with a body
@@ -104,7 +104,7 @@ where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,
 {
-    request(url, reqwest::Method::POST, body, ide).await
+    request(url, reqwest::Method::POST, body, Some(ide)).await
 }
 
 /// Put request with a body
@@ -113,5 +113,5 @@ where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,
 {
-    request(url, reqwest::Method::PUT, body, ide).await
+    request(url, reqwest::Method::PUT, body, Some(ide)).await
 }
