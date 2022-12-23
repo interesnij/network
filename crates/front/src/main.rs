@@ -29,11 +29,6 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use actix_files::Files;
 
-    let app_state = AppState {
-        key: Arc::new(env::var("KEY").unwrap()),
-        token: Mutex::new("".to_string()),
-    };
-
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new() 

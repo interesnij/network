@@ -8,7 +8,7 @@ use actix_web::{
 use serde::{Deserialize, Serialize};
 use actix_identity::Identity;
 use crate::AppState;
-
+use sailfish::TemplateOnce;
 
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
