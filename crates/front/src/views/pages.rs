@@ -24,6 +24,8 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;
+
+    let is_ajax = get_ajax(&req);
     if ide.is_some() { 
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
     }
@@ -44,7 +46,6 @@ pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web
             is_ajax: u8,
         }
         
-        let is_ajax = get_ajax(&req);
         let body = NobileSignupTemplate {
             is_ajax: is_ajax,
         } 
