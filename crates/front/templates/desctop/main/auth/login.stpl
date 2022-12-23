@@ -1,0 +1,18 @@
+<form id="login_form" class="row align-items-center h-sm-auto">
+    <div class="col-12">
+        <h5 class="mb-3 content-color-secondary text-left">Вход</h5>
+        <span class="api_response"></span>
+        <div class="card mb-2">
+            <div class="card-body p-0">
+                <input type="text" name="phone" id="id_username" class="form-control form-control-lg" placeholder="Телефон">
+                <hr class="my-0">
+                <input type="password" name="password" id="id_password" class="form-control form-control-lg" placeholder="Ваш пароль">
+            </div>
+        </div>
+        <div class="text-left mb-3">
+
+            <button type="button" id="logg" class=" btn btn-primary pink-gradient">Войти</button>
+            <a href="" class="ajax" style="float:right;padding-top: 9px;">Забыли пароль?</a>
+        </div>
+    </div>
+</form>

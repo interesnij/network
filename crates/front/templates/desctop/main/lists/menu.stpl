@@ -1,0 +1,4 @@
+<div class="nav flex-column nav-pills faqnav mt-3">
+  <a class="ajax" href="/">Новости</a>
+  <a class="ajax" href="/featured/">Рекомендации</a>
+</div>

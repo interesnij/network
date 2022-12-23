@@ -1,0 +1,41 @@
+<% let (
+			playlist_list,
+			playlist_name,
+			playlist_image,
+			playlist_description,
+			playlist_type
+	) = request_user.get_saved_playlist();
+%>
+
+<ul id="audio_playlists" style="display:none;">
+		<li id="saved_audio_category" data-source="saved_playlist" data-playlist-name="Текущий плейлист" data-thumbnail-path="<%= playlist_image %>">
+			<p class="minimalWhiteCategoriesTitle"><span class="boldWhite">Название: </span><span class="name"><%= playlist_name %></span></p>
+			<p class="minimalWhiteCategoriesType"><span class="boldWhite">Треков: </span><%= playlist_list.len() %></p>
+			<p class="minimalWhiteCategoriesDescription"><%= playlist_description %></p>
+		</li>
+</ul>
+
+<ul track-pk="0" data-type="<%= playlist_type %>" id="saved_playlist" style="display:none;">
+
+  <% if playlist_list.len() > 0 { %>
+    <% for track in playlist_list.iter() { %>
+      <li data-path="<%= track.file %>"
+        <% if track.image.is_some() { %>
+          data-thumbpath="<%= track.image.as_deref().unwrap() %>"
+        <% } else { %>
+          data-thumbpath="/static/images/logo.jpg"
+        <% } %>
+			   data-add="track_copy"
+			   data-track-id="<%= track.id %>">
+        <p><a style="font-weight:bold; color:#FF0000;"><%= track.title %></a></p>
+      </li>
+    <% } %>
+	<% } else { %>
+    <li data-path="http://mp3.trb-stream.net/;.mp3"
+      data-thumbpath="/static/images/news_small1.jpg"
+      data-add="track_copy"
+      data-track-id="0">
+     <p><a style="font-weight:bold; color:#FF0000;">Радио по умолчанию</a></p>
+    </li>
+  <% } %>
+</ul>

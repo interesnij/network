@@ -1,0 +1,58 @@
+<div id="fullscreens_container"></div>
+<% if is_ajax == 1 { %>
+
+</span>
+</div>
+<div class="col-md-0 col-lg-1 col-xl-2"></div>
+</div>
+
+</div>
+
+<!--
+audio_playlist.stpl"
+-->
+<div class='card video_fullscreen' style='display:none'>
+<span class="video_btn_big">
+<span class="video_fullscreen_resize" title="Свернуть">
+<svg width="30px" height="30px" fill="currentColor" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6 19h12v2H6z"/></svg>
+</span>
+<span class="video_fullscreen_hide" title="Закрыть видео">
+<svg width="30px" height="30px" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+</span>
+</span>
+<span class="video_btn_small" style="display:none;cursor:move" id="draggable-header">
+<span class="video_fullscreen_normal" style="cursor:pointer" title="Развернуть" >
+Развернуть
+</span>
+<span class="small_video_fullscreen_hide" title="Закрыть видео" style="cursor:pointer">
+Закрыть
+</span>
+</span>
+<div id="video_loader"></div>
+<div id="draggable-resize" class="resize"></div>
+</div>
+
+<div class="body_overlay pointer"></div>
+
+<script>
+  function on(elSelector,eventName,selector,fn) {var element = document.querySelector(elSelector);element.addEventListener(eventName, function(event) {var possibleTargets = element.querySelectorAll(selector);var target = event.target;for (var i = 0, l = possibleTargets.length; i < l; i++) {var el = target;var p = possibleTargets[i];while(el && el !== element) {if (el === p) {return fn.call(p, event);}el = el.parentNode;}}});};
+</script>
+<script defer src="/static/scripts/lib.js" type="text/javascript"></script>
+<script defer src="/static/scripts/lib/plugin_for_player_1.js" type="text/javascript"></script>
+<script defer src="/static/scripts/lib/music_player.js" type="text/javascript"></script>
+
+<script defer src="/static/scripts/functions/audio_video.js" type="text/javascript"></script>
+
+<script defer src="/static/scripts/functions/socket.js" type="text/javascript"></script>
+<script defer src="/static/scripts/lib/dragula.min.js" type="text/javascript"></script>
+
+<script defer src="/static/scripts/chart_v1.js" type="text/javascript"></script>
+<script defer src="/static/scripts/app.js?ver5" type="text/javascript"></script>
+<script defer src="/static/scripts/get.js?ver5" type="text/javascript"></script>
+
+<% if request_user.is_moderator() { %>
+  <script defer src="/static/scripts/manager.js" type="text/javascript"></script>
+<% } %>
+</body>
+</html>
+<% } %>

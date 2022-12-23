@@ -1,3 +1,147 @@
+use actix_web::{
+    HttpRequest,
+    web,
+    error::InternalError,
+    http::StatusCode,
+};
+use serde::{Deserialize, Serialize};
+use actix_identity::Identity;
 
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
+pub const USERSURL: &str = "http:194.58.90.123:9001";
+
+
+fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
+    req.headers().get("user-agent")?.to_str().ok()
+}
+
+pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
+    if state.device == 1 {
+        return true;
+    }
+    else if state.device == 2 {
+        return false;
+    }
+    else {
+        let agent = get_content_type(req).unwrap();
+        if agent.contains("Mobile") {
+            let mut device = state.device.lock().unwrap();
+            device = 2;
+            return false;
+        }
+        device = 1;
+        return true;
+    }
+}
+
+pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bool, i32) {
+    #[derive(Debug, Deserialize)]
+    struct Params {
+        pub ajax: Option<i32>,
+    }
+    let params_some = web::Query::<Params>::from_query(&req.query_string());
+    let mut is_ajax = 0;
+
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.ajax.is_some() {
+            is_ajax = params.ajax.unwrap();
+        }
+        else {
+            is_ajax = 0;
+        }
+    }
+
+    (is_desctop(state, req), is_ajax)
+}
+
+pub async fn get_first_load_page (    
+    is_authenticate: bool,
+    is_desctop:      bool,
+    title:           String,
+    description:     String,
+    uri:             String,
+    image:           String,
+) -> actix_web::Result<HttpResponse> {
+    if is_authenticate {
+        if is_desctop {
+            #[derive(TemplateOnce)]
+            #[template(path = "desctop/generic/first_load.stpl")]
+            struct Template {
+                title:        String,
+                description:  String,
+                image:        String,
+                uri:          String,
+            }
+            let body = Template {
+                title:        title,
+                description:  description,
+                image:        image,
+                uri:          uri,
+            }
+            .render_once()
+            .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
+            Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
+        }
+        else {
+            #[derive(TemplateOnce)]
+            #[template(path = "mobile/generic/first_load.stpl")]
+            struct Template {
+                title:        String,
+                description:  String,
+                image:        String,
+                uri:          String,
+            }
+            let body = Template {
+                title:        title,
+                description:  description,
+                image:        image,
+                uri:          uri,
+            }
+            .render_once()
+            .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
+            Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
+        }
+    }
+    else {
+        if is_desctop {
+            #[derive(TemplateOnce)]
+            #[template(path = "desctop/generic/anon_first_load.stpl")]
+            struct Template {
+                title:        String,
+                description:  String,
+                image:        String,
+                uri:          String,
+            }
+            let body = Template {
+                title:        title,
+                description:  description,
+                image:        image,
+                uri:          uri,
+            }
+            .render_once()
+            .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
+            Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
+        }
+        else {
+            #[derive(TemplateOnce)]
+            #[template(path = "mobile/generic/anon_first_load.stpl")]
+            struct Template {
+                title:        String,
+                description:  String,
+                image:        String,
+                uri:          String,
+            }
+            let body = Template {
+                title:        title,
+                description:  description,
+                image:        image,
+                uri:          uri,
+            }
+            .render_once()
+            .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
+            Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
+        }
+    }
+}

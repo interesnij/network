@@ -1,0 +1,28 @@
+<% let communities_count = request_user.get_featured_communities_count(); %>
+
+<% if communities_count > 2 { %>
+
+<% let communities_ids = request_user.get_10_featured_communities_ids(); %>
+
+<div class="card csslider infinity uc_slider mb-3">
+  <p>Сообщества для Вас</p>
+  <% for (i, _object) in communities_ids.iter().enumerate() { %>
+    <input type="radio" name="slides_2" <% if i == 0 { %>checked="checked"<% } %> id="com_<%= i %>"/>
+  <% } %>
+  <ul>
+    <% for object in request_user.get_10_featured_communities().iter().enumerate() { %>
+    <li class="scrollable">
+      card.html
+    </li>
+    <% } %>
+  </ul>
+  <div class="slides_arrows arrows_2">
+    <% for (i, _object) in communities_ids.iter().enumerate() { %>
+      <label for="com_<%= i %>"></label>
+    <% } %>
+
+    <label class="goto_first" for="com_1"></label>
+    <label class="goto_last" for="com_<%= communities_count %>"></label>
+  </div>
+</div>
+<% } %>

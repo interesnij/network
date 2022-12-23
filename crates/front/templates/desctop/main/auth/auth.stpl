@@ -1,0 +1,18 @@
+
+<% include!("../../../base_block/anon_base_header.stpl"); %>
+
+
+<div class="main-container h-100 h-sm-auto" data-title="Трезвый.рус - вход">
+            <div class="row h-100 h-sm-auto">
+    <div class="col-md-8 order-md-1 mt-3">
+      <% include!("../../main/auth/process.stpl"); %>
+    </div>
+
+    <div class="col-md-4 order-md-2 mt-3" style="padding-left: 20px;padding-right: -20px;">
+      <% include!("../../main/auth/login.stpl"); %>
+      <% include!("../../main/auth/signup.stpl"); %>
+    </div>
+</div>
+</div>
+
+<% include!("../../../base_block/anon_base_footer.stpl"); %>

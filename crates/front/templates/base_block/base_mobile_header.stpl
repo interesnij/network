@@ -1,0 +1,31 @@
+<% if is_ajax == 1 { %>
+
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/styles/bootstrap.min.css" media="all" />
+    <link rel="stylesheet" href="/static/styles/default.css?ver11" media="all" />
+    <link class="my_color_settings" rel="stylesheet" href="/static/styles/color/<%= request_user.get_color_background() %>.css" />
+    <style>
+    .sidebar .nav .nav-item a{
+      font-size:20px;
+      border-bottom: 1px solid black;
+      margin-top: 10px;
+    }
+    .sidebar .nav .nav-item svg{
+      width:17px;
+      height:17px;
+    }
+    </style>
+    <script>function on(elSelector, eventName, selector, fn) {var element = document.querySelector(elSelector);element.addEventListener(eventName, function(event) {var possibleTargets = element.querySelectorAll(selector);var target = event.target;for (var i = 0, l = possibleTargets.length; i < l; i++) {var el = target;var p = possibleTargets[i];while (el && el !== element) {if (el === p) {return fn.call(p, event);}el = el.parentNode;}}});};</script>
+</head>
+  <body class="fixed-header" data-video="first_player" data-csrf="csrf_token">
+        <div id="ajax" class="userpic" data-id="<%= request_user.id %>" data-pk="<%= request_user.link %>" data-device="mobile" data-name="<%= request_user.get_full_name() %>" style="padding-right:0px; padding-left:0px;">
+          <span id="reload_block">
+
+<% } %>

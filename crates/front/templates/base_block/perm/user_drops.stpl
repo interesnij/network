@@ -1,0 +1,6 @@
+<span class="dropdown-item select_perm_dropdown" data-value="a">Все пользователи</span>
+<span class="dropdown-item select_perm_dropdown" data-value="b">Друзья</span>
+<span class="dropdown-item select_perm_dropdown" data-value="c">Друзья и друзья друзей</span>
+<span class="dropdown-item select_perm_dropdown" data-value="o">Только я</span>
+<span class="select_perm_dropdown dropdown-item" data-value="e">Друзья, кроме</span>
+<span class="select_perm_dropdown dropdown-item" data-value="f">Некоторые друзья</span>

@@ -1,0 +1,3 @@
+<div class="data-title" data-title="Просмотр элемента недоступен">
+  <%= text %>
+</div>

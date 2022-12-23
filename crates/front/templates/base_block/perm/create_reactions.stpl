@@ -1,0 +1,23 @@
+<div class="mb-3 form_group">
+  <input name="reactions" class="reactions_collector" value="" type="hidden" />
+  <a class="mt-1 mb-2 i_link next_shower_btn pointer">
+      Вы выбрали
+      <span class="reactions_count">2</span>
+      <span class="reactions_count_ru"> реакции</span>
+       из 16
+  </a>
+    <div class="hide">
+      <% for reaction in reaction_list.iter() { %>
+        <p class="select_item_reaction pointer page-sub-title-small mt-1" style="line-height: 18px;">
+          <img style="width:19px" src="/static/images/reactions/<%= reaction.image %>.png" alt="img" />
+          <span style="padding-left:7px;vertical-align: <% if reaction.position == 1 { %>bottom<% } else { %>middle<% } %>;">
+            <%= reaction.name %>
+          </span>
+          <input value="<%= reaction.position %>" type="checkbox"
+           <% if reaction.position < 3 { %>checked<% } %>
+           class="switch switch-sm">
+          <label style="margin-right:12px;" class="bg_success mb-2 border float-right"></label>
+        </p>
+      <% } %>
+    </div>
+</div>
