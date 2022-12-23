@@ -42,10 +42,10 @@ pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
     }
 }
 
-pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bool, i32) {
+pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bool, u8) {
     #[derive(Debug, Deserialize)]
     struct Params {
-        pub ajax: Option<i32>,
+        pub ajax: Option<u8>,
     }
     let params_some = web::Query::<Params>::from_query(&req.query_string());
     let mut is_ajax = 0;
@@ -151,4 +151,25 @@ pub async fn get_first_load_page (
             Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
         }
     }
+}
+
+pub fn get_ajax(req: &HttpRequest) -> u8 {
+    #[derive(Debug, Deserialize)]
+    struct Params {
+        pub ajax: Option<u8>,
+    }
+    let params_some = web::Query::<Params>::from_query(&req.query_string());
+    let mut is_ajax = 0;
+
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.ajax.is_some() {
+            is_ajax = params.ajax.unwrap();
+        }
+        else {
+            is_ajax = 0;
+        }
+    }
+
+    is_ajax
 }
