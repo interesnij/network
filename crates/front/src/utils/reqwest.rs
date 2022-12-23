@@ -24,8 +24,8 @@ pub fn get_token(ide: Option<Identity>)-> Option<String>{
     }
 }
 
-pub fn set_token(ide: Identity, token: String) {
-    ide.remember(token);
+pub fn set_token(token: String) {
+    Identity::login(&request.extensions(), token).unwrap();
 }
 
 pub fn remove_token(ide: Identity){
