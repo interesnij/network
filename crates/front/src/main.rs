@@ -19,8 +19,8 @@ mod routes;
 mod errors;
 
 pub struct AppState {
-    token:  Mutex<String>,
-    device: Mutex<u8>,     // 1 - комп, 2 - телефон
+    device:    Mutex<u8>,     // 1 - комп, 2 - телефон
+    user_name: Mutex<String>, // 1 - комп, 2 - телефон
 }
 
 #[actix_web::main]
