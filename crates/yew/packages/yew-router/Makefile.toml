@@ -1,7 +1,0 @@
-[tasks.test]
-command = "wasm-pack"
-args = [
-    "test",
-    "--firefox",
-    "--headless",
-]
