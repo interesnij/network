@@ -1,0 +1,61 @@
+{
+  "hosting": [
+    {
+      "target": "website",
+      "public": "website/build/",
+      "cleanUrls": true,
+      "redirects": [],
+      "rewrites": [
+        {
+          "source": "/api/**",
+          "dynamicLinks": true
+        }
+      ]
+    },
+    {
+      "target": "api",
+      "public": "api-docs/dist/",
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://docs.rs/yew",
+          "type": 302
+        },
+        {
+          "regex": "/(yew_((agent|router)?_?(macro)?))",
+          "destination": "https://docs.rs/:1",
+          "type": 302
+        }
+      ]
+    },
+    {
+      "target": "examples",
+      "public": "dist",
+      "rewrites": [
+        {
+          "source": "/router/**",
+          "destination": "/router/index.html"
+        },
+        {
+          "source": "/todomvc/**",
+          "destination": "/todomvc/index.html"
+        }
+      ],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://yew.rs/getting-started/examples",
+          "type": 302
+        }
+      ]
+    }
+  ],
+  "emulators": {
+    "hosting": {
+      "port": 5000
+    },
+    "ui": {
+      "enabled": true
+    }
+  }
+}

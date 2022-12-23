@@ -1,0 +1,20 @@
+{
+  "projects": {
+    "default": "yew-rs"
+  },
+  "targets": {
+    "yew-rs": {
+      "hosting": {
+        "website": [
+          "yew-rs"
+        ],
+        "examples": [
+          "yew-rs-examples"
+        ],
+        "api": [
+          "yew-rs-api"
+        ]
+      }
+    }
+  }
+}

@@ -65,7 +65,6 @@ table! {
         types -> Int2,
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
-        see_member -> Int2,
         see_el -> Int2,
         see_comment -> Int2,
         create_list -> Int2,
@@ -158,7 +157,6 @@ table! {
         types -> Int2,
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
-        see_member -> Int2,
     }
 }
 
@@ -279,7 +277,6 @@ table! {
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
         see_all -> Int2,
-        see_friend -> Int2,
     }
 }
 
@@ -391,6 +388,22 @@ table! {
         community_id -> Nullable<Int4>,
         mute -> Bool,
         sleep -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    owner_services (id) {
+        id -> Int4,
+        types -> Int2,
+        name -> Varchar,
+    }
+}
+
+table! {
+    owner_services_items (id) {
+        id -> Int4,
+        owner_id -> Int4,
+        service_id -> Int4,
     }
 }
 
@@ -574,11 +587,11 @@ table! {
         last_name -> Varchar,
         types -> Int2,
         is_man -> Bool,
+        password -> Varchar,
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
         last_activity -> Timestamp,
         see_all -> Int2,
-        see_friend -> Int2,
         see_el -> Int2,
         see_comment -> Int2,
         create_el -> Int2,
@@ -634,6 +647,8 @@ allow_tables_to_appear_in_same_query!(
     moderateds,
     news_user_communities,
     notify_user_communities,
+    owner_services,
+    owner_services_items,
     owners,
     perms_lists,
     post_comment_counter_reactions,

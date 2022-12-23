@@ -47,7 +47,6 @@ table! {
         cover -> Nullable<Varchar>,
         created -> Timestamp,
         description -> Nullable<Varchar>,
-        members -> Int4,
     }
 }
 
@@ -111,6 +110,7 @@ table! {
         s_avatar -> Nullable<Varchar>,
         category_id -> Int4,
         user_id -> Int4,
+        members -> Int4,
     }
 }
 
@@ -143,10 +143,9 @@ table! {
     moderated_logs (id) {
         id -> Int4,
         user_id -> Int4,
-        object_id -> Int4,
+        community_id -> Int4,
         action -> Int2,
         description -> Nullable<Varchar>,
-        types -> Int2,
         created -> Timestamp,
         time_to_suspend -> Nullable<Timestamp>,
     }
@@ -158,8 +157,7 @@ table! {
         user_id -> Int4,
         moderated_id -> Int4,
         expiration -> Nullable<Timestamp>,
-        types -> Int2,
-        object_id -> Int4,
+        community_id -> Int4,
         status -> Int2,
         created -> Timestamp,
     }
@@ -182,10 +180,25 @@ table! {
         description -> Nullable<Varchar>,
         verified -> Bool,
         status -> Int2,
-        types -> Int2,
-        object_id -> Int4,
+        community_id -> Int4,
         created -> Timestamp,
         count -> Int4,
+    }
+}
+
+table! {
+    owner_services (id) {
+        id -> Int4,
+        types -> Int2,
+        name -> Varchar,
+    }
+}
+
+table! {
+    owner_services_items (id) {
+        id -> Int4,
+        owner_id -> Int4,
+        service_id -> Int4,
     }
 }
 
@@ -220,6 +233,7 @@ table! {
         last_name -> Varchar,
         types -> Int2,
         is_man -> Bool,
+        password -> Varchar,
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
         last_activity -> Timestamp,
@@ -250,6 +264,8 @@ allow_tables_to_appear_in_same_query!(
     moderated_penalties,
     moderated_reports,
     moderateds,
+    owner_services,
+    owner_services_items,
     owners,
     user_visible_perms,
     users,

@@ -1,0 +1,30 @@
+[tasks.native-test]
+command = "cargo"
+args = ["test", "--features", "csr,ssr,hydration"]
+
+[tasks.wasm-test]
+command = "wasm-pack"
+args = [
+    "test",
+    "--firefox",
+    "--headless",
+    "--",
+    "--features",
+    "csr,hydration,ssr",
+]
+
+[tasks.ssr-test]
+command = "cargo"
+args = ["test", "ssr_tests", "--features", "ssr"]
+
+[tasks.test]
+args = ["test", "--all-targets", "--all-features"]
+dependencies = ["native-test", "wasm-test"]
+
+[tasks.clippy-feature-soundness]
+script = '''
+#!/usr/bin/env bash
+set -ex
+bash ../../ci/feature-soundness.sh
+bash ../../ci/feature-soundness-release.sh
+'''

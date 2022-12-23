@@ -1,4 +1,12 @@
 table! {
+    custom_links (id) {
+        id -> Int4,
+        link -> Varchar,
+        owner -> Int2,
+    }
+}
+
+table! {
     reactions (id) {
         id -> Int4,
         image -> Varchar,
@@ -73,6 +81,7 @@ joinable!(smiles -> smile_categories (category_id));
 joinable!(stickers -> sticker_categories (category_id));
 
 allow_tables_to_appear_in_same_query!(
+    custom_links,
     reactions,
     smile_categories,
     smiles,

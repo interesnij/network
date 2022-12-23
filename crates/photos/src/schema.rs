@@ -40,7 +40,6 @@ table! {
         community_id -> Int4,
         comment -> Bool,
         comment_reply -> Bool,
-        mention -> Bool,
         comment_mention -> Bool,
         repost -> Bool,
         reactions -> Bool,
@@ -67,6 +66,7 @@ table! {
         s_avatar -> Nullable<Varchar>,
         see_el -> Int2,
         see_comment -> Int2,
+        create_list -> Int2,
         create_el -> Int2,
         create_comment -> Int2,
         copy_el -> Int2,
@@ -137,7 +137,6 @@ table! {
         id -> Int4,
         user_id -> Int4,
         community_id -> Nullable<Int4>,
-        sticker_id -> Nullable<Int4>,
         content -> Nullable<Varchar>,
         attach -> Nullable<Varchar>,
         comment_id -> Int4,
@@ -210,19 +209,23 @@ table! {
         types -> Int2,
         image -> Nullable<Varchar>,
         count -> Int4,
+        see_el -> Int2,
+        copy_el -> Int2,
     }
 }
 
 table! {
-    item_photos (id) {
+    item_posts (id) {
         id -> Int4,
-        user_id -> Int4,
-        community_id -> Nullable<Int4>,
+        content -> Nullable<Varchar>,
         list_id -> Int4,
+        community_id -> Nullable<Int4>,
+        user_id -> Int4,
         item_id -> Int4,
-        preview -> Varchar,
-        file -> Varchar,
         types -> Int2,
+        attach -> Nullable<Varchar>,
+        created -> Timestamp,
+        is_signature -> Bool,
     }
 }
 
@@ -264,6 +267,7 @@ table! {
         types -> Int2,
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
+        see_all -> Int2,
     }
 }
 
@@ -305,6 +309,56 @@ table! {
 }
 
 table! {
+    moderated_logs (id) {
+        id -> Int4,
+        user_id -> Int4,
+        object_id -> Int4,
+        action -> Int2,
+        description -> Nullable<Varchar>,
+        types -> Int2,
+        created -> Timestamp,
+        time_to_suspend -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    moderated_penalties (id) {
+        id -> Int4,
+        user_id -> Int4,
+        moderated_id -> Int4,
+        expiration -> Nullable<Timestamp>,
+        types -> Int2,
+        object_id -> Int4,
+        status -> Int2,
+        created -> Timestamp,
+    }
+}
+
+table! {
+    moderated_reports (id) {
+        id -> Int4,
+        user_id -> Int4,
+        moderated_id -> Int4,
+        description -> Nullable<Varchar>,
+        types -> Int2,
+        created -> Timestamp,
+    }
+}
+
+table! {
+    moderateds (id) {
+        id -> Int4,
+        description -> Nullable<Varchar>,
+        verified -> Bool,
+        status -> Int2,
+        types -> Int2,
+        object_id -> Int4,
+        created -> Timestamp,
+        count -> Int4,
+    }
+}
+
+table! {
     news_user_communities (id) {
         id -> Int4,
         owner -> Int4,
@@ -325,6 +379,48 @@ table! {
         community_id -> Nullable<Int4>,
         mute -> Bool,
         sleep -> Nullable<Timestamp>,
+    }
+}
+
+table! {
+    owner_services (id) {
+        id -> Int4,
+        types -> Int2,
+        name -> Varchar,
+    }
+}
+
+table! {
+    owner_services_items (id) {
+        id -> Int4,
+        owner_id -> Int4,
+        service_id -> Int4,
+    }
+}
+
+table! {
+    owners (id) {
+        id -> Int4,
+        user_id -> Int4,
+        community_id -> Nullable<Int4>,
+        name -> Varchar,
+        types -> Int2,
+        secret_key -> Varchar,
+        service_key -> Varchar,
+        is_active -> Bool,
+    }
+}
+
+table! {
+    perms_lists (id) {
+        id -> Int4,
+        user_id -> Int4,
+        community_id -> Nullable<Int4>,
+        list_id -> Int4,
+        list_types -> Int2,
+        types -> Int2,
+        see_el -> Int2,
+        copy_el -> Int2,
     }
 }
 
@@ -352,7 +448,6 @@ table! {
         photo_id -> Int4,
         user_id -> Int4,
         community_id -> Nullable<Int4>,
-        sticker_id -> Nullable<Int4>,
         parent_id -> Nullable<Int4>,
         content -> Nullable<Varchar>,
         attach -> Nullable<Varchar>,
@@ -420,7 +515,7 @@ table! {
         user_id -> Int4,
         photo_list_id -> Int4,
         types -> Int2,
-        preview -> Varchar,
+        server_id -> Int2,
         file -> Varchar,
         description -> Nullable<Varchar>,
         comments_on -> Bool,
@@ -431,17 +526,6 @@ table! {
         copy -> Int4,
         position -> Int2,
         reactions -> Int4,
-    }
-}
-
-table! {
-    reactions (id) {
-        id -> Int4,
-        image -> Varchar,
-        gif -> Varchar,
-        name -> Varchar,
-        is_active -> Bool,
-        position -> Int2,
     }
 }
 
@@ -469,7 +553,6 @@ table! {
         user_id -> Int4,
         comment -> Bool,
         comment_reply -> Bool,
-        mention -> Bool,
         comment_mention -> Bool,
         repost -> Bool,
         reactions -> Bool,
@@ -493,9 +576,11 @@ table! {
         last_name -> Varchar,
         types -> Int2,
         is_man -> Bool,
+        password -> Varchar,
         link -> Varchar,
         s_avatar -> Nullable<Varchar>,
         last_activity -> Timestamp,
+        see_all -> Int2,
         see_el -> Int2,
         see_comment -> Int2,
         create_el -> Int2,
@@ -507,6 +592,7 @@ table! {
     }
 }
 
+joinable!(moderated_logs -> users (user_id));
 joinable!(photo_comments -> communitys (community_id));
 joinable!(photo_comments -> photos (photo_id));
 joinable!(photo_comments -> users (user_id));
@@ -535,15 +621,23 @@ allow_tables_to_appear_in_same_query!(
     item_forums,
     item_goods,
     item_lists,
-    item_photos,
+    item_posts,
     item_sites,
     item_surveys,
     item_users,
     item_videos,
     item_wikis,
     list_user_communities_keys,
+    moderated_logs,
+    moderated_penalties,
+    moderated_reports,
+    moderateds,
     news_user_communities,
     notify_user_communities,
+    owner_services,
+    owner_services_items,
+    owners,
+    perms_lists,
     photo_comment_counter_reactions,
     photo_comment_reactions,
     photo_comments,
@@ -552,7 +646,6 @@ allow_tables_to_appear_in_same_query!(
     photo_lists,
     photo_reactions,
     photos,
-    reactions,
     user_photo_list_collections,
     user_photo_list_positions,
     user_photo_notifications,

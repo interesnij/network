@@ -1,0 +1,42 @@
+name: Publish Examples
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'ci/**'
+      - 'examples/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      # leave empty for /
+      PUBLIC_URL_PREFIX: ""
+      RUSTUP_TOOLCHAIN: nightly
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup toolchain
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly
+          targets: wasm32-unknown-unknown
+          components: rust-src
+
+      - uses: Swatinem/rust-cache@v2
+
+      - uses: jetli/trunk-action@v0.1.0
+        with:
+          version: 'latest'
+
+      - name: Build examples
+        run: ./ci/build-examples.sh
+
+      - name: Deploy to Firebase
+        uses: siku2/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseToken: "${{ secrets.FIREBASE_TOKEN }}"
+          channelId: live
+          targets: examples
