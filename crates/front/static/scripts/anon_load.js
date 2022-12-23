@@ -1,3 +1,32 @@
+function on(elSelector, eventName, selector, fn) {var element = document.querySelector(elSelector);element.addEventListener(eventName, function(event) {var possibleTargets = element.querySelectorAll(selector);var target = event.target;for (var i = 0, l = possibleTargets.length; i < l; i++) {var el = target;var p = possibleTargets[i];while (el && el !== element) {if (el === p) {return fn.call(p, event);}el = el.parentNode;}}});};
+function getCookie(name) {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        let c = cookies[i].trim().split('=');
+        if (c[0] === name) {
+            return c[1];
+        }
+    }
+    return "";
+}
+function setCookie(name, value, days) {
+    let cookie = `${name}=${encodeURIComponent(value)}`;
+    if (days) {
+        const expiry = new Date();
+        expiry.setDate(expiry.getDate() + days);
+        cookie += `; expires=${expiry.toUTCString()}`;
+    }
+    document.cookie = cookie + "; path=/";
+};
+
+function addStyleSheets(href) {
+    $head = document.head, $link = document.createElement('link');
+    $link.rel = 'stylesheet';
+    $link.classList.add("color");
+    $link.href = href;
+    $head.appendChild($link)
+};
+
 function get_custom_design() {
   color = "white";
   background = getCookie("background");
