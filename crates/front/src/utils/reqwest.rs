@@ -55,7 +55,7 @@ where
     }
 
     if allow_body{ 
-        req = req(Json(body))
+        req = Json(req.body);
     }
 
     log::info!("Request: {:?}", req);
@@ -67,13 +67,13 @@ where
 
         match resp.status().is_success(){
             true => {
-                match resp(Json::<T>().await{
+                match resp.json::<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
                         log::info!("Failed parse body");
                         Err(0)
                     },
-                })
+                }
             },
             false => Err(resp.status().as_u16())
         }
