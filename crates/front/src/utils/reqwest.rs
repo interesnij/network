@@ -55,7 +55,7 @@ where
     }
 
     if allow_body{ 
-        req = Json(req.body);
+        req = req.json(body);
     }
 
     log::info!("Request: {:?}", req);
