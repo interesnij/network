@@ -3,9 +3,11 @@ use actix_web::{
     web,
     error::InternalError,
     http::StatusCode,
+    HttpResponse,
 };
 use serde::{Deserialize, Serialize};
 use actix_identity::Identity;
+use crate::AppState;
 
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
