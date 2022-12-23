@@ -29,11 +29,12 @@ pub async fn news_page (
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state, &req, 20);
     let _request_user: User;
+    let c_state = state.clone();
     _request_user = User {
-        id:       *state.user_id.lock().unwrap(),
-        name:     (*state.user_name.lock().unwrap()).to_string(),
-        link:     (*state.user_link.lock().unwrap()).to_string(),
-        s_avatar: (*state.user_image.lock().unwrap()).to_string(),
+        id:       *c_state.user_id.lock().unwrap(),
+        name:     (*c_state.user_name.lock().unwrap()).to_string(),
+        link:     (*c_state.user_link.lock().unwrap()).to_string(),
+        s_avatar: (*c_state.user_image.lock().unwrap()).to_string(),
     };
     
     //let object_list: Vec<WallObject> = Vec::new();
