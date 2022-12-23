@@ -49,7 +49,7 @@ pub async fn news_page (
     }
     else if is_desctop {
         #[derive(TemplateOnce)]
-        #[template(path = "desctop/main/lists/news_list.stpl")]
+        #[template(path = "desctop/generic/empty_page.stpl")]
         struct Template {
             request_user:     User,
             //count:            usize,
@@ -69,7 +69,7 @@ pub async fn news_page (
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
     } else {
         #[derive(TemplateOnce)]
-        #[template(path = "mobile/main/lists/news_list.stpl")]
+        #[template(path = "mobile/generic/empty_page.stpl")]
         struct Template {
             request_user:     User,
             //count:            usize,
