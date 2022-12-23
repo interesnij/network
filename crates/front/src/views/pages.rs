@@ -30,7 +30,7 @@ pub async fn news_page (
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state, &req, 20);
     let _request_user: User;
     _request_user = User {
-        id:       state.user_id.lock().unwrap(),
+        id:       state.user_id.lock().unwrap() as i32,
         name:     state.name.lock().unwrap(),
         link:     state.link.lock().unwrap(),
         s_avatar: state.s_avatar.lock().unwrap(),
