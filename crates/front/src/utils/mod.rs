@@ -23,7 +23,7 @@ fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
     return req.headers().get("user-agent")?.to_str().ok();
 }
 
-fn get_default_image() -> String {
+pub fn get_default_image() -> String {
     return "/static/images/hakew.png".to_string();
 }
 
