@@ -10,6 +10,7 @@ use actix_identity::Identity;
 use crate::AppState;
 
 
+
 pub const APIURL: &str = "http:194.58.90.123:8000";
 pub const USERSURL: &str = "http:194.58.90.123:9001";
 
@@ -29,10 +30,10 @@ pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
         let agent = get_content_type(req).unwrap();
         if agent.contains("Mobile") {
             let mut device = state.device.lock().unwrap();
-            device = 2;
+            *device = 2;
             return false;
         }
-        device = 1;
+        *device = 1;
         return true;
     }
 }
