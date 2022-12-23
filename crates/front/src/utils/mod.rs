@@ -89,8 +89,8 @@ pub fn get_device_and_ajax_and_limit_offset (
     }
     let params_some = web::Query::<Params>::from_query(&req.query_string());
     let mut is_ajax = 0;
-    let mut limit = 0;
-    let mut offset = 0;
+    let mut _limit = 0;
+    let mut _offset = 0;
 
     if params_some.is_ok() {
         let params = params_some.unwrap();

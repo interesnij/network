@@ -23,7 +23,7 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 
 pub async fn news_page (
-    token: Snring, 
+    token: String, 
     state: web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
@@ -34,7 +34,7 @@ pub async fn news_page (
         name:     state.name.lock().unwrap(),
         link:     state.link.lock().unwrap(),
         s_avatar: state.s_avatar.lock().unwrap(),
-    }
+    };
     
     //let object_list: Vec<WallObject> = Vec::new();
     if is_ajax == 0 {

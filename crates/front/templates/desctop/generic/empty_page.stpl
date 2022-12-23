@@ -1,4 +1,4 @@
-<% include!("../../header.stpl"); %>
+<% include!("../header.stpl"); %>
 
 <div class="main-container" data-title="Новости">
     <div class="row">
@@ -21,4 +21,4 @@
     </div>
 </div>
 
-<% include!("../../footer.stpl"); %>
+<% include!("../footer.stpl"); %>

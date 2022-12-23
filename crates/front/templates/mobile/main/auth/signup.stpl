@@ -1,6 +1,6 @@
 <% include!("../../anon_header.stpl"); %>
 
-<div data-title="Трезвый.рус - регистрация" data-image="<%= object.get_image() %>" data-description="Трезвый.рус: Регистрация" data-uri="/mob_register" class="main-container wrapper justify-content-center" style="height: 85vh !important;padding-top:0">
+<div data-title="Трезвый.рус - регистрация" data-image="/static/images/logo.jpg" data-description="Трезвый.рус: Регистрация" data-uri="/mob_register" class="main-container wrapper justify-content-center" style="height: 85vh !important;padding-top:0">
     <div class="container"> 
         <h4 class="font-weight-light mb-3 text-center">Регистрация</h4>
         <form id="signup">
