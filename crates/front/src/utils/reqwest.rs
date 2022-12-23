@@ -7,7 +7,7 @@ use std::result::Result;
 use std::sync::Arc;
 use crate::AppState;
 use actix_identity::Identity;
-use actix_web::{HttpRequest, HttpMessage};
+use actix_web::{HttpRequest, HttpMessage, web::Json};
 
 
 
@@ -55,7 +55,7 @@ where
     }
 
     if allow_body{ 
-        req = req.body();
+        req = req(Json(body))
     }
 
     log::info!("Request: {:?}", req);
