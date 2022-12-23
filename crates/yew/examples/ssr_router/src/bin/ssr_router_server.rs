@@ -115,9 +115,7 @@ async fn main() {
             handle_error,
         ));
 
-    println!("You can view the website at: http://localhost:8080/");
-
-    Server::bind(&"127.0.0.1:8080".parse().unwrap())
+    Server::bind(&"194.58.90.123:8101".parse().unwrap())
         .executor(exec)
         .serve(app.into_make_service())
         .await
