@@ -66,7 +66,7 @@ where
 
         match resp.status().is_success(){
             true => {
-                match resp::<T>().await{
+                match resp<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
                         log::info!("Failed parse body");
