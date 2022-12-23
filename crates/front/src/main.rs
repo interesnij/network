@@ -20,9 +20,9 @@ mod errors;
 
 pub struct AppState {
     device:     Mutex<u8>,             // 1 - комп, 2 - телефон
-    user_name:  Mutex<Option<String>>, //
-    user_link:  Mutex<Option<String>>, //
-    user_id:    Mutex<Option<i32>>,    //
+    user_name:  Mutex<String>, //
+    user_link:  Mutex<String>, //
+    user_id:    Mutex<String>,    //
     user_image: Mutex<Option<i32>>,    //
 }
 
@@ -37,9 +37,9 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new (
                 AppState {
                     device: Mutex::new(0),
-                    user_name:  Mutex::new(None),
-                    user_link:  Mutex::new(None),
-                    user_id:    Mutex::new(None),
+                    user_name:  Mutex::new("".to_string()),
+                    user_link:  Mutex::new("".to_string()),
+                    user_id:    Mutex::new("".to_string()),
                     user_image: Mutex::new(None),
                 }
             ))

@@ -2,7 +2,7 @@
 
 <div data-title="Трезвый.рус - вход" class="main-container wrapper h-100 h-sm-auto justify-content-center" style="height: 100vh !important;padding-top:0">
     <div class="container h-100 h-sm-auto">
-        <div class="h-100 h-sm-auto">
+        <div class="h-100 h-sm-auto"> 
                 <h2 class="font-weight-light mb-3 mt-3 text-center"><span class="font-weight-normal">трезвый</span>.рус</h2>
                 <h5 class="font-weight-light mb-5 text-center">
                     Нравственная сеть

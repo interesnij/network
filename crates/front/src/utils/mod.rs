@@ -15,6 +15,15 @@ pub use self::{
     reqwest::*,
 };
 
+#[derive(Serialize, Deserialize)]
+// это объект пользователя
+pub struct User {
+    pub id:       i32,
+    pub name:     String,
+    pub link:     String,
+    pub s_avatar: Option<String>,
+}
+
 pub const APIURL: &str = "http:194.58.90.123:8000";
 pub const USERURL: &str = "http:194.58.90.123:9001";
 
@@ -65,6 +74,50 @@ pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bo
     }
 
     (is_desctop(state, req), is_ajax)
+}
+
+pub fn get_device_and_ajax_and_limit_offset (
+    state: web::Data<AppState>, 
+    req: &HttpRequest, 
+    limit: i64
+) -> (bool, u8, i64, i64) {
+    #[derive(Debug, Deserialize)]
+    struct Params {
+        pub ajax:   Option<u8>,
+        pub limit:  Option<i64>,
+        pub offset: Option<i64>,
+    }
+    let params_some = web::Query::<Params>::from_query(&req.query_string());
+    let mut is_ajax = 0;
+    let mut limit = 0;
+    let mut offset = 0;
+
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        if params.ajax.is_some() {
+            is_ajax = params.ajax.unwrap();
+        }
+        else {
+            is_ajax = 0;
+        }
+        if params.limit.is_some() {
+            _limit = params.limit.unwrap();
+            if _limit < 0 || _limit > 100 {
+                _limit = limit;
+            }
+        }
+        else {
+            _limit = limit;
+        }
+        if params.offset.is_some() {
+            _offset = params.offset.unwrap();
+        }
+        else {
+            _offset = offset;
+        }
+    }
+
+    (is_desctop(state, req), is_ajax, _limit, _offset)
 }
 
 pub async fn get_first_load_page (    
@@ -119,7 +172,7 @@ pub async fn get_first_load_page (
         if is_desctop {
             #[derive(TemplateOnce)]
             #[template(path = "desctop/generic/anon_first_load.stpl")]
-            struct Template {
+            struct Template { 
                 title:        String,
                 description:  String,
                 image:        String,
