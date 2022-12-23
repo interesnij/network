@@ -19,8 +19,11 @@ mod routes;
 mod errors;
 
 pub struct AppState {
-    device:    Mutex<u8>,     // 1 - комп, 2 - телефон
-    user_name: Mutex<String>, // 1 - комп, 2 - телефон
+    device:     Mutex<u8>,             // 1 - комп, 2 - телефон
+    user_name:  Mutex<Option<String>>, //
+    user_link:  Mutex<Option<String>>, //
+    user_id:    Mutex<Option<i32>>,    //
+    user_image: Mutex<Option<i32>>,    //
 }
 
 #[actix_web::main]
@@ -33,8 +36,11 @@ async fn main() -> std::io::Result<()> {
         App::new() 
             .app_data(web::Data::new (
                 AppState {
-                    token:  Mutex::new("".to_string()),
                     device: Mutex::new(0),
+                    user_name:  Mutex::new(None),
+                    user_link:  Mutex::new(None),
+                    user_id:    Mutex::new(None),
+                    user_image: Mutex::new(None),
                 }
             ))
             .wrap(IdentityMiddleware::default())
