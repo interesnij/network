@@ -1,0 +1,42 @@
+<% if is_ajax == 1 { %>
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/styles/bootstrap.min.css" media="all" />
+    <link rel="stylesheet" href="/static/styles/default.css?ver10" />
+    <link class="my_color_settings" rel="stylesheet" href="/static/styles/color/a.css" />
+    <link rel="stylesheet" href="/static/styles/load.css" media="none" onload="if(media!='all')media='all'" />
+</head>
+
+  <body class="fixed-header">
+    <div class="wrapper" id="video_id_saver" data-video="first_player">
+      <header class="main-header">
+          <div class="container">
+              <div class="align-items-center" style="display:flex;flex-wrap:wrap;">
+                <div class="col-auto" style="padding-left: 0;">
+                    <a href="/" class="logo ajax">
+                      <img src="/static/images/hakew.png" alt="logo">
+                      <span style="margin-top:10px;float:left;"class="d-none d-sm-block">ТРЕЗВЫЙ.РУС</span>
+                    </a>
+                </div>
+                <div class="col text-right">
+
+                </div>
+              </div>
+          </div>
+      </header>
+
+				<span class="row no-gutters">
+          <div class="col-md-1 col-lg-2 col-xl-2 clean_panel"></div>
+            <div class="col-auto sidebar-inner position-relative mt-1">
+                <br>
+                <% include!("./anon_desctop_nav.stpl"); %>
+            </div>
+            <div class="col-md-8 col-lg-8 col-xl-6 desctop_version" id="ajax">
+              <span id="reload_block">
+<% } %>

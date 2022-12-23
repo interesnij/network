@@ -1,0 +1,22 @@
+
+<form class="h-sm-auto final_process_form">
+  <h1 class="font-weight-light mb-3 mt-4 text-center user_name"></h1>
+  <p class="text-center">
+    Вам нужно подтвердить с помощью телефона свой профиль, и в будущем использовать номер телефона
+    в качестве логина к профилю соцсети трезвый.рус.
+  </p>
+  <div class="row">
+    <div class="col-md-2"></div>
+    <div class="col-md-4" style="display: inline-flex;margin-top: 12px;margin-bottom: 12px;">
+      <input type="number" id="phone" min="0" onkeyup="phone_check();" class="form-control border-0" placeholder="Телефон">
+      <hr class="my-0">
+    </div>
+    <div class="col-md-4" style="margin-top: 12px;">
+      <button type="button" disabled="disabled" id="phone_send" class="btn btn-primary pink-gradient">Получить код</button>
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+  <div id='jsondata' style="margin-top:50px"></div>
+
+  <div id='jsondata2' style="margin-top:50px"></div>
+</form>

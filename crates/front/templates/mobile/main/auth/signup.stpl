@@ -1,0 +1,56 @@
+<% include!("../../../base_block/anon_base_mobile_header.stpl"); %>
+
+<div data-title="Трезвый.рус - регистрация" class="main-container wrapper justify-content-center" style="height: 85vh !important;padding-top:0">
+    <div class="container">
+                <h4 class="font-weight-light mb-3 text-center">Регистрация</h4>
+                <form id="signup">
+                    <div class="card mb-3">
+                        <div class="card-body p-0">
+                            <div class="card">
+                                <div class="card-body p-0">
+                                    <input type="text" name="first_name" id="id_first_name" class="form-control text-center border-0" placeholder="Имя">
+                                    <hr class="my-0">
+                                    <input type="text" name="last_name" id="id_last_name" class="form-control text-center border-0" placeholder="Фамилия">
+                                    <hr class="my-0">
+                                    <input type="password" name="password1" id="password1" autocomplete="new-password" class="form-control text-center border-0" placeholder="Пароль">
+                                    <hr class="my-0">
+                                    <input type="password" name="password2" id="password2" autocomplete="new-password" class="form-control text-center border-0" placeholder="Повторите пароль">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2 mb-2 no-gutters">
+                      <div class="col-6">
+                        <div class="custom-control custom-radio">
+                          <input value="Man" type="radio" name="gender" class="custom-control-input" id="customradio1" checked="">
+                          <label class="custom-control-label" for="customradio1">Я мужчина</label>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="custom-control custom-radio">
+                          <input value="Fem" type="radio" name="gender" class="custom-control-input" id="customradio2">
+                          <label class="custom-control-label" for="customradio2">Я женщина</label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <% include!("birtday.stpl"); %>
+
+                <div class="col mt-2 mb-2">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" id="register_" checked onchange="document.getElementById('register_ajax').disabled = !this.checked;" class="custom-control-input">
+                        <label class="custom-control-label" for="register_">
+                            Я принимаю <a href="/terms/" class="ajax underline">Правила сайта</a> и
+                            даю согласие на обработку моих персональных данных.
+                        </label>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <button type="button" desabled id="register_ajax" class="btn btn-sm btn-success success-gradient">Продолжить</button>
+                    <a href="/" class="btn btn-sm border ajax">Вход</a>
+                </div>
+              </form>
+    </div>
+</div>
+
+<% include!("../../../base_block/anon_base_mobile_footer.stpl"); %>

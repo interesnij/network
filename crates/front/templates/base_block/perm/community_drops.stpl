@@ -1,0 +1,6 @@
+<span class="dropdown-item select_perm_dropdown" data-value="a">Все пользователи</span>
+<span class="dropdown-item select_perm_dropdown" data-value="g">Подписчики</span>
+<span class="dropdown-item select_perm_dropdown" data-value="p">Администраторы</span>
+<span class="select_perm_dropdown dropdown-item" data-value="o">Владелец сообщества</span>
+<span class="select_perm_dropdown dropdown-item" data-value="h">Подписчики, кроме</span>
+<span class="select_perm_dropdown dropdown-item" data-value="i">Некоторые подписчики</span>

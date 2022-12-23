@@ -1,0 +1,43 @@
+<form id="signup" class="row align-items-center h-sm-auto">
+    <div class="col-12">
+        <p class="mb-3 content-color-secondary text-left">Регистрация</p>
+        <div class="card mb-2">
+            <div class="card-body p-0">
+                <input type="text" name="first_name" id="id_first_name" class="form-control form-control-lg" placeholder="Имя">
+                <hr class="my-0">
+                <input type="text" name="last_name" id="id_last_name" class="form-control form-control-lg" placeholder="Фамилия">
+                <hr class="my-0">
+                <input type="password" name="password1" id="password1" autocomplete="new-password" class="form-control form-control-lg" placeholder="Пароль">
+                <hr class="my-0">
+                <input type="password" name="password2" id="password2" autocomplete="new-password" class="form-control form-control-lg" placeholder="Повторите пароль">
+
+                <% include!("./birtday.stpl"); %>
+            </div>
+            <div class="row mt-2 mb-2 no-gutters">
+              <div class="col-6">
+                <div class="custom-control custom-radio">
+                  <input value="Man" type="radio" name="gender" class="custom-control-input" id="customradio1" checked="">
+                  <label class="custom-control-label" for="customradio1">Я мужчина</label>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="custom-control custom-radio">
+                  <input value="Fem" type="radio" name="gender" class="custom-control-input" id="customradio2">
+                  <label class="custom-control-label" for="customradio2">Я женщина</label>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="col mt-3">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="register_" checked onchange="document.getElementById('register_ajax').disabled = !this.checked;" class="custom-control-input">
+                <label class="custom-control-label" for="register_">
+                    Я принимаю <a href="/terms/" class="ajax underline">Правила сайта</a>.
+                </label>
+            </div>
+        </div>
+        <div class="text-left mt-3">
+            <button type="button" class="btn btn-primary pink-gradient" desabled id="register_ajax">Продолжить</button>
+        </div>
+    </div>
+</form>

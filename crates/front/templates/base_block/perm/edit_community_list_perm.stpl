@@ -1,0 +1,140 @@
+<div class="row mb-1 form_group_flex">
+    <label class="col-md-6">Кто видит список</label>
+    <span class="col-md-6">
+      <% if list.can_see_el == "a" { %>
+      <input class="input" name="can_see_el" type="hidden" value="a" />
+      <a class="i_link menu_drop_2 pointer">Все пользователи</a>
+      <span class="collector"></span>
+
+      <% } else if list.can_see_el == "g" { %>
+      <input class="input" name="can_see_el" type="hidden" value="g" />
+      <a class="i_link menu_drop_2 pointer">Подписчики</a>
+      <span class="collector"></span>
+
+      <% } else if list.can_see_el == "p" { %>
+      <input class="input" name="can_see_el" type="hidden" value="p" />
+      <a class="i_link menu_drop_2 pointer">Администраторы</a>
+      <span class="collector"></span>
+
+      <% } else if list.can_see_el == "o" { %>
+      <input class="input" name="can_see_el" type="hidden" value="o" />
+      <a class="i_link menu_drop_2 pointer">Владелец сообщества</a>
+      <span class="collector"></span>
+
+      <% } else if list.can_see_el == "h" { %>
+      <input class="input" name="can_see_el" type="hidden" value="h" />
+      <a class="i_link menu_drop_2 pointer">Подписчики, кроме</a>
+      <span class="collector">:
+        <% for object in list.get_can_see_el_exclude_users().iter() { %>
+          <a href="<%= object.link %>" target="_blank"><%= object.get_full_name() %></a>&nbsp;
+        <% } %>
+      </span>
+
+      <% } else if list.can_see_el == "i" { %>
+      <input class="input" name="can_see_el" type="hidden" value="i" />
+      <a class="i_link menu_drop_2 pointer">Некоторые подписчики</a>
+      <span class="collector">:
+        <% for object in list.get_can_see_el_include_users().iter() {  %>
+          <a href="<%= object.link %>" target="_blank"><%= object.get_full_name() %></a>&nbsp;
+          <% } %>
+      </span>
+      <% } %>
+      <div class="dropdown-menu" data-action="can_see_el" style="top: 30px;">
+        <% include!("community_drops.stpl"); %>
+      </div>
+    </span>
+</div>
+
+<div class="row mb-1 form_group_flex">
+    <label class="col-md-6">Кто создает элементы</label>
+    <span class="col-md-6">
+      <% if list.create_el == "a" { %>
+      <input class="input" name="create_el" type="hidden" value="a" />
+      <a class="i_link menu_drop_2 pointer">Все пользователи</a>
+      <span class="collector"></span>
+
+      <% } else if list.create_el == "g" { %>
+      <input class="input" name="create_el" type="hidden" value="g" />
+      <a class="i_link menu_drop_2 pointer">Подписчики</a>
+      <span class="collector"></span>
+
+      <% } else if list.create_el == "p" { %>
+      <input class="input" name="create_el" type="hidden" value="p" />
+      <a class="i_link menu_drop_2 pointer">Администраторы</a>
+      <span class="collector"></span>
+
+      <% } else if list.create_el == "o" { %>
+      <input class="input" name="create_el" type="hidden" value="o" />
+      <a class="i_link menu_drop_2 pointer">Владелец сообщества</a>
+      <span class="collector"></span>
+
+      <% } else if list.create_el == "h" { %>
+      <input class="input" name="create_el" type="hidden" value="h" />
+      <a class="i_link menu_drop_2 pointer">Подписчики, кроме</a>
+      <span class="collector">:
+        <% for object in list.get_create_el_exclude_users().iter() { %>
+          <a href="<%= object.link %>" target="_blank"><%= object.get_full_name() %></a>&nbsp;
+        <% } %>
+      </span>
+
+      <% } else if list.create_el == "i" { %>
+      <input class="input" name="create_el" type="hidden" value="i" />
+      <a class="i_link menu_drop_2 pointer">Некоторые подписчики</a>
+      <span class="collector">:
+        <% for object in list.get_create_el_include_users().iter() {  %>
+          <a href="<%= object.link %>" target="_blank"><%= object.get_full_name() %></a>&nbsp;
+          <% } %>
+      </span>
+      <% } %>
+      <div class="dropdown-menu" data-action="create_el" style="top: 30px;">
+        <% include!("community_drops.stpl"); %>
+      </div>
+    </span>
+</div>
+
+    <div class="row mb-1 form_group_flex">
+        <label class="col-md-6">Кто копирует список/элементы</label>
+        <span class="col-md-6">
+          <% if list.copy_el == "a" { %>
+          <input class="input" name="copy_el" type="hidden" value="a" />
+          <a class="i_link menu_drop_2 pointer">Все пользователи</a>
+          <span class="collector"></span>
+
+          <% } else if list.copy_el == "g" { %>
+          <input class="input" name="copy_el" type="hidden" value="g" />
+          <a class="i_link menu_drop_2 pointer">Подписчики</a>
+          <span class="collector"></span>
+
+          <% } else if list.copy_el == "p" { %>
+          <input class="input" name="copy_el" type="hidden" value="p" />
+          <a class="i_link menu_drop_2 pointer">Администраторы</a>
+          <span class="collector"></span>
+
+          <% } else if list.copy_el == "o" { %>
+          <input class="input" name="copy_el" type="hidden" value="o" />
+          <a class="i_link menu_drop_2 pointer">Владелец сообщества</a>
+          <span class="collector"></span>
+
+          <% } else if list.copy_el == "h" { %>
+          <input class="input" name="copy_el" type="hidden" value="h" />
+          <a class="i_link menu_drop_2 pointer">Подписчики, кроме</a>
+          <span class="collector">:
+            <% for object in list.get_copy_el_exclude_users().iter() { %>
+              <a href="<%= object.link %>" target="_blank"><%= object.get_full_name() %></a>&nbsp;
+            <% } %>
+          </span>
+
+          <% } else if list.copy_el == "i" { %>
+          <input class="input" name="copy_el" type="hidden" value="i" />
+          <a class="i_link menu_drop_2 pointer">Некоторые подписчики</a>
+          <span class="collector">:
+            <% for object in list.get_copy_el_include_users().iter() {  %>
+              <a href="<%= object.link %>" target="_blank"><%= object.get_full_name() %></a>&nbsp;
+              <% } %>
+          </span>
+          <% } %>
+          <div class="dropdown-menu" data-action="copy_el" style="top: 30px;">
+            <% include!("community_drops.stpl"); %>
+          </div>
+        </span>
+    </div>

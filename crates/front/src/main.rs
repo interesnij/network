@@ -11,20 +11,17 @@ use actix_web::{
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_redis::RedisSession;
-use actix_web_httpauth::{
-    extractors::{bearer::{BearerAuth, Config}, AuthenticationError},
-    middleware::HttpAuthentication,
-};
-use std::sync::Mutex;
-use std::env;
+use std::{sync::Mutex}, env};
+
 mod views;
 mod utils;
 mod routes;
-
+mod errors;
 
 pub struct AppState {
-    key:   Arc<String>,
-    token: Mutex<String>,
+    key:    Arc<String>,
+    token:  Mutex<String>,
+    device: Mutex<u8>,     // 1 - комп, 2 - телефон
 }
 
 #[actix_web::main]
@@ -42,15 +39,15 @@ async fn main() -> std::io::Result<()> {
         App::new() 
             .app_data(web::Data::new (
                 AppState {
-                    key: Arc::new(env::var("KEY").unwrap()),
-                    token: Mutex::new("".to_string()),
+                    key:    Arc::new(env::var("KEY").unwrap()),
+                    token:  Mutex::new("".to_string()),
+                    device: Mutex::new(0),
                 }
             ))
             .wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
             .service(_files)
-
     })
     .bind("194.58.90.123:8100")?
     .run()
