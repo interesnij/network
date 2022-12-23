@@ -54,6 +54,10 @@ function check_first_load() {
             elem_.innerHTML = ajax_link.responseText;
             span.innerHTML = elem_.innerHTML;
             window.history.pushState ({"url":url}, document.title, url);
+            loadScripts('/static/scripts/lib/progressive-image.js');
+            loadScripts('/static/scripts/lib/video_player.js');
+            loadScripts('/static/scripts/lib/video_init.js');
+            loadScripts('/static/scripts/anon.js');
         }
       }
       ajax_link.send();
@@ -112,10 +116,5 @@ function check_first_load() {
 };
 
 check_first_load();
-
-loadScripts('/static/scripts/lib/progressive-image.js');
-loadScripts('/static/scripts/lib/video_player.js');
-loadScripts('/static/scripts/lib/video_init.js');
-loadScripts('/static/scripts/anon.js');
 
 
