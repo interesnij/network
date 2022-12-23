@@ -17,7 +17,7 @@ pub use self::{
 
 #[derive(Serialize, Deserialize)]
 // это объект пользователя
-pub struct User<'a> {
+pub struct User {
     pub id:       i32,
     pub name:     String,
     pub link:     String,
