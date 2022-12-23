@@ -7,7 +7,7 @@ use std::result::Result;
 use std::sync::Arc;
 use crate::AppState;
 use actix_identity::Identity;
-use actix_web::HttpRequest;
+use actix_web::{HttpRequest, HttpMessage};
 
 
 
