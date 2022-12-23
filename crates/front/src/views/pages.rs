@@ -24,16 +24,16 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 pub async fn news_page (
     token: String, 
-    state: web::Data<&AppState>, 
+    state: &web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state, &req, 20);
     let _request_user: User;
     _request_user = User {
         id:       *state.user_id.lock().unwrap(),
-        name:     *state.name.lock().unwrap(),
-        link:     *state.link.lock().unwrap(),
-        s_avatar: *state.s_avatar.lock().unwrap(),
+        name:     *state.user_name.lock().unwrap(),
+        link:     *state.user_link.lock().unwrap(),
+        s_avatar: *state.user_image.lock().unwrap(),
     };
     
     //let object_list: Vec<WallObject> = Vec::new();
