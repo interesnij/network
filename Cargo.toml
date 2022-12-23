@@ -9,4 +9,6 @@ members = [
   "crates/photo_files_2",
   "crates/api",
   "crates/front",
+
+  "crates/yew",
 ]
