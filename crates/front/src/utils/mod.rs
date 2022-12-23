@@ -20,16 +20,17 @@ fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
 }
 
 pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
-    if state.device == 1 {
+    let inner: u8 = *state.device;
+    if inner == 1 {
         return true;
     }
-    else if state.device == 2 {
+    else if inner == 2 {
         return false;
     }
     else {
         let agent = get_content_type(req).unwrap();
+        let mut device = state.device.lock().unwrap();
         if agent.contains("Mobile") {
-            let mut device = state.device.lock().unwrap();
             *device = 2;
             return false;
         }
