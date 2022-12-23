@@ -83,7 +83,7 @@ where
     }
 }
 
-pub async fn request_delete<T>(url: String) -> Result<T, u16>
+pub async fn request_delete<T>(url: String, ide: Identity) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
@@ -91,27 +91,27 @@ where
 }
 
 /// Get request
-pub async fn request_get<T>(url: String) -> Result<T, u16>
+pub async fn request_get<T>(url: String, ide: Identity) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::GET, &()).await
+    request(url, reqwest::Method::GET, &(), ide).await
 }
 
 /// Post request with a body
-pub async fn request_post<U, T>(url: String, body: &U) -> Result<T, u16>
+pub async fn request_post<U, T>(url: String, body: &U, ide: Identity) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,
 {
-    request(url, reqwest::Method::POST, body).await
+    request(url, reqwest::Method::POST, body, ide).await
 }
 
 /// Put request with a body
-pub async fn request_put<U, T>(url: String, body: &U) -> Result<T, u16>
+pub async fn request_put<U, T>(url: String, body: &U, ide: Identity) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,
 {
-    request(url, reqwest::Method::PUT, body).await
+    request(url, reqwest::Method::PUT, body, ide).await
 }
