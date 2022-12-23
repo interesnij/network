@@ -19,7 +19,6 @@ mod routes;
 mod errors;
 
 pub struct AppState {
-    key:    Arc<String>,
     token:  Mutex<String>,
     device: Mutex<u8>,     // 1 - комп, 2 - телефон
 }
@@ -34,7 +33,6 @@ async fn main() -> std::io::Result<()> {
         App::new() 
             .app_data(web::Data::new (
                 AppState {
-                    key:    Arc::new(env::var("KEY").unwrap()),
                     token:  Mutex::new("".to_string()),
                     device: Mutex::new(0),
                 }
