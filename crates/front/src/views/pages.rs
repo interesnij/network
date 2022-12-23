@@ -7,14 +7,17 @@ use actix_web::{
     http::StatusCode,
 };
 use actix_identity::Identity;
-use crate::utils::{APIURL, USERURL};
+use crate::utils::{
+    APIURL, USERURL, 
+    get_first_load_page, get_default_image,
+};
 use crate::AppState;
 use sailfish::TemplateOnce;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
     //config.route("/", web::get().to(index_page));
-    config.route("/mob_register/", web::get().to(mobile_signup));
+    config.route("/mob_register", web::get().to(mobile_signup));
 }
 
 
@@ -23,7 +26,17 @@ pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web
     use crate::utils::get_ajax;
     if ide.is_some() { 
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
-    } 
+    }
+    else if is_ajax == 0 {
+        get_first_load_page (
+            false,
+            false,
+            "Трезвый.рус - регистрация".to_string(),
+            "Трезвый.рус: Регистрация".to_string(),
+            "/mob_register".to_string(),
+            get_default_image(), 
+        ).await
+    }
     else {
         #[derive(TemplateOnce)]
         #[template(path = "mobile/main/auth/signup.stpl")]

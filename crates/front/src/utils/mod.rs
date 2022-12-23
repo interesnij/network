@@ -20,7 +20,11 @@ pub const USERURL: &str = "http:194.58.90.123:9001";
 
 
 fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
-    req.headers().get("user-agent")?.to_str().ok()
+    return req.headers().get("user-agent")?.to_str().ok();
+}
+
+fn get_default_image() -> String {
+    return "/static/images/hakew.png".to_string();
 }
 
 pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
