@@ -7,7 +7,7 @@ use actix_web::{
     http::StatusCode,
 };
 use actix_identity::Identity;
-use crate::utils::{APIURL, USERSURL};
+use crate::utils::{APIURL, USERURL};
 use crate::AppState;
 use sailfish::TemplateOnce;
 
