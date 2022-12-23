@@ -3,7 +3,6 @@ use actix_web::{
     Error as ActixError, HttpResponse,
 };
 use derive_more::Display;
-use diesel::result::{DatabaseErrorKind, Error as DBError};
 use std::convert::From;
 use serde::{Deserialize, Serialize};
 
@@ -44,23 +43,6 @@ impl ResponseError for AuthError {
             AuthError::DuplicateValue(ref message) => HttpResponse::BadRequest().json(message),
 
             AuthError::GenericError(ref message) => HttpResponse::BadRequest().json(message),
-        }
-    }
-}
-
-impl From<DBError> for AuthError {
-    fn from(error: DBError) -> AuthError {
-        // We only care about UniqueViolations
-        match error {
-            DBError::DatabaseError(kind, info) => {
-                let message = info.details().unwrap_or_else(|| info.message()).to_string();
-
-                match kind {
-                    DatabaseErrorKind::UniqueViolation => AuthError::DuplicateValue(message),
-                    _ => AuthError::GenericError(message)
-                }
-            }
-            _ => AuthError::GenericError(String::from("Some database error occured")),
         }
     }
 }
@@ -127,24 +109,6 @@ impl From<Vec<String>> for ErrorResponse {
     }
 }
 
-// Convert DBErrors to our Error type
-impl From<DBError> for Error {
-    fn from(error: DBError) -> Error {
-        // Right now we just care about UniqueViolation from diesel
-        // But this would be helpful to easily map errors as our app grows
-        match error {
-            DBError::DatabaseError(kind, info) => {
-                if let DatabaseErrorKind::UniqueViolation = kind {
-                    let message = info.details().unwrap_or_else(|| info.message()).to_string();
-                    return Error::BadRequest(message);
-                }
-                Error::InternalServerError("Unknown database error".into())
-            }
-            DBError::NotFound => Error::NotFound("Record not found".into()),
-            _ => Error::InternalServerError("Unknown database error".into()),
-        }
-    }
-}
 
 impl From<BlockingError> for Error {
     fn from(error: BlockingError) -> Error {
