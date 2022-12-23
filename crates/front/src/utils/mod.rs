@@ -20,7 +20,7 @@ fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
 }
 
 pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
-    let inner: u8 = *state.device;
+    let inner: u8 = state.device;
     if inner == 1 {
         return true;
     }
