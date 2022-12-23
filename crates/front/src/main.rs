@@ -11,7 +11,7 @@ use actix_web::{
 use actix_cors::Cors;
 use actix_identity::IdentityMiddleware;
 use actix_redis::RedisSession;
-use std::{sync::Mutex}, env};
+use std::{sync::Mutex, env};
 
 mod views;
 mod utils;
