@@ -7,6 +7,7 @@ use std::result::Result;
 use std::sync::Arc;
 use crate::AppState;
 use actix_identity::Identity;
+use actix_web::HttpRequest;
 
 
 
@@ -66,7 +67,7 @@ where
 
         match resp.status().is_success(){
             true => {
-                match resp<T>().await{
+                match resp::<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
                         log::info!("Failed parse body");
