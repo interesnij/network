@@ -19,8 +19,8 @@ pub use self::{
 // это объект пользователя
 pub struct User<'a> {
     pub id:       i32,
-    pub name:     &str,
-    pub link:     &str,
+    pub name:     Box<str>,
+    pub link:     Box<str>,
     pub s_avatar: Option<String>,
 }
 
