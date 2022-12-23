@@ -33,7 +33,7 @@ pub async fn news_page (
         id:       *state.user_id.lock().unwrap(),
         name:     (*state.user_name.lock().unwrap()).to_string(),
         link:     (*state.user_link.lock().unwrap()).to_string(),
-        s_avatar: (*state.user_image.lock().unwrap()).as_deref(),
+        s_avatar: (*state.user_image.lock().unwrap()).to_string(),
     };
     
     //let object_list: Vec<WallObject> = Vec::new();
