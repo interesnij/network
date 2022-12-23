@@ -31,9 +31,9 @@ pub async fn news_page (
     let _request_user: User;
     _request_user = User {
         id:       *state.user_id.lock().unwrap(),
-        name:     *state.user_name.lock().unwrap(),
-        link:     *state.user_link.lock().unwrap(),
-        s_avatar: *state.user_image.lock().unwrap(),
+        name:     *state.user_name.lock().unwrap().clone(),
+        link:     *state.user_link.lock().unwrap().clone(),
+        s_avatar: *state.user_image.lock().unwrap().as_ref(),
     };
     
     //let object_list: Vec<WallObject> = Vec::new();
