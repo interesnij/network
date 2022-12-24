@@ -60,8 +60,8 @@ pub async fn phone_send (
         ide 
     ).await;
     match res {
-        Ok(_ok) => Json(_ok),
-        Err(_err) => Json(_err),
+        Ok(_ok) => Ok(Json(_ok)),
+        Err(_err) => Err(Json(_err)),
     }
 }
 
