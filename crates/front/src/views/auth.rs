@@ -50,7 +50,7 @@ pub async fn phone_send (
     ide: Identity,
     data: PhoneParams,
     state: web::Data<AppState>,
-) -> actix_web::Result<HttpResponse> {
+) -> HttpResponse {
     let body = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
