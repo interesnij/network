@@ -27,6 +27,7 @@ pub struct RequestUser {
     pub new_notifies: u16,
 }
 
+pub const TOKEN: &str = "111";
 pub const APIURL: &str = "http:194.58.90.123:8000";
 pub const USERURL: &str = "http:194.58.90.123:9001";
 

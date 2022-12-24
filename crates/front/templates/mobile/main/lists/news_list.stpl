@@ -31,11 +31,11 @@
     </div>
     <h6 style="margin: 20px;text-align: center;">
       Пока ничего нет.
-      <a href="/all-users/" class="ajax underline">
+      <a href="/all-users" class="ajax underline">
         Найдите друзей
       </a>
       и
-      <a href="/all-communities/" class="ajax underline">
+      <a href="/all-communities" class="ajax underline">
       вступайте в сообщества
       </a>, и их записи будут отображаться здесь.</h6>
   </div>

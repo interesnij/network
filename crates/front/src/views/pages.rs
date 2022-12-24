@@ -22,7 +22,6 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 
 pub async fn news_page (
-    token: String, 
     state: web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {

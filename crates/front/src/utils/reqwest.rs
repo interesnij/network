@@ -46,7 +46,7 @@ where
 {
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
     let mut req = reqwest::Client::new()
-        .request(method, format!("http://localhost:8080{}", url))
+        .request(method, url)
         .header("Content-Type", "application/json");
 
 

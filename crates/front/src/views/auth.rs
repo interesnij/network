@@ -8,18 +8,53 @@ use actix_web::{
 };
 use actix_identity::Identity;
 use crate::utils::{
-    APIURL, USERURL,
+    APIURL, USERURL, TOKEN,
     get_first_load_page, get_default_image,
     get_device_and_ajax,
 };
 use crate::AppState;
 use sailfish::TemplateOnce;
+use crate::views::index_page;
+use serde::{Deserialize, Serialize};
 
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
     config.route("/login", web::get().to(mobile_login));
-} 
+    config.route("/phone_send", web::post().to(phone_send));
+    //config.route("/phone_verify", web::post().to(phone_verify));
+    //config.route("/signup", web::post().to(process_signup));
+    //config.route("/login", web::post().to(login));
+    //config.route("/logout", web::get().to(logout));
+}  
+
+pub async fn logout (
+    ide: Identity, 
+    state: web::Data<AppState>, 
+    req: HttpRequest
+) -> actix_web::Result<HttpResponse> {
+    ide.logout();
+    index_page(None, state, req)
+}
+
+#[derive(Serialize)]
+pub struct PhoneParams {
+    pub phone: String,
+}
+#[derive(Deserialize)]
+pub struct TokenParams {
+    pub token: String,
+}
+pub async fn phone_send (
+    ide: Identity,
+    data: PhoneParams,
+    state: web::Data<AppState>,
+) -> actix_web::Result<HttpResponse> {
+    let body = request_post::<PhoneParams, TokenParams>(
+        USERURL.to_owned() + &"/login".to_string(), &*data.borrow_mut()
+    ).await;
+    Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
+}
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;

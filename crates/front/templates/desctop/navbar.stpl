@@ -46,7 +46,7 @@
                             </div>
                         </a>
                         <div class="dropdown-divider m-0"></div>
-                        <a class="dropdown-item" href="/logout/">
+                        <a class="dropdown-item" href="/logout">
                             <div class="row align-items-center">
                                 <div class="col">Выход</div>
                                 <div class="col-auto">
@@ -57,7 +57,7 @@
                             </div>
                         </a>
                         <div class="dropdown-divider m-0"></div>
-                        <a class="dropdown-item ajax" href="/quan/">
+                        <a class="dropdown-item ajax" href="/quan">
                             <div class="row align-items-center">
                                 <div class="col">Помощь</div>
                                 <div class="col-auto">
@@ -71,7 +71,7 @@
                             </div>
                         </a>
                         <div class="dropdown-divider m-0"></div>
-                        <a class="dropdown-item ajax" href="/about/">
+                        <a class="dropdown-item ajax" href="/about">
                             <div class="row align-items-center">
                                 <div class="col">О сайте</div>
                                 <div class="col-auto">
