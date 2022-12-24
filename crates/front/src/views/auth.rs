@@ -61,7 +61,7 @@ pub async fn phone_send (
     ).await;
     match res {
         Ok(_ok) => Ok(Json(_ok)),
-        Err(_err) => Err(_err),
+        Err(_err) => _err,
     }
 }
 
