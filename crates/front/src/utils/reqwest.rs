@@ -5,6 +5,7 @@ use std::fmt::Debug;
 use std::result;
 use std::result::Result;
 use std::sync::Arc;
+use crate::AppState;
 use actix_identity::Identity;
 use actix_web::{HttpRequest, HttpMessage, web::Json};
 

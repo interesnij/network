@@ -8,12 +8,12 @@ use actix_web::{
 };
 use actix_identity::Identity;
 use crate::utils::{
-    APIURL, USERURL, User, UserState,
+    APIURL, USERURL, User,
     get_first_load_page, get_default_image,
     get_device_and_ajax, get_device_and_ajax_and_limit_offset,
 };
+use crate::AppState;
 use sailfish::TemplateOnce;
-use std::sync::Mutex;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
@@ -24,21 +24,16 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 
 pub async fn news_page (
     token: String, 
-    data: web::Data<Mutex<UserState>>, 
-    req: HttpRequest 
+    state: web::Data<AppState>, 
+    req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
-    let mut data = data.lock().unwrap();
-    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(data, &req, 20);
+    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state, &req, 20);
     let _request_user: User;
-
     _request_user = User {
-        id:           data.user_id,
-        name:         data.user_name.to_string(),
-        link:         data.user_link.to_string(),
-        s_avatar:     data.user_image.to_string(),
-        new_follows:  data.new_follows,
-        new_messages: data.new_messages,
-        new_notifies: data.new_notifies,
+        id:       *state.user_id.lock().unwrap(),
+        name:     (*state.user_name.lock().unwrap()).to_string(),
+        link:     (*state.user_link.lock().unwrap()).to_string(),
+        s_avatar: (*state.user_image.lock().unwrap()).to_string(),
     };
     
     //let object_list: Vec<WallObject> = Vec::new();
@@ -96,13 +91,13 @@ pub async fn news_page (
 }
 
 pub async fn index_page (
-    ide: Option<Identity>,
-    data: web::Data<Mutex<UserState>>,
+    ide: Option<Identity>, 
+    state: web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
-    let (is_desctop, is_ajax) = get_device_and_ajax(data.clone(), &req);
+    let (is_desctop, is_ajax) = get_device_and_ajax(state.clone(), &req);
     if ide.is_some() {
-        return news_page(ide.unwrap().id().unwrap(), data.clone(), req).await
+        return news_page(ide.unwrap().id().unwrap(), state.clone(), req).await
     }
     else if is_ajax == 0 {
         get_first_load_page (
@@ -174,7 +169,3 @@ pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))
     }
 }
-
-
-
-

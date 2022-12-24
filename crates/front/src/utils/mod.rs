@@ -7,7 +7,7 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 use actix_identity::Identity;
-use std::sync::Mutex;
+use crate::AppState;
 use sailfish::TemplateOnce;
 
 pub mod reqwest;
@@ -18,24 +18,10 @@ pub use self::{
 #[derive(Serialize, Deserialize)]
 // это объект пользователя
 pub struct User {
-    pub id:           i32,
-    pub name:         String,
-    pub link:         String,
-    pub s_avatar:     String,
-    pub new_follows:  i32,
-    pub new_messages: i32,
-    pub new_notifies: i32,
-}
-
-pub struct UserState {
-    pub device:       u8,       // 1 - комп, 2 - телефон
-    pub user_name:    String,
-    pub user_link:    String,
-    pub user_id:      i32,
-    pub user_image:   String,
-    pub new_follows:  i32,
-    pub new_messages: i32,
-    pub new_notifies: i32,
+    pub id:       i32,
+    pub name:     String,
+    pub link:     String,
+    pub s_avatar: String,
 }
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
@@ -50,8 +36,8 @@ pub fn get_default_image() -> String {
     return "/static/images/hakew.png".to_string();
 }
 
-pub fn is_desctop(state: UserState, req: &HttpRequest) -> bool {
-    let mut device = state.device;
+pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
+    let mut device = state.device.lock().unwrap();
     if *device == 1 {
         return true;
     }
@@ -69,7 +55,7 @@ pub fn is_desctop(state: UserState, req: &HttpRequest) -> bool {
     }
 }
 
-pub fn get_device_and_ajax(state: UserState, req: &HttpRequest) -> (bool, u8) {
+pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bool, u8) {
     #[derive(Debug, Deserialize)]
     struct Params {
         pub ajax: Option<u8>,
@@ -91,7 +77,7 @@ pub fn get_device_and_ajax(state: UserState, req: &HttpRequest) -> (bool, u8) {
 }
 
 pub fn get_device_and_ajax_and_limit_offset (
-    state: UserState, 
+    state: web::Data<AppState>, 
     req: &HttpRequest, 
     limit: i64
 ) -> (bool, u8, i64, i64) {

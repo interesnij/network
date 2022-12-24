@@ -18,27 +18,31 @@ mod utils;
 mod routes;
 mod errors;
 
+pub struct AppState {
+    device:     Mutex<u8>,             // 1 - комп, 2 - телефон
+    user_name:  Mutex<String>, //
+    user_link:  Mutex<String>, //
+    user_id:    Mutex<i32>,    //
+    user_image: Mutex<String>,    //
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use actix_files::Files;
-    use crate::utils::UserState;
 
-    let data = web::Data::new(Mutex::new(UserState {
-        device:       0,
-        user_name:    "".to_string(),
-        user_link:    "".to_string(),
-        user_id:      0,
-        user_image:   "".to_string(),
-        new_follows:  0,
-        new_messages: 0,
-        new_notifies: 0,
-    }));
-    HttpServer::new(move || { 
+    HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new() 
-            .app_data(data.clone())
+            .app_data(web::Data::new (
+                AppState {
+                    device: Mutex::new(0),
+                    user_name:  Mutex::new("".to_string()),
+                    user_link:  Mutex::new("".to_string()),
+                    user_id:    Mutex::new(0),
+                    user_image: Mutex::new("".to_string()),
+                }
+            ))
             .wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
