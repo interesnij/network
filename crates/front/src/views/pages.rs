@@ -37,7 +37,7 @@ pub async fn news_page (
         new_follows:  *state.new_follows.lock().unwrap(),
         new_messages: *state.new_messages.lock().unwrap(),
         new_notifies: *state.new_notifies.lock().unwrap(),
-    };
+    }; 
     
     //let object_list: Vec<WallObject> = Vec::new();
     if is_ajax == 0 {
