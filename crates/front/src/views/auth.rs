@@ -50,15 +50,15 @@ pub async fn phone_send (
     ide: Identity,
     data: PhoneParams,
     state: web::Data<AppState>,
-) -> HttpResponse {
+) -> Result<i16, Error> {
     let body = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
         ide 
     ).await;
     match body {
-        Ok(ok) => HttpResponse::Ok(ok.resp),
-        Err(error) => HttpResponse::Err(error)
+        Ok(ok) => ok.resp,
+        Err(error) => error
     }
 }
 
