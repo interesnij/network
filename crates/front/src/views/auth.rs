@@ -37,7 +37,7 @@ pub async fn logout (
 ) -> actix_web::Result<HttpResponse> {
     ide.logout();
     index_page(None, state, req).await
-}
+} 
 
 #[derive(Serialize)]
 pub struct PhoneParams {
@@ -57,11 +57,7 @@ pub async fn phone_send (
         &*data.borrow_mut(),
         ide 
     ).await;
-    if body.is_ok() {
-        Ok(body)
-    } else { 
-        Err(body)
-    }
+    HttpResponse::Ok().body(body)
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
