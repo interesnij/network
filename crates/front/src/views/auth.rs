@@ -43,14 +43,14 @@ pub async fn logout (
 pub struct PhoneParams {
     pub phone: String,
 }
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct RespParams {
     pub resp: i16,
 }
 pub async fn phone_send (
     ide: Identity,
     mut data: PhoneParams,
-) -> dyn Responder<Body = Type> {
+) -> dyn Responder<Body = Type> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
