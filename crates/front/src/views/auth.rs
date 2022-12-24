@@ -45,7 +45,7 @@ pub struct PhoneParams {
 }
 #[derive(Deserialize)]
 pub struct RespParams {
-    pub resp: u16,
+    pub resp: i16,
 }
 pub async fn phone_send (
     ide: Identity,
