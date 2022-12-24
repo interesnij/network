@@ -9,7 +9,6 @@ use actix_web::{
     Error,
 };
 use actix_cors::Cors;
-use actix_session::storage::RedisActorSessionStore;
 use actix_identity::{Identity, IdentityMiddleware};
 use actix_session::{Session, SessionMiddleware};
 use std::{sync::Mutex, env}; 
@@ -35,9 +34,6 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use actix_files::Files;
 
-    let secret_key = Key::generate();
-    let redis_connection_string = "127.0.0.1:6379";
-
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new()  
@@ -54,12 +50,12 @@ async fn main() -> std::io::Result<()> {
                 }
             ))
             .wrap(IdentityMiddleware::default())
-            .wrap(
-                SessionMiddleware::new(
-                    RedisActorSessionStore::new(redis_connection_string),
-                    secret_key.clone()
-                )
-            )
+            //.wrap(
+            //    SessionMiddleware::new(
+            //        RedisActorSessionStore::new(redis_connection_string),
+            //        secret_key.clone()
+            //    )
+            //)
             .configure(routes)
             .service(_files)
     })
