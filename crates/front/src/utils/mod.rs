@@ -28,6 +28,17 @@ pub struct User {
     pub new_notifies: i32,
 }
 
+pub struct UserState {
+    device:       u8,       // 1 - комп, 2 - телефон
+    user_name:    String,
+    user_link:    String,
+    user_id:      i32,
+    user_image:   String,
+    new_follows:  i32,
+    new_messages: i32,
+    new_notifies: i32,
+}
+
 pub const APIURL: &str = "http:194.58.90.123:8000";
 pub const USERURL: &str = "http:194.58.90.123:9001";
 

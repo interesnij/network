@@ -18,22 +18,12 @@ mod utils;
 mod routes;
 mod errors;
 
-pub struct UserState {
-    device:       Mutex<u8>,       // 1 - комп, 2 - телефон
-    user_name:    Mutex<String>,
-    user_link:    Mutex<String>,
-    user_id:      Mutex<i32>,
-    user_image:   Mutex<String>,
-    new_follows:  Mutex<i32>,
-    new_messages: Mutex<i32>,
-    new_notifies: Mutex<i32>,
-}
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use actix_files::Files;
+    use crate::utils::UserState;
 
     let data = web::Data::new(Mutex::new(UserState {
         device:       0,
