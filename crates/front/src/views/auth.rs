@@ -39,11 +39,11 @@ pub async fn logout (
     index_page(None, state, req).await
 } 
 
-#[derive(Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct PhoneParams {
     pub phone: String,
 }
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct RespParams {
     pub resp: i16,
 }

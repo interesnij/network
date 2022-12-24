@@ -41,8 +41,8 @@ async fn request<U, T> (
     ide: Option<Identity>,
 ) -> Result<T, u16>
 where
-    T: DeserializeOwned + Send,
-    U: Serialize,
+    T: DeserializeOwned + Debug + Send,
+    U: Serialize + Debug ,
 {
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
     let mut req = reqwest::Client::new()
@@ -102,8 +102,8 @@ where
 /// Post request with a body
 pub async fn request_post<U, T>(url: String, body: &U, ide: Identity) -> Result<T, u16>
 where
-    T: DeserializeOwned + Send,
-    U: Serialize,
+    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    U: Serialize + std::fmt::Debug, 
 {
     request(url, reqwest::Method::POST, body, Some(ide)).await
 }
@@ -111,8 +111,8 @@ where
 /// Put request with a body
 pub async fn request_put<U, T>(url: String, body: &U, ide: Identity) -> Result<T, u16>
 where
-    T: DeserializeOwned + Send,
-    U: Serialize,
+    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    U: Serialize + std::fmt::Debug,
 {
     request(url, reqwest::Method::PUT, body, Some(ide)).await
 }
