@@ -16,7 +16,7 @@ use crate::AppState;
 use sailfish::TemplateOnce;
 
 
-pub fn pages_urls(config: &mut web::ServiceConfig) {
+pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
     config.route("/login", web::get().to(mobile_login));
 } 
