@@ -56,7 +56,10 @@ pub async fn phone_send (
         &*data.borrow_mut(),
         ide 
     ).await;
-    Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body.resp))
+    match body {
+        Ok(ok) => ok.resp,
+        Err(error) => error
+    }
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
