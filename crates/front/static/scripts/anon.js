@@ -575,10 +575,13 @@ on('#ajax', 'click', '#phone_send', function() {
   else if (_user_phone[0] == "8" || _user_phone[0] == "7") {
     _user_phone = _user_phone.slice(1)
   };
-  _user_phone = 7 + _user_phone;
+
+
+  form_data = new FormData();
+  form_data.append("phone", 7 + _user_phone);
 
   var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-  request.open('GET', "/phone_send/" + _user_phone + "/", true);
+  request.open('POST', "/phone_send", true);
   request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
@@ -589,7 +592,7 @@ on('#ajax', 'click', '#phone_send', function() {
           }
       }
   };
-  request.send(null);
+  request.send(form_data);
 });
 
 function create_hide_input (name, value, _class) {
