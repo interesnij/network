@@ -59,7 +59,10 @@ pub async fn phone_send (
         &data,
         ide 
     ).await;
-    Json(res)
+    match res {
+        Ok(_ok) => Json(_ok),
+        Err(_err) => Json(_err),
+    }
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
