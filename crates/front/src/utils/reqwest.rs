@@ -111,8 +111,8 @@ where
 /// Put request with a body
 pub async fn request_put<U, T>(url: String, body: &U, ide: Identity) -> Result<T, u16>
 where
-    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    U: Serialize + std::fmt::Debug,
+    T: DeserializeOwned + Send,
+    U: Serialize,
 {
     request(url, reqwest::Method::PUT, body, Some(ide)).await
 }
