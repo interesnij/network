@@ -28,7 +28,7 @@ pub async fn news_page (
     req: HttpRequest 
 ) -> actix_web::Result<HttpResponse> {
     let mut data = data.lock().unwrap();
-    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(data.clone(), &req, 20);
+    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(data, &req, 20);
     let _request_user: User;
 
     _request_user = User {

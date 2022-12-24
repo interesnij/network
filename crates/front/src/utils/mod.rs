@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 use actix_identity::Identity;
 use std::sync::Mutex;
 use sailfish::TemplateOnce;
-use crate::utils::UserState;
 
 pub mod reqwest;
 pub use self::{
