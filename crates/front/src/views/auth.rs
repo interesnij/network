@@ -50,7 +50,7 @@ pub struct RespParams {
 pub async fn phone_send (
     ide: Identity,
     mut data: PhoneParams,
-) -> Responder {
+) -> dyn Responder {
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
