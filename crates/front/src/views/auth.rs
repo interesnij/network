@@ -19,7 +19,7 @@ use sailfish::TemplateOnce;
 use crate::views::index_page;
 use serde::{Deserialize, Serialize};
 use std::borrow::BorrowMut;
-use std::collections::HashMap
+use std::collections::HashMap;
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
