@@ -50,14 +50,13 @@ pub struct RespParams {
 pub async fn phone_send (
     ide: Identity,
     data: PhoneParams,
-) -> Responder { 
+) -> Result<RespParams, u16> { 
     let mut _data = data.clone();
-    //let res = request_post::<PhoneParams, RespParams> (
-    //    USERURL.to_owned() + &"/login".to_string(),
-    //    &*data.borrow_mut(),
-    //    ide 
-    //).await;
-    HttpResponse::Ok().body("ok")
+    let res = request_post::<PhoneParams, RespParams> (
+        USERURL.to_owned() + &"/login".to_string(),
+        &*data.borrow_mut(),
+        ide 
+    ).await;
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
