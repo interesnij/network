@@ -53,7 +53,7 @@ pub async fn phone_send (
 ) -> Result<RespParams, u16> { 
     //let mut _data = data;
     let res = request_post::<PhoneParams, RespParams> (
-        USERURL.to_owned() + &"/login".to_string(),
+        USERURL.to_owned() + &"/phone_send".to_string(),
         //&*_data.borrow_mut(),
         &data,
         ide 
