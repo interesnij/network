@@ -19,7 +19,7 @@ use sailfish::TemplateOnce;
 use crate::views::index_page;
 use serde::{Deserialize, Serialize};
 use std::borrow::BorrowMut;
-use std::HashMap;
+use std::collections::HashMap
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
@@ -66,6 +66,7 @@ pub async fn phone_send (
         .json(&map)
         .send()
         .await;
+    Json(res)
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
