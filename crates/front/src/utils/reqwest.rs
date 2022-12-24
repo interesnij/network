@@ -102,8 +102,8 @@ where
 /// Post request with a body
 pub async fn request_post<U, T>(url: String, body: &U, ide: Identity) -> Result<T, u16>
 where
-    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    U: Serialize + std::fmt::Debug,
+    T: DeserializeOwned + Send,
+    U: Serialize,
 {
     request(url, reqwest::Method::POST, body, Some(ide)).await
 }
