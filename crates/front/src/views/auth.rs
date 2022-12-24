@@ -49,7 +49,7 @@ pub struct RespParams {
 }
 pub async fn phone_send (
     ide: Identity,
-    data: PhoneParams,
+    data: web::Json<PhoneParams>,
 ) -> Result<RespParams, u16> { 
     //let mut _data = data;
     let res = request_post::<PhoneParams, RespParams> (
