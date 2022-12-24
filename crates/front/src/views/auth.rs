@@ -56,8 +56,7 @@ pub async fn phone_send (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
         ide 
-    ).await;
-    res
+    ).await
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
