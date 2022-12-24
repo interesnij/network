@@ -10,7 +10,7 @@ use actix_identity::Identity;
 use crate::utils::{
     APIURL, USERURL, TOKEN,
     get_first_load_page, get_default_image,
-    get_device_and_ajax,
+    get_device_and_ajax, request_post,
 };
 use crate::AppState;
 use sailfish::TemplateOnce;
