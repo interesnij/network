@@ -39,7 +39,7 @@ pub struct LoginUser2 {
     pub phone:    String,
     pub password: String,
 }
-#[derive(Deserialize, Debug)]
+#[derive(Serialize, Debug)]
 pub struct TokenParams {
     pub token: String,
 }
