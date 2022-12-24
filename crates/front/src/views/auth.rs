@@ -65,7 +65,7 @@ pub async fn phone_send (
     let res = client.post(USERURL.to_owned() + &"/phone_send".to_string())
         .json(&map)
         .send()
-        .await?
+        .await?;
     
     Ok(res)
 }
