@@ -51,7 +51,7 @@ pub struct RespParams {
 pub async fn phone_send (
     ide: Identity,
     data: Json<PhoneParams>,
-) -> Result<Json<RespParams>, Json<u16>> { 
+) -> Result<Json<RespParams>, Error> { 
     //let mut _data = data;
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
@@ -61,7 +61,7 @@ pub async fn phone_send (
     ).await;
     match res {
         Ok(_ok) => Ok(Json(_ok)),
-        Err(_err) => Err(Json(_err)),
+        Err(_err) => Err(_err),
     }
 }
 
