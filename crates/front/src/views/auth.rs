@@ -3,6 +3,7 @@ use actix_web::{
     HttpResponse,
     Responder,
     web,
+    web::Json,
     error::InternalError,
     http::StatusCode,
     Error,
@@ -49,8 +50,8 @@ pub struct RespParams {
 }
 pub async fn phone_send (
     ide: Identity,
-    data: web::Json<PhoneParams>,
-) -> Result<RespParams, u16> { 
+    data: Json<PhoneParams>,
+) -> Result<Json<RespParams>, u16> { 
     //let mut _data = data;
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
