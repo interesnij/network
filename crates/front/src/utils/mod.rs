@@ -18,10 +18,13 @@ pub use self::{
 #[derive(Serialize, Deserialize)]
 // это объект пользователя
 pub struct User {
-    pub id:       i32,
-    pub name:     String,
-    pub link:     String,
-    pub s_avatar: String,
+    pub id:           i32,
+    pub name:         String,
+    pub link:         String,
+    pub s_avatar:     String,
+    pub new_follows:  i32,
+    pub new_messages: i32,
+    pub new_notifies: i32,
 }
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
