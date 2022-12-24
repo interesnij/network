@@ -51,13 +51,13 @@ pub async fn phone_send (
     ide: Identity,
     mut data: PhoneParams,
     state: web::Data<AppState>,
-) -> i16 {
+) -> Responder {
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
         ide 
     ).await;
-    res.resp
+    HttpResponse::Ok().body(res.resp);
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
