@@ -57,7 +57,11 @@ pub async fn phone_send (
         &*data.borrow_mut(),
         ide 
     ).await;
-    Ok(body)
+    if body.is_ok() {
+        Ok(body)
+    } else {
+        Err(body)
+    }
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
