@@ -35,6 +35,7 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     HttpServer::new(move || {
         let cors = Cors::default()
+            .allowed_origin("194.58.90.123:8100")
             .allowed_origin("194.58.90.123:8000")
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
