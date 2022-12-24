@@ -50,8 +50,8 @@ pub struct RespParams {
 }
 pub async fn phone_send (
     ide: Identity,
-    data: Json<RespParams>,
-) -> (RespParams, u16) { 
+    data: Json<PhoneParams>,
+) -> Result<RespParams, u16> { 
     request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*_data.borrow_mut(),
