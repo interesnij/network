@@ -51,7 +51,7 @@ pub fn get_default_image() -> String {
 }
 
 pub fn is_desctop(state: UserState, req: &HttpRequest) -> bool {
-    let mut device = state.device.lock().unwrap();
+    let mut device = state.device;
     if *device == 1 {
         return true;
     }
