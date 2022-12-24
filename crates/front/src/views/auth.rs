@@ -52,7 +52,7 @@ pub async fn phone_send (
     ide: Identity,
     data: Json<PhoneParams>,
 //) -> Json<Result<RespParams, u16>> { 
- ) -> Json<Result<reqwest::Response, u16>> {
+ ) -> Json<Result<reqwest::Response, reqwest::Error>> {
     //Json(request_post::<PhoneParams, RespParams> (
     //    USERURL.to_owned() + &"/phone_send".to_string(),
     //    //&*_data.borrow_mut(),
