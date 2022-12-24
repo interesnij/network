@@ -8,7 +8,7 @@ use actix_web::{
 };
 use actix_identity::Identity;
 use crate::utils::{
-    APIURL, USERURL, User,
+    APIURL, USERURL, RequestUser,
     get_first_load_page, get_default_image,
     get_device_and_ajax, get_device_and_ajax_and_limit_offset,
 };
@@ -28,12 +28,15 @@ pub async fn news_page (
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state.clone(), &req, 20);
-    let _request_user: User;
-    _request_user = User {
-        id:       *state.user_id.lock().unwrap(),
-        name:     (*state.user_name.lock().unwrap()).to_string(),
-        link:     (*state.user_link.lock().unwrap()).to_string(),
-        s_avatar: (*state.user_image.lock().unwrap()).to_string(),
+    let _request_user: RequestUser;
+    _request_user = RequestUser {
+        id:           *state.user_id.lock().unwrap(),
+        name:         (*state.user_name.lock().unwrap()).to_string(),
+        link:         (*state.user_link.lock().unwrap()).to_string(),
+        s_avatar:     (*state.user_image.lock().unwrap()).to_string(),
+        new_follows:  *state.new_follows.lock().unwrap(),
+        new_messages: *state.new_messages.lock().unwrap(),
+        new_notifies: *state.new_notifies.lock().unwrap(),
     };
     
     //let object_list: Vec<WallObject> = Vec::new();
@@ -51,7 +54,7 @@ pub async fn news_page (
         #[derive(TemplateOnce)]
         #[template(path = "desctop/generic/empty_page.stpl")]
         struct Template {
-            request_user:     User,
+            request_user:     RequestUser,
             //count:            usize,
             //next_page_number: i32,
             //object_list:      Vec<WallObject>,
@@ -71,7 +74,7 @@ pub async fn news_page (
         #[derive(TemplateOnce)]
         #[template(path = "mobile/generic/empty_page.stpl")]
         struct Template {
-            request_user:     User,
+            request_user:     RequestUser,
             //count:            usize,
             //next_page_number: i32,
            // object_list:      Vec<WallObject>,

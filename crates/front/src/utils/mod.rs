@@ -16,12 +16,15 @@ pub use self::{
 };
 
 #[derive(Serialize, Deserialize)]
-// это объект пользователя
-pub struct User {
-    pub id:       i32,
-    pub name:     String,
-    pub link:     String,
-    pub s_avatar: String,
+// это объект авторизованного пользователя
+pub struct RequestUser {
+    pub id:           i32,
+    pub name:         String,
+    pub link:         String,
+    pub s_avatar:     String,
+    pub new_follows:  u16,
+    pub new_messages: u16,
+    pub new_notifies: u16,
 }
 
 pub const APIURL: &str = "http:194.58.90.123:8000";
