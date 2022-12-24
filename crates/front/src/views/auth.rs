@@ -52,7 +52,7 @@ pub async fn phone_send (
     ide: Identity,
     data: Json<PhoneParams>,
 //) -> Json<Result<RespParams, u16>> { 
- ) -> Result<reqwest::Response, reqwest::Error> {
+ ) -> reqwest::Response {
     //Json(request_post::<PhoneParams, RespParams> (
     //    USERURL.to_owned() + &"/phone_send".to_string(),
     //    //&*_data.borrow_mut(),
@@ -62,11 +62,10 @@ pub async fn phone_send (
     let mut map = HashMap::new();
     map.insert("phone", data.phone.clone());
     let client = reqwest::Client::new();
-    let res = client.post(USERURL.to_owned() + &"/phone_send".to_string())
+    client.post(USERURL.to_owned() + &"/phone_send".to_string())
         .json(&map)
         .send()
-        .await;
-    res
+        .await?
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
