@@ -41,8 +41,8 @@ async fn request<U, T> (
     ide: Option<Identity>,
 ) -> Result<T, u16>
 where
-    T: DeserializeOwned + Debug + Send,
-    U: Serialize + Debug ,
+    T: DeserializeOwned + Send,
+    U: Serialize,
 {
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
     let mut req = reqwest::Client::new()
