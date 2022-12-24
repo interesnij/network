@@ -44,7 +44,7 @@ pub struct PhoneParams {
 }
 #[derive(Deserialize)]
 pub struct RespParams {
-    pub resp: u8,
+    pub resp: u16,
 }
 pub async fn phone_send (
     ide: Identity,
@@ -54,9 +54,9 @@ pub async fn phone_send (
     let body = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
-        ide
+        ide 
     ).await;
-    Ok(body.resp)
+    Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body.resp))
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
