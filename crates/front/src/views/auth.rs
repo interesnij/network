@@ -5,6 +5,7 @@ use actix_web::{
     web,
     error::InternalError,
     http::StatusCode,
+    Error,
 };
 use actix_identity::Identity;
 use crate::utils::{
