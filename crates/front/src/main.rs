@@ -47,7 +47,7 @@ async fn main() -> std::io::Result<()> {
             new_notifies: 0,
         }
     }));
-    HttpServer::new(move || {
+    HttpServer::new(move || { 
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new() 
             .register_data(data.clone())
