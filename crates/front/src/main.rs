@@ -35,17 +35,15 @@ async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use actix_files::Files;
 
-    let data = web::Data::new(Mutex::new(AppState{
-        UserState {
-            device:       0,
-            user_name:    "".to_string(),
-            user_link:    "".to_string(),
-            user_id:      0,
-            user_image:   "".to_string(),
-            new_follows:  0,
-            new_messages: 0,
-            new_notifies: 0,
-        }
+    let data = web::Data::new(Mutex::new(UserState {
+        device:       0,
+        user_name:    "".to_string(),
+        user_link:    "".to_string(),
+        user_id:      0,
+        user_image:   "".to_string(),
+        new_follows:  0,
+        new_messages: 0,
+        new_notifies: 0,
     }));
     HttpServer::new(move || { 
         let _files = Files::new("/static", "static/").show_files_listing();
