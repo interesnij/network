@@ -25,6 +25,13 @@ pub struct AppState {
     user_id:    Mutex<i32>,    //
     user_image: Mutex<String>,    //
 }
+pub struct UserState {
+    device:     Mutex<u8>,             // 1 - комп, 2 - телефон
+    user_name:  Mutex<String>, //
+    user_link:  Mutex<String>, //
+    user_id:    Mutex<i32>,    //
+    user_image: Mutex<String>,    //
+}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -36,6 +43,15 @@ async fn main() -> std::io::Result<()> {
         App::new() 
             .app_data(web::Data::new (
                 AppState {
+                    device: Mutex::new(0),
+                    user_name:  Mutex::new("".to_string()),
+                    user_link:  Mutex::new("".to_string()),
+                    user_id:    Mutex::new(0),
+                    user_image: Mutex::new("".to_string()),
+                }
+            ))
+            .app_data(web::Data::new (
+                UserState {
                     device: Mutex::new(0),
                     user_name:  Mutex::new("".to_string()),
                     user_link:  Mutex::new("".to_string()),
