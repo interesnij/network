@@ -52,13 +52,13 @@ pub async fn phone_send (
     ide: Identity,
     data: Json<PhoneParams>,
 //) -> Json<Result<RespParams, u16>> { 
-    -> Json<Result<RespParams, u16>>
-    Json(request_post::<PhoneParams, RespParams> (
-        USERURL.to_owned() + &"/phone_send".to_string(),
-        //&*_data.borrow_mut(),
-        &data,
-        ide 
-    ).await)
+    -> Json<Result<RespParams, u16>> {
+    //Json(request_post::<PhoneParams, RespParams> (
+    //    USERURL.to_owned() + &"/phone_send".to_string(),
+    //    //&*_data.borrow_mut(),
+    //    &data,
+    //    ide 
+    //).await)
     let mut map = HashMap::new();
     map.insert("phone", data.phone);
     let client = reqwest::Client::new();
