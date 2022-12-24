@@ -39,7 +39,7 @@ pub async fn logout (
     index_page(None, state, req).await
 } 
 
-#[derive(Debug, Clone(), Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PhoneParams {
     pub phone: String,
 }
