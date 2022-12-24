@@ -39,7 +39,7 @@ pub async fn logout (
     index_page(None, state, req).await
 } 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone(), Serialize, Deserialize)]
 pub struct PhoneParams {
     pub phone: String,
 }
@@ -51,10 +51,10 @@ pub async fn phone_send (
     ide: Identity,
     data: PhoneParams,
 ) -> Result<RespParams, u16> { 
-    let mut _data = data.clone();
+    let mut _data = data;
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
-        &*data.borrow_mut(),
+        &*_data.borrow_mut(),
         ide 
     ).await;
     res
