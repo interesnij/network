@@ -16,6 +16,7 @@ use crate::AppState;
 use sailfish::TemplateOnce;
 use crate::views::index_page;
 use serde::{Deserialize, Serialize};
+use std::borrow::BorrowMut;
 
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
@@ -34,7 +35,7 @@ pub async fn logout (
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     ide.logout();
-    index_page(None, state, req)
+    index_page(None, state, req).await
 }
 
 #[derive(Serialize)]
