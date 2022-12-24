@@ -43,7 +43,7 @@ async fn request<U, T> (
 where
     T: DeserializeOwned + Debug + Send,
     U: Serialize + Debug ,
-{
+{ 
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
     let mut req = reqwest::Client::new()
         .request(method, url)
@@ -58,9 +58,9 @@ where
         req = req.json(body);
     }
 
-    //log::info!("Request: {:?}", req);
+    log::info!("Request: {:?}", req);
     let res_resp = req.send().await;
-    //log::info!("Response: {:?}", res_resp);
+    log::info!("Response: {:?}", res_resp);
 
     match res_resp {
         Ok(resp) => {
@@ -70,7 +70,7 @@ where
                 match resp.json::<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
-                        //log::info!("Failed parse body");
+                        log::info!("Failed parse body");
                         Err(0)
                     },
                 }
