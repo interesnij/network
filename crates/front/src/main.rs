@@ -38,7 +38,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || { 
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new() 
-            .register_data(data.clone())
+            .app_data(data.clone())
             .wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
