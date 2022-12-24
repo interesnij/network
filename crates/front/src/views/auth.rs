@@ -23,7 +23,7 @@ use std::borrow::BorrowMut;
 pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
     config.route("/login", web::get().to(mobile_login));
-    config.route("/phone_send", web::get().to(phone_send));
+    config.route("/phone_send", web::post().to(phone_send));
     //config.route("/phone_verify", web::post().to(phone_verify));
     //config.route("/signup", web::post().to(process_signup));
     //config.route("/login", web::post().to(login));
@@ -49,8 +49,9 @@ pub struct RespParams {
 }
 pub async fn phone_send (
     ide: Identity,
-    mut data: PhoneParams,
+    data: PhoneParams,
 ) -> Responder { 
+    let mut _data = data.clone();
     //let res = request_post::<PhoneParams, RespParams> (
     //    USERURL.to_owned() + &"/login".to_string(),
     //    &*data.borrow_mut(),
