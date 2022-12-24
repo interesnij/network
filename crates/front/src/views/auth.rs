@@ -43,19 +43,20 @@ pub struct PhoneParams {
     pub phone: String,
 }
 #[derive(Deserialize)]
-pub struct TokenParams {
-    pub token: String,
+pub struct RespParams {
+    pub resp: u8,
 }
 pub async fn phone_send (
     ide: Identity,
     data: PhoneParams,
     state: web::Data<AppState>,
 ) -> actix_web::Result<HttpResponse> {
-    request_post::<PhoneParams, TokenParams> (
+    let body = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
         ide
-    ).await
+    ).await;
+    Ok(body.resp)
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
