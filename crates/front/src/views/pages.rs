@@ -27,7 +27,7 @@ pub async fn news_page (
     state: web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
-    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state, &req, 20);
+    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state.clone(), &req, 20);
     let _request_user: User;
     _request_user = User {
         id:       *state.user_id.lock().unwrap(),
