@@ -49,7 +49,7 @@ async fn main() -> std::io::Result<()> {
                     new_notifies: Mutex::new(0),
                 }
             ))
-            .wrap(IdentityMiddleware::default())
+            //.wrap(IdentityMiddleware::default())
             .wrap(RedisSession::new("127.0.0.1:6379", &[0; 32]))
             .configure(routes)
             .service(_files)
