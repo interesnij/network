@@ -56,7 +56,7 @@ pub async fn phone_send (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
         ide 
-    ).await?;
+    ).await;
     res.resp
 }
 
