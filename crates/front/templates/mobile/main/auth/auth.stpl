@@ -26,7 +26,7 @@
                 </div>
                 <div class="text-center">
                     <button type="button" id="logg" class="btn btn-sm btn-success success-gradient">Вход</button>
-                    <a href="/mob_register/" class="btn btn-sm border ajax">Регистрация</a>
+                    <a href="/signup/" class="btn btn-sm border ajax">Регистрация</a>
                 </div>
                 <br>
                 <div class="text-center mb-4">
