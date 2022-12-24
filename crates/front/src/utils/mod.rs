@@ -7,8 +7,9 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 use actix_identity::Identity;
-use crate::AppState;
+use std::sync::Mutex;
 use sailfish::TemplateOnce;
+use crate::utils::UserState,
 
 pub mod reqwest;
 pub use self::{
@@ -39,7 +40,7 @@ pub fn get_default_image() -> String {
     return "/static/images/hakew.png".to_string();
 }
 
-pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
+pub fn is_desctop(state: web::Data<Mutex<UserState>>, req: &HttpRequest) -> bool {
     let mut device = state.device.lock().unwrap();
     if *device == 1 {
         return true;
@@ -58,7 +59,7 @@ pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
     }
 }
 
-pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bool, u8) {
+pub fn get_device_and_ajax(state: web::Data<Mutex<UserState>>, req: &HttpRequest) -> (bool, u8) {
     #[derive(Debug, Deserialize)]
     struct Params {
         pub ajax: Option<u8>,
@@ -80,7 +81,7 @@ pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bo
 }
 
 pub fn get_device_and_ajax_and_limit_offset (
-    state: web::Data<AppState>, 
+    state: web::Data<Mutex<UserState>>, 
     req: &HttpRequest, 
     limit: i64
 ) -> (bool, u8, i64, i64) {

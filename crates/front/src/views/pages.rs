@@ -12,8 +12,8 @@ use crate::utils::{
     get_first_load_page, get_default_image,
     get_device_and_ajax, get_device_and_ajax_and_limit_offset,
 };
-use crate::AppState;
 use sailfish::TemplateOnce;
+use std::sync::Mutex;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
