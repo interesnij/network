@@ -61,7 +61,7 @@ pub async fn phone_send (
     match res {
         Ok(_ok) => _ok.resp,
         Err(error) => error,
-    };
+    }
 }
 
 pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
