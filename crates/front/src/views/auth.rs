@@ -51,7 +51,7 @@ pub async fn phone_send (
     ide: Identity,
     data: PhoneParams,
     state: web::Data<AppState>,
-) -> Result<i16, Error> {
+) -> Responder {
     let body = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/login".to_string(),
         &*data.borrow_mut(),
@@ -59,7 +59,7 @@ pub async fn phone_send (
     ).await;
     if body.is_ok() {
         Ok(body)
-    } else {
+    } else { 
         Err(body)
     }
 }
