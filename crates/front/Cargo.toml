@@ -22,3 +22,6 @@ derive_more = "0.99.5"
 sailfish = "0.4.0"
 sailfish-macros = "0.4.0"
 log = "0.4.16"
+
+[dependencies.cookie]
+features = ["secure", "percent-encode"]
