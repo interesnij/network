@@ -811,12 +811,13 @@ impl User {
         let _connection = establish_connection();
         use crate::models::NewUserInfo;
 
+        let from_ymd_opt = chrono::NaiveDate::from_ymd_opt;
         let _user_info = NewUserInfo {
             user_id:   self.id,
             avatar_id: None,
             language:  "Ru".to_string(),
             email:     None,
-            birthday:  chrono::Local::now().naive_utc(),
+            birthday:  from_ymd_opt(2015, 3, 14).unwrap(),
             b_avatar:  None,
             status:    None,
             city:      None,
