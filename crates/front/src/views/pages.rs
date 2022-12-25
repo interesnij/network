@@ -25,6 +25,8 @@ pub async fn news_page (
     state: web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
+    use cookie::Cookie;
+
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(state.clone(), &req, 20);
     let _request_user: RequestUser;
     _request_user = RequestUser {
@@ -39,6 +41,14 @@ pub async fn news_page (
     
     //let object_list: Vec<WallObject> = Vec::new();
     if is_ajax == 0 {
+        let cookie = Cookie::new("name", "1");
+        let secure_cookie = Cookie::build("secure_name", "1")
+            .domain("194.58.90.123:8100")
+            .path("/")
+            .secure(true)
+            .http_only(true)
+            .finish();
+
         get_first_load_page (
             false,
             false,
