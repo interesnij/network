@@ -550,7 +550,6 @@ impl User {
     }
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             1 => 41,
             2 => 42,
@@ -575,7 +574,6 @@ impl User {
         //use crate::models::show_wall_notify_items;
 
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             41 => 1,
             42 => 2,
@@ -597,7 +595,6 @@ impl User {
     }
     pub fn suspend_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             1 => 51,
             2 => 52,
@@ -620,7 +617,6 @@ impl User {
     }
     pub fn unsuspend_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             51 => 1,
             52 => 2,

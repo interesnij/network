@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::utils::{
     establish_connection, gen_jwt,
     get_user_owner_data,
-    ErrorParams, InfoParams,
+    ErrorParams,
 };
 use bcrypt::{hash, verify};
 use diesel::{
@@ -45,8 +45,6 @@ pub struct TokenParams {
 }
 
 pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
-    use crate::utils::get_user_id;
-
     let _user = User::get_user_by_phone(&data.phone);
     
     if _user.is_err() {
