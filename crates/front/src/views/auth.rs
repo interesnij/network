@@ -37,7 +37,7 @@ pub async fn logout (
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     ide.logout();
-    index_page(None, state, req).await
+    index_page(state, req).await
 } 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
