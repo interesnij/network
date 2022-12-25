@@ -102,13 +102,6 @@ pub async fn index_page (
         return news_page(state.clone(), req).await
     }
     else if is_ajax == 0 {
-        let cookie = Cookie::new("name", "1");
-        let secure_cookie = Cookie::build("secure_name", "1")
-            .domain("194.58.90.123:8100")
-            .path("/")
-            .secure(true)
-            .http_only(true)
-            .finish();
         get_first_load_page (
             false,
             false,
@@ -119,6 +112,13 @@ pub async fn index_page (
         ).await
     }
     else {
+        let cookie = Cookie::new("name", "1");
+        let secure_cookie = Cookie::build("secure_name", "1")
+            .domain("194.58.90.123:8100")
+            .path("/")
+            .secure(true)
+            .http_only(true)
+            .finish();
         if is_desctop {
             #[derive(TemplateOnce)]
             #[template(path = "desctop/main/auth/auth.stpl")]
