@@ -93,15 +93,16 @@ pub async fn news_page (
 }
 
 pub async fn index_page (
-    ide: Option<Identity>, 
+    //ide: Option<Identity>, 
     state: web::Data<AppState>, 
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax) = get_device_and_ajax(state.clone(), &req);
-    if ide.is_some() {
-        return news_page(state.clone(), req).await
-    }
-    else if is_ajax == 0 {
+    //if ide.is_some() {
+    //    return news_page(state.clone(), req).await
+    //}
+    //else 
+    if is_ajax == 0 {
         get_first_load_page (
             false,
             false,
