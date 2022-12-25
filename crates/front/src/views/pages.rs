@@ -114,12 +114,14 @@ pub async fn index_page (
     }
     else {
         let cookie = Cookie::new("name", "1");
-        //let secure_cookie = Cookie::build("secure_name", "1")
-        //    .domain("http://194.58.90.123:8100")
-        //    .path("/")
-        //    .secure(true)
-        //    .http_only(true)
-        //    .finish();
+        let cookie_nv = cookie.name_value();
+        let cookie_dom = cookie.domain();
+        let secure_cookie = Cookie::build("secure_name", "1")
+            .domain("http://194.58.90.123:8100")
+            .path("/")
+            .secure(true)
+            .http_only(true)
+            .finish(); 
         
         for header in req.headers().into_iter() {
             if header.0 == "cookie" {
@@ -129,7 +131,7 @@ pub async fn index_page (
                     let split_c: Vec<&str> = c.split("=").collect();
                     println!("name {:?}", split_c[0].trim());
                     println!("value {:?}", split_c[1]);
-                }
+                } 
             }
         };
         if is_desctop {
@@ -137,9 +139,11 @@ pub async fn index_page (
             #[template(path = "desctop/main/auth/auth.stpl")]
             struct DesctopAuthTemplate {
                 is_ajax: u8,
+                c_1: String,
             }
             let body = DesctopAuthTemplate {
                 is_ajax: is_ajax,
+                c_1: cookie_dom.unwrap().to_string(),
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
