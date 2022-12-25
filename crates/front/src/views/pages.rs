@@ -119,6 +119,21 @@ pub async fn index_page (
             .secure(true)
             .http_only(true)
             .finish();
+        
+            for header in req.headers().into_iter() {
+                if header.0 == "cookie" {
+                    let str_cookie = header.1.to_str().unwrap();
+                    let _cookie: Vec<&str> = str_cookie.split(";").collect();
+                    for c in _cookie.iter() {
+                        let split_c: Vec<&str> = c.split("=").collect();
+                        if split_c[0] == "user" {
+                            user_id = split_c[1].parse().unwrap();
+                        }
+                        println!("name {:?}", split_c[0].trim());
+                        println!("value {:?}", split_c[1]);
+                    }
+                }
+            };
         if is_desctop {
             #[derive(TemplateOnce)]
             #[template(path = "desctop/main/auth/auth.stpl")]
