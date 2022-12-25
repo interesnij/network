@@ -114,6 +114,7 @@ pub struct NewUserForm {
     pub is_man:     Option<i16>, 
     pub password:   Option<String>,
     pub phone:      Option<String>,
+    pub birthday:   Option<String>,
 }
 #[derive(Serialize)]
 pub struct NewUserDetailJson {
@@ -133,7 +134,6 @@ pub struct NewUserData {
     pub last_name:  Option<String>,
     pub is_man:     Option<i16>,
     pub link:       Option<String>,
-    pub birthday:   Option<String>,
 }
 
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
