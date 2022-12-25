@@ -89,19 +89,6 @@ pub struct UserLogin {
     pub password: String,
 }
 
-#[derive(Deserialize)]
-pub struct UserSignup {
-    pub id:            i32,
-    pub first_name:    String,
-    pub last_name:     String,
-    pub phone:         String,
-    pub types:         i16,
-    pub is_man:        bool,
-    pub password:      String,
-    pub link:          String,
-    pub last_activity: chrono::NaiveDateTime,
-}
-
 /////// UserNotifications //////
 #[derive(Queryable, Serialize, Identifiable, Associations)]
 pub struct UserNotification {

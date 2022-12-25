@@ -133,6 +133,7 @@ pub struct NewUserData {
     pub last_name:  Option<String>,
     pub is_man:     Option<i16>,
     pub link:       Option<String>,
+    pub birthday:   Option<String>,
 }
 
 pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
@@ -142,7 +143,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         PhoneCode,
     };
     use crate::schema::phone_codes::dsl::phone_codes;
-    use chrono::Duration;
+    use chrono::{Duration, Datelike};
     use crate::utils::{TOKEN, USERS_SERVICES};
 
     let _connection = establish_connection();
@@ -171,6 +172,12 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     else if data.phone.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametr 'phone' not found!".to_string(),
+        }).unwrap();
+        return Err(Error::BadRequest(body));
+    }
+    else if data.birthday.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametr 'birthday' not found!".to_string(),
         }).unwrap();
         return Err(Error::BadRequest(body));
     }
@@ -217,18 +224,26 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
           ipaddr = val.ip().to_string();
     };
 
+    let birthday = chrono::NaiveDate::parse_from_str(data.password.as_deref().unwrap(), "%Y-%m-%d").unwrap();
+    let types: i16;
+    if birthday.year() < 2006 {
+        types = 3;
+    } 
+    else {
+        types = 1;
+    }
     let count = User::count_users() + 1;
-    let link = "/id".to_string() + &count.to_string() + &"/".to_string();
+    let link = "/id".to_string() + &count.to_string();
     let form_user = NewUser {
         first_name:    data.first_name.as_deref().unwrap().to_string(),
         last_name:     data.last_name.as_deref().unwrap().to_string(),
         phone:         data.phone.as_deref().unwrap().to_string(),
-        types:         1,
+        types:         types,
         is_man:        is_man,
         password:      hash(data.password.as_deref().unwrap(), 8).unwrap(),
         link:          link,
         last_activity: chrono::Local::now().naive_utc(),
-    };
+    }; 
 
     let _new_user = diesel::insert_into(schema::users::table)
         .values(&form_user)
@@ -237,11 +252,32 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     // удалим телефон из таблицы подтвержденных телефонов, чтобы он больше не использовался
     let _del = diesel::delete(
         phone_codes
-            .filter(schema::phone_codes::phone.eq(data.phone.as_deref().unwrap()))
+            .filter(schema::phone_codes::phone.eq(&data.phone.as_deref().unwrap()))
             .filter(schema::phone_codes::types.eq(1))
         )
         .execute(&_connection)
         .expect("E.");
+
+    let info_user = NewUserInfo {
+        user_id:   _new_user.id,
+        avatar_id: None,
+        language:  "Ru".to_string(),
+        email:     None,
+        birthday:  chrono::NaiveDate::parse_from_str(data.password.as_deref().unwrap(), "%Y-%m-%d").unwrap(),
+        b_avatar:  None,
+        status:    None,
+        city:      None,
+        level:     100,
+        cover:     None,
+        created:   chrono::Local::now().naive_utc(),
+        friends:   0,
+        follows:   0,
+    }; 
+
+    let _new_user = diesel::insert_into(schema::user_infos::table)
+        .values(&info_user)
+        .execute(&_connection)
+        .expect("Error saving user info."); 
 
     // записываем местоположение нового пользователя
     let _geo_url = "http://api.sypexgeo.net/J5O6d/json/".to_owned() + &ipaddr;

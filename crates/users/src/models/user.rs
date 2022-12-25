@@ -22,8 +22,11 @@ use crate::errors::Error;
 /*
 Типы пользоватетеля
 1 стандартный тип пользователя
-6 пославший запрос на идентификацию
-7 идентифицированный
+2 стандартный пославший запрос на идентификацию
+3 стандартный идентифицированный
+4 детский тип пользователя
+5 детский пославший запрос на идентификацию
+6 детский идентифицированный
 
 10 TRAINEE_MODERATOR
 11 MODERATOR
@@ -42,20 +45,32 @@ use crate::errors::Error;
 25 SUPERMANAGER
 
 31 удаленный стандартный
-36 удаленный пославший запрос на идентификацию
-37 удаленный идентифицированный
+32 удаленный пославший запрос на идентификацию
+33 удаленный идентифицированный
+34 удаленный ребенок
+35 удаленный ребенок пославший запрос на идентификацию
+36 удаленный ребенок идентифицированный
 
 41 закрытый стандартный
-46 закрытый пославший запрос на идентификацию
-47 закрытый идентифицированный
+42 закрытый пославший запрос на идентификацию
+43 закрытый идентифицированный
+44 закрытый ребенок
+45 закрытый ребенок пославший запрос на идентификацию
+46 закрытый ребенок идентифицированный
 
 51 приостановленный стандартный
-56 приостановленный пославший запрос на идентификацию
-57 приостановленный идентифицированный
+52 приостановленный пославший запрос на идентификацию
+53 приостановленный идентифицированный
+54 приостановленный ребенок
+55 приостановленный ребенок пославший запрос на идентификацию
+56 приостановленный ребенок идентифицированный
 
 61 закрытый баннером стандартный
-66 закрытый баннером пославший запрос на идентификацию
-67 закрытый баннером идентифицированный
+62 закрытый баннером пославший запрос на идентификацию
+63 закрытый баннером идентифицированный
+64 приостановленный ребенок
+65 приостановленный ребенок пославший запрос на идентификацию
+66 приостановленный ребенок идентифицированный
 
 приватность
 1 Все пользователи
@@ -102,14 +117,14 @@ pub struct NewUser {
 
 #[derive(Deserialize)]
 pub struct UserSignup {
-    pub id:            i32,
-    pub first_name:    String,
-    pub last_name:     String,
-    pub phone:         String,
-    pub is_man:        bool,
-    pub password:      String,
-    pub link:          String,
-    pub last_activity: chrono::NaiveDateTime,
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub phone:      String,
+    pub is_man:     bool,
+    pub password:   String,
+    pub link:       String,
+    pub birthday:   chrono::NaiveDate,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -537,10 +552,13 @@ impl User {
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
-        let _case = match user_types {
+        let _case = match self.types {
             1 => 41,
+            2 => 42,
+            3 => 43,
+            4 => 44,
+            5 => 45,
             6 => 46,
-            7 => 47,
             _ => 41,
         };
         let o = diesel::update(self)
@@ -559,10 +577,13 @@ impl User {
 
         let _connection = establish_connection();
         let user_types = self.types;
-        let close_case = match user_types {
+        let _case = match self.types {
             41 => 1,
+            42 => 2,
+            43 => 2,
+            44 => 4,
+            45 => 5,
             46 => 6,
-            47 => 7,
             _ => 1,
         };
         let o = diesel::update(self)
@@ -578,10 +599,13 @@ impl User {
     pub fn suspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
-        let _case = match user_types {
+        let _case = match self.types {
             1 => 51,
+            2 => 52,
+            3 => 53,
+            4 => 54,
+            5 => 55,
             6 => 56,
-            7 => 57,
             _ => 51,
         };
         let o = diesel::update(self)
@@ -598,10 +622,13 @@ impl User {
     pub fn unsuspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
-        let close_case = match user_types {
+        let _case = match self.types {
             51 => 1,
+            52 => 2,
+            53 => 2,
+            54 => 4,
+            55 => 5,
             56 => 6,
-            57 => 7,
             _ => 1,
         };
         let o = diesel::update(self)
@@ -652,24 +679,27 @@ impl User {
     }
     pub fn is_man(&self) -> bool {
         return self.is_man;
+    } 
+    pub fn is_child(&self) -> bool {
+        return self.types > 3 && self.types < 7;
     }
     pub fn is_suspended(&self) -> bool {
-        return self.types < 40 && self.types > 30;
+        return self.types < 60 && self.types > 50;
     }
     pub fn is_have_warning_banner(&self) -> bool {
-        return self.types < 50 && self.types > 40;
+        return self.types < 70 && self.types > 50; 
     }
     pub fn is_deleted(&self) -> bool {
-        return self.types < 20 && self.types > 10;
+        return self.types < 40 && self.types > 30;
     }
     pub fn is_closed(&self) -> bool {
-        return self.types < 30 && self.types > 20;
+        return self.types < 50 && self.types > 40;
     }
     pub fn is_identified_send(&self) -> bool {
-        return self.types == 6;
+        return self.types == 2 && self.types == 5;
     }
     pub fn is_identified(&self) -> bool {
-        return self.types > 6 && self.types < 30;
+        return self.types == 3 && self.types == 6;
     }
 
     pub fn is_online(&self) -> bool {
@@ -2577,10 +2607,13 @@ impl User {
     pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
-        let _case = match user_types {
+        let _case = match self.types { 
             1 => 31,
+            2 => 32,
+            3 => 33,
+            4 => 34,
+            5 => 35,
             6 => 36,
-            7 => 37,
             _ => 31,
         };
         let o = diesel::update(self)
@@ -2597,10 +2630,13 @@ impl User {
     pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
         let user_types = self.types;
-        let _case = match user_types {
+        let _case = match self.types {
             31 => 1,
+            32 => 2,
+            33 => 2,
+            34 => 4,
+            35 => 5,
             36 => 6,
-            37 => 7,
             _ => 1,
         };
         let o = diesel::update(self)

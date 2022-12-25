@@ -92,6 +92,9 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     else if data.last_name.is_none() {
         Err(Error::BadRequest("Field 'last_name' is required!".to_string()))
     }
+    else if data.types.is_none() {
+        Err(Error::BadRequest("Field 'types' is required!".to_string()))
+    }
     else if data.link.is_none() {
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
     }
@@ -108,6 +111,7 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
                 data.user_id.unwrap(),
                 data.first_name.as_deref().unwrap().to_string(),
                 data.last_name.as_deref().unwrap().to_string(),
+                data.types.unwrap(),
                 is_man,
                 data.password.as_deref().unwrap().to_string(),
                 data.link.as_deref().unwrap().to_string(),
