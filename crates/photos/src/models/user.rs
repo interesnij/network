@@ -699,7 +699,7 @@ impl User {
         user_id:    i32,
         first_name: String,
         last_name:  String,
-        types:      i32,
+        types:      i16,
         is_man:     bool,
         password:   String,
         link:       String,
