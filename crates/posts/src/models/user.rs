@@ -1159,7 +1159,6 @@ impl User {
         прикрепляемых элементов.
         */
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types { 
             1 => 31,
             2 => 32,
@@ -1194,7 +1193,6 @@ impl User {
         use crate::models::ItemUser;
 
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             31 => 1,
             32 => 2,
@@ -1231,7 +1229,6 @@ impl User {
         use crate::models::ItemUser;
 
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             1 => 41,
             2 => 42,
@@ -1267,7 +1264,6 @@ impl User {
         use crate::models::ItemUser;
 
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             41 => 1,
             42 => 2,
@@ -1303,7 +1299,6 @@ impl User {
         use crate::models::ItemUser;
 
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             1 => 51,
             2 => 52,
@@ -1339,7 +1334,6 @@ impl User {
         use crate::models::ItemUser;
 
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             51 => 1,
             52 => 2,
