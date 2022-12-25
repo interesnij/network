@@ -126,9 +126,6 @@ pub async fn index_page (
                     let _cookie: Vec<&str> = str_cookie.split(";").collect();
                     for c in _cookie.iter() {
                         let split_c: Vec<&str> = c.split("=").collect();
-                        if split_c[0] == "user" {
-                            user_id = split_c[1].parse().unwrap();
-                        }
                         println!("name {:?}", split_c[0].trim());
                         println!("value {:?}", split_c[1]);
                     }
