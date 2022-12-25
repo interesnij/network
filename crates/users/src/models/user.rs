@@ -485,7 +485,7 @@ impl User {
         let city: Option<String>;
         let status: Option<String>; 
         let image: Option<String>;
-        let mut _b = "".to_string();
+        let _b = _ok.birthday.format("%d-%m-%Y").to_string();
 
         let info = self.get_info_model();
         match info {
@@ -493,9 +493,6 @@ impl User {
               city = _ok.city;
               status = _ok.status;
               image = _ok.b_avatar;
-              if _ok.birthday.is_some() {
-                  _b = _ok.birthday.unwrap().format("%d-%m-%Y").to_string();
-              }
           },
           Err(_error) => {
               city = None;
@@ -819,7 +816,7 @@ impl User {
             avatar_id: None,
             language:  "Ru".to_string(),
             email:     None,
-            birthday:  None,
+            birthday:  chrono::Local::now().naive_utc(),
             b_avatar:  None,
             status:    None,
             city:      None,
