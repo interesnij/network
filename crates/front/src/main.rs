@@ -49,7 +49,7 @@ async fn main() -> std::io::Result<()> {
                     new_notifies: Mutex::new(0),
                 }
             ))
-            .wrap(IdentityMiddleware::default())
+            //.wrap(IdentityMiddleware::default())
             //.wrap(
             //    SessionMiddleware::new(
             //        RedisActorSessionStore::new(redis_connection_string),
