@@ -493,13 +493,13 @@ impl User {
               city = _ok.city;
               status = _ok.status;
               image = _ok.b_avatar;
-              _b = _ok.birthday.format("%d-%m-%Y").to_string();
+              b = _ok.birthday.format("%d-%m-%Y").to_string();
           },
           Err(_error) => {
               city = None;
               status = None;
               image = None;
-              _b = "".to_string();
+              b = "".to_string();
           },
         };
         let user_json = UserDetailJson {
@@ -510,7 +510,7 @@ impl User {
              city:          city,
              status:        status,
              image:         image,
-             birthday:      _b,
+             birthday:      b,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
          };
          return user_json;
