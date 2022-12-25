@@ -2602,7 +2602,6 @@ impl User {
     }
     pub fn delete_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types { 
             1 => 31,
             2 => 32,
@@ -2625,7 +2624,6 @@ impl User {
     }
     pub fn restore_item(&self) -> i16 {
         let _connection = establish_connection();
-        let user_types = self.types;
         let _case = match self.types {
             31 => 1,
             32 => 2,

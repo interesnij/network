@@ -44,7 +44,7 @@ pub struct TokenParams {
     pub token: String,
 }
 
-pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
+pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     
     if _user.is_err() {
