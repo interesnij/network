@@ -485,7 +485,7 @@ impl User {
         let city: Option<String>;
         let status: Option<String>; 
         let image: Option<String>;
-        let _b = _ok.birthday.format("%d-%m-%Y").to_string();
+        let b: String;
 
         let info = self.get_info_model();
         match info {
@@ -493,11 +493,13 @@ impl User {
               city = _ok.city;
               status = _ok.status;
               image = _ok.b_avatar;
+              _b = _ok.birthday.format("%d-%m-%Y").to_string();
           },
           Err(_error) => {
               city = None;
               status = None;
               image = None;
+              _b = "".to_string();
           },
         };
         let user_json = UserDetailJson {
