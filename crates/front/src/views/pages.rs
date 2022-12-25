@@ -113,13 +113,13 @@ pub async fn index_page (
         ).await
     }
     else {
-        let cookie = Cookie::new("name", "1");
-        let secure_cookie = Cookie::build("secure_name", "1")
-            .domain("http://194.58.90.123:8100")
-            .path("/")
-            .secure(true)
-            .http_only(true)
-            .finish();
+        let cookie = Cookie::new("name", 1);
+        //let secure_cookie = Cookie::build("secure_name", "1")
+        //    .domain("http://194.58.90.123:8100")
+        //    .path("/")
+        //    .secure(true)
+        //    .http_only(true)
+        //    .finish();
         
         for header in req.headers().into_iter() {
             if header.0 == "cookie" {
