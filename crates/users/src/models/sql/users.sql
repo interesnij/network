@@ -76,7 +76,7 @@ CREATE TABLE user_infos (
     avatar_id INT,
     language  VARCHAR(10) NOT NULL,
     email     VARCHAR(100),
-    birthday  DATE,
+    birthday  DATE NOT NULL,
     b_avatar  VARCHAR(100),
     status    VARCHAR(100),
     city      VARCHAR(100),
