@@ -18,7 +18,7 @@ use diesel::{
     QueryDsl,
 };
 use crate::schema;
-use crate::models::{User, NewUser};
+use crate::models::{User, NewUser, NewUserInfo};
 use crate::errors::Error;
 
 
@@ -274,7 +274,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
         follows:   0,
     }; 
 
-    let _new_user = diesel::insert_into(schema::user_infos::table)
+    let _info_user = diesel::insert_into(schema::user_infos::table)
         .values(&info_user)
         .execute(&_connection)
         .expect("Error saving user info."); 
