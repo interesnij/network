@@ -44,6 +44,8 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
+        let http_client = awc::Client::default();
+
         App::new()  
             .app_data(Data::new (
                 AppState {
@@ -62,13 +64,14 @@ async fn main() -> std::io::Result<()> {
                     new_notifies: Mutex::new(0),
                 }
             ))
+            .app_data(Data::new(http_client))
             .app_data(Data::new(config_to_user_server.clone()))
             .configure(routes)
             .service(_files)
 
             // прокси на сервер пользователей.
             .service(web::resource("/u/{path:.*}").to(user_proxy))
-    })
+    }) 
     .bind("194.58.90.123:8100")?
     .run()
     .await
