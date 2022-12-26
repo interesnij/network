@@ -32,8 +32,8 @@ pub fn get_token(state: Data<AppState>)-> Option<String> {
 pub fn is_authenticate(state: Data<AppState>)-> bool {
     println!("token state {}", state.token.lock().unwrap().to_string());
     println!("token state empty {}", !state.token.lock().unwrap().to_string().is_empty());
-    println!("token storage {}", web_local_storage_api::get_item("token").is_ok());
-    return !state.token.lock().unwrap().to_string() || web_local_storage_api::get_item("token").is_ok();
+    println!("token storage {}", web_local_storage_api::get_item("token").expect("E."));
+    return !state.token.lock().unwrap().to_string().is_empty() || web_local_storage_api::get_item("token").is_ok();
 } 
 
 pub fn set_token(token: String, state: Data<AppState>) {

@@ -40,15 +40,15 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new (
                 AppState {
                     device: Mutex::new(0),
-                    token:  Mutex::new("".to_string()),
+                    token:  Mutex::new(String::new()),
                 }
             ))
             .app_data(web::Data::new (
                 UserState {
                     id:           Mutex::new(0),
-                    name:         Mutex::new("".to_string()),
-                    link:         Mutex::new("".to_string()),
-                    image:        Mutex::new("".to_string()),
+                    name:         Mutex::new(String::new()),
+                    link:         Mutex::new(String::new()),
+                    image:        Mutex::new(String::new()),
                     new_follows:  Mutex::new(0),
                     new_messages: Mutex::new(0),
                     new_notifies: Mutex::new(0),
