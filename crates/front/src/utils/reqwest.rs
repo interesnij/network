@@ -30,7 +30,7 @@ pub fn get_token(state: web::Data<AppState>)-> Option<String> {
 }
 
 pub fn is_authenticate(state: web::Data<AppState>)-> Option<String> {
-    return !state.token.lock().unwrap()).to_string().is_empty() || web_local_storage_api::get_item("token").is_some();
+    return !state.token.lock().unwrap().to_string().is_empty() || web_local_storage_api::get_item("token").is_some();
 }
 
 pub fn set_token(token: String, state: web::Data<AppState>) {
