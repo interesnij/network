@@ -6,7 +6,7 @@ use std::result;
 use std::result::Result;
 use std::sync::Arc;
 use crate::AppState;
-use actix_web::{HttpRequest, HttpMessage, web::Json};
+use actix_web::{HttpRequest, HttpMessage, web::Json, web::Data};
 
 
 struct ReqResult<T> {
@@ -15,7 +15,7 @@ struct ReqResult<T> {
 }
 
 
-pub fn get_token(state: web::Data<AppState>)-> Option<String> {
+pub fn get_token(state: Data<AppState>)-> Option<String> {
     let token = state.token.lock().unwrap().to_string();
     if !token.is_empty() {
         return Some(token);
@@ -29,17 +29,17 @@ pub fn get_token(state: web::Data<AppState>)-> Option<String> {
     }
 }
 
-pub fn is_authenticate(state: web::Data<AppState>)-> bool {
+pub fn is_authenticate(state: Data<AppState>)-> bool {
     return !state.token.lock().unwrap().to_string().is_empty() || web_local_storage_api::get_item("token").is_ok();
 }
 
-pub fn set_token(token: String, state: web::Data<AppState>) {
+pub fn set_token(token: String, state: Data<AppState>) {
     web_local_storage_api::set_item("token", &token);
     let token = state.token.lock().unwrap().to_string();
     token = token.clone();
 }
 
-pub fn remove_token(state: web::Data<AppState>){
+pub fn remove_token(state: Data<AppState>){
     web_local_storage_api::remove_item("token");
     let token = state.token.lock().unwrap().to_string();
     token = "".to_string();
@@ -50,7 +50,7 @@ async fn request<U, T> (
     url: String, 
     method: reqwest::Method, 
     body: &U,
-    state: web::Data<AppState>,
+    state: Data<AppState>,
 ) -> Result<T, u16>
 where
     T: DeserializeOwned + Debug + Send,
@@ -96,7 +96,7 @@ where
     }
 }
 
-pub async fn request_delete<T>(url: String, state: web::Data<AppState>,) -> Result<T, u16>
+pub async fn request_delete<T>(url: String, state: Data<AppState>,) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
@@ -104,7 +104,7 @@ where
 }
 
 /// Get request
-pub async fn request_get<T>(url: String, state: web::Data<AppState>,) -> Result<T, u16>
+pub async fn request_get<T>(url: String, state: Data<AppState>,) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
@@ -112,7 +112,7 @@ where
 }
 
 /// Post request with a body
-pub async fn request_post<U, T>(url: String, body: &U, state: web::Data<AppState>,) -> Result<T, u16>
+pub async fn request_post<U, T>(url: String, body: &U, state: Data<AppState>,) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug, 
@@ -121,7 +121,7 @@ where
 }
 
 /// Put request with a body
-pub async fn request_put<U, T>(url: String, body: &U, state: web::Data<AppState>,) -> Result<T, u16>
+pub async fn request_put<U, T>(url: String, body: &U, state: Data<AppState>,) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,

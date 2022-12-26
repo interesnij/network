@@ -9,7 +9,7 @@ use actix_web::{
 
 use crate::utils::{
     APIURL, USERURL, RequestUser,
-    get_first_load_page, get_default_image,
+    get_first_load_page, get_default_image, is_authenticate,
     get_device_and_ajax, get_device_and_ajax_and_limit_offset,
 };
 use crate::{AppState, UserState};
@@ -117,11 +117,9 @@ pub async fn index_page (
             #[template(path = "desctop/main/auth/auth.stpl")]
             struct DesctopAuthTemplate {
                 is_ajax: u8,
-                c_1: Option<String>,
             }
             let body = DesctopAuthTemplate {
                 is_ajax: is_ajax,
-                c_1: cookie_dom,
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
