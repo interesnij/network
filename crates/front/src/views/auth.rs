@@ -56,8 +56,8 @@ pub async fn phone_send (
 ) -> Json<Result<RespParams, u16>> { 
     Json(request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
-        //&*_data.borrow_mut(),
-        &data,
+        &*_data.borrow_mut(),
+        //&data,
         app_state,
     ).await)
 }
