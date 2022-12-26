@@ -29,7 +29,7 @@ pub async fn user_proxy (
     path:        web::Path<String>,
     http_client: Data<awc::Client>,
 ) -> impl Responder {
-    let url = format!(
+    let url = format!( 
         "{to}{path}",
         to = USERURL,
         path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
@@ -51,6 +51,7 @@ pub async fn user_proxy (
         }
         Err(err) => {
             warn!("{url}: {err:?}");
+            println!("err {}", err);
             HttpResponse::build(StatusCode::BAD_GATEWAY).body("Bad Gateway")
         }
     }
