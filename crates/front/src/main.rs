@@ -33,6 +33,12 @@ pub struct UserState {
 async fn main() -> std::io::Result<()> {
     use crate::routes::routes;
     use actix_files::Files;
+    use crate::utils::{
+        user_proxy,
+        ConfigToUserServer,
+    };
+
+    let config_to_user_server = ConfigToUserServer::parse();
 
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
@@ -54,8 +60,12 @@ async fn main() -> std::io::Result<()> {
                     new_notifies: Mutex::new(0),
                 }
             ))
+            .app_data(Data::new(config_to_user_server.clone()))
             .configure(routes)
             .service(_files)
+
+            // прокси на сервер пользователей.
+            .service(web::resource("/u/{path:.*}").to(user_proxy))
     })
     .bind("194.58.90.123:8100")?
     .run()

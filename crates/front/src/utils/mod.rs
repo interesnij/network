@@ -10,8 +10,10 @@ use crate::AppState;
 use sailfish::TemplateOnce;
 
 pub mod reqwest;
+pub mod proxy;
 pub use self::{
     reqwest::*,
+    proxy::*,
 };
 
 #[derive(Serialize, Deserialize)]

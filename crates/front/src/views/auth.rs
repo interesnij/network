@@ -59,7 +59,7 @@ pub async fn phone_send (
         &*data.borrow_mut(),
         //&data,
         app_state,
-    ).await)
+    ).await) 
 }
 
 pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
