@@ -6,6 +6,7 @@ use actix_web::{
     HttpServer,
     dev::ServiceRequest,
     Error,
+    web::Data,
 };
 use actix_cors::Cors;
 use std::{sync::Mutex, env}; 
@@ -37,19 +38,20 @@ async fn main() -> std::io::Result<()> {
         user_proxy,
         ConfigToUserServer,
     };
+    use clap::Parser;
 
     let config_to_user_server = ConfigToUserServer::parse();
 
     HttpServer::new(move || {
         let _files = Files::new("/static", "static/").show_files_listing();
         App::new()  
-            .app_data(web::Data::new (
+            .app_data(Data::new (
                 AppState {
                     device: Mutex::new(0),
                     token:  Mutex::new(String::new()),
                 }
             ))
-            .app_data(web::Data::new (
+            .app_data(Data::new (
                 UserState {
                     id:           Mutex::new(0),
                     name:         Mutex::new(String::new()),

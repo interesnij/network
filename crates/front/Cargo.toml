@@ -19,3 +19,4 @@ log = "0.4.16"
 web-local-storage-api = "*"
 awc = { version = "3", features = ["rustls"] }
 clap = { version = "3", features = ["derive"] }
+futures = "0.3"

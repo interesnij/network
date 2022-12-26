@@ -8,10 +8,6 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     USERURL,
 };
-use crate::models::{
-    Photo, PhotoList,
-};
-use actix_multipart::{Field, Multipart};
 use futures::StreamExt;
 use std::str;
 use std::borrow::BorrowMut;
