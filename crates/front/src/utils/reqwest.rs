@@ -30,7 +30,7 @@ pub fn get_token(state: Data<AppState>)-> Option<String> {
 }
 
 pub fn is_authenticate(state: Data<AppState>)-> bool {
-    println!("state.token {}", state.token.unwrap());
+    println!("state.token {}", state.token.lock().unwrap());
     return state.token.lock().unwrap().as_str() != "" || web_local_storage_api::get_item("token").expect("E.").is_some();
 } 
 
