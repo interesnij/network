@@ -34,8 +34,8 @@ pub async fn user_proxy (
         to = USERURL,
         path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
     );
-    println!("header {}", req.head());
-    println!("body {}", body);
+    println!("url {}", url);
+    println!("body {}", body.to_string());
     return match http_client
         .request_from(&url, req.head())
         .send_stream(body)
