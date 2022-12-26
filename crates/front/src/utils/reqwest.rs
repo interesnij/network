@@ -35,13 +35,13 @@ pub fn is_authenticate(state: Data<AppState>)-> bool {
 
 pub fn set_token(token: String, state: Data<AppState>) {
     web_local_storage_api::set_item("token", &token);
-    let token = state.token.lock().unwrap().to_string();
-    token = token.clone();
+    let mut _token = state.token.lock().unwrap().to_string();
+    _token = token;
 }
 
 pub fn remove_token(state: Data<AppState>){
     web_local_storage_api::remove_item("token");
-    let token = state.token.lock().unwrap().to_string();
+    let mut token = state.token.lock().unwrap().to_string();
     token = "".to_string();
 }
 
