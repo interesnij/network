@@ -6,7 +6,7 @@ use futures::TryStreamExt;
 use log::{debug, info, warn};
 use serde::{Serialize, Deserialize};
 use crate::utils::{
-    USERURL,
+    USERURL, FRONTURL, FRONTPORT, 
 };
 use futures::StreamExt;
 use std::str;
@@ -15,9 +15,9 @@ use std::borrow::BorrowMut;
 
 #[derive(Clone, Parser)]
 pub struct ConfigToUserServer {
-    #[clap(short, long, default_value = "194.58.90.123")]             // наш ip
+    #[clap(short, long, default_value = FRONTURL)]             // наш ip
     pub address: String,
-    #[clap(short, long, default_value = "8100")]                      // наш порт
+    #[clap(short, long, default_value = FRONTPORT)]                      // наш порт
     pub port: u16,
     #[clap(short, long, default_value = USERURL)] // адрес, на который будем перенаправлять запросы
     pub to: String,
