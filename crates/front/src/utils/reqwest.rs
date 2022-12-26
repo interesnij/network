@@ -35,13 +35,13 @@ pub fn is_authenticate(state: web::Data<AppState>)-> Option<String> {
 
 pub fn set_token(token: String, state: web::Data<AppState>) {
     web_local_storage_api::set_item("token", token.clone());
-    let token = state.token.lock().unwrap()).to_string();
+    let token = state.token.lock().unwrap().to_string();
     token = token.clone();
 }
 
 pub fn remove_token(state: web::Data<AppState>){
     web_local_storage_api::remove_item("token");
-    let token = state.token.lock().unwrap()).to_string();
+    let token = state.token.lock().unwrap().to_string();
     token = "".to_string();
 }
 
