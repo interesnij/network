@@ -43,6 +43,7 @@ pub async fn logout (
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PhoneParams {
+    pub token: String,
     pub phone: String,
 }
 #[derive(Debug, Serialize, Deserialize)]
