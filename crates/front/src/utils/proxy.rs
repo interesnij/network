@@ -34,7 +34,7 @@ pub async fn user_proxy (
         to = USERURL,
         path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
     );
-    let url = _url.replace("/users", "/");
+    let url = _url.replace("/users", "");
     println!("url {}", url);
     return match http_client
         .request_from(&url, req.head())
