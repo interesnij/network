@@ -52,7 +52,7 @@ pub struct RespParams {
 }
 pub async fn phone_send (
     app_state: web::Data<AppState>,
-    data: Json<PhoneParams>,
+    mut data: Json<PhoneParams>,
 ) -> Json<Result<RespParams, u16>> { 
     Json(request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
