@@ -70,7 +70,7 @@ async fn main() -> std::io::Result<()> {
             .service(_files)
 
             // прокси на сервер пользователей.
-            .service(web::resource("/u/{path:.*}").to(user_proxy))
+            .service(web::resource("/users{path:.*}").to(user_proxy))
     }) 
     .bind("194.58.90.123:8100")?
     .run()
