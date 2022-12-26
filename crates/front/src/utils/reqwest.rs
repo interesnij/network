@@ -17,12 +17,12 @@ struct ReqResult<T> {
 
 pub fn get_token(state: Data<AppState>)-> Option<String> {
     let token = state.token.lock().unwrap().to_string();
-    if !token.is_empty() {
+    if token != "" { 
         return Some(token);
     }
-    let token = web_local_storage_api::get_item("token");
-    if token.is_ok() {
-        return token.expect("E.");
+    let token = web_local_storage_api::get_item("token").expect("E.");
+    if token.is_some() {
+        return token;
     }
     else {
         return None;
@@ -60,7 +60,6 @@ where
     let mut req = reqwest::Client::new()
         .request(method, url)
         .header("Content-Type", "application/json");
-
 
     if let Some(token) = get_token(state){
         req = req.bearer_auth(token);
