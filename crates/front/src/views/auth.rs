@@ -8,13 +8,14 @@ use actix_web::{
     http::StatusCode,
     Error,
 };
-use actix_identity::Identity;
+
 use crate::utils::{
     APIURL, USERURL, TOKEN,
     get_first_load_page, get_default_image,
     get_device_and_ajax, request_post,
+    remove_token, is_authenticate,
 };
-use crate::AppState;
+use crate::{AppState, UserState};
 use sailfish::TemplateOnce;
 use crate::views::index_page;
 use serde::{Deserialize, Serialize};
@@ -31,13 +32,13 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
     //config.route("/logout", web::get().to(logout));
 }  
 
-pub async fn logout (
-    ide: Identity, 
-    state: web::Data<AppState>, 
+pub async fn logout ( 
+    app_state: web::Data<AppState>,
+    user_state: web::Data<UserState>,
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
-    ide.logout();
-    index_page(state, req).await
+    remove_token(app_state.clone());
+    index_page(app_state, user_state, req).await
 } 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -49,22 +50,23 @@ pub struct RespParams {
     pub resp: i16,
 }
 pub async fn phone_send (
-    ide: Identity,
+    app_state: web::Data<AppState>,
     data: Json<PhoneParams>,
 ) -> Json<Result<RespParams, u16>> { 
     Json(request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*_data.borrow_mut(),
         &data,
-        ide 
+        ide,
+        app_state,
     ).await)
 }
 
-pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
+pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;
 
     let is_ajax = get_ajax(&req);
-    if ide.is_some() { 
+    if is_authenticate(state) { 
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
     }
     else if is_ajax == 0 {
@@ -93,11 +95,11 @@ pub async fn mobile_signup(ide: Option<Identity>, req: HttpRequest) -> actix_web
     }
 }
 
-pub async fn mobile_login(ide: Option<Identity>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
+pub async fn mobile_login(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;
 
     let is_ajax = get_ajax(&req);
-    if ide.is_some() { 
+    if is_authenticate(state) { 
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
     }
     else if is_ajax == 0 {

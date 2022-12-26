@@ -9,8 +9,6 @@ use actix_web::{
     Error,
 };
 use actix_cors::Cors;
-use actix_identity::{Identity, IdentityMiddleware};
-use actix_session::{Session, SessionMiddleware};
 use std::{sync::Mutex, env}; 
 
 mod views;
@@ -19,11 +17,14 @@ mod routes;
 mod errors;
 
 pub struct AppState {
-    device:       Mutex<u8>,             // 1 - комп, 2 - телефон
-    user_name:    Mutex<String>,
-    user_link:    Mutex<String>,
-    user_id:      Mutex<i32>,
-    user_image:   Mutex<String>,
+    device: Mutex<u8>,             // 1 - комп, 2 - телефон
+    token:  Mutex<String>,
+}
+pub struct UserState {
+    id:           Mutex<i32>,
+    name:         Mutex<String>,
+    link:         Mutex<String>,
+    image:        Mutex<String>,
     new_follows:  Mutex<u16>,
     new_messages: Mutex<u16>,
     new_notifies: Mutex<u16>,
@@ -39,23 +40,21 @@ async fn main() -> std::io::Result<()> {
         App::new()  
             .app_data(web::Data::new (
                 AppState {
-                    device:       Mutex::new(0),
-                    user_name:    Mutex::new("".to_string()),
-                    user_link:    Mutex::new("".to_string()),
-                    user_id:      Mutex::new(0),
-                    user_image:   Mutex::new("".to_string()),
+                    device: Mutex::new(0),
+                    token:  Mutex::new("".to_string()),
+                }
+            ))
+            .app_data(web::Data::new (
+                UserState {
+                    id:           Mutex::new(0),
+                    name:         Mutex::new("".to_string()),
+                    link:         Mutex::new("".to_string()),
+                    image:        Mutex::new("".to_string()),
                     new_follows:  Mutex::new(0),
                     new_messages: Mutex::new(0),
                     new_notifies: Mutex::new(0),
                 }
             ))
-            //.wrap(IdentityMiddleware::default())
-            //.wrap(
-            //    SessionMiddleware::new(
-            //        RedisActorSessionStore::new(redis_connection_string),
-            //        secret_key.clone()
-            //    )
-            //)
             .configure(routes)
             .service(_files)
     })
