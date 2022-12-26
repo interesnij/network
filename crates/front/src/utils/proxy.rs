@@ -34,7 +34,8 @@ pub async fn user_proxy (
         to = USERURL,
         path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
     );
-    debug!("=> {url}");
+    println!("header {}", req.head());
+    println!("body {}", body);
     return match http_client
         .request_from(&url, req.head())
         .send_stream(body)
@@ -42,7 +43,6 @@ pub async fn user_proxy (
     {
         Ok(resp) => {
             let status = resp.status();
-            debug!("<= [{status}] {url}", status = status.as_u16());
             let mut resp_builder = HttpResponse::build(status);
             for header in resp.headers() {
                 resp_builder.insert_header(header);
@@ -50,7 +50,6 @@ pub async fn user_proxy (
             resp_builder.streaming(resp.into_stream())
         }
         Err(err) => {
-            warn!("{url}: {err:?}");
             println!("err {}", err);
             HttpResponse::build(StatusCode::BAD_GATEWAY).body("Bad Gateway")
         }
