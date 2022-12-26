@@ -16,15 +16,17 @@ struct ReqResult<T> {
 
 
 pub fn get_token(state: web::Data<AppState>)-> Option<String> {
-    let token = state.token.lock().unwrap()).to_string();
+    let token = state.token.lock().unwrap().to_string();
     if !token.is_empty() {
         return Some(token);
     }
     let token = web_local_storage_api::get_item("token");
-    if !token.is_some() {
+    if token.is_some() {
         return token;
     }
-    return None;
+    else {
+        return None;
+    }
 }
 
 pub fn is_authenticate(state: web::Data<AppState>)-> Option<String> {
