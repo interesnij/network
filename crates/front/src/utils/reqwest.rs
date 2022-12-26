@@ -21,20 +21,20 @@ pub fn get_token(state: web::Data<AppState>)-> Option<String> {
         return Some(token);
     }
     let token = web_local_storage_api::get_item("token");
-    if token.is_some() {
-        return token;
+    if token.is_ok() {
+        return token.expect("E.");
     }
     else {
         return None;
     }
 }
 
-pub fn is_authenticate(state: web::Data<AppState>)-> Option<String> {
-    return !state.token.lock().unwrap().to_string().is_empty() || web_local_storage_api::get_item("token").is_some();
+pub fn is_authenticate(state: web::Data<AppState>)-> bool {
+    return !state.token.lock().unwrap().to_string().is_empty() || web_local_storage_api::get_item("token").is_ok();
 }
 
 pub fn set_token(token: String, state: web::Data<AppState>) {
-    web_local_storage_api::set_item("token", token.clone());
+    web_local_storage_api::set_item("token", &token);
     let token = state.token.lock().unwrap().to_string();
     token = token.clone();
 }
