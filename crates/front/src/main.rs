@@ -4,7 +4,6 @@ use actix_web::{
     App,
     HttpRequest,
     HttpServer,
-    cookie::Key,
     dev::ServiceRequest,
     Error,
 };
