@@ -29,8 +29,8 @@ pub struct RequestUser {
 }
 
 pub const TOKEN: &str = "111";
-pub const APIURL: &str = "http:194.58.90.123:8000";
-pub const USERURL: &str = "http:194.58.90.123:9001";
+pub const APIURL: &str = "http://194.58.90.123:8000";
+pub const USERURL: &str = "http://194.58.90.123:9001";
 
 
 fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
