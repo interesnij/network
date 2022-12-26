@@ -29,12 +29,12 @@ pub async fn user_proxy (
     path:        web::Path<String>,
     http_client: Data<awc::Client>,
 ) -> impl Responder {
-    let url = format!( 
+    let _url = format!( 
         "{to}{path}",
         to = USERURL,
         path = req.uri().path_and_query().map(|p| p.as_str()).unwrap_or("")
     );
-    let url = url.replace("/users", "/");
+    let url = _url.replace("/users", "/");
     println!("url {}", url);
     return match http_client
         .request_from(&url, req.head())
