@@ -57,7 +57,7 @@ pub struct ErrorParams {
 
 pub async fn phone_send (
     app_state: web::Data<AppState>,
-    mut data: Json<PhoneParams>,
+    data: Json<PhoneParams>,
 ) -> Result<Json<RespParams>, Error> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
@@ -81,7 +81,7 @@ pub struct PhoneCodeParams {
 }
 pub async fn phone_verify (
     app_state: web::Data<AppState>,
-    mut data: Json<PhoneCodeParams>,
+    data: Json<PhoneCodeParams>,
 ) -> Result<Json<RespParams>, Error> { 
     let res = request_post::<PhoneCodeParams, RespParams> (
         USERURL.to_owned() + &"/phone_verify".to_string(),
@@ -112,7 +112,6 @@ pub async fn login (
 ) -> Result<Json<TokenParams>, Error> { 
     let res = request_post::<LoginUser2, TokenParams> (
         USERURL.to_owned() + &"/login".to_string(),
-        //&*data.borrow_mut(),
         &data,
         app_state.clone(),
     ).await;
