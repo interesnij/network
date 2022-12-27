@@ -73,7 +73,7 @@ pub async fn phone_send (
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct PhoneCodeParams {
     pub token: String,
     pub phone: String,
