@@ -400,7 +400,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
             println!("Пользователь с таким номером уже зарегистрирован");
             Json( RespParams {
                 resp: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string()
-            });
+            })
         }
         else {
             let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
@@ -424,12 +424,12 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
             if c.is_ok() {
                 Json( RespParams {
                     resp: "1".to_string()
-                });
+                })
             }
             else {
                 Json( RespParams {
                     resp: "1".to_string()
-                });
+                })
             }
         }
     }
@@ -437,7 +437,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
         println!("phone is small");
         Json( RespParams {
             resp: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string()
-        });
+        })
     }
 }
 
