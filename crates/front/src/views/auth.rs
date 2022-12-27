@@ -109,8 +109,8 @@ pub struct TokenParams {
 pub async fn login (
     app_state: web::Data<AppState>,
     data: Json<LoginUser2>,
-) -> Result<Json<PhoneCodeParams>, Error> { 
-    let res = request_post::<PhoneCodeParams, TokenParams> (
+) -> Result<Json<TokenParams>, Error> { 
+    let res = request_post::<LoginUser2, TokenParams> (
         USERURL.to_owned() + &"/login".to_string(),
         //&*data.borrow_mut(),
         &data,
