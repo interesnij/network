@@ -62,7 +62,7 @@ where
         req = req.json(body);
     }
 
-    //println!("Request: {:?}", req);
+    println!("Request: {:?}", req);
     let res_resp = req.send().await;
     //println!("Response: {:?}", res_resp);
 
