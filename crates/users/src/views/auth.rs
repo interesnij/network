@@ -371,12 +371,12 @@ pub struct CodeJson {
     pub code: String,
 }
 
-pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<String>, Error> {
+pub async fn phone_send(data: Json<PhoneJson>) -> Json<String> {
     let (err, _user_id) = get_user_owner_data(data.token.clone(), None, 0);
     println!("start");
     if err.is_some() {   
         println!("err token");
-        return Ok(Json(err.unwrap()));
+        return Json(err.unwrap());
     }  
     let _phone = data.phone.as_deref().unwrap().to_string();
     println!("_phone: {:?}", _phone);
@@ -391,7 +391,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<String>, Error> {
             .first::<i32>(&_connection)
             .is_ok() {
             println!("Пользователь с таким номером уже зарегистрирован");
-            Ok(Json("Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string()))
+            Json("Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string())
         }
         else {
             let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
@@ -412,16 +412,16 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<String>, Error> {
                 .values(&new_phone_code)
                 .execute(&_connection);
             if c.is_ok() {
-                Ok(Json("1".to_string()))
+                Json("1".to_string())
             }
             else {
-                Ok(Json("0".to_string()))
+                Json("0".to_string())
             }
         }
     }
     else {
         println!("phone is small");
-        Ok(Json("Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string()))
+        Json("Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string())
     }
 }
 
