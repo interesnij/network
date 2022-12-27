@@ -54,10 +54,11 @@ pub struct RespParams {
 pub struct ErrorParams {
     pub error: u16,
 }
+
 pub async fn phone_send (
     app_state: web::Data<AppState>,
     mut data: Json<PhoneParams>,
-) -> Json<RespParams> { 
+) -> Result<Json<RespParams>, Json<ErrorParams>> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*data.borrow_mut(),
@@ -65,22 +66,23 @@ pub async fn phone_send (
         app_state,
     ).await;
     println!("res {:?}", res);
-    if res.is_ok() {
-        let res_expect = res.expect("E.");
-        println!("res_expect {:?}", res_expect);
-        Json(RespParams{
-            resp: res_expect.resp
-        })
-    }
-    else {
-        Json(RespParams{
-            resp: "400 Bad Request".to_string()
-        })
+
+    match res {
+        Ok(ok) => Ok(Json(ok)),
+        Err(err) => Err(Json{ErrorParams: err}),
     }
 
-    //match res {
-    //    Ok(ok) => Ok(Json(ok)),
-    //    Err(_) => Err(0),
+    //if res.is_ok() {
+    //    let res_expect = res.expect("E.");
+    //    println!("res_expect {:?}", res_expect);
+    //    Json(RespParams{
+    //        resp: res_expect.resp
+    //    })
+    //}
+    //else {
+    //    Json(RespParams{
+    //        resp: "400 Bad Request".to_string()
+    //    })
     //}
 }
 
