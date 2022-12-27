@@ -119,7 +119,7 @@ pub async fn login (
 
     match res {
         Ok(ok) => {
-            set_token(ok.clone(), app_state);
+            set_token(ok.token, app_state);
             Ok(Json(ok))
         },
         Err(err) => Err(Error::BadRequest(err.to_string())),
