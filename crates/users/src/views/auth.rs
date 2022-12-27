@@ -474,7 +474,7 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<R
             .parse()
             .unwrap();
         
-        let code: i32 = _code;
+        let code: i32 = _code.try_into().unwrap();
         
         let _phone_code: PhoneCode;
         let _phone_code_res = phone_codes
