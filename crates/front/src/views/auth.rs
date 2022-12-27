@@ -64,7 +64,7 @@ pub async fn phone_send (
         &data,
         app_state,
     ).await;
-    HttpResponse::Ok().body(res)
+    HttpResponse::Ok().body(Ok(res))
 
     //match res {
     //    Ok(ok) => Ok(Json(ok)),
