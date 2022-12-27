@@ -57,7 +57,7 @@ pub struct ErrorParams {
 pub async fn phone_send (
     app_state: web::Data<AppState>,
     mut data: Json<PhoneParams>,
-) -> Responder { 
+) -> u16 { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*data.borrow_mut(),
@@ -65,10 +65,10 @@ pub async fn phone_send (
         app_state,
     ).await;
     if res.is_ok() {
-        HttpResponse::Ok().body(res.expect("E.").resp.to_string())
+        res.expect("E.").resp
     }
     else {
-        HttpResponse::Ok().body("400")
+        400
     }
 
     //match res {
