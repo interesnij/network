@@ -64,7 +64,10 @@ pub fn get_default_image() -> String {
 }
 
 pub fn is_desctop(req: &HttpRequest) -> bool {
-    get_content_type(req).unwrap().contains("Mobile");
+    if get_content_type(req).unwrap().contains("Mobile") {
+        return false;
+    };
+    return true;
 }
 
 pub fn get_device_and_ajax(req: &HttpRequest) -> (bool, u8) {

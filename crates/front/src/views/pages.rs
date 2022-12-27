@@ -81,13 +81,11 @@ pub async fn news_page(req: HttpRequest) -> actix_web::Result<HttpResponse> {
 }
 
 pub async fn index_page (
-    app_state: web::Data<AppState>,
-    user_state: web::Data<UserState>,
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
-    let (is_desctop, is_ajax) = get_device_and_ajax(app_state.clone(), &req); 
-    if is_authenticate(app_state.clone()) { 
-        return news_page(app_state.clone(), user_state.clone(), req).await
+    let (is_desctop, is_ajax) = get_device_and_ajax(&req); 
+    if is_authenticate() { 
+        return news_page(req).await
     }
     else if is_ajax == 0 {
         get_first_load_page (
@@ -105,11 +103,9 @@ pub async fn index_page (
             #[template(path = "desctop/main/auth/auth.stpl")]
             struct DesctopAuthTemplate {
                 is_ajax: u8,
-                token:   String,
             }
             let body = DesctopAuthTemplate {
                 is_ajax: is_ajax,
-                token:   app_state.token.lock().unwrap().to_string(),
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;

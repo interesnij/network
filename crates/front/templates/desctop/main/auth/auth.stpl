@@ -1,7 +1,6 @@
 
 <% include!("../../anon_header.stpl"); %>
 
-token = <%= token %>
 <div class="main-container h-100 h-sm-auto" data-title="Трезвый.рус - вход">
             <div class="row h-100 h-sm-auto">
     <div class="col-md-8 order-md-1 mt-3">
