@@ -39,9 +39,32 @@ pub fn get_request_data() -> RequestUser {
     let name = web_local_storage_api::get_item("name").expect("E.").unwrap();
     let link = web_local_storage_api::get_item("link").expect("E.").unwrap();
     let s_avatar = web_local_storage_api::get_item("s_avatar").expect("E.").unwrap();
-    let new_follows = web_local_storage_api::get_item("new_follows").expect("E.").unwrap();
-    let new_messages = web_local_storage_api::get_item("new_messages").expect("E.").unwrap();
-    let new_notifies = web_local_storage_api::get_item("new_notifies").expect("E.").unwrap();
+
+    let new_follows: String;
+    let new_messages: String;
+    let new_notifies: String;
+    let _new_follows = web_local_storage_api::get_item("new_follows").expect("E.");
+    let _new_messages = web_local_storage_api::get_item("new_messages").expect("E.");
+    let _new_notifies = web_local_storage_api::get_item("new_notifies").expect("E.");
+
+    if _new_follows.is_some() {
+        new_follows = _new_follows.unwrap();
+    }
+    else {
+        new_follows = String::new();
+    }
+    if _new_messages.is_some() {
+        new_messages = _new_messages.unwrap();
+    }
+    else {
+        new_messages = String::new();
+    }
+    if _new_notifies.is_some() {
+        new_notifies = _new_notifies.unwrap();
+    }
+    else {
+        new_notifies = String::new();
+    }
 
     return RequestUser {
         id:           id,
