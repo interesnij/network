@@ -13,7 +13,7 @@ use crate::utils::{
     APIURL, USERURL, TOKEN,
     get_first_load_page, get_default_image,
     get_device_and_ajax, request_post,
-    remove_token, is_authenticate,
+    remove_token, is_authenticate, set_token,
 };
 use crate::{AppState, UserState};
 use sailfish::TemplateOnce;
@@ -28,7 +28,7 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/phone_send", web::post().to(phone_send));
     config.route("/phone_verify", web::post().to(phone_verify));
     //config.route("/signup", web::post().to(process_signup));
-    //config.route("/login", web::post().to(login));
+    config.route("/login", web::post().to(login));
     //config.route("/logout", web::get().to(logout));
 }  
 
@@ -95,6 +95,37 @@ pub async fn phone_verify (
         Err(err) => Err(Error::BadRequest(err.to_string())),
     }
 }
+
+#[derive(Deserialize, Serialize, Debug)]
+pub struct LoginUser2 {
+    pub token:    String,
+    pub phone:    String,
+    pub password: String,
+}
+#[derive(Deserialize, Serialize, Debug)]
+pub struct TokenParams {
+    pub token: String,
+}
+pub async fn login (
+    app_state: web::Data<AppState>,
+    data: Json<LoginUser2>,
+) -> Result<Json<PhoneCodeParams>, Error> { 
+    let res = request_post::<PhoneCodeParams, TokenParams> (
+        USERURL.to_owned() + &"/login".to_string(),
+        //&*data.borrow_mut(),
+        &data,
+        app_state.clone(),
+    ).await;
+
+    match res {
+        Ok(ok) => {
+            set_token(ok.clone(), app_state);
+            Ok(Json(ok))
+        },
+        Err(err) => Err(Error::BadRequest(err.to_string())),
+    }
+}
+
 
 pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;

@@ -34,6 +34,11 @@ pub async fn logout() -> HttpResponse {
     HttpResponse::Unauthorized().finish()
 }
 
+#[derive(Serialize)]
+pub struct RespParams {
+    pub resp: String,
+}
+
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LoginUser2 {
     pub phone:    String,
@@ -44,12 +49,12 @@ pub struct TokenParams {
     pub token: String,
 }
 
-pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<String>, Error> {
+pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<TokenParams>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Пользователь с таким телефоном не найден!".to_string(),
+            error: "Пользователь с таким телдефоном не найден".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -371,11 +376,6 @@ pub struct CodeJson {
     pub code: String,
 }
 
-#[derive(Serialize)]
-pub struct RespParams {
-    pub resp: String,
-}
-
 pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
     let (err, _user_id) = get_user_owner_data(data.token.clone(), None, 0);
     println!("start");
@@ -495,9 +495,6 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<R
             }))
         }
         else {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Code is incorrect!".to_string(),
-            }).unwrap(); 
             Ok(Json( RespParams {
                 resp: "Field 'code' is incorrect!".to_string(),
             }))
