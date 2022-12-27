@@ -371,7 +371,7 @@ pub struct CodeJson {
     pub code: String,
 }
 
-pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
+pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<String>, Error> {
     let (err, _user_id) = get_user_owner_data(data.token.clone(), None, 0);
     println!("start");
     if err.is_some() {   
@@ -394,7 +394,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
                 error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
             }).unwrap();
             println!("Пользователь с таким номером уже зарегистрирован");
-            Err(Error::BadRequest(body))
+            Ok(body)
         }
         else {
             let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
@@ -415,10 +415,10 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
                 .values(&new_phone_code)
                 .execute(&_connection);
             if c.is_ok() {
-                Ok(Json(1))
+                Ok(Json("1".to_string()))
             }
             else {
-                Ok(Json(0))
+                Ok(Json("0".to_string()))
             }
         }
     }
@@ -427,7 +427,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
         let body = serde_json::to_string(&ErrorParams {
             error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        Ok(body)
     }
 }
 

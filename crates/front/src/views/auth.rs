@@ -48,7 +48,7 @@ pub struct PhoneParams {
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RespParams {
-    pub resp: i16,
+    pub resp: String,
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ErrorParams {
@@ -69,12 +69,12 @@ pub async fn phone_send (
         let res_expect = res.expect("E.");
         println!("res_expect {:?}", res_expect);
         Json(RespParams{
-            resp: res_expect.resp.try_into().unwrap()
+            resp: res_expect.resp
         })
     }
     else {
         Json(RespParams{
-            resp: 400
+            resp: "700 Bad Request".to_string()
         })
     }
 
