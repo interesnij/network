@@ -468,12 +468,12 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<R
 
         let _connection = establish_connection();
         let _phone = data.phone.as_deref().unwrap();
-        let code: i32 = data.code
+        let code: Result<i32> = data.code
             .as_deref()
             .unwrap()
             .parse();
         
-        if code.is_none() {
+        if code.is_err() {
             return Ok(Json( RespParams {
                 resp: "Field 'code' is incorrect!".to_string(),
             }));
@@ -482,7 +482,7 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<R
         let _phone_code: PhoneCode;
         let _phone_code_res = phone_codes
             .filter(schema::phone_codes::phone.eq(_phone.clone()))
-            .filter(schema::phone_codes::code.eq(code.unwrap()))
+            .filter(schema::phone_codes::code.eq(code.expect("E.")))
             .filter(schema::phone_codes::created.gt(chrono::Local::now().naive_utc() - Duration::hours(1)))
             .first::<PhoneCode>(&_connection);
         if _phone_code_res.is_ok() {
