@@ -35,7 +35,7 @@ pub fn is_authenticate(state: Data<AppState>)-> bool {
 
 pub fn set_token(token: String, state: Data<AppState>) {
     let local_token = web_local_storage_api::set_item("token", &token);
-    if local_token.is_some() {
+    if local_token.is_ok() {
         println!("local_token is_some!");
     }
     let mut state_token = state.token.lock().unwrap();
