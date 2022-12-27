@@ -52,7 +52,7 @@ pub struct RespParams {
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ErrorParams {
-    pub error: String,
+    pub error: u16,
 }
 
 pub async fn phone_send (
