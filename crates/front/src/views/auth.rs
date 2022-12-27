@@ -26,7 +26,7 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
     config.route("/login", web::get().to(mobile_login));
     config.route("/phone_send", web::post().to(phone_send));
-    //config.route("/phone_verify", web::post().to(phone_verify));
+    config.route("/phone_verify", web::post().to(phone_verify));
     //config.route("/signup", web::post().to(process_signup));
     //config.route("/login", web::post().to(login));
     //config.route("/logout", web::get().to(logout));
@@ -71,19 +71,29 @@ pub async fn phone_send (
         Ok(ok) => Ok(Json(ok)),
         Err(err) => Err(Error::BadRequest(err.to_string())),
     }
+}
 
-    //if res.is_ok() {
-    //    let res_expect = res.expect("E.");
-    //    println!("res_expect {:?}", res_expect);
-    //    Json(RespParams{
-    //        resp: res_expect.resp
-    //    })
-    //}
-    //else {
-    //    Json(RespParams{
-    //        resp: "400 Bad Request".to_string()
-    //    })
-    //}
+#[derive(Deserialize)]
+pub struct PhoneCodeParams {
+    pub token: String,
+    pub phone: String,
+    pub code:  String,
+}
+pub async fn phone_verify (
+    app_state: web::Data<AppState>,
+    mut data: Json<PhoneCodeParams>,
+) -> Result<Json<RespParams>, Error> { 
+    let res = request_post::<PhoneCodeParams, RespParams> (
+        USERURL.to_owned() + &"/phone_verify".to_string(),
+        //&*data.borrow_mut(),
+        &data,
+        app_state,
+    ).await;
+
+    match res {
+        Ok(ok) => Ok(Json(ok)),
+        Err(err) => Err(Error::BadRequest(err.to_string())),
+    }
 }
 
 pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
