@@ -6,7 +6,6 @@ use actix_web::{
     HttpResponse,
 };
 use serde::{Deserialize, Serialize};
-use crate::AppState;
 use sailfish::TemplateOnce;
 
 pub mod reqwest;
