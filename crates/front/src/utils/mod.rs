@@ -16,24 +16,44 @@ pub use self::{
     //proxy::*,
 };
 
-#[derive(Serialize, Deserialize)]
-// это объект авторизованного пользователя
-pub struct RequestUser {
-    pub id:           i32,
-    pub name:         String,
-    pub link:         String,
-    pub s_avatar:     String,
-    pub new_follows:  u16,
-    pub new_messages: u16,
-    pub new_notifies: u16,
-}
-
 pub const FRONTURL: &str = "http://194.58.90.123";
 pub const FRONTPORT: &str = "8100";
 pub const TOKEN: &str = "111";
 pub const APIURL: &str = "http://194.58.90.123:8000";
 pub const USERURL: &str = "http://194.58.90.123:9001";
 
+
+#[derive(Serialize, Deserialize)]
+// это объект авторизованного пользователя
+pub struct RequestUser {
+    pub id:           String,
+    pub name:         String,
+    pub link:         String,
+    pub s_avatar:     String,
+    pub new_follows:  String,
+    pub new_messages: String,
+    pub new_notifies: String,
+}
+
+pub fn get_request_data() -> RequestUser {
+    let id = web_local_storage_api::get_item("id").expect("E.").unwrap();
+    let name = web_local_storage_api::get_item("name").expect("E.").unwrap();
+    let link = web_local_storage_api::get_item("link").expect("E.").unwrap();
+    let s_avatar = web_local_storage_api::get_item("s_avatar").expect("E.").unwrap();
+    let new_follows = web_local_storage_api::get_item("new_follows").expect("E.").unwrap();
+    let new_messages = web_local_storage_api::get_item("new_messages").expect("E.").unwrap();
+    let new_notifies = web_local_storage_api::get_item("new_notifies").expect("E.").unwrap();
+
+    return RequestUser {
+        id:           id,
+        name:         name,
+        link:         link,
+        s_avatar:     s_avatar,
+        new_follows:  new_follows,
+        new_messages: new_messages,
+        new_notifies: new_notifies,
+    }
+}
 
 fn get_content_type<'a>(req: &'a HttpRequest) -> Option<&'a str> {
     return req.headers().get("user-agent")?.to_str().ok();
@@ -43,26 +63,11 @@ pub fn get_default_image() -> String {
     return "/static/images/hakew.png".to_string();
 }
 
-pub fn is_desctop(state: web::Data<AppState>, req: &HttpRequest) -> bool {
-    let mut device = state.device.lock().unwrap();
-    if *device == 1 {
-        return true;
-    }
-    else if *device == 2 {
-        return false;
-    }
-    else {
-        let agent = get_content_type(req).unwrap();
-        if agent.contains("Mobile") {
-            *device = 2;
-            return false;
-        }
-        *device = 1;
-        return true;
-    }
+pub fn is_desctop(req: &HttpRequest) -> bool {
+    get_content_type(req).unwrap().contains("Mobile");
 }
 
-pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bool, u8) {
+pub fn get_device_and_ajax(req: &HttpRequest) -> (bool, u8) {
     #[derive(Debug, Deserialize)]
     struct Params {
         pub ajax: Option<u8>,
@@ -80,11 +85,10 @@ pub fn get_device_and_ajax(state: web::Data<AppState>, req: &HttpRequest) -> (bo
         }
     }
 
-    (is_desctop(state, req), is_ajax)
+    (is_desctop(req), is_ajax)
 }
 
 pub fn get_device_and_ajax_and_limit_offset (
-    state: web::Data<AppState>, 
     req: &HttpRequest, 
     limit: i64
 ) -> (bool, u8, i64, i64) {
@@ -124,7 +128,7 @@ pub fn get_device_and_ajax_and_limit_offset (
         }
     }
 
-    (is_desctop(state, req), is_ajax, _limit, _offset)
+    (is_desctop(req), is_ajax, _limit, _offset)
 }
 
 pub async fn get_first_load_page (    

@@ -5,8 +5,7 @@ use std::fmt::Debug;
 use std::result;
 use std::result::Result;
 use std::sync::Arc;
-use crate::AppState;
-use actix_web::{HttpRequest, HttpMessage, web::Json, web::Data};
+use actix_web::{HttpRequest, HttpMessage, web::Json};
 
 
 struct ReqResult<T> {
@@ -15,11 +14,7 @@ struct ReqResult<T> {
 }
 
 
-pub fn get_token(state: Data<AppState>)-> Option<String> {
-    let token = state.token.lock().unwrap().to_string();
-    if token != "" { 
-        return Some(token);
-    }
+pub fn get_token()-> Option<String> {
     let token = web_local_storage_api::get_item("token").expect("E.");
     if token.is_some() {
         return token;
@@ -29,25 +24,19 @@ pub fn get_token(state: Data<AppState>)-> Option<String> {
     }
 }
 
-pub fn is_authenticate(state: Data<AppState>)-> bool {
-    return state.token.lock().unwrap().as_str() != "" || web_local_storage_api::get_item("token").expect("E.").is_some();
+pub fn is_authenticate()-> bool {
+    return web_local_storage_api::get_item("token").expect("E.").is_some();
 } 
 
-pub fn set_token(token: String, state: Data<AppState>) {
+pub fn set_token(token: String) {
     let local_token = web_local_storage_api::set_item("token", &token);
     if local_token.is_ok() {
         println!("local_token is_some!");
     }
-    let mut state_token = state.token.lock().unwrap();
-    println!("old state_token {}", state_token);
-    *state_token = token;
-    println!("new state_token {}", state_token);
 }
 
-pub fn remove_token(state: Data<AppState>){
+pub fn remove_token(){
     web_local_storage_api::remove_item("token");
-    let mut token = state.token.lock().unwrap().to_string();
-    token = "".to_string();
 }
 
 
@@ -55,7 +44,6 @@ async fn request<U, T> (
     url: String, 
     method: reqwest::Method, 
     body: &U,
-    state: Data<AppState>,
 ) -> Result<T, u16>
 where
     T: DeserializeOwned + Debug + Send,
@@ -66,7 +54,7 @@ where
         .request(method, url)
         .header("Content-Type", "application/json");
 
-    //if let Some(token) = get_token(state){
+    //if let Some(token) = get_token(){
     //    req = req.bearer_auth(token);
     //}
 
@@ -103,35 +91,35 @@ where
     }
 }
 
-pub async fn request_delete<T>(url: String, state: Data<AppState>,) -> Result<T, u16>
+pub async fn request_delete<T>(url: String) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::DELETE, &(), state).await
+    request(url, reqwest::Method::DELETE, &()).await
 }
 
 /// Get request
-pub async fn request_get<T>(url: String, state: Data<AppState>,) -> Result<T, u16>
+pub async fn request_get<T>(url: String) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::GET, &(), state).await
+    request(url, reqwest::Method::GET, &()).await
 }
 
 /// Post request with a body
-pub async fn request_post<U, T>(url: String, body: &U, state: Data<AppState>,) -> Result<T, u16>
+pub async fn request_post<U, T>(url: String, body: &U) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug, 
 {
-    request(url, reqwest::Method::POST, body, state).await
+    request(url, reqwest::Method::POST, body).await
 }
 
 /// Put request with a body
-pub async fn request_put<U, T>(url: String, body: &U, state: Data<AppState>,) -> Result<T, u16>
+pub async fn request_put<U, T>(url: String, body: &U) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,
 {
-    request(url, reqwest::Method::PUT, body, state).await
+    request(url, reqwest::Method::PUT, body).await
 }

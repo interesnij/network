@@ -45,11 +45,16 @@ pub struct LoginUser2 {
     pub password: String,
 }
 #[derive(Serialize, Debug)]
-pub struct TokenParams {
-    pub token: String,
+pub struct AuthResp {
+    pub token:    String,
+    pub id:       String,
+    pub name:     String,
+    pub link:     String,
+    pub s_avatar: String,
+
 }
 
-pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<TokenParams>, Error> {
+pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     
     if _user.is_err() {
@@ -66,8 +71,19 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                 
                 match token {
                     Ok(token_str) => {
-                        Ok(Json(TokenParams {
-                            token: token_str.to_owned(),
+                        let image: String;
+                        if _user.s_avatar.is_some() {
+                            image = _user.s_avatar.as_deref().unwrap();
+                        }
+                        else {
+                            image = String::new();
+                        }
+                        Ok(Json(AuthResp {
+                            token:    token_str.to_owned(),
+                            id:       _user.id.to_string(),
+                            name:     _user.name.clone(),
+                            link:     _user.link.clone(),
+                            s_avatar: image.clone(),
                         }))
                     },
                     Err(err) => {

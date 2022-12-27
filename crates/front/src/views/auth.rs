@@ -15,12 +15,13 @@ use crate::utils::{
     get_device_and_ajax, request_post,
     remove_token, is_authenticate, set_token,
 };
-use crate::{AppState, UserState};
+
 use sailfish::TemplateOnce;
 use crate::views::index_page;
 use serde::{Deserialize, Serialize};
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
+
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/signup", web::get().to(mobile_signup));
@@ -32,13 +33,14 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
     config.route("/logout", web::get().to(logout));
 }  
 
-pub async fn logout ( 
-    app_state: web::Data<AppState>,
-    user_state: web::Data<UserState>,
-    req: HttpRequest
-) -> actix_web::Result<HttpResponse> {
-    remove_token(app_state.clone());
-    index_page(app_state, user_state, req).await
+
+pub async fn logout(req: HttpRequest) -> actix_web::Result<HttpResponse> {
+    web_local_storage_api::remove_item("token");
+    web_local_storage_api::remove_item("id");
+    web_local_storage_api::remove_item("name");
+    web_local_storage_api::remove_item("link");
+    web_local_storage_api::remove_item("s_avatar");
+    index_page(req).await
 } 
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -55,15 +57,11 @@ pub struct ErrorParams {
     pub error: u16,
 }
 
-pub async fn phone_send (
-    app_state: web::Data<AppState>,
-    data: Json<PhoneParams>,
-) -> Result<Json<RespParams>, Error> { 
+pub async fn phone_send(data: Json<PhoneParams>) -> Result<Json<RespParams>, Error> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*data.borrow_mut(),
         &data,
-        app_state,
     ).await;
     println!("res {:?}", res);
 
@@ -79,15 +77,11 @@ pub struct PhoneCodeParams {
     pub phone: String,
     pub code:  String,
 }
-pub async fn phone_verify (
-    app_state: web::Data<AppState>,
-    data: Json<PhoneCodeParams>,
-) -> Result<Json<RespParams>, Error> { 
+pub async fn phone_verify(data: Json<PhoneCodeParams>) -> Result<Json<RespParams>, Error> { 
     let res = request_post::<PhoneCodeParams, RespParams> (
         USERURL.to_owned() + &"/phone_verify".to_string(),
         //&*data.borrow_mut(),
         &data,
-        app_state,
     ).await;
 
     match res {
@@ -103,24 +97,29 @@ pub struct LoginUser2 {
     pub password: String,
 }
 #[derive(Deserialize, Serialize, Debug)]
-pub struct TokenParams {
-    pub token: String,
+pub struct AuthResp {
+    pub token:    String,
+    pub id:       String,
+    pub name:     String,
+    pub link:     String,
+    pub s_avatar: String,
+
 }
-pub async fn login (
-    app_state: web::Data<AppState>,
-    mut data: Json<LoginUser2>,
-) -> Result<Json<TokenParams>, Error> { 
-    let res = request_post::<LoginUser2, TokenParams> (
+pub async fn login(data: Json<LoginUser2>) -> Result<Json<AuthResp>, Error> { 
+    let res = request_post::<LoginUser2, AuthResp> (
         USERURL.to_owned() + &"/login".to_string(),
-        &*data.borrow_mut(),
-        //&data,
-        app_state.clone(),
+        &data,
     ).await;
 
     match res {
         Ok(ok) => {
             println!("res ok");
-            set_token(ok.token.clone(), app_state);
+            web_local_storage_api::set_item("token", &ok.token);
+            web_local_storage_api::set_item("id", &ok.id);
+            web_local_storage_api::set_item("name", &ok.name);
+            web_local_storage_api::set_item("link", &ok.link);
+            web_local_storage_api::set_item("s_avatar", &ok.s_avatar);
+
             Ok(Json(ok))
         },
         Err(err) => Err(Error::BadRequest(err.to_string())),
@@ -128,11 +127,11 @@ pub async fn login (
 }
 
 
-pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
+pub async fn mobile_signup(req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;
 
     let is_ajax = get_ajax(&req);
-    if is_authenticate(state) { 
+    if is_authenticate() { 
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
     }
     else if is_ajax == 0 {
@@ -161,11 +160,11 @@ pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> acti
     }
 }
 
-pub async fn mobile_login(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
+pub async fn mobile_login(req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_ajax;
 
     let is_ajax = get_ajax(&req);
-    if is_authenticate(state) { 
+    if is_authenticate() { 
         Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(""))
     }
     else if is_ajax == 0 {

@@ -11,8 +11,8 @@ use crate::utils::{
     APIURL, USERURL, RequestUser,
     get_first_load_page, get_default_image, is_authenticate,
     get_device_and_ajax, get_device_and_ajax_and_limit_offset,
+    get_request_data,
 };
-use crate::{AppState, UserState};
 use sailfish::TemplateOnce;
 
 
@@ -21,22 +21,10 @@ pub fn pages_urls(config: &mut web::ServiceConfig) {
 } 
 
 
-pub async fn news_page (
-    app_state: web::Data<AppState>,
-    user_state: web::Data<UserState>,
-    req: HttpRequest
-) -> actix_web::Result<HttpResponse> {
-    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(app_state.clone(), &req, 20);
+pub async fn news_page(req: HttpRequest) -> actix_web::Result<HttpResponse> {
+    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(&req, 20);
     let _request_user: RequestUser;
-    _request_user = RequestUser {
-        id:           *user_state.id.lock().unwrap(),
-        name:         (*user_state.name.lock().unwrap()).to_string(),
-        link:         (*user_state.link.lock().unwrap()).to_string(),
-        s_avatar:     (*user_state.image.lock().unwrap()).to_string(),
-        new_follows:  *user_state.new_follows.lock().unwrap(),
-        new_messages: *user_state.new_messages.lock().unwrap(),
-        new_notifies: *user_state.new_notifies.lock().unwrap(),
-    }; 
+    _request_user = get_request_data(); 
     
     //let object_list: Vec<WallObject> = Vec::new();
     if is_ajax == 0 {
