@@ -379,6 +379,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
         return Err(Error::BadRequest(err.unwrap()));
     }  
     let _phone = data.phone.as_deref().unwrap().to_string();
+    println!("_phone: {:?}", _phone);
     if _phone.len() > 8 {
         use crate::models::NewPhoneCode;
         use crate::schema::users::dsl::users;
