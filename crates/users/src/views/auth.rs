@@ -66,16 +66,14 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                 
                 match token {
                     Ok(token_str) => {
-                        let body = serde_json::to_string(&TokenParams {
+                        Ok(Json(TokenParams {
                             token: token_str.to_owned(),
-                        }).unwrap();
-                        Ok(Json(body))
+                        }))
                     },
                     Err(err) => {
-                        let body = serde_json::to_string(&ErrorParams {
+                        Err(Error::BadRequest(ErrorParams {
                             error: err.to_string(),
-                        }).unwrap();
-                        Err(Error::BadRequest(body))
+                        }))
                     }
                 }
         } else {
