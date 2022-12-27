@@ -58,17 +58,23 @@ pub struct ErrorParams {
 pub async fn phone_send (
     app_state: web::Data<AppState>,
     mut data: Json<PhoneParams>,
-) -> Result<Json<RespParams>, u16> { 
+) -> Result<RespParams, u16> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*data.borrow_mut(),
         &data,
         app_state,
     ).await;
-    match res {
-        Ok(ok) => Ok(Json(ok)),
-        Err(_) => Err(0),
+    if res.is_ok() {
+        Ok(res.expect("E."))
     }
+    else {
+        Err(0)
+    }
+    //match res {
+    //    Ok(ok) => Ok(Json(ok)),
+    //    Err(_) => Err(0),
+    //}
 }
 
 pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
