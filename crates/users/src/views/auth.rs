@@ -73,7 +73,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                     Ok(token_str) => {
                         let image: String;
                         if _user.s_avatar.is_some() {
-                            image = _user.s_avatar.as_deref().unwrap();
+                            image = _user.s_avatar.as_deref().unwrap().to_string();
                         }
                         else {
                             image = String::new();
@@ -81,7 +81,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                         Ok(Json(AuthResp {
                             token:    token_str.to_owned(),
                             id:       _user.id.to_string(),
-                            name:     _user.name.clone(),
+                            name:     _user.get_full_name(),
                             link:     _user.link.clone(),
                             s_avatar: image.clone(),
                         }))
