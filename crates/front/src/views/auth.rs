@@ -64,9 +64,12 @@ pub async fn phone_send (
         &data,
         app_state,
     ).await;
+    println!("res {:?}", res);
     if res.is_ok() {
+        res_expect = res.expect("E.");
+        println!("res_expect {:?}", res_expect);
         Json(RespParams{
-            resp: res.expect("E.").resp.try_into().unwrap()
+            resp: res_expect.resp.try_into().unwrap()
         })
     }
     else {
