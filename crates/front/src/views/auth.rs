@@ -53,17 +53,17 @@ pub struct RespParams {
 pub async fn phone_send (
     app_state: web::Data<AppState>,
     mut data: Json<PhoneParams>,
-) -> Result<RespParams, u16> { 
+) -> Json<Result<RespParams, u16>> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*data.borrow_mut(),
         &data,
         app_state,
     ).await;
-    match res {
+    match Json(res {
         Ok(ok) => Ok(ok),
         Err(err) => Err(err),
-    }
+    })
 }
 
 pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
