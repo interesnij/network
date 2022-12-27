@@ -6,10 +6,9 @@ use actix_web::{
     web::Json,
     error::InternalError,
     http::StatusCode,
-    Error,
     ResponseError,
 };
-
+use crate::errors::Error;
 use crate::utils::{
     APIURL, USERURL, TOKEN,
     get_first_load_page, get_default_image,
@@ -65,8 +64,8 @@ pub async fn phone_send (
         &data,
         app_state,
     ).await;
+    HttpResponse::Ok().body(res)
 
-    Ok(res)
     //match res {
     //    Ok(ok) => Ok(Json(ok)),
     //    Err(_) => Err(0),
