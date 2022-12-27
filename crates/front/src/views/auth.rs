@@ -69,7 +69,7 @@ pub async fn phone_send (
         Ok(Json(res.expect("E.")))
     }
     else {
-        Err(_)
+        Err(res)
     }
     //match res {
     //    Ok(ok) => Ok(Json(ok)),
