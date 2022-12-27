@@ -447,22 +447,20 @@ pub struct OptionPhoneCodeJson {
     pub phone: Option<String>,
     pub code:  Option<String>,
 }
-pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<usize>, Error> {
+pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<RespParams>, Error> {
     let (err, user_id) = get_user_owner_data(data.token.clone(), None, 0);
     if err.is_some() || (user_id != 0) {
         return Err(Error::BadRequest(err.unwrap()));
     } 
     else if data.phone.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'phone' is required!".to_string(),
-        }).unwrap(); 
-        return  Err(Error::BadRequest(body));
+        return Ok(Json( RespParams {
+            resp: "Field 'phone' is required!".to_string(),
+        }));
     }
     else if data.code.is_none() {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'code' is required!".to_string(),
-        }).unwrap(); 
-        return Err(Error::BadRequest(body));
+        return Ok(Json( RespParams {
+            resp: "Field 'code' is required!".to_string(),
+        }));
     }
         use crate::schema::phone_codes::dsl::phone_codes;
         use crate::models::PhoneCode;
@@ -487,12 +485,16 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<u
             let _update = diesel::update(&_phone_code)
                 .set(schema::phone_codes::accept.eq(true))
                 .execute(&_connection); 
-            Ok(Json(1))
+            Ok(Json(RespParams {
+                resp: "1".to_string(),
+            }))
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Code is incorrect!".to_string(),
             }).unwrap(); 
-            Err(Error::BadRequest(body))
+            Ok(Json( RespParams {
+                resp: "Field 'code' is incorrect!".to_string(),
+            }))
         }
     }
