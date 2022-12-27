@@ -81,7 +81,7 @@ where
                 match resp.json::<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
-                        //println!("Failed parse body");
+                        println!("Failed parse body");
                         Err(0)
                     },
                 }
