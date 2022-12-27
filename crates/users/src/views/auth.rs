@@ -373,8 +373,9 @@ pub struct CodeJson {
 
 pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
     let (err, _user_id) = get_user_owner_data(data.token.clone(), None, 0);
-
+    println!("start");
     if err.is_some() {   
+        println!("err token");
         return Err(Error::BadRequest(err.unwrap()));
     }  
     let _phone = data.phone.as_deref().unwrap().to_string();
@@ -420,6 +421,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
         }
     }
     else {
+        println!("phone is small");
         let body = serde_json::to_string(&ErrorParams {
             error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
         }).unwrap();
