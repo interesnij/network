@@ -119,6 +119,7 @@ pub async fn login (
 
     match res {
         Ok(ok) => {
+            println!("res ok");
             set_token(ok.token.clone(), app_state);
             Ok(Json(ok))
         },
