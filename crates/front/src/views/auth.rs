@@ -69,7 +69,7 @@ pub async fn phone_send (
 
     match res {
         Ok(ok) => Ok(Json(ok)),
-        Err(err) => Err(Error::BadRequest(err.unwrap())),
+        Err(err) => Err(Error::BadRequest(err)),
     }
 
     //if res.is_ok() {
