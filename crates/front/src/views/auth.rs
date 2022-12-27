@@ -35,11 +35,7 @@ pub fn auth_urls(config: &mut web::ServiceConfig) {
 
 
 pub async fn logout(req: HttpRequest) -> actix_web::Result<HttpResponse> {
-    web_local_storage_api::remove_item("token");
-    web_local_storage_api::remove_item("id");
-    web_local_storage_api::remove_item("name");
-    web_local_storage_api::remove_item("link");
-    web_local_storage_api::remove_item("s_avatar");
+    web_local_storage_api::clear();
     index_page(req).await
 } 
 
