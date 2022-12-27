@@ -393,7 +393,8 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<i16>, Error> {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
             }).unwrap();
-             Err(Error::BadRequest(body))
+            println!("Пользователь с таким номером уже зарегистрирован");
+            Err(Error::BadRequest(body))
         }
         else {
             let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
