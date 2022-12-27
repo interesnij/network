@@ -10,10 +10,10 @@ use crate::AppState;
 use sailfish::TemplateOnce;
 
 pub mod reqwest;
-pub mod proxy;
+//pub mod proxy;
 pub use self::{
     reqwest::*,
-    proxy::*,
+    //proxy::*,
 };
 
 #[derive(Serialize, Deserialize)]
@@ -28,7 +28,7 @@ pub struct RequestUser {
     pub new_notifies: u16,
 }
 
-pub const FRONTURL: &str = "194.58.90.123";
+pub const FRONTURL: &str = "http://194.58.90.123";
 pub const FRONTPORT: &str = "8100";
 pub const TOKEN: &str = "111";
 pub const APIURL: &str = "http://194.58.90.123:8000";
