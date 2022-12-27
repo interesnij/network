@@ -72,7 +72,7 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
                     },
                     Err(err) => {
                         let body = serde_json::to_string(&ErrorParams {
-                            error: err.unwrap(),
+                            error: err.to_string(),
                         }).unwrap();
                         Err(Error::BadRequest(body))
                     }
