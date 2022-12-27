@@ -60,7 +60,10 @@ pub async fn phone_send (
         &data,
         app_state,
     ).await;
-    Ok(Json(res))
+    match res {
+        Ok(ok) => ok,
+        Err(err) => err,
+    }
 }
 
 pub async fn mobile_signup(state: web::Data<AppState>, req: HttpRequest) -> actix_web::Result<HttpResponse> {
