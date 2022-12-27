@@ -61,8 +61,8 @@ pub async fn phone_send (
 ) -> Result<Json<RespParams>, Error> { 
     let res = request_post::<PhoneParams, RespParams> (
         USERURL.to_owned() + &"/phone_send".to_string(),
-        &*data.borrow_mut(),
-        //&data,
+        //&*data.borrow_mut(),
+        &data,
         app_state,
     ).await;
     println!("res {:?}", res);
