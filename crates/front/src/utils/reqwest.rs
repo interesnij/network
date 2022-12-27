@@ -35,7 +35,7 @@ pub fn is_authenticate(state: Data<AppState>)-> bool {
 
 pub fn set_token(token: String, state: Data<AppState>) {
     web_local_storage_api::set_item("token", &token);
-    state.token.lock().unwrap() = token;
+    *state.token.lock().unwrap() = token;
 }
 
 pub fn remove_token(state: Data<AppState>){
