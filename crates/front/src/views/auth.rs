@@ -65,12 +65,8 @@ pub async fn phone_send (
         &data,
         app_state,
     ).await;
-    if res.is_ok() {
-        Json(res.expect("E."))
-    }
-    else {
-        Json(ErrorParams{error:400})
-    }
+
+    Ok(res)
     //match res {
     //    Ok(ok) => Ok(Json(ok)),
     //    Err(_) => Err(0),
