@@ -74,7 +74,7 @@ pub async fn phone_send (
     }
     else {
         Json(RespParams{
-            resp: "700 Bad Request".to_string()
+            resp: "400 Bad Request".to_string()
         })
     }
 

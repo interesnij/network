@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 use crate::utils::{
     establish_connection, gen_jwt,
     get_user_owner_data,
-    ErrorParams,
+    ErrorParams
 };
 use bcrypt::{hash, verify};
 use diesel::{
@@ -390,11 +390,8 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<String>, Error> {
             .select(schema::users::id)
             .first::<i32>(&_connection)
             .is_ok() {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string(),
-            }).unwrap();
             println!("Пользователь с таким номером уже зарегистрирован");
-            Ok(Json(body))
+            Ok(Json("Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string()))
         }
         else {
             let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
@@ -424,10 +421,7 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Result<Json<String>, Error> {
     }
     else {
         println!("phone is small");
-        let body = serde_json::to_string(&ErrorParams {
-            error: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string(),
-        }).unwrap();
-        Ok(Json(body))
+        Ok(Json("Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string()))
     }
 }
 
