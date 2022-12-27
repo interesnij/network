@@ -468,7 +468,7 @@ pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<R
 
         let _connection = establish_connection();
         let _phone = data.phone.as_deref().unwrap();
-        let code: Result<i32> = data.code
+        let code: Result<i32, _> = data.code
             .as_deref()
             .unwrap()
             .parse();
