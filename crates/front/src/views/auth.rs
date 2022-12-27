@@ -65,7 +65,7 @@ pub async fn phone_send (
         app_state,
     ).await;
     if res.is_ok() {
-        HttpResponse::Ok().body(res.expect("E.").resp)
+        HttpResponse::Ok().body(res.expect("E.").resp.to_string())
     }
     else {
         HttpResponse::Ok().body("400")
