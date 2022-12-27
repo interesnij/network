@@ -371,12 +371,19 @@ pub struct CodeJson {
     pub code: String,
 }
 
-pub async fn phone_send(data: Json<PhoneJson>) -> String {
+#[derive(Serialize)]
+pub struct RespParams {
+    pub resp: String,
+}
+
+pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
     let (err, _user_id) = get_user_owner_data(data.token.clone(), None, 0);
     println!("start");
     if err.is_some() {   
         println!("err token");
-        return err.unwrap();
+        return Json( RespParams {
+            resp: err.unwrap()
+        });
     }  
     let _phone = data.phone.as_deref().unwrap().to_string();
     println!("_phone: {:?}", _phone);
@@ -391,7 +398,9 @@ pub async fn phone_send(data: Json<PhoneJson>) -> String {
             .first::<i32>(&_connection)
             .is_ok() {
             println!("Пользователь с таким номером уже зарегистрирован");
-            "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string()
+            Json( RespParams {
+                resp: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string()
+            });
         }
         else {
             let _url = "https://api.ucaller.ru/v1.0/initCall?service_id=12203&key=GhfrKn0XKAmA1oVnyEzOnMI5uBnFN4ck&phone=".to_owned() + &_phone;
@@ -411,17 +420,24 @@ pub async fn phone_send(data: Json<PhoneJson>) -> String {
             let c = diesel::insert_into(schema::phone_codes::table)
                 .values(&new_phone_code)
                 .execute(&_connection);
+            
             if c.is_ok() {
-                "1".to_string()
+                Json( RespParams {
+                    resp: "1".to_string()
+                });
             }
             else {
-                "0".to_string()
+                Json( RespParams {
+                    resp: "1".to_string()
+                });
             }
         }
     }
     else {
         println!("phone is small");
-        "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string()
+        Json( RespParams {
+            resp: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string()
+        });
     }
 }
 
