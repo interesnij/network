@@ -69,9 +69,9 @@ where
         req = req.json(body);
     }
 
-    log::info!("Request: {:?}", req);
+    println!("Request: {:?}", req);
     let res_resp = req.send().await;
-    log::info!("Response: {:?}", res_resp);
+    println!("Response: {:?}", res_resp);
 
     match res_resp {
         Ok(resp) => {
@@ -81,15 +81,19 @@ where
                 match resp.json::<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
-                        log::info!("Failed parse body");
+                        println!("Failed parse body");
                         Err(0)
                     },
                 }
             },
-            false => Err(resp.status().as_u16())
+            false => {
+                println!("resp: {:?}", resp);
+                Err(resp.status().as_u16())
+            }
         }
     },
         Err(err) => {
+            println!("err: {:?}", err);
             Err(0)
         }
     }
