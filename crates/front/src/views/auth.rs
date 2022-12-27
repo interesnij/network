@@ -64,7 +64,12 @@ pub async fn phone_send (
         &data,
         app_state,
     ).await;
-    HttpResponse::Ok().body(Ok(res))
+    if res.is_ok() {
+        HttpResponse::Ok().body(res.expect("E."))
+    }
+    else {
+        HttpResponse::Ok().body("400")
+    }
 
     //match res {
     //    Ok(ok) => Ok(Json(ok)),
