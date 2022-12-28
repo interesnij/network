@@ -20,6 +20,7 @@ use diesel::{
 use crate::schema;
 use crate::models::{User, NewUser, NewUserInfo};
 use crate::errors::Error;
+use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 
 pub fn auth_urls(config: &mut web::ServiceConfig) {
@@ -62,8 +63,8 @@ pub async fn login(_auth: BearerAuth, data: web::Json<LoginUser2>, state: web::D
         println!("---------"); 
     };
     match is_auth(_auth, state.key.as_ref()).await {
-        ok(ok) => println!("id {:?}", ok),
-        err(_) => println!("not id"),
+        Ok(ok) => println!("id {:?}", ok),
+        Err(_) => println!("not id"),
     };
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
