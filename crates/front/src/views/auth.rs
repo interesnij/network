@@ -58,6 +58,7 @@ pub async fn phone_send(data: Json<PhoneParams>) -> Result<Json<RespParams>, Err
         USERURL.to_owned() + &"/phone_send".to_string(),
         //&*data.borrow_mut(),
         &data,
+        false
     ).await;
     println!("res {:?}", res);
 
@@ -78,6 +79,7 @@ pub async fn phone_verify(data: Json<PhoneCodeParams>) -> Result<Json<RespParams
         USERURL.to_owned() + &"/phone_verify".to_string(),
         //&*data.borrow_mut(),
         &data,
+        false
     ).await;
 
     match res {
@@ -105,6 +107,7 @@ pub async fn login(data: Json<LoginUser2>) -> Result<Json<AuthResp>, Error> {
     let res = request_post::<LoginUser2, AuthResp> (
         USERURL.to_owned() + &"/login".to_string(),
         &data,
+        false
     ).await;
 
     match res {

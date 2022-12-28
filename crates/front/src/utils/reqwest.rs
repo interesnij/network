@@ -44,6 +44,7 @@ async fn request<U, T> (
     url: String, 
     method: reqwest::Method, 
     body: &U,
+    is_auth: bool
 ) -> Result<T, u16>
 where
     T: DeserializeOwned + Debug + Send,
@@ -54,7 +55,7 @@ where
         .request(method, url)
         .header("Content-Type", "application/json");
 
-    if let Some(token) = get_token(){
+    if is_auth && let Some(token) = get_token(){
         req = req.bearer_auth(token);
     }
 
@@ -91,35 +92,35 @@ where
     }
 }
 
-pub async fn request_delete<T>(url: String) -> Result<T, u16>
+pub async fn request_delete<T>(url: String, is_auth: bool) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::DELETE, &()).await
+    request(url, reqwest::Method::DELETE, &(), is_auth).await
 }
 
 /// Get request
-pub async fn request_get<T>(url: String) -> Result<T, u16>
+pub async fn request_get<T>(url: String, is_auth: bool) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
 {
-    request(url, reqwest::Method::GET, &()).await
+    request(url, reqwest::Method::GET, &(), is_auth).await
 }
 
 /// Post request with a body
-pub async fn request_post<U, T>(url: String, body: &U) -> Result<T, u16>
+pub async fn request_post<U, T>(url: String, body: &U, is_auth: bool) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug, 
 {
-    request(url, reqwest::Method::POST, body).await
+    request(url, reqwest::Method::POST, body, is_auth).await
 }
 
 /// Put request with a body
-pub async fn request_put<U, T>(url: String, body: &U) -> Result<T, u16>
+pub async fn request_put<U, T>(url: String, body: &U, is_auth: bool) -> Result<T, u16>
 where
     T: DeserializeOwned + 'static + std::fmt::Debug + Send,
     U: Serialize + std::fmt::Debug,
 {
-    request(url, reqwest::Method::PUT, body).await
+    request(url, reqwest::Method::PUT, body, is_auth).await
 }
