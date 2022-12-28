@@ -66,8 +66,8 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
 
 pub async fn is_auth(_auth: BearerAuth, _secret: &String)-> Result<i32, u16>{
     let jwt_key = _secret.clone();
-    let _token = &_auth.token();
     let claims = block(move || {
+        let _token = &_auth.token();
         let decoding_key = DecodingKey::from_secret(jwt_key.as_bytes());
 
         decode::<Claims>(&_token, &decoding_key, &Validation::default())
