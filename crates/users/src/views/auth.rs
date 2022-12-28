@@ -55,11 +55,11 @@ pub struct AuthResp {
     pub request_id: String,
 }
 
-pub async fn login(
+pub async fn login (
     //_auth: Option<BearerAuth>,
     _auth: BearerAuth,
     data: web::Json<LoginUser2>,
-    state: web::Data<AppState>
+    state: web::Data<AppState> 
 ) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     

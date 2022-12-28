@@ -46,7 +46,7 @@ pub struct RegListData {
     pub user_id: Option<i32>,
     pub limit:   Option<i64>,
     pub offset:  Option<i64>,
-}
+} 
 
 #[derive(Deserialize)]
 pub struct TargetListData {
