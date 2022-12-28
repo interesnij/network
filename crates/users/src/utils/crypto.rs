@@ -64,7 +64,7 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
 }
 
 fn get_auth_header(req: HttpRequest) -> Option<String> {
-    return req.headers().get("authorization")?.to_str().ok().to_string();
+    return req.headers().get("authorization")?.to_str().ok()?.to_string();
 }
 
 pub async fn is_auth(req: &HttpRequest, _secret: &String)-> Result<i32, u16>{
