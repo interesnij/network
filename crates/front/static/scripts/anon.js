@@ -898,9 +898,6 @@ function ajax_get_reload(url) {
     if (this.readyState == 4 && this.status == 200) {
       $link = document.location.pathname;
       rtr = document.getElementById('ajax');
-      meta_block = rtr.querySelector(".doc_title");
-      $title = meta_block.getAttribute("data-title");
- 
       elem_ = document.createElement('span');
       elem_.innerHTML = ajax_link.responseText;  
       rtr.innerHTML = elem_.innerHTML;
