@@ -32,9 +32,18 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
     use crate::utils::get_device_and_ajax_and_limit_offset;
  
     let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(&req, 20);
-    let object_list: Vec<CardUserJson>;
-
-    if is_authenticate() {
+    let object_list: Vec<CardUserJson>; 
+    if is_ajax == 0 {
+        get_first_load_page (
+            is_authenticate(),
+            is_desctop,
+            "Все пользователи".to_string(),
+            "Трезвый.рус: Все пользователи".to_string(),
+            "/users/all-users".to_string(),
+            get_default_image(), 
+        ).await
+    }
+    else if is_authenticate() {
         let _request_user = get_request_data();
         let _object_list = request_get::<Vec<CardUserJson>> (
             USERURL.to_owned() 
