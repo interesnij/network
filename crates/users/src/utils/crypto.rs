@@ -64,13 +64,13 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
 }
 
 fn get_auth_header(req: HttpRequest) -> Option<String> {
-    return req.headers().get("authorization")?.to_string().ok();
+    return req.headers().get("authorization")?.to_str().to_string().ok();
 }
 
 pub async fn is_auth(req: &HttpRequest, _secret: &String)-> Result<i32, u16>{
     let jwt_key = _secret.clone();
     let _token: String;
-    let _token_some = get_auth_header(&req);
+    let _token_some = get_auth_header(req);
     if _token_some.is_some() {
         _token = _token_some.unwrap();
     }
