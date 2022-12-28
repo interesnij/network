@@ -62,7 +62,7 @@ pub async fn login(
     state: web::Data<AppState>
 ) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
-    match is_auth(_auth.unwrap(), state.key.as_ref()).await {
+    match is_auth(_auth, state.key.as_ref()).await {
         Ok(ok) => println!("id {:?}", ok),
         Err(_) => println!("not id"),
     };
