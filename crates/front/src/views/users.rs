@@ -20,7 +20,7 @@ pub fn users_urls(config: &mut web::ServiceConfig) {
     config.route("/users/all-users", web::get().to(all_users_page));
 } 
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 pub struct CardUserJson {
     pub id:         i32,
     pub first_name: String,
