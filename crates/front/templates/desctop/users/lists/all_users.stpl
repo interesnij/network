@@ -22,7 +22,7 @@
               <ul class="list-group is_paginate">
                 <% for object in object_list.iter() { %>
                   <li class="list-group-item">
-                      <% include!("../generic/user/card_send_message.stpl"); %>
+                      <% include!("../../generic/user/card_send_message.stpl"); %>
                   </li>
                 <% } %>
               </ul>
