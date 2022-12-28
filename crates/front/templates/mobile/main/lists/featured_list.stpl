@@ -1,6 +1,6 @@
 <% include!("../../../base_block/base_mobile_header.stpl"); %>
 
-<div data-title=" data-title="Рекомендации"" class="main-container container mt-3">
+<div data-title="Рекомендации"  data-title="Рекомендации" data-description="Трезвый.рус: рекомендации" data-uri="/fetured" data-image="<%= ogg_image %>" class="main-container container mt-3">
 <div class="input-group mb-3">
   <input type="text" class="form-control form-control-sm" placeholder="Поиск">
   <div class="input-group-append">

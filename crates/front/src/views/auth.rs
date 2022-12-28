@@ -147,10 +147,12 @@ pub async fn mobile_signup(req: HttpRequest) -> actix_web::Result<HttpResponse> 
         #[template(path = "mobile/main/auth/signup.stpl")]
         struct Template {
             is_ajax: u8,
+            ogg_image: String,
         }
         
         let body = Template {
             is_ajax: is_ajax,
+            ogg_image: get_default_image(),
         } 
         .render_once()
         .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
@@ -180,10 +182,12 @@ pub async fn mobile_login(req: HttpRequest) -> actix_web::Result<HttpResponse> {
         #[template(path = "mobile/main/auth/auth.stpl")]
         struct Template {
             is_ajax: u8,
+            ogg_image: String,
         }
         
         let body = Template {
             is_ajax: is_ajax,
+            ogg_image: get_default_image(),
         } 
         .render_once()
         .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;

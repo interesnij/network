@@ -1,6 +1,6 @@
 <% include!("../../../base_block/base_mobile_header.stpl"); %>
 
-<div data-title="Новости" class="main-container container mt-3">
+<div data-title="Новости" data-description="Трезвый.рус: новости" data-uri="/" data-image="<%= ogg_image %>" class="main-container container mt-3">
 <div class="input-group mb-3">
   <input type="text" class="form-control form-control-sm" placeholder="Поиск">
   <div class="input-group-append">

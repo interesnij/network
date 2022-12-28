@@ -102,10 +102,12 @@ pub async fn index_page (
             #[derive(TemplateOnce)]
             #[template(path = "desctop/main/auth/auth.stpl")]
             struct DesctopAuthTemplate {
-                is_ajax: u8,
+                is_ajax:   u8,
+                ogg_image: String,
             }
             let body = DesctopAuthTemplate {
-                is_ajax: is_ajax,
+                is_ajax:   is_ajax,
+                ogg_image: get_default_image(),
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
@@ -115,9 +117,13 @@ pub async fn index_page (
             #[derive(TemplateOnce)]
             #[template(path = "mobile/main/auth/auth.stpl")]
             struct MobileAuthTemplate {
-                is_ajax: u8,
+                is_ajax:   u8,
+                ogg_image: String,
             }
-            let body = MobileAuthTemplate {is_ajax: is_ajax,}
+            let body = MobileAuthTemplate {
+                is_ajax:   is_ajax,
+                ogg_image: get_default_image(),
+            }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
             Ok(HttpResponse::Ok().content_type("text/html; charset=utf-8").body(body))

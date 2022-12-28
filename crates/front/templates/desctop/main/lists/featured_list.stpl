@@ -1,6 +1,6 @@
 <% include!("../../header.stpl"); %>
 
-<div class="main-container" data-title="Рекомендации">
+<div class="main-container" data-title="Рекомендации"  data-title="Рекомендации" data-description="Трезвый.рус: рекомендации" data-uri="/fetured" data-image="<%= ogg_image %>">
     <div class="row">
         <div class="col-md-8 mt-3">
         <div class="input-group mb-3">
