@@ -1,4 +1,4 @@
-<% include!("../../../anon_header.stpl"); %>
+<% include!("../../anon_header.stpl"); %>
 
 <div class="main-container" data-title="Пользователи соцсети" data-type="user_main">
 <div class="row">
@@ -44,4 +44,4 @@
 </div>
 </div>
 
-<% include!("../../../anon_footer.stpl"); %>
+<% include!("../../anon_footer.stpl"); %>
