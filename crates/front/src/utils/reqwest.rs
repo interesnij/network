@@ -57,8 +57,10 @@ where
         .request(method, url)
         .header("Content-Type", "application/json");
 
-    if is_auth && let Some(token) = get_token(){
-        req = req.bearer_auth(token);
+    if is_auth {
+        if let Some(token) = get_token(){
+            req = req.bearer_auth(token);
+        }
     }
 
     if allow_body{ 

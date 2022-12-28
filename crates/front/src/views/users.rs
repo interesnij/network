@@ -36,11 +36,11 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
 
     if is_authenticate() {
         let _request_user = get_request_data();
-        let _object_list = request_get::<CardUserJson> (
+        let _object_list = request_get::<Vec<CardUserJson>> (
             USERURL.to_owned() 
             + &"/all-users?token=".to_string() + &TOKEN
-            + &"&limit=" + &limit
-            + &"&offset=" + &offset
+            + &"&limit=" + &limit.to_string()
+            + &"&offset=" + &offset.to_string()
             ,true
         ).await;
         if _object_list.is_ok() {
@@ -88,11 +88,11 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
         }
 
     } else {
-        let _object_list = request_get::<CardUserJson> (
+        let _object_list = request_get::<Vec<CardUserJson>> (
             USERURL.to_owned() 
-            + &"/all-users?token=".to_string() + &TOKEN 
-            + &"&limit=" + &limit 
-            + &"&offset=" + &offset
+            + &"/all-users?token=".to_string() + &TOKEN
+            + &"&limit=" + &limit.to_string()
+            + &"&offset=" + &offset.to_string()
             , false
         ).await;
         if _object_list.is_ok() {
