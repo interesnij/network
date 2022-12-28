@@ -49,8 +49,8 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             USERURL.to_owned() 
             + &"/all-users?token=".to_string() + &TOKEN
             + &"&limit=" + &limit.to_string()
-            + &"&offset=" + &offset.to_string()
-            ,true
+            + &"&offset=" + &offset.to_string(),
+            true
         ).await;
         if _object_list.is_ok() {
             object_list = _object_list.expect("E.");
@@ -101,8 +101,8 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             USERURL.to_owned() 
             + &"/all-users?token=".to_string() + &TOKEN
             + &"&limit=" + &limit.to_string()
-            + &"&offset=" + &offset.to_string()
-            , false
+            + &"&offset=" + &offset.to_string(),
+            false
         ).await;
         if _object_list.is_ok() {
             object_list = _object_list.expect("E.");
