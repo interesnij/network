@@ -52,12 +52,11 @@ pub struct AuthResp {
     pub name:       String,
     pub link:       String,
     pub s_avatar:   String,
-    pub request_id: String,
+    //pub request_id: String,
 }
 
 pub async fn login (
     //_auth: Option<BearerAuth>,
-    _auth: BearerAuth,
     data: web::Json<LoginUser2>,
     state: web::Data<AppState> 
 ) -> Result<Json<AuthResp>, Error> {
@@ -77,10 +76,10 @@ pub async fn login (
                 
                 match token {
                     Ok(token_str) => {
-                        let request_id = match is_auth(_auth, state.key.as_ref()).await {
-                            Ok(ok) => ok,
-                            Err(_) => 0,
-                        }; 
+                        //let request_id = match is_auth(_auth, state.key.as_ref()).await {
+                        //    Ok(ok) => ok,
+                        //    Err(_) => 0,
+                        //}; 
                         let image: String;
                         if _user.s_avatar.is_some() {
                             image = _user.s_avatar.as_deref().unwrap().to_string();
@@ -94,7 +93,7 @@ pub async fn login (
                             name:       _user.get_full_name(),
                             link:       _user.link.clone(),
                             s_avatar:   image.clone(),
-                            request_id: request_id.to_string(),
+                            //request_id: request_id.to_string(),
                         }))
                     },
                     Err(err) => {
