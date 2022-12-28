@@ -4,6 +4,7 @@ use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation}
 use serde::{Deserialize, Serialize};
 use std::env;
 use std::{result::Result};
+use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -63,14 +64,9 @@ pub async fn verify_jwt(_token: String, _secret: &String)-> Result<Claims, u16>{
     Ok(claims)
 }
 
-fn get_auth_header(req: &HttpRequest) -> String {
-    return req.headers().get("authorization").expect("E.").to_str().ok().unwrap().to_string();
-}
-
-pub async fn is_auth(req: &HttpRequest, _secret: &String)-> Result<i32, u16>{
+pub async fn is_auth(auth: BearerAuth, _secret: &String)-> Result<i32, u16>{
     let jwt_key = _secret.clone();
-    let _token: String;
-    let _token = get_auth_header(req);
+    let _token = auth.token();
     let claims = block(move || {
         let decoding_key = DecodingKey::from_secret(jwt_key.as_bytes());
 
