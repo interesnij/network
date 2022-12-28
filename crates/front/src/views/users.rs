@@ -38,10 +38,11 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
         let _request_user = get_request_data();
         let _object_list = request_get::<CardUserJson> (
             USERURL.to_owned() 
-            + &"/all-users?token=".to_string() + &TOKEN 
-            + &"&limit=" + &limit 
-            + &"&offset=" + &offset;
-        , true).await;
+            + &"/all-users?token=".to_string() + &TOKEN
+            + &"&limit=" + &limit
+            + &"&offset=" + &offset
+            ,true
+        ).await;
         if _object_list.is_ok() {
             object_list = _object_list.expect("E.");
         }
@@ -91,8 +92,9 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             USERURL.to_owned() 
             + &"/all-users?token=".to_string() + &TOKEN 
             + &"&limit=" + &limit 
-            + &"&offset=" + &offset;
-        , false).await;
+            + &"&offset=" + &offset
+            , false
+        ).await;
         if _object_list.is_ok() {
             object_list = _object_list.expect("E.");
         }

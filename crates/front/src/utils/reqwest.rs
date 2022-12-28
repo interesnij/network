@@ -102,7 +102,8 @@ where
 /// Get request
 pub async fn request_get<T>(url: String, is_auth: bool) -> Result<T, u16>
 where
-    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    //T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    T: DeserializeOwned + 'static + Send,
 {
     request(url, reqwest::Method::GET, &(), is_auth).await
 }
@@ -110,8 +111,10 @@ where
 /// Post request with a body
 pub async fn request_post<U, T>(url: String, body: &U, is_auth: bool) -> Result<T, u16>
 where
-    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    U: Serialize + std::fmt::Debug, 
+    //T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    //U: Serialize + std::fmt::Debug,
+    T: DeserializeOwned + 'static + Send,
+    U: Serialize,
 {
     request(url, reqwest::Method::POST, body, is_auth).await
 }
