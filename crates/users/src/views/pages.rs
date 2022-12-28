@@ -18,6 +18,7 @@ use crate::utils::{
 };
 use crate::models::{User, Owner, TokenJson};
 use crate::errors::Error;
+use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
@@ -56,9 +57,10 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
      Ok(Json(_res))
 }
 
-pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn all_users_page(_auth: Option<BearerAuth>, req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
-    if params_some.is_ok() {
+    //let token = _auth.token();
+    if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
         if err.is_some() {
@@ -68,7 +70,10 @@ pub async fn all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>,
             Err(Error::BadRequest(body))
         }
         else {
-            let _res = block(move || User::get_users(params.limit, params.offset)).await?;
+            let _res = block(move || User::get_users (
+                params.limit,
+                params.offset
+            )).await?;
             Ok(Json(_res))
         }
     }
