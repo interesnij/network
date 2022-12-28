@@ -66,11 +66,11 @@ where
     if allow_body{ 
         req = req.json(body);
     }
-
+    println!("=============");
     println!("Req: {:?}", req);
     let res_resp = req.send().await;
     println!("Resp: {:?}", res_resp);
-
+    println!("=============");
     match res_resp {
         Ok(resp) => {
 
@@ -79,7 +79,7 @@ where
                 match resp.json::<T>().await{
                     Ok(data) => Ok(data),
                     Err(_) => {
-                        //println!("Failed parse body");
+                        println!("Failed parse body");
                         Err(0)
                     },
                 }
@@ -90,7 +90,7 @@ where
         }
     },
         Err(err) => {
-            //println!("err: {:?}", err);
+            println!("err: {:?}", err);
             Err(0)
         }
     }
