@@ -47,10 +47,10 @@ async fn request<U, T> (
     is_auth: bool
 ) -> Result<T, u16>
 where
-    //T: DeserializeOwned + Debug + Send,
-    //U: Serialize + Debug,
-    T: DeserializeOwned + Send,
-    U: Serialize,
+    T: DeserializeOwned + Debug + Send,
+    U: Serialize + Debug,
+    //T: DeserializeOwned + Send,
+    //U: Serialize,
 { 
     let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
     let mut req = reqwest::Client::new()
@@ -98,8 +98,8 @@ where
 
 pub async fn request_delete<T>(url: String, is_auth: bool) -> Result<T, u16>
 where
-    //T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    T: DeserializeOwned + 'static + Send,
+    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    //T: DeserializeOwned + 'static + Send,
 {
     request(url, reqwest::Method::DELETE, &(), is_auth).await
 }
@@ -116,10 +116,10 @@ where
 /// Post request with a body
 pub async fn request_post<U, T>(url: String, body: &U, is_auth: bool) -> Result<T, u16>
 where
-    //T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    //U: Serialize + std::fmt::Debug,
-    T: DeserializeOwned + 'static + Send,
-    U: Serialize,
+    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    U: Serialize + std::fmt::Debug,
+    //T: DeserializeOwned + 'static + Send,
+    //U: Serialize,
 {
     request(url, reqwest::Method::POST, body, is_auth).await
 }
@@ -127,10 +127,10 @@ where
 /// Put request with a body
 pub async fn request_put<U, T>(url: String, body: &U, is_auth: bool) -> Result<T, u16>
 where
-    //T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    //U: Serialize + std::fmt::Debug,
-    T: DeserializeOwned + 'static + Send,
-    U: Serialize,
+    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    U: Serialize + std::fmt::Debug,
+    //T: DeserializeOwned + 'static + Send,
+    //U: Serialize,
 {
     request(url, reqwest::Method::PUT, body, is_auth).await
 }
