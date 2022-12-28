@@ -107,8 +107,8 @@ where
 /// Get request
 pub async fn request_get<T>(url: String, is_auth: bool) -> Result<T, u16>
 where
-    //T: DeserializeOwned + 'static + std::fmt::Debug + Send,
-    T: DeserializeOwned + 'static + Send,
+    T: DeserializeOwned + 'static + std::fmt::Debug + Send,
+    //T: DeserializeOwned + 'static + Send,
 {
     request(url, reqwest::Method::GET, &(), is_auth).await
 }
