@@ -47,12 +47,12 @@ pub struct LoginUser2 {
 }
 #[derive(Serialize, Debug)]
 pub struct AuthResp {
-    pub token:    String,
-    pub id:       String,
-    pub name:     String,
-    pub link:     String,
-    pub s_avatar: String,
-
+    pub token:      String,
+    pub id:         String,
+    pub name:       String,
+    pub link:       String,
+    pub s_avatar:   String,
+    pub request_id: String,
 }
 
 pub async fn login(
@@ -62,19 +62,7 @@ pub async fn login(
     state: web::Data<AppState>
 ) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
-    match is_auth(_auth, state.key.as_ref()).await {
-        Ok(ok) => println!("id {:?}", ok),
-        Err(_) => println!("not id"),
-    };
-    //if _auth.is_some() {
-    //   match is_auth(_auth.unwrap(), state.key.as_ref()).await {
-    //        Ok(ok) => println!("id {:?}", ok),
-    //        Err(_) => println!("not id"),
-    //    };
-    //}
-    //else {
-    //    println!("anonymous!")
-    //}
+    
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телдефоном не найден".to_string(),
@@ -89,6 +77,10 @@ pub async fn login(
                 
                 match token {
                     Ok(token_str) => {
+                        let request_id = match is_auth(_auth, state.key.as_ref()).await {
+                            Ok(ok) => ok,
+                            Err(_) => 0,
+                        }; 
                         let image: String;
                         if _user.s_avatar.is_some() {
                             image = _user.s_avatar.as_deref().unwrap().to_string();
@@ -97,11 +89,12 @@ pub async fn login(
                             image = String::new();
                         }
                         Ok(Json(AuthResp {
-                            token:    token_str.to_owned(),
-                            id:       _user.id.to_string(),
-                            name:     _user.get_full_name(),
-                            link:     _user.link.clone(),
-                            s_avatar: image.clone(),
+                            token:      token_str.to_owned(),
+                            id:         _user.id.to_string(),
+                            name:       _user.get_full_name(),
+                            link:       _user.link.clone(),
+                            s_avatar:   image.clone(),
+                            request_id: request_id.to_string(),
                         }))
                     },
                     Err(err) => {

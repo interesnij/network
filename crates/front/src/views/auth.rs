@@ -94,12 +94,11 @@ pub struct LoginUser2 {
 }
 #[derive(Deserialize, Serialize, Debug)]
 pub struct AuthResp {
-    pub token:    String,
-    pub id:       String,
-    pub name:     String,
-    pub link:     String,
-    pub s_avatar: String,
-
+    pub token:      String,
+    pub id:         String,
+    pub name:       String,
+    pub link:       String,
+    pub s_avatar:   String,
 }
 pub async fn login(data: Json<LoginUser2>) -> Result<Json<AuthResp>, Error> { 
     let res = request_post::<LoginUser2, AuthResp> (
