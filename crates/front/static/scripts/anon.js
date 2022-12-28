@@ -890,13 +890,14 @@ function list_block_load(target_block, response_block, link) {
     request.send( null );
 };
 
-function ajax_get_reload(url) {
+function ajax_get_reload(url) { 
   var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
   ajax_link.open('GET', url + "?ajax=2", true);
   ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   ajax_link.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       $link = document.location.pathname;
+      rtr = document.getElementById('ajax');
       meta_block = rtr.querySelector(".doc_title");
       if (meta_block.getAttribute("data-id")) {
         $object_id = meta_block.getAttribute("data-id");
