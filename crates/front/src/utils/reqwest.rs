@@ -67,9 +67,9 @@ where
         req = req.json(body);
     }
 
-    //println!("Request: {:?}", req);
+    println!("Req: {:?}", req);
     let res_resp = req.send().await;
-    //println!("Response: {:?}", res_resp);
+    println!("Resp: {:?}", res_resp);
 
     match res_resp {
         Ok(resp) => {
