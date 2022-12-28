@@ -13,7 +13,7 @@
     </a>
     <div class="media-body">
         <a href="<%= object.link %>" class="ajax">
-            <h6 class="my-0 mt-1"><%= object.get_full_name() %></h6>
+            <h6 class="my-0 mt-1"><%= object.first_name %> <%= object.last_name %></h6>
         </a>
         <a href="<%= object.link %>" class="small ajax">Перейти</a>
     </div>
