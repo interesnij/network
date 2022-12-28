@@ -59,7 +59,7 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
 
 pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest, state: web::Data<AppState>) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
-    match verify_jwt(_auth.token(), state.key.as_ref()).await {
+    match verify_jwt(_auth.token().to_string(), state.key.as_ref()).await {
         Ok(ok) => println!("id {:?}", ok.id),
         Err(err) => println!("err {:?}", err),
     }
