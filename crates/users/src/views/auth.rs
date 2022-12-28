@@ -56,21 +56,21 @@ pub struct AuthResp {
 }
 
 pub async fn login(
-    //_auth: Option<BearerAuth>,
+    _auth: Option<BearerAuth>,
     data: web::Json<LoginUser2>,
     state: web::Data<AppState>
 ) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
 
-    //if _auth.is_some() {
-    //    match is_auth(_auth.unwrap(), state.key.as_ref()).await {
-    //        Ok(ok) => println!("id {:?}", ok),
-    //        Err(_) => println!("not id"),
-    //    };
-    //}
-    //else {
-    //    println!("anonymous!")
-    //}
+    if _auth.is_some() {
+        match is_auth(_auth.unwrap(), state.key.as_ref()).await {
+            Ok(ok) => println!("id {:?}", ok),
+            Err(_) => println!("not id"),
+        };
+    }
+    else {
+        println!("anonymous!")
+    }
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телдефоном не найден".to_string(),
