@@ -19,6 +19,7 @@ use crate::utils::{
 use crate::models::{User, Owner, TokenJson};
 use crate::errors::Error;
 use actix_web_httpauth::extractors::bearer::BearerAuth;
+use crate::AppState;
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
