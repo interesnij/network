@@ -912,7 +912,7 @@ function ajax_get_reload(url) {
       document.querySelector('meta[name="title"]').setAttribute("content", _title);
       document.querySelector('meta[name="description"]').setAttribute("content", _description);
       document.querySelector('meta[name="image"]').setAttribute("content", _image);
-      document.querySelector('link[rel="canonical"]').setAttribute("href", _uri);
+      //document.querySelector('link[rel="canonical"]').setAttribute("href", _uri);
       window.scrollTo(0, 0);
       window.history.pushState(null, "vfgffgfgf", url);
       if_list(rtr);
