@@ -17,7 +17,7 @@ use sailfish::TemplateOnce;
 use actix_web_httpauth::extractors::bearer::BearerAuth;
 
 
-pub fn pages_urls(config: &mut web::ServiceConfig) {
+pub fn users_urls(config: &mut web::ServiceConfig) {
     config.route("/users/all-users", web::get().to(all_users_page));
 } 
 
@@ -33,7 +33,7 @@ pub struct CardUserJson {
 pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_device_and_ajax_and_limit_offset;
  
-    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(&req);
+    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(&req, 20);
     let object_list: Vec<CardUserJson>;
     let _object_list = request_get<CardUserJson> (
         USERURL.to_owned() 
@@ -57,7 +57,7 @@ pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> actix_web::R
             struct Template {
                 request_user: RequestUser,
                 object_list:  Vec<CardUserJson>,
-                is_ajax:      bool,
+                is_ajax:      u8,
             }
 
             let body = Template {
@@ -75,7 +75,7 @@ pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> actix_web::R
             struct Template {
                 request_user: RequestUser,
                 object_list:  Vec<CardUserJson>,
-                is_ajax:      bool,
+                is_ajax:      u8,
             }
 
             let body = Template {
@@ -94,7 +94,7 @@ pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> actix_web::R
             #[template(path = "desctop/users/lists/anon_all_users.stpl")]
             struct Template {
                 object_list: Vec<CardUserJson>,
-                is_ajax:     bool,
+                is_ajax:     u8,
             }
             let body = Template {
                 object_list: object_list,
@@ -109,7 +109,7 @@ pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> actix_web::R
             #[template(path = "mobile/users/lists/anon_all_users.stpl")]
             struct Template {
                 object_list: Vec<CardUserJson>,
-                is_ajax:     bool,
+                is_ajax:     u8,
             }
             let body = Template {
                 object_list: object_list,
