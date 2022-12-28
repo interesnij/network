@@ -1,0 +1,47 @@
+<% include!("../../../header.stpl"); %>
+
+<div class="main-container" data-title="Пользователи соцсети" data-type="user_main">
+<div class="row">
+    <div class="col-md-8 mt-3">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control form-control-sm" placeholder="Поиск людей">
+            <div class="input-group-append">
+                <button class="btn btn-sm border" type="button">Искать</button>
+            </div>
+        </div>
+        <div class="card mb-2">
+            <div class="card-header">
+                <div class="media">
+                    <div class="media-body">
+                        <h5 class="mt-1">Все пользователи</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-0 py-0">
+              <% if object_list.len() > 0 { %>
+              <ul class="list-group is_paginate">
+                <% for object in object_list.iter() { %>
+                  <li class="list-group-item">
+                      <% include!("../generic/user/card_send_message.stpl"); %>
+                  </li>
+                <% } %>
+              </ul>
+              <% } else { %>
+              <div class="card centered">
+                <div class="card-body">
+                <svg fill="currentColor" class="thumb_big svg_default" viewBox="0 0 24 24"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <h6 style="margin: 20px;text-align: center;"> Пользователей нет...</h6>
+              </div>
+              <% } %>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mt-3">
+      friends/featured_users.stpl
+    </div>
+</div>
+</div>
+
+<% include!("../../../footer.stpl"); %>
