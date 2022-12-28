@@ -69,13 +69,13 @@ fn get_auth_header<'a>(req: &'a HttpRequest) -> Option<&'a str> {
 
 pub async fn is_auth(req: &HttpRequest, _secret: &String)-> Result<i32, u16>{
     let jwt_key = _secret.clone();
-    let _token: String;
+    let _token: &str;
     let _token_some = get_auth_header(&req);
     if _token_some.is_some() {
         _token = _token_some.unwrap();
     }
     else {
-        _token = String::new();
+        _token = "";
     }
     let claims = block(move || {
         let decoding_key = DecodingKey::from_secret(jwt_key.as_bytes());
