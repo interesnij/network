@@ -905,7 +905,7 @@ function ajax_get_reload(url) {
       elem_.innerHTML = ajax_link.responseText;  
       rtr.innerHTML = elem_.innerHTML;
   
-      _meta = rtr.querySelector(".doc_title");
+      _meta = rtr.querySelector(".main-container");
       _title = _meta.getAttribute("data-title");
       _uri = "http://трезвый.рус" + _meta.getAttribute("data-uri");
       _description = _meta.getAttribute("data-description");

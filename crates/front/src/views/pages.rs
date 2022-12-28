@@ -35,7 +35,7 @@ pub async fn news_page(req: HttpRequest) -> actix_web::Result<HttpResponse> {
             "Трезвый.рус: новости".to_string(),
             "/".to_string(),
             get_default_image(), 
-        ).await
+        ).await 
     }
     else if is_desctop {
         #[derive(TemplateOnce)]
@@ -88,7 +88,7 @@ pub async fn index_page (
         return news_page(req).await
     }
     else if is_ajax == 0 {
-        get_first_load_page (
+        get_first_load_page ( 
             false,
             false,
             "Трезвый.рус - вход".to_string(),
