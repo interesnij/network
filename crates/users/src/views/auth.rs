@@ -54,7 +54,7 @@ pub struct AuthResp {
 
 }
 
-pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<AuthResp>, Error> {
+pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     
     if _user.is_err() {
@@ -65,6 +65,13 @@ pub async fn login(data: web::Json<LoginUser2>, state: web::Data<AppState>) -> R
     }
     else {
         let _user = _user.unwrap();
+        for header in req.headers().into_iter() {
+            if header.0 == "user-agent" {
+                println!("name {:?}", header.0);
+                println!("value {:?}", header.1);
+                println!("---------");
+            }
+        };
 
         if verify(data.password.as_str(), _user.password.as_str()).unwrap() {
                 let token = gen_jwt(_user.id, state.key.as_ref()).await;
