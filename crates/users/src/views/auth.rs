@@ -57,11 +57,7 @@ pub struct AuthResp {
 
 pub async fn login(_auth: BearerAuth, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
-    for header in req.headers().into_iter() {
-        println!("name {:?}", header.0);
-        println!("value {:?}", header.1);
-        println!("---------"); 
-    };
+
     match is_auth(_auth, state.key.as_ref()).await {
         Ok(ok) => println!("id {:?}", ok),
         Err(_) => println!("not id"),
