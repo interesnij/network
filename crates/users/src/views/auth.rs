@@ -57,11 +57,9 @@ pub struct AuthResp {
 pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Data<AppState>) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     for header in req.headers().into_iter() {
-        if header.0 == "user-agent" {
-            println!("name {:?}", header.0);
-            println!("value {:?}", header.1);
-            println!("---------");
-        }
+        println!("name {:?}", header.0);
+        println!("value {:?}", header.1);
+        println!("---------");
     };
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
