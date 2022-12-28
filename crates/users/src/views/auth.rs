@@ -8,7 +8,7 @@ use crate::AppState;
 use serde::{Deserialize, Serialize};
 use crate::utils::{
     establish_connection, gen_jwt,
-    get_user_owner_data,
+    get_user_owner_data, is_auth,
     ErrorParams
 };
 use bcrypt::{hash, verify};
@@ -61,6 +61,9 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
         println!("value {:?}", header.1);
         println!("---------");
     };
+    if is_auth(&req).is_ok() {
+        println!("id {:?}", is_auth(&req).expect("E."));
+    }
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Пользователь с таким телдефоном не найден".to_string(),
