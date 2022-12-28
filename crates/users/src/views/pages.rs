@@ -8,7 +8,7 @@ use actix_web::{
     web::Json,
 };
 use crate::utils::{
-    get_user_owner_data, get_user,
+    get_user_owner_data, get_user, verify_jwt,
     get_user_permission,
     get_anon_user_permission,
     ErrorParams, CardUserJson,
@@ -59,7 +59,10 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
 
 pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
-    //let token = _auth.token();
+    match verify_jwt(_auth.token()) {
+        Ok(ok) => println!("id {:?}", ok.id),
+        Err(err) => println!("err {:?}", err),
+    }
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
