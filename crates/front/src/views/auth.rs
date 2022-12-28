@@ -99,6 +99,7 @@ pub struct AuthResp {
     pub name:       String,
     pub link:       String,
     pub s_avatar:   String,
+    pub request_id: String,
 }
 pub async fn login(data: Json<LoginUser2>) -> Result<Json<AuthResp>, Error> { 
     let res = request_post::<LoginUser2, AuthResp> (
