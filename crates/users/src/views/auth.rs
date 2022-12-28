@@ -59,10 +59,10 @@ pub async fn login(req: HttpRequest, data: web::Json<LoginUser2>, state: web::Da
     for header in req.headers().into_iter() {
         println!("name {:?}", header.0);
         println!("value {:?}", header.1);
-        println!("---------");
+        println!("---------"); 
     };
-    if is_auth(&req).is_ok() {
-        println!("id {:?}", is_auth(&req).expect("E."));
+    if is_auth(&req, state.key.as_ref()).await.is_ok() {
+        println!("id {:?}", is_auth(&req, state.key.as_ref()).await.expect("E."));
     }
     if _user.is_err() {
         let body = serde_json::to_string(&ErrorParams {
