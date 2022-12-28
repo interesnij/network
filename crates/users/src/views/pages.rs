@@ -57,9 +57,9 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
      Ok(Json(_res))
 }
 
-pub async fn all_users_page(_auth: Option<BearerAuth>, req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
-    let token = _auth.token();
+    //let token = _auth.token();
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
