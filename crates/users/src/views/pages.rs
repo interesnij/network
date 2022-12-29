@@ -68,14 +68,13 @@ pub async fn all_users_page (
 
     let auth = Authorization::<Bearer>::parse(&req);
     match auth {
-        Ok(ok) => 
-        {
+        Ok(ok) => println!("not auth!"),
+        Err(_) => {
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametrs not found!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body)),
-        }
-        Err(_) => println!("not auth!"),
+            Err(Error::BadRequest(body))
+        },
     } 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //match verify_jwt(_auth.token().to_string(), state.key.as_ref()).await {
