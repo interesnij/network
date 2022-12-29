@@ -155,7 +155,7 @@ pub async fn get_file (
                 is_open = false;
             }
         
-            let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
+            let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
                 
             if err.is_some() {
                 is_open = false;
