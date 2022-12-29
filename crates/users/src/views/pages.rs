@@ -73,7 +73,7 @@ pub async fn all_users_page (
             let body = serde_json::to_string(&ErrorParams {
                 error: "parametrs not found!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
         },
     } 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
