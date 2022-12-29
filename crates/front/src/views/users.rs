@@ -31,7 +31,8 @@ pub struct CardUserJson {
 pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse> {
     use crate::utils::get_device_and_ajax_and_limit_offset;
  
-    let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(&req, 20);
+    //let (is_desctop, is_ajax, limit, offset) = get_device_and_ajax_and_limit_offset(&req, 20);
+    let (is_desctop, is_ajax, limit, offset) = true, get_ajax(&req), 20, 0;
     let object_list: Vec<CardUserJson>; 
     if is_ajax == 0 {
         get_first_load_page (
