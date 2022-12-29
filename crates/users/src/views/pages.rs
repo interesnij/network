@@ -68,7 +68,13 @@ pub async fn all_users_page (
 
     let auth = Authorization::<Bearer>::parse(&req);
     match auth {
-        Ok(ok) => println!("ok {:?}", ok),
+        Ok(ok) => 
+        {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "parametrs not found!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body)),
+        }
         Err(_) => println!("not auth!"),
     } 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
