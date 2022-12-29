@@ -68,7 +68,7 @@ pub async fn all_users_page (
 
     let auth = Authorization::<Bearer>::parse(&req);
     match auth {
-        Ok(_) => println!("auth ok!"),
+        Ok(ok) => println!("ok {:?}", ok),
         Err(_) => println!("not auth!"),
     } 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
