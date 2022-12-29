@@ -20,7 +20,7 @@ pub fn users_urls(config: &mut web::ServiceConfig) {
     config.route("/users/all-users", web::get().to(all_users_page));
 } 
 
-#[derive(Deserialize, Serialize, Queryable)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct TestCardUsers {
     pub users:    Vec<CardUserJson>,
     pub auth:     i32,
