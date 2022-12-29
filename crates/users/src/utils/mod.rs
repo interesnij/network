@@ -168,7 +168,14 @@ pub fn get_user_owner_data (
             }
             else if owner.types == 1 {
                 match Authorization::<Bearer>::parse(req) {
-                    Ok(ok) => return (None, ok.as_ref().token().to_string().into()),
+                    Ok(ok) => {
+                        let token = ok.as_ref().token().to_string();
+                        return match verify_jwt(token, "users") {
+                            Ok(ok) => ok.id,
+                            Err(_) => Some("401 Unauthorized"),
+                        }
+
+                    },
                     Err(_) => return (None, 0),
                 }
             } 
