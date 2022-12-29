@@ -2,6 +2,7 @@ use actix_web::{
     web,
     web::block,
     web::Json,
+    HttpRequest,
 };
 use crate::utils::{
     get_community,
@@ -16,6 +17,7 @@ use crate::utils::{
     ReactionData, JsonItemReactions,
 };
 use crate::errors::Error;
+use crate::AppState;
 
 
 pub fn item_urls(config: &mut web::ServiceConfig) {
@@ -30,7 +32,11 @@ pub fn item_urls(config: &mut web::ServiceConfig) {
 }
 
 
-pub async fn delete_photo(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn delete_photo (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -71,7 +77,11 @@ pub async fn delete_photo(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         }
     }
 }
-pub async fn recover_photo(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn recover_photo (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -113,7 +123,11 @@ pub async fn recover_photo(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn on_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -155,7 +169,11 @@ pub async fn on_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn off_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -197,7 +215,11 @@ pub async fn off_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn add_photos_in_list(data: Json<DataNewPhotos>) -> Result<Json<Vec<RespPhoto>>, Error> {
+pub async fn add_photos_in_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataNewPhotos>
+) -> Result<Json<Vec<RespPhoto>>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), Some(data.user_id), 21);
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
@@ -251,7 +273,11 @@ pub async fn add_photos_in_list(data: Json<DataNewPhotos>) -> Result<Json<Vec<Re
     }
 }
 
-pub async fn edit_photo(data: Json<DataEditPhoto>) -> Result<Json<i16>, Error> {
+pub async fn edit_photo (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataEditPhoto>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
@@ -292,7 +318,11 @@ pub async fn edit_photo(data: Json<DataEditPhoto>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn send_reaction_photo(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
+pub async fn send_reaction_photo (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ReactionData>
+) -> Result<Json<JsonItemReactions>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -364,7 +394,11 @@ pub async fn send_reaction_photo(data: Json<ReactionData>) -> Result<Json<JsonIt
     }
 }
 
-pub async fn copy_photo(data: Json<DataCopyPhoto>) -> Result<Json<i16>, Error> {
+pub async fn copy_photo (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataCopyPhoto>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))

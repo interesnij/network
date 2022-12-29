@@ -2,6 +2,7 @@ use actix_web::{
     web,
     web::block,
     web::Json,
+    HttpRequest,
 };
 use crate::utils::{
     get_community,
@@ -13,6 +14,7 @@ use crate::utils::{
     ItemParams, DataCopyList, ErrorParams,
     DataListJson, RespListJson,
 };
+use crate::AppState;
 use crate::models::PhotoList;
 use crate::errors::Error;
 
@@ -31,7 +33,11 @@ pub fn list_urls(config: &mut web::ServiceConfig) {
     config.route("/copy_list", web::put().to(copy_list));
 }
 
-pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn add_list_in_user_collection (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -71,7 +77,11 @@ pub async fn add_list_in_user_collection(data: Json<ItemParams>) -> Result<Json<
         }
     }
 }
-pub async fn delete_list_from_user_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn delete_list_from_user_collection (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -92,7 +102,11 @@ pub async fn delete_list_from_user_collection(data: Json<ItemParams>) -> Result<
     }
 }
 
-pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn add_list_in_community_collection (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -151,7 +165,11 @@ pub async fn add_list_in_community_collection(data: Json<ItemParams>) -> Result<
         }
     }
 }
-pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn delete_list_from_community_collection (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -193,7 +211,11 @@ pub async fn delete_list_from_community_collection(data: Json<ItemParams>) -> Re
     }
 }
 
-pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
+pub async fn add_user_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataListJson>
+) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -212,7 +234,11 @@ pub async fn add_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson
         Ok(Json(_res))
     }
 }
-pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
+pub async fn edit_user_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataListJson>
+) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -243,7 +269,11 @@ pub async fn edit_user_list(data: Json<DataListJson>) -> Result<Json<RespListJso
         }
     }
 }
-pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
+pub async fn add_community_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataListJson>
+) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -281,7 +311,11 @@ pub async fn add_community_list(data: Json<DataListJson>) -> Result<Json<RespLis
         Err(Error::BadRequest("Permission Denied".to_string()))
     }
 }
-pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespListJson>, Error> {
+pub async fn edit_community_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataListJson>
+) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -326,7 +360,11 @@ pub async fn edit_community_list(data: Json<DataListJson>) -> Result<Json<RespLi
     }
 }
 
-pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn delete_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -367,7 +405,11 @@ pub async fn delete_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+pub async fn recover_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
@@ -408,7 +450,11 @@ pub async fn recover_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn copy_list(data: Json<DataCopyList>) -> Result<Json<i16>, Error> {
+pub async fn copy_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataCopyList>
+) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))

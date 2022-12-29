@@ -28,6 +28,7 @@ use crate::models::{
 };
 use serde::{Deserialize, Serialize};
 use crate::errors::Error;
+use crate::AppState;
 
 
 pub fn pages_routes(config: &mut web::ServiceConfig) {
@@ -71,13 +72,15 @@ pub async fn index_page() -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct LoadListParams {
     pub token:   Option<String>, // токен приложения
-    pub user_id: Option<i32>,    // кто запрашивает
     pub list_id: Option<i32>,    // какой список интересует
     pub limit:   Option<i64>,    // кол-во постов
     pub offset:  Option<i64>,    // число смещения
 } 
 
-pub async fn load_list_page(req: HttpRequest) -> impl Responder {
+pub async fn load_list_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
     let params_some = web::Query::<LoadListParams>::from_query(req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -239,10 +242,12 @@ pub async fn load_list_page(req: HttpRequest) -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct EditUserListParams {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,    // кто запрашивает
     pub list_id: Option<i32>,
 }
-pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
+pub async fn edit_user_list_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<EditUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -303,10 +308,12 @@ pub async fn edit_user_list_page(req: HttpRequest) -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct EditCommunityListParams {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
     pub list_id: Option<i32>,
 }
-pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
+pub async fn edit_community_list_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<EditCommunityListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -368,13 +375,15 @@ pub async fn edit_community_list_page(req: HttpRequest) -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct LoadItemParams {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
     pub item_id: Option<i32>,
     pub limit:   Option<i64>,
     pub offset:  Option<i64>,
 }
 
-pub async fn load_photo_page(req: HttpRequest) -> impl Responder {
+pub async fn load_photo_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<LoadItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
@@ -521,7 +530,10 @@ pub async fn load_photo_page(req: HttpRequest) -> impl Responder {
     }
 }
 
-pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
+pub async fn load_comments_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<LoadItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
@@ -689,7 +701,6 @@ pub async fn load_comments_page(req: HttpRequest) -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct ItemParams {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
     pub item_id: Option<i32>,
 }
 #[derive(Debug, Serialize)]
@@ -697,7 +708,10 @@ pub struct DescriptionResp {
     pub description: Option<String>,
 }
 
-pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
+pub async fn edit_photo_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<ItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -765,13 +779,15 @@ pub async fn edit_photo_page(req: HttpRequest) -> impl Responder {
 #[derive(Debug, Deserialize)]
 pub struct ItemReactionsParams {
     pub token:       Option<String>,
-    pub user_id:     Option<i32>,
     pub item_id:     Option<i32>,
     pub reaction_id: Option<i32>,
     pub limit:       Option<i64>,
     pub offset:      Option<i64>,
 }
-pub async fn photo_reactions_page(req: HttpRequest) -> impl Responder {
+pub async fn photo_reactions_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -868,7 +884,10 @@ pub async fn photo_reactions_page(req: HttpRequest) -> impl Responder {
     }
 }
 
-pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
+pub async fn comment_reactions_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> impl Responder {
     let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -974,7 +993,10 @@ pub async fn comment_reactions_page(req: HttpRequest) -> impl Responder {
 }
 
 
-pub async fn search_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPhotoListJson>>, Error> {
+pub async fn search_lists_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<Vec<CardPhotoListJson>>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1012,7 +1034,10 @@ pub async fn search_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPhotoLis
     }
 }
 
-pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPhotoListJson>>, Error> {
+pub async fn search_user_lists_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<Vec<CardPhotoListJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1090,7 +1115,10 @@ pub async fn search_user_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPho
     }
 }
 
-pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<CardPhotoListJson>>, Error> {
+pub async fn search_community_lists_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<Vec<CardPhotoListJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1174,7 +1202,10 @@ pub async fn search_community_lists_page(req: HttpRequest) -> Result<Json<Vec<Ca
     }
 }
 
-pub async fn search_photos_page(req: HttpRequest) -> Result<Json<SearchAllPhotos>, Error> {
+pub async fn search_photos_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<SearchAllPhotos>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1211,7 +1242,10 @@ pub async fn search_photos_page(req: HttpRequest) -> Result<Json<SearchAllPhotos
     }
 }
 
-pub async fn search_user_photos_page(req: HttpRequest) -> Result<Json<Vec<CardPhotoJson>>, Error> {
+pub async fn search_user_photos_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardPhotoJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1265,7 +1299,10 @@ pub async fn search_user_photos_page(req: HttpRequest) -> Result<Json<Vec<CardPh
     }
 }
 
-pub async fn search_community_photos_page(req: HttpRequest) -> Result<Json<Vec<CardPhotoJson>>, Error> {
+pub async fn search_community_photos_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardPhotoJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1326,7 +1363,10 @@ pub async fn search_community_photos_page(req: HttpRequest) -> Result<Json<Vec<C
 }
 
 
-pub async fn search_list_photos_page(req: HttpRequest) -> impl Responder {
+pub async fn search_list_photos_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1479,7 +1519,10 @@ pub async fn search_list_photos_page(req: HttpRequest) -> impl Responder {
 }
 
 
-pub async fn search_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
+pub async fn search_comments_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<SearchAllComments>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1521,7 +1564,10 @@ pub async fn search_comments_page(req: HttpRequest) -> Result<Json<SearchAllComm
     }
 }
 
-pub async fn search_user_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
+pub async fn search_user_comments_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<SearchAllComments>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1576,7 +1622,10 @@ pub async fn search_user_comments_page(req: HttpRequest) -> Result<Json<SearchAl
     }
 }
 
-pub async fn search_community_comments_page(req: HttpRequest) -> Result<Json<SearchAllComments>, Error> {
+pub async fn search_community_comments_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<SearchAllComments>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() { 
         let params = params_some.unwrap();
@@ -1631,7 +1680,10 @@ pub async fn search_community_comments_page(req: HttpRequest) -> Result<Json<Sea
     }
 }
 
-pub async fn search_list_comments_page(req: HttpRequest) -> impl Responder {
+pub async fn search_list_comments_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -1807,7 +1859,10 @@ pub async fn search_list_comments_page(req: HttpRequest) -> impl Responder {
     }
 }
 
-pub async fn search_photo_comments_page(req: HttpRequest) -> impl Responder {
+pub async fn search_photo_comments_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();

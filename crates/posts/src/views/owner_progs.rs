@@ -2,6 +2,7 @@ use actix_web::{
     web,
     web::block,
     web::Json,
+    HttpRequest,
 };
 
 use crate::models::{
@@ -57,7 +58,6 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
 #[derive(Deserialize)]
 pub struct AddTargetParams {
     pub token:     Option<String>,
-    pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
 }
 

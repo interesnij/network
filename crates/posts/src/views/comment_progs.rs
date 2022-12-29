@@ -2,6 +2,7 @@ use actix_web::{
     web,
     web::block,
     web::Json,
+    HttpRequest,
 };
 use crate::utils::{
     get_user,
@@ -15,6 +16,7 @@ use crate::utils::{
     ReactionData, JsonItemReactions,
 };
 use crate::errors::Error;
+use crate::AppState;
 
 
 pub fn comment_urls(config: &mut web::ServiceConfig) {
@@ -26,8 +28,12 @@ pub fn comment_urls(config: &mut web::ServiceConfig) {
 }
 
 
-pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+pub async fn add_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataNewComment>,
+) -> Result<Json<RespComment>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
     if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
     } 
@@ -93,8 +99,12 @@ pub async fn add_comment(data: Json<DataNewComment>) -> Result<Json<RespComment>
     }
 }
 
-pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespComment>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+pub async fn edit_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<DataEditComment>
+) -> Result<Json<RespComment>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -137,8 +147,12 @@ pub async fn edit_comment(data: Json<DataEditComment>) -> Result<Json<RespCommen
     }
 }
 
-pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+pub async fn delete_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -176,8 +190,12 @@ pub async fn delete_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> 
     }
 }
 
-pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+pub async fn recover_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ItemParams>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -216,8 +234,12 @@ pub async fn recover_comment(data: Json<ItemParams>) -> Result<Json<i16>, Error>
 }
 
 
-pub async fn send_reaction_comment(data: Json<ReactionData>) -> Result<Json<JsonItemReactions>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+pub async fn send_reaction_comment (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ReactionData>
+) -> Result<Json<JsonItemReactions>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }

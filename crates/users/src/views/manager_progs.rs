@@ -78,7 +78,7 @@ pub struct ReportResp {
     pub user:    CardUserJson,
 }
 
-pub async fn get_claim_page (
+pub async fn get_claim_page ( 
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<ReportResp>, Error> {

@@ -1,8 +1,10 @@
 mod items;
 mod attach_items;
+mod crypto;
 pub use self::{
     attach_items::*,
     items::*,
+    crypto::*,
 };
 
 use diesel::{
@@ -23,6 +25,9 @@ use crate::models::{
     Owner,
 };
 use crate::errors::Error;
+use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
+use actix_web::{web, http::header::Header, HttpRequest};
+use crate::AppState;
 
 
 /* 
@@ -189,16 +194,12 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
         .first::<Moderated>(&_connection)?);
 }
 
-pub fn get_owner_data (
-    token:         Option<String>,
-    user_id:       Option<i32>,
-    service_types: i16
+pub async fn get_owner_data (
+    req:           &HttpRequest,
+    state:         web::Data<AppState>,
+    token:         Option<String>,  // токен
+    service_types: i16              // тип сервиса и роли в нем
 ) -> (Option<String>, i32, i32) {
-    // проверка токена на допуск к нейтральным объектам
-    // (например, для загрузки списка в окне)
-    // нам нужно узнать по токену тип владельца.
-    // заодним мы выясним id пользователя.
-    // отдаем ошибку, id пользователя, id сообщества.
     if token.is_some() {
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
@@ -211,21 +212,16 @@ pub fn get_owner_data (
                 return (Some("This role is not allowed in this service!".to_string()), 0, 0);
             }
             else if owner.types == 1 {
-                // токен приложения, которое работает как наше
-                if user_id.is_some() {
-                    // параметр id текущего пользователя
-                    let _id = user_id.unwrap();
-                    let _user = get_user(_id);
-                    if _user.is_ok() {
-                        return (None, _id, 0);
-                    }
-                    else {
-                        return (Some("user not found!".to_string()), 0, 0);
-                    }
-                }
-                else {
-                    // параметра user_id нет - значит пользователь анонимный
-                    return (None, 0, 0);
+                match Authorization::<Bearer>::parse(req) {
+                    Ok(ok) => {
+                        let token = ok.as_ref().token().to_string();
+                        return match verify_jwt(token, state.key.as_ref()).await {
+                            Ok(ok) => (None, ok.id, 0),
+                            Err(_) => (Some("401 Unauthorized".to_string()), 0, 0),
+                        }
+
+                    },
+                    Err(_) => return (None, 0, 0),
                 }
             }
             else if owner.types == 2 {
@@ -249,14 +245,12 @@ pub fn get_owner_data (
     }
 }
 
-pub fn get_user_owner_data (
-    token: Option<String>,
-    user_id: Option<i32>,
-    service_types: i16,
+pub async fn get_user_owner_data (
+    req:           &HttpRequest,
+    state:         web::Data<AppState>,
+    token:         Option<String>,  // токен
+    service_types: i16              // тип сервиса и роли в нем
 ) -> (Option<String>, i32) {
-    // проверка токена на допуск к объектам пользователя
-    // нам нужно узнать по токену тип владельца.
-    // заодним мы выясним id пользователя.
     if token.is_some() {
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
@@ -269,72 +263,20 @@ pub fn get_user_owner_data (
                 return (Some("This role is not allowed in this service!".to_string()), 0);
             }
             else if owner.types == 1 {
-                if user_id.is_some() {
-                    let _id = user_id.unwrap();
-                    let _user = get_user(_id);
-                    if _user.is_ok() {
-                        return (None, _id);
-                    }
-                    else {
-                        return (Some("user not found!".to_string()), 0);
-                    }
-                }
-                else {
-                    return (Some("parametr 'user_id' not found!".to_string()), 0);
+                match Authorization::<Bearer>::parse(req) {
+                    Ok(ok) => {
+                        let token = ok.as_ref().token().to_string();
+                        return match verify_jwt(token, state.key.as_ref()).await {
+                            Ok(ok) => (None, ok.id),
+                            Err(_) => (Some("401 Unauthorized".to_string()), 0),
+                        }
+
+                    },
+                    Err(_) => return (None, 0),
                 }
             }
             else if owner.types == 2 {
                 return (None, owner.user_id);
-            }
-            else {
-                return (Some("owner not found!".to_string()), 0);
-            }
-        }
-        else {
-            return (Some("tokens owner not found!".to_string()), 0);
-        }
-    }
-    else {
-        return (Some("parametr 'token' not found!".to_string()), 0);
-    }
-}
-
-pub fn get_community_owner_id (
-    token:         Option<String>,
-    community_id:  Option<i32>,
-    service_types: i16,
-) -> (Option<String>, i32) {
-    // проверка токена на допуск к объектам сообщества
-    // нам нужно узнать по токену тип владельца.
-    // заодним мы выясним id сообщества.
-    if token.is_some() {
-        use crate::schema::owners::dsl::owners;
-        let _connection = establish_connection();
-        let owner_res = owners
-            .filter(schema::owners::service_key.eq(token.unwrap()))
-            .first::<Owner>(&_connection);
-        if owner_res.is_ok() {
-            let owner = owner_res.expect("E");
-            if service_types < 1 || !owner.is_service_types_ok(service_types) {
-                return (Some("This role is not allowed in this service!".to_string()), 0);
-            }
-            else if owner.types == 1 {
-                if community_id.is_some() {
-                    let _id = community_id.unwrap();
-                    let _community = get_community(_id);
-                    if _community.is_ok() {
-                        return (None, _id);
-                    }
-                    else {
-                        return (Some("community not found!".to_string()), 0);
-                    }
-                }
-                else {
-                    return (Some("parametr 'community_id' not found!".to_string()), 0);
-                }
-            }
-            else if owner.types == 3 {
-                return (None, owner.community_id.unwrap());
             }
             else {
                 return (Some("owner not found!".to_string()), 0);

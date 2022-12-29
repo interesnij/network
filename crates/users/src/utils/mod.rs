@@ -150,7 +150,7 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
         .first::<Moderated>(&_connection)?);
 }
 
-pub async fn get_user_owner_data ( 
+pub async fn get_user_owner_data (  
     req:           &HttpRequest,
     state:         web::Data<AppState>,
     token:         Option<String>,  // токен

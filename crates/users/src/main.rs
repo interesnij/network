@@ -5,12 +5,9 @@ use std::sync::Arc;
 use dotenv::dotenv;
 use std::env;
 use actix_web::{
-    //middleware::Logger,
     web,
     App,
-    //HttpRequest,
     HttpServer,
-    //Result
 };
 use actix_cors::Cors;
 
@@ -28,11 +25,12 @@ pub struct AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    use crate::routes::routes;
+
     dotenv().ok();
     let app_state = AppState {
         key: Arc::new(env::var("KEY").unwrap()),
     };
-    use crate::routes::routes;
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin("194.58.90.123:8100")
