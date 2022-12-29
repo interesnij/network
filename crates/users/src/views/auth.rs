@@ -394,8 +394,12 @@ pub struct CodeJson {
     pub code: String,
 }
 
-pub async fn phone_send(req: HttpRequest, data: Json<PhoneJson>) -> Json<RespParams> {
-    let (err, _user_id) = get_user_owner_data(&req, data.token.clone(), 0);
+pub async fn phone_send (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<PhoneJson>
+) -> Json<RespParams> {
+    let (err, _user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {   
         return Json( RespParams {
             resp: err.unwrap()
@@ -460,8 +464,12 @@ pub struct OptionPhoneCodeJson {
     pub phone: Option<String>,
     pub code:  Option<String>,
 }
-pub async fn phone_verify(req: HttpRequest, data: web::Json<OptionPhoneCodeJson>) -> Result<Json<RespParams>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 0);
+pub async fn phone_verify (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: web::Json<OptionPhoneCodeJson>
+) -> Result<Json<RespParams>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() || (user_id != 0) {
         return Err(Error::BadRequest(err.unwrap()));
     } 
