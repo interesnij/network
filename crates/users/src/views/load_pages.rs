@@ -10,6 +10,7 @@ use crate::utils::{
     ErrorParams, CardUserJson, RegListData,
 };
 use crate::errors::Error;
+use crate::AppState;
 
 
 pub fn load_urls(config: &mut web::ServiceConfig) {
@@ -22,11 +23,14 @@ pub fn load_urls(config: &mut web::ServiceConfig) {
 }
 
 
-pub async fn friends_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn friends_load (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -55,11 +59,14 @@ pub async fn friends_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, E
     }
 }
 
-pub async fn follows_load(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn follows_load (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -122,11 +129,14 @@ pub struct IEFollowsResponse {
     pub follows: Vec<CardUserJson>,
 }
 
-pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResponse>, Error> {
+pub async fn include_friends_load (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<IEFriendsResponse>, Error> {
     let params_some = web::Query::<IEFriendsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -172,11 +182,14 @@ pub async fn include_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResp
     }
 }
 
-pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResponse>, Error> {
+pub async fn exclude_friends_load (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<IEFriendsResponse>, Error> {
     let params_some = web::Query::<IEFriendsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state,  params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -223,11 +236,14 @@ pub async fn exclude_friends_load(req: HttpRequest) -> Result<Json<IEFriendsResp
 }
 
 
-pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResponse>, Error> {
+pub async fn include_follows_load (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<IEFollowsResponse>, Error> {
     let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -273,11 +289,14 @@ pub async fn include_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResp
     }
 }
 
-pub async fn exclude_follows_load(req: HttpRequest) -> Result<Json<IEFollowsResponse>, Error> {
+pub async fn exclude_follows_load (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<IEFollowsResponse>, Error> {
     let params_some = web::Query::<IEFollowsData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {

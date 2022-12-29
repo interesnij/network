@@ -68,7 +68,7 @@ pub async fn all_users_page (
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() { 
         let params = params_some.unwrap();
-        let (err, _user_id) = get_user_owner_data(&req, params.token.clone(), 0);
+        let (err, _user_id) = get_user_owner_data(&req, state, params.token.clone(), 0).await;
         let auth_check = match Authorization::<Bearer>::parse(&req) {
             Ok(ok) => 1,
             Err(_) => 0,
@@ -98,13 +98,15 @@ pub async fn all_users_page (
     }
 }
 
-pub async fn profile_page(req: HttpRequest) -> Result<Json<UserDetailJson>, Error> {
+pub async fn profile_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<UserDetailJson>, Error> {
     let params_some = web::Query::<UsersData>::from_query(&req.query_string());
     if params_some.is_ok() { 
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
-            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -167,13 +169,15 @@ pub async fn profile_page(req: HttpRequest) -> Result<Json<UserDetailJson>, Erro
     }
 }
 
-pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_friends_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
-            // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
             }).unwrap();
@@ -236,11 +240,14 @@ pub async fn user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
     }
 }
 
-pub async fn user_friends_online_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_friends_online_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -305,11 +312,14 @@ pub async fn user_friends_online_page(req: HttpRequest) -> Result<Json<Vec<CardU
     }
 }
 
-pub async fn user_friends_common_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_friends_common_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -373,11 +383,14 @@ pub async fn user_friends_common_page(req: HttpRequest) -> Result<Json<Vec<CardU
     }
 }
 
-pub async fn user_followings_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_followings_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -416,11 +429,14 @@ pub async fn user_followings_page(req: HttpRequest) -> Result<Json<Vec<CardUserJ
     }
 }
 
-pub async fn user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_follows_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<TargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -485,11 +501,14 @@ pub async fn user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson
     }
 }
 
-pub async fn user_featured_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_featured_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -528,11 +547,14 @@ pub async fn user_featured_page(req: HttpRequest) -> Result<Json<Vec<CardUserJso
     }
 }
 
-pub async fn user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn user_blacklist_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -571,11 +593,14 @@ pub async fn user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<CardUserJs
     }
 }
 
-pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_all_users_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, _user_id) = get_user_owner_data(&req, params.token.clone(), 0);
+        let (err, _user_id) = get_user_owner_data(&req, state, params.token.clone(), 0).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -609,11 +634,14 @@ pub async fn search_all_users_page(req: HttpRequest) -> Result<Json<Vec<CardUser
     }
 }
 
-pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_friends_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -691,11 +719,14 @@ pub async fn search_user_friends_page(req: HttpRequest) -> Result<Json<Vec<CardU
     }
 }
 
-pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_friends_online_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -773,11 +804,14 @@ pub async fn search_user_friends_online_page(req: HttpRequest) -> Result<Json<Ve
     }
 }
 
-pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_friends_common_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -854,11 +888,14 @@ pub async fn search_user_friends_common_page(req: HttpRequest) -> Result<Json<Ve
     }
 }
 
-pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_followings_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -910,11 +947,14 @@ pub async fn search_user_followings_page(req: HttpRequest) -> Result<Json<Vec<Ca
     }
 }
 
-pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_blacklist_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
+        let (err, user_id) = get_user_owner_data(&req, state,  params.token.clone(), 31).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -966,11 +1006,14 @@ pub async fn search_user_blacklist_page(req: HttpRequest) -> Result<Json<Vec<Car
     }
 }
 
-pub async fn search_user_follows_page(req: HttpRequest) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn search_user_follows_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
