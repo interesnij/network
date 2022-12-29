@@ -1077,16 +1077,28 @@ loadScripts('/static/scripts/goods/user_get.js');
 loadScripts('/static/scripts/video/user_get.js');
 loadScripts('/static/scripts/music/get.js');
 
-on('body', 'click', '.anon_color_change', function() {
+function get_custom_design() {
+  background = getCookie("background");
+  if (background != "") {
+    addStyleSheets("/static/styles/color/" + background + ".css")
+  }
+  else {
+    addStyleSheets("/static/styles/color/white.css")
+  }
+};
+
+on('body', 'click', '.color_change', function() { 
   var span = this;
   var color = this.getAttribute('data-color');
   var input = span.querySelector(".custom-control-input");
-    var uncheck=document.getElementsByTagName('input');
-    for(var i=0;i<uncheck.length;i++)
-    {uncheck[i].checked=false;}
-    input.checked = true;
-    addStyleSheets("/static/styles/color/" + color + ".css");
-});
+  var uncheck=document.getElementsByTagName('input');
+  for(var i=0;i<uncheck.length;i++) {
+    uncheck[i].checked=false;
+  }
+  input.checked = true;
+  addStyleSheets("/static/styles/color/" + color + ".css");
+  setCookie("background", color, 90);
+}); 
 
 on('body', 'click', '.menu_drop', function() {
   block = this.nextElementSibling;
@@ -1127,3 +1139,5 @@ on('#ajax', 'click', '.select_tab_content_universal', function() {
 on('#ajax', 'click', '.toggle_visible_owner_lists', function() {
   this.parentElement.nextElementSibling.querySelector(".owner_lists").classList.toggle("hide");
 })
+
+get_custom_design();
