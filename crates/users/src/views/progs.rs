@@ -89,8 +89,12 @@ pub async fn user_block (
     }
 }
 
-pub async fn user_unblock(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
+pub async fn user_unblock (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<UsersData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -143,8 +147,12 @@ pub async fn user_unblock(req: HttpRequest, data: Json<UsersData>) -> Result<Jso
 }
 
 
-pub async fn user_friend(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
+pub async fn user_friend (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<UsersData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -196,8 +204,12 @@ pub async fn user_friend(req: HttpRequest, data: Json<UsersData>) -> Result<Json
     }
 }
 
-pub async fn user_unfriend(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
+pub async fn user_unfriend (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<UsersData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -250,8 +262,12 @@ pub async fn user_unfriend(req: HttpRequest, data: Json<UsersData>) -> Result<Js
 }
 
 
-pub async fn user_follow(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
+pub async fn user_follow (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<UsersData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -302,8 +318,12 @@ pub async fn user_follow(req: HttpRequest, data: Json<UsersData>) -> Result<Json
         }
     }
 }
-pub async fn user_follow_view(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
+pub async fn user_follow_view (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<UsersData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -340,8 +360,12 @@ pub async fn user_follow_view(req: HttpRequest, data: Json<UsersData>) -> Result
     }
 }
 
-pub async fn user_unfollow(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
+pub async fn user_unfollow (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<UsersData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, atate, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
