@@ -114,7 +114,7 @@ pub async fn get_file (
                 is_open = false;
             }
         
-            let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
+            let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
                 
             if err.is_some() { 
                 is_open = false;
@@ -155,7 +155,7 @@ pub async fn get_file (
                 is_open = false;
             }
         
-            let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 8);
+            let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
                 
             if err.is_some() {
                 is_open = false;
@@ -289,7 +289,7 @@ pub async fn upload_files (
     let form = files_form(payload.borrow_mut()).await;
     let mut is_open = false;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, form.token.clone(), 38).await;
     if err.is_some() { 
         is_open = false;
         println!("проблема с токеном!");
