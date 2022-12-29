@@ -168,7 +168,7 @@ pub fn get_user_owner_data (
             }
             else if owner.types == 1 {
                 match Authorization::<Bearer>::parse(req) {
-                    Ok(ok) => return (None, ok.as_ref().user_id()),
+                    Ok(ok) => return (None, ok.token()),
                     Err(_) => return (None, 0),
                 }
             } 
