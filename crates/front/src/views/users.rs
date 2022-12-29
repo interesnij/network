@@ -63,7 +63,7 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             true
         ).await;
         if _object_list.is_ok() {
-            object_list_ok = _object_list.expect("E.");
+            let object_list_ok = _object_list.expect("E.");
             object_list = object_list_ok.users;
             _auth = object_list_ok.auth;
         }
@@ -122,7 +122,7 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             false
         ).await;
         if _object_list.is_ok() {
-            object_list_ok = _object_list.expect("E.");
+            let object_list_ok = _object_list.expect("E.");
             object_list = object_list_ok.users;
             _auth = object_list_ok.auth;
         }
