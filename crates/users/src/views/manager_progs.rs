@@ -293,8 +293,8 @@ pub async fn close_user(req: HttpRequest, data: Json<CloseParams>) -> Result<Jso
     }
 }
 
-pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn unclose_user(req: HttpRequest, data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -465,7 +465,7 @@ pub async fn unsuspend_user(req: HttpRequest, data: Json<ModerationParams>) -> R
     }
 }
 
-pub async fn suspend_moderation(req: Httprequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+pub async fn suspend_moderation(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
