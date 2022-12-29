@@ -27,7 +27,8 @@ pub async fn news_page(req: HttpRequest) -> actix_web::Result<HttpResponse> {
     _request_user = get_request_data(); 
     
     //let object_list: Vec<WallObject> = Vec::new();
-    if is_ajax == 0 {
+
+    if is_ajax == 0 { 
         get_first_load_page (
             false,
             false,
@@ -84,6 +85,14 @@ pub async fn index_page (
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax) = get_device_and_ajax(&req); 
+    use actix_web_httpauth::headers::authorization::Authorization
+
+    let auth = Authorization::<Bearer>::parse(&req);
+    match auth {
+        Ok(_) => println!("auth ok!"),
+        Err(_) => println!("not auth!"),
+    }
+
     if is_authenticate() { 
         return news_page(req).await
     }
