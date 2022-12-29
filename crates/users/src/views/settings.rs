@@ -517,6 +517,7 @@ pub struct EditPasswordData {
 }
 #[derive(Serialize)]
 pub struct EditPasswordResp {
+    pub user_id: Option<i32>,
     pub token:    Option<String>,
     pub password: Option<String>,
 }
@@ -599,6 +600,7 @@ pub async fn edit_password (
 #[derive(Serialize, Deserialize)]
 pub struct EditPrivateData {
     pub token:   Option<String>,
+    pub user_id: Option<i32>,
     pub field:   Option<String>,
     pub value:   Option<i16>,
     pub users:   Option<Vec<i32>>,
