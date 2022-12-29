@@ -6,6 +6,8 @@ pub mod models;
 pub mod routes;
 mod errors;
 use dotenv::dotenv;
+use std::env;
+
 #[macro_use]
 mod utils;
 #[macro_use]
