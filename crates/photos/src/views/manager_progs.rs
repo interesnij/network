@@ -90,7 +90,7 @@ pub async fn create_claim_list (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -160,7 +160,7 @@ pub async fn create_claim_photo (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -231,7 +231,7 @@ pub async fn create_claim_comment (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -302,7 +302,7 @@ pub async fn close_user (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -336,7 +336,7 @@ pub async fn close_community (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -370,7 +370,7 @@ pub async fn unclose_user (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -404,7 +404,7 @@ pub async fn unclose_community (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -437,7 +437,7 @@ pub async fn close_list (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -479,7 +479,7 @@ pub async fn close_photo (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -521,7 +521,7 @@ pub async fn close_comment (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -564,7 +564,7 @@ pub async fn unclose_list (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -606,7 +606,7 @@ pub async fn unclose_photo (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -648,7 +648,7 @@ pub async fn unclose_comment (
     state: web::Data<AppState>,
     data: Json<CloseParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -692,7 +692,7 @@ pub async fn suspend_community (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -726,7 +726,7 @@ pub async fn unsuspend_community (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -760,7 +760,7 @@ pub async fn suspend_user (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -794,7 +794,7 @@ pub async fn unsuspend_user (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -827,7 +827,7 @@ pub async fn suspend_list (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -869,7 +869,7 @@ pub async fn unsuspend_list (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -912,7 +912,7 @@ pub async fn suspend_moderation (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -949,7 +949,7 @@ pub async fn close_moderation (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -984,7 +984,7 @@ pub async fn unsuspend_moderation (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1019,7 +1019,7 @@ pub async fn unclose_moderation (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1054,7 +1054,7 @@ pub async fn unverify_moderation (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1089,7 +1089,7 @@ pub async fn reject_moderation (
     state: web::Data<AppState>,
     data: Json<ModerationParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1131,7 +1131,7 @@ pub async fn edit_user_staff (
     state: web::Data<AppState>,
     data: Json<UStaffParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1186,7 +1186,7 @@ pub async fn edit_member_staff (
     state: web::Data<AppState>,
     data: Json<CStaffParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 0);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1240,7 +1240,7 @@ pub async fn edit_user_private (
     state: web::Data<AppState>,
     data: Json<UPrivateParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1321,7 +1321,7 @@ pub async fn edit_community_private (
     state: web::Data<AppState>,
     data: Json<CPrivateParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1380,7 +1380,7 @@ pub async fn edit_list_private (
     state: web::Data<AppState>,
     data: Json<LPrivateParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }

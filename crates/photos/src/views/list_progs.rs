@@ -38,7 +38,7 @@ pub async fn add_list_in_user_collection (
     state: web::Data<AppState>,
     data: Json<ItemParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -82,7 +82,7 @@ pub async fn delete_list_from_user_collection (
     state: web::Data<AppState>,
     data: Json<ItemParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -107,7 +107,7 @@ pub async fn add_list_in_community_collection (
     state: web::Data<AppState>,
     data: Json<ItemParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -170,7 +170,7 @@ pub async fn delete_list_from_community_collection (
     state: web::Data<AppState>,
     data: Json<ItemParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -216,7 +216,7 @@ pub async fn add_user_list (
     state: web::Data<AppState>,
     data: Json<DataListJson>
 ) -> Result<Json<RespListJson>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -239,7 +239,7 @@ pub async fn edit_user_list (
     state: web::Data<AppState>,
     data: Json<DataListJson>
 ) -> Result<Json<RespListJson>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -274,7 +274,7 @@ pub async fn add_community_list (
     state: web::Data<AppState>,
     data: Json<DataListJson>
 ) -> Result<Json<RespListJson>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -316,7 +316,7 @@ pub async fn edit_community_list (
     state: web::Data<AppState>,
     data: Json<DataListJson>
 ) -> Result<Json<RespListJson>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -365,7 +365,7 @@ pub async fn delete_list (
     state: web::Data<AppState>,
     data: Json<ItemParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -410,7 +410,7 @@ pub async fn recover_list (
     state: web::Data<AppState>,
     data: Json<ItemParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -455,7 +455,7 @@ pub async fn copy_list (
     state: web::Data<AppState>,
     data: Json<DataCopyList>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(data.token.clone(), data.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }

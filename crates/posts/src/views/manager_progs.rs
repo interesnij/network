@@ -91,7 +91,7 @@ pub async fn create_claim_list (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 34).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -161,7 +161,7 @@ pub async fn create_claim_post (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 34).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -232,7 +232,7 @@ pub async fn create_claim_comment (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 34).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1241,7 +1241,7 @@ pub async fn edit_user_private (
     state: web::Data<AppState>,
     data: Json<UPrivateParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 21).await;
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 34).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1323,7 +1323,7 @@ pub async fn edit_community_private (
     state: web::Data<AppState>,
     data: Json<CPrivateParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 34).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1382,7 +1382,7 @@ pub async fn edit_list_private (
     state: web::Data<AppState>,
     data: Json<LPrivateParams>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 21).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 34).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }

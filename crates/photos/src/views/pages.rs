@@ -84,7 +84,7 @@ pub async fn load_list_page (
     let params_some = web::Query::<LoadListParams>::from_query(req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -251,7 +251,7 @@ pub async fn edit_user_list_page (
     let params_some = web::Query::<EditUserListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 21);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -317,7 +317,7 @@ pub async fn edit_community_list_page (
     let params_some = web::Query::<EditCommunityListParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 21);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 38).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -388,7 +388,7 @@ pub async fn load_photo_page (
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -538,7 +538,7 @@ pub async fn load_comments_page (
     if params_some.is_ok() {
         // если параметры строки запроса правильные...
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -715,7 +715,7 @@ pub async fn edit_photo_page (
     let params_some = web::Query::<ItemParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 21);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 38).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -791,7 +791,7 @@ pub async fn photo_reactions_page (
     let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -891,7 +891,7 @@ pub async fn comment_reactions_page (
     let params_some = web::Query::<ItemReactionsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1000,7 +1000,7 @@ pub async fn search_lists_page (
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, _user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             // если проверка токена не удалась...
             let body = serde_json::to_string(&ErrorParams {
@@ -1041,7 +1041,7 @@ pub async fn search_user_lists_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1122,7 +1122,7 @@ pub async fn search_community_lists_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1209,7 +1209,7 @@ pub async fn search_photos_page (
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1249,7 +1249,7 @@ pub async fn search_user_photos_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1306,7 +1306,7 @@ pub async fn search_community_photos_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1370,7 +1370,7 @@ pub async fn search_list_photos_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1526,7 +1526,7 @@ pub async fn search_comments_page (
     let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1571,7 +1571,7 @@ pub async fn search_user_comments_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1629,7 +1629,7 @@ pub async fn search_community_comments_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() { 
         let params = params_some.unwrap();
-        let (err, user_id, _community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1687,7 +1687,7 @@ pub async fn search_list_comments_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -1866,7 +1866,7 @@ pub async fn search_photo_comments_page (
     let params_some = web::Query::<SearchTargetListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 8).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
