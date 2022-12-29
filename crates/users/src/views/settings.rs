@@ -333,7 +333,7 @@ pub struct EditLinkData {
 }
 pub async fn edit_link (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<EditLinkData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;

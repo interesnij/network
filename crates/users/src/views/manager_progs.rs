@@ -65,7 +65,7 @@ pub struct ModerationParams {
 #[derive(Serialize)]
 pub struct DataModerationParams {
     pub token:       Option<String>,
-    pub item_id:     Option<i32>,
+    pub user_id:     Option<i32>,
     pub item_id:     Option<i32>,
     pub description: Option<String>,
     pub expiration:  Option<chrono::NaiveDateTime>,
