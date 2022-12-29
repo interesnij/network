@@ -14,7 +14,7 @@ use crate::utils::{
     ErrorParams, CardUserJson,
     RegListData, SearchRegListData,
     TargetListData, SearchTargetListData,
-    UsersData, UserDetailJson,
+    UsersData, UserDetailJson, TestCardUsers,
 };
 use crate::models::{User, Owner, TokenJson};
 use crate::errors::Error;
@@ -71,7 +71,7 @@ pub async fn all_users_page (
     let auth_check = match auth {
         Ok(ok) => 1,
         Err(_) => 0,
-    } 
+    } ;
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //match verify_jwt(_auth.token().to_string(), state.key.as_ref()).await {
     //    Ok(ok) => println!("id {:?}", ok.id),
@@ -96,7 +96,7 @@ pub async fn all_users_page (
                 auth:  auth_check,
             }))
         }
-    }
+    } 
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
