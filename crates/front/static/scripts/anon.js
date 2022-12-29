@@ -1087,12 +1087,11 @@ function get_custom_design() {
   }
 };
 
-on('body', 'click', '.background_change', function() { 
-  var span = this;
+on('body', 'click', '.background_change', function() {  
   var color = this.getAttribute('data-color');
-  var input = span.querySelector(".custom-control-input");
+  var input = this.querySelector(".custom-control-input");
   var uncheck=document.getElementsByTagName('input');
-  for(var i=0;i<uncheck.length;i++) {
+  for(var i=0;i<uncheck.length;i++) { 
     uncheck[i].checked=false;
   }
   input.checked = true;
