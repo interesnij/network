@@ -19,7 +19,7 @@ pub const FRONTURL: &str = "http://194.58.90.123";
 pub const FRONTPORT: &str = "8100";
 pub const TOKEN: &str = "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";
 pub const APIURL: &str = "http://194.58.90.123:8000";
-pub const USERURL: &str = "http://194.58.90.123:9021";
+pub const USERURL: &str = "http://194.58.90.123:9001";
 
 
 #[derive(Serialize, Deserialize)]
