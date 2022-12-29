@@ -148,8 +148,9 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
         .first::<Moderated>(&_connection)?);
 }
 
-pub fn get_user_owner_data ( 
+pub async fn get_user_owner_data ( 
     req:           &HttpRequest,
+    state:         web::Data<AppState>,
     token:         Option<String>,  // токен
     service_types: i16              // тип сервиса и роли в нем
 ) -> (Option<String>, i32) { 
@@ -170,8 +171,8 @@ pub fn get_user_owner_data (
                 match Authorization::<Bearer>::parse(req) {
                     Ok(ok) => {
                         let token = ok.as_ref().token().to_string();
-                        return match verify_jwt(token, &"users".to_string()).await {
-                            Ok(ok) => ok.id,
+                        return match verify_jwt(token, state.key.as_ref()).await {
+                            Ok(ok) => ok,
                             Err(_) => Some("401 Unauthorized"),
                         }
 
