@@ -1087,7 +1087,7 @@ function get_custom_design() {
   }
 };
 
-on('body', 'click', '.color_change', function() { 
+on('body', 'click', '.background_change', function() { 
   var span = this;
   var color = this.getAttribute('data-color');
   var input = span.querySelector(".custom-control-input");
