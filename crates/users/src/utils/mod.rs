@@ -167,8 +167,8 @@ pub fn get_user_owner_data (
                 return (Some("This role is not allowed in this service!".to_string()), 0);
             }
             else if owner.types == 1 {
-                match Authorization::<Bearer>::parse(&req) {
-                    Ok(ok) => return (None, ok),
+                match Authorization::<Bearer>::parse(req) {
+                    Ok(ok) => return (None, ok.token()),
                     Err(_) => return (None, 0),
                 }
             } 

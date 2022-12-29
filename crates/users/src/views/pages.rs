@@ -64,15 +64,15 @@ pub async fn all_users_page (
 ) -> Result<Json<TestCardUsers>, Error> {
     use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
     use actix_web::http::header::Header;
-
-    let auth_check = Authorization::<Bearer>::parse(&req) auth {
-        Ok(ok) => 1,
-        Err(_) => 0,
-    }; 
+ 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(&req, params.token.clone(), 0);
+        let auth_check = Authorization::<Bearer>::parse(req) {
+            Ok(ok) => 1,
+            Err(_) => 0,
+        };
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
