@@ -56,7 +56,7 @@ pub struct AuthResp {
 
 pub async fn login (
     data: web::Json<LoginUser2>,
-    state: web::Data<AppState> 
+    state: web::Data<AppState>
 ) -> Result<Json<AuthResp>, Error> {
     let _user = User::get_user_by_phone(&data.phone);
     
@@ -159,7 +159,7 @@ pub struct NewUserData {
 
 pub async fn process_signup (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<NewUserForm>
 ) -> Result<Json<NewUserDetailJson>, Error> {
     use crate::models::{

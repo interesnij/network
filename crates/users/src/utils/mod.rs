@@ -8,7 +8,7 @@ use diesel::{
 use crate::schema;
 use crate::errors::Error;
 use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
-use actix_web::{http::header::Header, HttpRequest};
+use actix_web::{web, http::header::Header, HttpRequest};
 
 mod lists;
 mod profile;
@@ -175,7 +175,7 @@ pub async fn get_user_owner_data (
                         let token = ok.as_ref().token().to_string();
                         return match verify_jwt(token, state.key.as_ref()).await {
                             Ok(ok) => (None, ok.id),
-                            Err(_) => (Some("401 Unauthorized"), 0),
+                            Err(_) => (Some("401 Unauthorized".to_string()), 0),
                         }
 
                     },

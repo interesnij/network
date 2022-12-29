@@ -28,7 +28,6 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 #[derive(Serialize)]
 pub struct AddTargetParams {
     pub token:     Option<String>,
-    pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
 }
 
@@ -365,7 +364,7 @@ pub async fn user_unfollow (
     state: web::Data<AppState>,
     data: Json<UsersData>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, atate, data.token.clone(), 31).await;
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))

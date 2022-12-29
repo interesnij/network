@@ -52,13 +52,11 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
 #[derive(Deserialize)]
 pub struct TokenData {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
     pub id:      Option<i32>,
 }
 #[derive(Deserialize)]
 pub struct TokensData {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
 }
 
 pub async fn create_token_page (
@@ -395,7 +393,6 @@ pub async fn get_all_tokens (
 #[derive(Deserialize)]
 pub struct AddTokenData {
     token:        Option<String>,
-    user_id:      Option<i32>,
     name:         Option<String>,
     description:  Option<String>,
     services_ids: Option<Vec<i32>>, 
@@ -403,7 +400,7 @@ pub struct AddTokenData {
 
 pub async fn create_user_token (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<AddTokenData>
 ) -> Result<Json<TokenDetailJson>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -432,7 +429,7 @@ pub async fn create_user_token (
 }
 pub async fn create_app_token (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<AddTokenData>
 ) -> Result<Json<TokenDetailJson>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -464,14 +461,13 @@ pub async fn create_app_token (
 pub struct EditTokenData {
     token:        Option<String>,
     id:           Option<i32>,
-    user_id:      Option<i32>,
     name:         Option<String>,
     description:  Option<String>,
     services_ids: Option<Vec<i32>>,
 }
 pub async fn edit_token (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<EditTokenData>
 ) -> Result<Json<TokenDetailJson>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -520,7 +516,7 @@ pub async fn edit_token (
 
 pub async fn delete_token (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<ObjectData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -559,7 +555,7 @@ pub async fn delete_token (
 
 pub async fn get_secret_key (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<ObjectData>
 ) -> Result<Json<String>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -596,7 +592,7 @@ pub async fn get_secret_key (
 }
 pub async fn get_service_key (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<ObjectData>
 ) -> Result<Json<String>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;

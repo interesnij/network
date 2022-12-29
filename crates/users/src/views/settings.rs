@@ -198,7 +198,7 @@ pub async fn edit_link_page (
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(&req, state,  params.token.clone(), 31).await;
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -390,12 +390,11 @@ pub async fn edit_link (
 #[derive(Deserialize)]
 pub struct EditPhoneData {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
     pub phone:   Option<String>,
 }
 pub async fn edit_phone (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<EditPhoneData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -437,14 +436,13 @@ pub async fn edit_phone (
 #[derive(Serialize, Deserialize)] 
 pub struct EditNameData {
     pub token:      Option<String>,
-    pub user_id:    Option<i32>,
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
 }
 
 pub async fn edit_name (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<EditNameData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -513,20 +511,18 @@ pub async fn edit_name (
 #[derive(Deserialize)]
 pub struct EditPasswordData {
     pub token:        Option<String>,
-    pub user_id:      Option<i32>,
     pub old_password: Option<String>,
     pub new_password: Option<String>,
 }
 #[derive(Serialize)]
 pub struct EditPasswordResp {
     pub token:    Option<String>,
-    pub user_id:  Option<i32>,
     pub password: Option<String>,
 }
 
 pub async fn edit_password (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<EditPasswordData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -602,14 +598,13 @@ pub async fn edit_password (
 #[derive(Serialize, Deserialize)]
 pub struct EditPrivateData {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
     pub field:   Option<String>,
     pub value:   Option<i16>,
     pub users:   Option<Vec<i32>>,
 }
 pub async fn edit_private (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<EditPrivateData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -683,11 +678,10 @@ pub async fn edit_private (
 #[derive(Serialize, Deserialize)]
 pub struct MinimalData {
     pub token:   Option<String>,
-    pub user_id: Option<i32>,
 }
 pub async fn delete_account (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<MinimalData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -735,7 +729,7 @@ pub async fn delete_account (
 }
 pub async fn restore_account (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<MinimalData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -785,7 +779,7 @@ pub async fn restore_account (
 
 pub async fn edit_notify (
     req: HttpRequest,
-    state: web::Data<AppState>
+    state: web::Data<AppState>,
     data: Json<MinimalData>
 ) -> Result<Json<EditNotifyResp>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;

@@ -101,7 +101,6 @@ pub async fn follows_load (
 pub struct IEFriendsData {
     pub token:          Option<String>,
     pub types:          Option<i16>,
-    pub user_id:        Option<i32>,
     pub users_limit:    Option<i64>,
     pub users_offset:   Option<i64>,
     pub friends_limit:  Option<i64>,
@@ -111,7 +110,6 @@ pub struct IEFriendsData {
 pub struct IEFollowsData {
     pub token:          Option<String>,
     pub types:          Option<i16>,
-    pub user_id:        Option<i32>,
     pub users_limit:    Option<i64>,
     pub users_offset:   Option<i64>,
     pub follows_limit:  Option<i64>,
