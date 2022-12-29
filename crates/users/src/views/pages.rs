@@ -70,6 +70,7 @@ pub async fn all_users_page (
     match auth {
         Ok(ok) => println!("user authenticate!"),
         Err(_) => {
+            println!("user not authenticate!");
             let body = serde_json::to_string(&ErrorParams {
                 error: "user not authenticate!".to_string(),
             }).unwrap();
