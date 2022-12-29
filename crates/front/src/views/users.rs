@@ -64,8 +64,8 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
         ).await;
         if _object_list.is_ok() {
             object_list_ok = _object_list.expect("E.");
-            object_list = object_list.users;
-            _auth = object_list.auth;
+            object_list = object_list_ok.users;
+            _auth = object_list_ok.auth;
         }
         else {
             object_list = Vec::new();
@@ -123,8 +123,8 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
         ).await;
         if _object_list.is_ok() {
             object_list_ok = _object_list.expect("E.");
-            object_list = object_list.users;
-            _auth = object_list.auth;
+            object_list = object_list_ok.users;
+            _auth = object_list_ok.auth;
         }
         else {
             object_list = Vec::new();
