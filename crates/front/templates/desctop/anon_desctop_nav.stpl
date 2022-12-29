@@ -32,8 +32,8 @@
       </svg>
     </span>&nbsp;Цвет фона background_change
 
-      <div class="dropdown-menu theme-color background_change dropdown-menu-right">
-        <div class="custom-control custom-radio anon_color_change" data-color="white"> 
+      <div class="dropdown-menu theme-color dropdown-menu-right">
+        <div class="custom-control custom-radio background_change" data-color="white"> 
             <input checked type="radio" id="color_white" class="custom-control-input">
             <label class="custom-control-label bg-white" for="color_white"></label>
         </div>
