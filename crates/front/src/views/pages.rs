@@ -92,7 +92,7 @@ pub async fn index_page (
     match auth {
         Ok(_) => println!("auth ok!"),
         Err(_) => println!("not auth!"),
-    }
+    } 
 
     if is_authenticate() { 
         return news_page(req).await

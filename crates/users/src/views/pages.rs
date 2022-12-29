@@ -58,12 +58,24 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
      Ok(Json(_res))
 }
 
-pub async fn all_users_page(_auth: BearerAuth, req: HttpRequest, state: web::Data<AppState>) -> Result<Json<Vec<CardUserJson>>, Error> {
+pub async fn all_users_page (
+    //_auth: BearerAuth, 
+    req: HttpRequest, 
+    state: web::Data<AppState>
+) -> Result<Json<Vec<CardUserJson>>, Error> {
+    use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
+    use actix_web::http::header::Header;
+
+    let auth = Authorization::<Bearer>::parse(&req);
+    match auth {
+        Ok(_) => println!("auth ok!"),
+        Err(_) => println!("not auth!"),
+    } 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
-    match verify_jwt(_auth.token().to_string(), state.key.as_ref()).await {
-        Ok(ok) => println!("id {:?}", ok.id),
-        Err(err) => println!("err {:?}", err),
-    }
+    //match verify_jwt(_auth.token().to_string(), state.key.as_ref()).await {
+    //    Ok(ok) => println!("id {:?}", ok.id),
+    //    Err(err) => println!("err {:?}", err),
+    //}
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(params.token.clone(), params.user_id, 0);
