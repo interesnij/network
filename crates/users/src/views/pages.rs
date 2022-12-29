@@ -69,7 +69,7 @@ pub async fn all_users_page (
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(&req, params.token.clone(), 0);
-        let auth_check = match Authorization::<Bearer>::parse(req) {
+        let auth_check = match Authorization::<Bearer>::parse(&req) {
             Ok(ok) => 1,
             Err(_) => 0,
         };
