@@ -333,9 +333,9 @@ pub async fn close_user (
 
 // веерное событие
 pub async fn close_community (
-    data: Json<CloseParams>
+    data: Json<CloseParams>,
     req: HttpRequest,
-    state: web::Data<AppState>,
+    state: web::Data<AppState>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {

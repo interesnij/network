@@ -1,11 +1,11 @@
 #[macro_use]
 extern crate diesel;
-
+use std::sync::Arc;
 pub mod schema;
 pub mod models;
 pub mod routes;
 mod errors;
-
+use dotenv::dotenv;
 #[macro_use]
 mod utils;
 #[macro_use]
@@ -44,7 +44,7 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
         App::new()
             .app_data(Data::new(config_to_static_server.clone()))
-            .app_data(web::Data::new(app_state.to_owned()))
+            .app_data(Data::new(app_state.to_owned()))
             .app_data(Data::new(http_client))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)

@@ -1,11 +1,11 @@
 #[macro_use]
 extern crate diesel;
-
+use std::sync::Arc;
 pub mod schema;
 pub mod models;
 pub mod routes;
 mod errors;
-
+use dotenv::dotenv;
 #[macro_use]
 mod utils;
 #[macro_use]
@@ -18,7 +18,7 @@ pub struct AppState {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    use actix_web::{App, HttpServer, web::JsonConfig};
+    use actix_web::{App, HttpServer, web::JsonConfig, web::Data};
     use actix_cors::Cors;
     use crate::routes::routes;
 
@@ -33,7 +33,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST"])
             .max_age(3600);
         App::new()
-            .app_data(web::Data::new(app_state.to_owned()))
+            .app_data(Data::new(app_state.to_owned()))
             .app_data(JsonConfig::default().limit(4096))
             .wrap(cors)
             .configure(routes)
