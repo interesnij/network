@@ -1464,6 +1464,7 @@ impl User {
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
+        
         return _users;
     }
     pub fn search_users (

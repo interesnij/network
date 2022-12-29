@@ -20,6 +20,11 @@ pub fn users_urls(config: &mut web::ServiceConfig) {
     config.route("/users/all-users", web::get().to(all_users_page));
 } 
 
+#[derive(Deserialize, Serialize, Queryable)]
+pub struct TestCardUsers {
+    pub users:    Vec<CardUserJson>,
+    pub auth:     i32,
+} 
 #[derive(Debug, Deserialize)]
 pub struct CardUserJson {
     pub id:         i32,
@@ -36,7 +41,8 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
     let is_ajax = get_ajax(&req);
     let limit = 20;
     let offset = 0;
-    let object_list: Vec<CardUserJson>; 
+    let object_list: Vec<CardUserJson>;
+    let _auth: i32; 
     if is_ajax == 0 {
         get_first_load_page (
             is_authenticate(),
@@ -49,7 +55,7 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
     }
     else if is_authenticate() {
         let _request_user = get_request_data();
-        let _object_list = request_get::<Vec<CardUserJson>> (
+        let _object_list = request_get::<TestCardUsers> (
             USERURL.to_owned() 
             + &"/all-users?token=".to_string() + &TOKEN
             + &"&limit=" + &limit.to_string()
@@ -57,10 +63,13 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             true
         ).await;
         if _object_list.is_ok() {
-            object_list = _object_list.expect("E.");
+            object_list_ok = _object_list.expect("E.");
+            object_list = object_list.users;
+            _auth = object_list.auth;
         }
         else {
             object_list = Vec::new();
+            _auth = 0;
         }
         
         if is_desctop {
@@ -70,12 +79,14 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
                 request_user: RequestUser,
                 object_list:  Vec<CardUserJson>,
                 is_ajax:      u8,
+                _auth:        i32,
             }
 
             let body = Template {
                 request_user: _request_user,
                 object_list:  object_list,
                 is_ajax:      is_ajax,
+                _auth:        _auth,
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
@@ -88,12 +99,14 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
                 request_user: RequestUser,
                 object_list:  Vec<CardUserJson>,
                 is_ajax:      u8,
+                _auth:        i32,
             }
 
             let body = Template {
                 request_user: _request_user,
                 object_list:  object_list,
                 is_ajax:      is_ajax,
+                _auth:        _auth,
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
@@ -109,10 +122,13 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             false
         ).await;
         if _object_list.is_ok() {
-            object_list = _object_list.expect("E.");
+            object_list_ok = _object_list.expect("E.");
+            object_list = object_list.users;
+            _auth = object_list.auth;
         }
         else {
             object_list = Vec::new();
+            _auth = 0;
         }
         if is_desctop {
             #[derive(TemplateOnce)]
@@ -120,10 +136,12 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             struct Template {
                 object_list: Vec<CardUserJson>,
                 is_ajax:     u8,
+                _auth:       i32,
             }
             let body = Template {
                 object_list: object_list,
                 is_ajax:     is_ajax,
+                _auth:       _auth,
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;
@@ -135,10 +153,12 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
             struct Template {
                 object_list: Vec<CardUserJson>,
                 is_ajax:     u8,
+                _auth:       i32,
             }
             let body = Template {
                 object_list: object_list,
                 is_ajax:     is_ajax,
+                _auth:       _auth,
             }
             .render_once()
             .map_err(|e| InternalError::new(e, StatusCode::INTERNAL_SERVER_ERROR))?;

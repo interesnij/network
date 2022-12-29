@@ -58,24 +58,19 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
      Ok(Json(_res))
 }
 
+
 pub async fn all_users_page (
     //_auth: BearerAuth, 
     req: HttpRequest, 
     state: web::Data<AppState>
-) -> Result<Json<Vec<CardUserJson>>, Error> {
+) -> Result<Json<TestCardUsers>, Error> {
     use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
     use actix_web::http::header::Header;
 
     let auth = Authorization::<Bearer>::parse(&req);
-    match auth {
-        Ok(ok) => println!("user authenticate!"),
-        Err(_) => {
-            println!("user not authenticate!");
-            let body = serde_json::to_string(&ErrorParams {
-                error: "user not authenticate!".to_string(),
-            }).unwrap();
-            return Err(Error::BadRequest(body));
-        },
+    let auth_check = match auth {
+        Ok(ok) => 1,
+        Err(_) => 0,
     } 
     let params_some = web::Query::<RegListData>::from_query(&req.query_string());
     //match verify_jwt(_auth.token().to_string(), state.key.as_ref()).await {
@@ -96,7 +91,10 @@ pub async fn all_users_page (
                 params.limit,
                 params.offset
             )).await?;
-            Ok(Json(_res))
+            Ok(Json(TestCardUsers {
+                users: _res,
+                auth:  auth_check,
+            }))
         }
     }
     else {
