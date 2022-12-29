@@ -37,7 +37,7 @@ pub async fn edit_notifies_page(req: HttpRequest) -> Result<Json<EditNotifyResp>
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -78,7 +78,7 @@ pub async fn delete_account_page(req: HttpRequest) -> Result<Json<Vec<KeyValue>>
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -144,7 +144,7 @@ pub async fn edit_private_page(req: HttpRequest) -> Result<Json<EditPrivateResp>
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -185,7 +185,7 @@ pub async fn edit_link_page(req: HttpRequest) -> Result<Json<EditLinkResp>, Erro
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -224,7 +224,7 @@ pub async fn edit_name_page(req: HttpRequest) -> Result<Json<EditNameResp>, Erro
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -268,7 +268,7 @@ pub async fn edit_phone_page(req: HttpRequest) -> Result<Json<EditPhoneResp>, Er
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 31);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -312,8 +312,8 @@ pub struct EditLinkData {
     pub user_id: Option<i32>,
     pub link:    Option<String>,
 }
-pub async fn edit_link(data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_link(req: HttpRequest, data: Json<EditLinkData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -370,8 +370,8 @@ pub struct EditPhoneData {
     pub user_id: Option<i32>,
     pub phone:   Option<String>,
 }
-pub async fn edit_phone(data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_phone(req: HttpRequest, data: Json<EditPhoneData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -415,8 +415,8 @@ pub struct EditNameData {
     pub last_name:  Option<String>,
 }
 
-pub async fn edit_name(data: Json<EditNameData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_name(req: HttpRequest, data: Json<EditNameData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -493,8 +493,8 @@ pub struct EditPasswordResp {
     pub password: Option<String>,
 }
 
-pub async fn edit_password(data: Json<EditPasswordData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_password(req: HttpRequest, data: Json<EditPasswordData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -572,8 +572,8 @@ pub struct EditPrivateData {
     pub value:   Option<i16>,
     pub users:   Option<Vec<i32>>,
 }
-pub async fn edit_private(data: Json<EditPrivateData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_private(req: HttpRequest, data: Json<EditPrivateData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -646,8 +646,8 @@ pub struct MinimalData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
 }
-pub async fn delete_account(data: Json<MinimalData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn delete_account(req: HttpRequest, data: Json<MinimalData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -690,8 +690,8 @@ pub async fn delete_account(data: Json<MinimalData>) -> Result<Json<i16>, Error>
         Ok(Json(body))
     }
 }
-pub async fn restore_account(data: Json<MinimalData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn restore_account(req: HttpRequest, data: Json<MinimalData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
@@ -736,8 +736,8 @@ pub async fn restore_account(data: Json<MinimalData>) -> Result<Json<i16>, Error
     }
 }
 
-pub async fn edit_notify(data: Json<MinimalData>) -> Result<Json<EditNotifyResp>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_notify(req: HttpRequest, data: Json<MinimalData>) -> Result<Json<EditNotifyResp>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),

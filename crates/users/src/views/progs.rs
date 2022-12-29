@@ -30,8 +30,8 @@ pub struct AddTargetParams {
     pub target_id: Option<i32>,
 }
 
-pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_block(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -83,8 +83,8 @@ pub async fn user_block(data: Json<UsersData>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn user_unblock(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_unblock(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -137,8 +137,8 @@ pub async fn user_unblock(data: Json<UsersData>) -> Result<Json<i16>, Error> {
 }
 
 
-pub async fn user_friend(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_friend(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -190,8 +190,8 @@ pub async fn user_friend(data: Json<UsersData>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn user_unfriend(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_unfriend(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -244,8 +244,8 @@ pub async fn user_unfriend(data: Json<UsersData>) -> Result<Json<i16>, Error> {
 }
 
 
-pub async fn user_follow(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_follow(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -296,8 +296,8 @@ pub async fn user_follow(data: Json<UsersData>) -> Result<Json<i16>, Error> {
         }
     }
 }
-pub async fn user_follow_view(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_follow_view(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))
@@ -334,8 +334,8 @@ pub async fn user_follow_view(data: Json<UsersData>) -> Result<Json<i16>, Error>
     }
 }
 
-pub async fn user_unfollow(data: Json<UsersData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn user_unfollow(req: HttpRequest, data: Json<UsersData>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 31);
     if err.is_some() || (user_id == 0) {
         // если проверка токена не удалась или запрос анонимный...
         Err(Error::BadRequest(err.unwrap()))

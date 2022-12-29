@@ -7,17 +7,17 @@ use diesel::{
 };
 use crate::schema;
 use crate::errors::Error;
+use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
+use actix_web::{http::header::Header, HttpRequest};
 
 mod lists;
 mod profile;
 mod crypto;
-mod auth;
 
 pub use self::{
     lists::*,
     profile::*,
     crypto::*,
-    auth::*,
 };
 
 use crate::models::{
@@ -149,15 +149,13 @@ pub fn get_moderation(pk: i32) -> Result<Moderated, Error> {
 }
 
 pub fn get_user_owner_data ( 
+    req:           &HttpRequest,
     token:         Option<String>,  // токен
-    user_id:       Option<i32>,     // возможный id request_user'а,
     service_types: i16              // тип сервиса и роли в нем
 ) -> (Option<String>, i32) { 
-    // проверка токена на допуск к объектам пользователя
-    // нам нужно узнать по токену тип владельца.
-    // заодним мы выясним id пользователя.
     if token.is_some() {
         use crate::schema::owners::dsl::owners;
+
         let _connection = establish_connection();
         let _token = token.as_deref().unwrap();
         let owner_res = owners
@@ -169,21 +167,11 @@ pub fn get_user_owner_data (
                 return (Some("This role is not allowed in this service!".to_string()), 0);
             }
             else if owner.types == 1 {
-                if user_id.is_some() {
-                    let _id = user_id.unwrap();
-                    let _user = get_user(_id);
-                    if _user.is_ok() {
-                        return (None, _id);
-                    } 
-                    else {
-                        return (Some("user not found!".to_string()), 0);
-                    }
+                match Authorization::<Bearer>::parse(&req) {
+                    Ok(ok) => return (None, ok),
+                    Err(_) => return (None, 0),
                 }
-                else {
-                    // параметра user_id нет - значит пользователь анонимный
-                    return (None, 0);
-                }
-            }
+            } 
             else if owner.types == 2 {
                 // это токен пользователя
                 return (None, owner.user_id);

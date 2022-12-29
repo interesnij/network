@@ -47,16 +47,14 @@ pub struct LoginUser2 {
 }
 #[derive(Serialize, Debug)]
 pub struct AuthResp {
-    pub token:      String,
-    pub id:         String,
-    pub name:       String,
-    pub link:       String,
-    pub s_avatar:   String,
-    //pub request_id: String,
+    pub token:    String,
+    pub id:       String,
+    pub name:     String,
+    pub link:     String,
+    pub s_avatar: String,
 }
 
 pub async fn login (
-    //_auth: Option<BearerAuth>,
     data: web::Json<LoginUser2>,
     state: web::Data<AppState> 
 ) -> Result<Json<AuthResp>, Error> {
@@ -76,10 +74,6 @@ pub async fn login (
                 
                 match token {
                     Ok(token_str) => {
-                        //let request_id = match is_auth(_auth, state.key.as_ref()).await {
-                        //    Ok(ok) => ok,
-                        //    Err(_) => 0,
-                        //}; 
                         let image: String;
                         if _user.s_avatar.is_some() {
                             image = _user.s_avatar.as_deref().unwrap().to_string();
@@ -88,12 +82,11 @@ pub async fn login (
                             image = String::new();
                         }
                         Ok(Json(AuthResp {
-                            token:      token_str.to_owned(),
-                            id:         _user.id.to_string(),
-                            name:       _user.get_full_name(),
-                            link:       _user.link.clone(),
-                            s_avatar:   image.clone(),
-                            //request_id: request_id.to_string(),
+                            token:    token_str.to_owned(),
+                            id:       _user.id.to_string(),
+                            name:     _user.get_full_name(),
+                            link:     _user.link.clone(),
+                            s_avatar: image.clone(),
                         }))
                     },
                     Err(err) => {
@@ -175,7 +168,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     use crate::utils::{TOKEN, USERS_SERVICES};
 
     let _connection = establish_connection();
-    let (err, _) = get_user_owner_data(data.token.clone(), None, 0);
+    let (err, _) = get_user_owner_data(&req, data.token.clone(), 0);
     if err.is_some() {
         return Err(Error::BadRequest(err.unwrap()));
     }
@@ -401,17 +394,14 @@ pub struct CodeJson {
     pub code: String,
 }
 
-pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
-    let (err, _user_id) = get_user_owner_data(data.token.clone(), None, 0);
-    println!("start");
+pub async fn phone_send(req: HttpRequest, data: Json<PhoneJson>) -> Json<RespParams> {
+    let (err, _user_id) = get_user_owner_data(&req, data.token.clone(), 0);
     if err.is_some() {   
-        println!("err token");
         return Json( RespParams {
             resp: err.unwrap()
         });
     }  
     let _phone = data.phone.as_deref().unwrap().to_string();
-    println!("_phone: {:?}", _phone);
     if _phone.len() > 8 {
         use crate::models::NewPhoneCode;
         use crate::schema::users::dsl::users;
@@ -422,7 +412,6 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
             .select(schema::users::id)
             .first::<i32>(&_connection)
             .is_ok() {
-            println!("Пользователь с таким номером уже зарегистрирован");
             Json( RespParams {
                 resp: "Пользователь с таким номером уже зарегистрирован. Используйте другой номер или напишите в службу поддержки, если этот номер Вы не использовали ранее.".to_string()
             })
@@ -459,7 +448,6 @@ pub async fn phone_send(data: Json<PhoneJson>) -> Json<RespParams> {
         }
     }
     else {
-        println!("phone is small");
         Json( RespParams {
             resp: "Введите, пожалуйста, корректное количество цифр Вашего телефона".to_string()
         })
@@ -472,8 +460,8 @@ pub struct OptionPhoneCodeJson {
     pub phone: Option<String>,
     pub code:  Option<String>,
 }
-pub async fn phone_verify(data: web::Json<OptionPhoneCodeJson>) -> Result<Json<RespParams>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), None, 0);
+pub async fn phone_verify(req: HttpRequest, data: web::Json<OptionPhoneCodeJson>) -> Result<Json<RespParams>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 0);
     if err.is_some() || (user_id != 0) {
         return Err(Error::BadRequest(err.unwrap()));
     } 

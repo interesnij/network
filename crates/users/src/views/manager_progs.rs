@@ -83,7 +83,7 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
     let params_some = web::Query::<ReportParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 1);
+        let (err, user_id) = get_user_owner_data(&req, params.token.clone(), 1);
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -197,10 +197,10 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
     }
 }
 
-pub async fn create_claim_user(data: Json<ReportParams>) -> Result<Json<i16>, Error> {
+pub async fn create_claim_user(req: HttpRequest, data: Json<ReportParams>) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -237,8 +237,8 @@ pub async fn create_claim_user(data: Json<ReportParams>) -> Result<Json<i16>, Er
     }
 }
 
-pub async fn close_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn close_user(req: HttpRequest, data: Json<CloseParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -349,8 +349,8 @@ pub async fn unclose_user(data: Json<CloseParams>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn suspend_user(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -407,8 +407,8 @@ pub async fn suspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Err
 }
 
 // веерное событие
-pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn unsuspend_user(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -465,8 +465,8 @@ pub async fn unsuspend_user(data: Json<ModerationParams>) -> Result<Json<i16>, E
     }
 }
 
-pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn suspend_moderation(req: Httprequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -507,8 +507,8 @@ pub async fn suspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16
     }
 }
 
-pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn close_moderation(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -546,8 +546,8 @@ pub async fn close_moderation(data: Json<ModerationParams>) -> Result<Json<i16>,
     }
 }
 
-pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn unsuspend_moderation(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -585,8 +585,8 @@ pub async fn unsuspend_moderation(data: Json<ModerationParams>) -> Result<Json<i
     }
 }
 
-pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn unclose_moderation(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -624,8 +624,8 @@ pub async fn unclose_moderation(data: Json<ModerationParams>) -> Result<Json<i16
     }
 }
 
-pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn unverify_moderation(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -663,8 +663,8 @@ pub async fn unverify_moderation(data: Json<ModerationParams>) -> Result<Json<i1
     }
 }
 
-pub async fn reject_moderation(data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 1);
+pub async fn reject_moderation(req: HttpRequest, data: Json<ModerationParams>) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, data.token.clone(), 1);
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
