@@ -85,7 +85,7 @@ pub async fn index_page (
     req: HttpRequest
 ) -> actix_web::Result<HttpResponse> {
     let (is_desctop, is_ajax) = get_device_and_ajax(&req); 
-    use actix_web_httpauth::headers::authorization::Authorization
+    use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
 
     let auth = Authorization::<Bearer>::parse(&req);
     match auth {
