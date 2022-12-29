@@ -400,7 +400,7 @@ pub async fn copy_photo (
     data: Json<DataCopyPhoto>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
-    if err.is_some() {
+    if err.is_some() { 
         Err(Error::BadRequest(err.unwrap()))
     }
     else if user_id < 1 && community_id < 1 {

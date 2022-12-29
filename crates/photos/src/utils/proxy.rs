@@ -26,6 +26,7 @@ use actix_multipart::{Field, Multipart};
 use futures::StreamExt;
 use std::str;
 use std::borrow::BorrowMut;
+use crate::AppState;
 
 
 #[derive(Clone, Parser)]
@@ -48,6 +49,7 @@ pub struct LoadPhotoParams {
 
 pub async fn get_file (
     req:         HttpRequest,
+    state:       web::Data<AppState>,
     body:        web::Payload,
     path:        web::Path<String>,
     http_client: Data<awc::Client>,
@@ -112,9 +114,9 @@ pub async fn get_file (
                 is_open = false;
             }
         
-            let (err, user_id, community_id) = get_owner_data(params.token.clone(), params.user_id, 8);
+            let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
                 
-            if err.is_some() {
+            if err.is_some() { 
                 is_open = false;
             }
             else if community_id > 0 && community.id != community_id {
@@ -282,11 +284,12 @@ pub async fn upload_files (
     path:        web::Path<String>,
     http_client: Data<awc::Client>,
     req:         HttpRequest,
+    state:       web::Data<AppState>,
 ) -> impl Responder {
     let form = files_form(payload.borrow_mut()).await;
     let mut is_open = false;
 
-    let (err, user_id, community_id) = get_owner_data(form.token.clone(), form.user_id, 21);
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 38).await;
     if err.is_some() { 
         is_open = false;
         println!("проблема с токеном!");

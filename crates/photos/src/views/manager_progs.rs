@@ -1275,6 +1275,7 @@ pub async fn edit_user_private (
 #[derive(Deserialize)]
 pub struct AllPrivateData {
     pub token:   Option<String>,
+    pub user_id: Option<i32>,
     pub value:   Option<i16>,
     pub users:   Option<Vec<AttachOwner>>,
 } 
