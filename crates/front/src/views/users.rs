@@ -25,7 +25,7 @@ pub struct TestCardUsers {
     pub users:    Vec<CardUserJson>,
     pub auth:     i32,
 } 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct CardUserJson {
     pub id:         i32,
     pub first_name: String,
@@ -114,7 +114,7 @@ pub async fn all_users_page(req: HttpRequest) -> actix_web::Result<HttpResponse>
         }
 
     } else {
-        let _object_list = request_get::<Vec<CardUserJson>> (
+        let _object_list = request_get::<TestCardUsers> (
             USERURL.to_owned() 
             + &"/all-users?token=".to_string() + &TOKEN
             + &"&limit=" + &limit.to_string()
