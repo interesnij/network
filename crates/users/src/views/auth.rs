@@ -157,7 +157,11 @@ pub struct NewUserData {
     pub link:       Option<String>,
 }
 
-pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result<Json<NewUserDetailJson>, Error> {
+pub async fn process_signup (
+    req: HttpRequest,
+    state: web::Data<AppState>
+    data: Json<NewUserForm>
+) -> Result<Json<NewUserDetailJson>, Error> {
     use crate::models::{
         NewUserLocation, NewIpUser,
         NewUserPrivate, NewUserNotification,
@@ -168,7 +172,7 @@ pub async fn process_signup(req: HttpRequest, data: Json<NewUserForm>) -> Result
     use crate::utils::{TOKEN, USERS_SERVICES};
 
     let _connection = establish_connection();
-    let (err, _) = get_user_owner_data(&req, data.token.clone(), 0);
+    let (err, _) = get_user_owner_data(&req, state, data.token.clone(), 0).await;
     if err.is_some() {
         return Err(Error::BadRequest(err.unwrap()));
     }

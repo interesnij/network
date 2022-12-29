@@ -23,6 +23,8 @@ pub use self::{
 use crate::models::{
     User, Owner, Moderated,
 };
+use crate::AppState;
+
 
 pub static TOKEN: &str = "111";
 
@@ -172,8 +174,8 @@ pub async fn get_user_owner_data (
                     Ok(ok) => {
                         let token = ok.as_ref().token().to_string();
                         return match verify_jwt(token, state.key.as_ref()).await {
-                            Ok(ok) => ok,
-                            Err(_) => Some("401 Unauthorized"),
+                            Ok(ok) => (None, ok.id),
+                            Err(_) => (Some("401 Unauthorized"), 0),
                         }
 
                     },
