@@ -170,7 +170,7 @@ pub fn get_user_owner_data (
                 match Authorization::<Bearer>::parse(req) {
                     Ok(ok) => {
                         let token = ok.as_ref().token().to_string();
-                        return match verify_jwt(token, "users") {
+                        return match verify_jwt(token, &"users").await {
                             Ok(ok) => ok.id,
                             Err(_) => Some("401 Unauthorized"),
                         }
