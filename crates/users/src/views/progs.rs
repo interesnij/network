@@ -28,6 +28,7 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
 #[derive(Serialize)]
 pub struct AddTargetParams {
     pub token:     Option<String>,
+    pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
 }
 
