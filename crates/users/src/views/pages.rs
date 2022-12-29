@@ -71,7 +71,7 @@ pub async fn all_users_page (
         Ok(ok) => println!("user authenticate!"),
         Err(_) => {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametrs not found!".to_string(),
+                error: "user not authenticate!".to_string(),
             }).unwrap();
             return Err(Error::BadRequest(body));
         },
