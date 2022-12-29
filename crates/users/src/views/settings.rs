@@ -436,6 +436,7 @@ pub async fn edit_phone (
 #[derive(Serialize, Deserialize)] 
 pub struct EditNameData {
     pub token:      Option<String>,
+    pub user_id:    Option<i32>,
     pub first_name: Option<String>,
     pub last_name:  Option<String>,
 }
@@ -678,6 +679,7 @@ pub async fn edit_private (
 #[derive(Serialize, Deserialize)]
 pub struct MinimalData {
     pub token:   Option<String>,
+    pub user_id: Option<i32>,
 }
 pub async fn delete_account (
     req: HttpRequest,
@@ -762,7 +764,7 @@ pub async fn restore_account (
 
         let copy_user = MinimalData {
             token:   Some(TOKEN.to_string()),
-            user_id: data.user_id,
+            user_id: Some(user_id),
         };
     
         for link in USERS_SERVICES.iter() {

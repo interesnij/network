@@ -49,6 +49,7 @@ pub struct CloseParams {
 #[derive(Serialize)]
 pub struct DataCloseParams {
     pub token:       Option<String>,
+    pub user_id:     Option<i32>,
     pub item_id:     Option<i32>,
     pub description: Option<String>,
 }
