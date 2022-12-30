@@ -1086,10 +1086,11 @@ impl Community {
             posts:          0,
             comments:       0,
         };
-        diesel::insert_into(schema::communitys::table)
+        let _community = diesel::insert_into(schema::communitys::table)
             .values(&new_community_form)
-            .execute(&_connection)
+            .get_result::<Community>(&_connection)
             .expect("Error.");
+        _community.create_main_post_list()
         return 1;
     }
 

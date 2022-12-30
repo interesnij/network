@@ -829,10 +829,11 @@ impl User {
             photos:         0,
             comments:       0,
         };
-        diesel::insert_into(schema::users::table)
+        let _user = diesel::insert_into(schema::users::table)
             .values(&new_form)
-            .execute(&_connection)
+            .get_result::<User>(&_connection)
             .expect("Error.");
+        _user.create_main_photo_list();
         return 1;
     }
     pub fn get_full_name(&self) -> String {
