@@ -695,7 +695,7 @@ on('body', 'click', '#logg', function() {
   form_data = new FormData(form);
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link.open( 'POST', "/login", true );
-  link.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
