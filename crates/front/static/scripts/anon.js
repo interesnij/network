@@ -502,15 +502,21 @@ var ready = (callback) => {
   else document.addEventListener("DOMContentLoaded", callback);
 };
 function send_user_form (url) {
+  form_data = new FormData();
+  form_data.append("first_name", document.body.querySelector(".first_name").value);
+  form_data.append("last_name", document.body.querySelector(".last_name").value);
+  form_data.append("gender", document.body.querySelector(".gender").value);
+  form_data.append("password", document.body.querySelector(".password1").value);
+  form_data.append("birthday", document.body.querySelector(".birthday").value);
+
   request_2 = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-  request_2.open( 'GET', url, true );
+  request_2.open( 'POST', url, true );
   request_2.onreadystatechange = function() {
       if (request_2.readyState == 4 && request_2.status == 200) {
         window.location.href = "/"
       }
   }
-  request_2.send();
-  console.log("send!!");
+  request_2.send(form_data);
 };
 on('#ajax', 'click', '#code_send', function() {
   _form = document.body.querySelector(".final_process_form");
@@ -523,32 +529,26 @@ on('#ajax', 'click', '#code_send', function() {
   else if (_user_phone[0] == "8" || _user_phone[0] == "7") {
     _user_phone = _user_phone.slice(1)
   };
-  _user_phone = 7 + _user_phone;
 
-    var code = document.getElementById('code').value;
-    var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    request.open('GET', "/phone_verify/" + _user_phone + "/" + code + "/", true);
+  var code = document.getElementById('code').value;
+  form_data = new FormData();
+  form_data.append("phone", 7 + _user_phone);
+  form_data.append("code", code);
+  var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
+    request.open('POST', "/phone_verify", true);
     request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    request.onreadystatechange = function() {
+    request.onreadystatechange = function() { 
         if (request.readyState == 4 && request.status == 200) {
           var div = document.getElementById('jsondata');
 
           div.innerHTML = request.responseText;
           console.log(request.responseText);
             if (request.responseText == "ok") {
-              console.log("ok");
-              _first_name = document.body.querySelector(".first_name").value;
-              _last_name = document.body.querySelector(".last_name").value;
-              _gender = document.body.querySelector(".gender").value;
-              _password = document.body.querySelector(".password1").value;
-              _birthday = document.body.querySelector(".birthday").value;
-              _params = "?first_name=" + _first_name + "&last_name=" + _last_name + "&gender=" + _gender + "&password=" + _password + "&birthday=" + _birthday  + "&phone=" + _user_phone;
-              send_user_form("/signup/" + _params);
+              send_user_form("/signup");
             }
         }
-
     };
-    request.send(null)
+    request.send(form_data)
 });
 
 function phone_check() {
@@ -694,7 +694,7 @@ on('body', 'click', '#logg', function() {
 
   form_data = new FormData(form);
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'POST', "/login/", true );
+  link.open( 'POST', "/login", true );
   //link.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
   link.onreadystatechange = function () {
