@@ -109,9 +109,9 @@ pub struct AuthResp {
 }
 pub async fn login(data: Json<LoginUser>) -> Result<Json<AuthResp>, Error> { 
     let l_data = LoginUser2 {
-        pub token:    TOKEN,
-        pub phone:    data.phone,
-        pub password: data.password,
+        token:    TOKEN,
+        phone:    data.phone,
+        password: data.password,
     };
     let res = request_post::<LoginUser2, AuthResp> (
         USERURL.to_owned() + &"/login".to_string(),
