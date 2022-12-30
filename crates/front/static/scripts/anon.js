@@ -695,7 +695,7 @@ on('body', 'click', '#logg', function() {
   form_data = new FormData(form);
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link.open( 'POST', "/login", true ); 
-  link.setRequestHeader('Content-Type', 'application/json');
+  link.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -703,7 +703,7 @@ on('body', 'click', '#logg', function() {
     response.innerHTML = "Успешный вход";
     _this.disabled = true;
     window.location.href = "/"
-    }
+  } 
   else {
     _this.disabled = false;
     response.style.display = "block";
@@ -713,7 +713,7 @@ on('body', 'click', '#logg', function() {
     form.querySelector("#id_username").value = '';
     form.querySelector("#id_password").value = '';
   }};
-  link.send(JSON.stringify(form_data));
+  link.send(form_data);
 }); 
 
 function play_video_list(url, counter, video_pk) {
