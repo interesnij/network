@@ -211,7 +211,7 @@ impl Community {
             .filter(schema::post_lists::types.eq(0))
             .first::<PostList>(&_connection);
  
-        if _post_list.is_err() { {
+        if _post_list.is_err() {
             use crate::models::NewPostList;
             let new_list = NewPostList{
                     name:            "Основной список".to_string(),
