@@ -2,7 +2,6 @@ use actix_web::{
     web,
     web::block,
     web::Json,
-    HttpRequest,
 };
 
 use crate::models::{
@@ -19,7 +18,6 @@ use crate::utils::{
     ErrorParams, ObjectData, ItemParams,
 };
 use serde::{Serialize, Deserialize};
-use crate::AppState;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {

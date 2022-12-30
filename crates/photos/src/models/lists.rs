@@ -19,7 +19,7 @@ use crate::utils::{
     CardUserJson, CardOwnerJson,
     CardCommentJson, EditListJson,
     RespListJson, DataListJson,
-    DataNewPhotos, RespPhoto, CardPhotoJson,
+    RespPhoto, CardPhotoJson,
     AttachPhotoListResp, CardPhotoListJson,
     AttachOwner,
 };
@@ -810,7 +810,6 @@ impl PhotoList {
 
     pub fn search_items (
         &self,
-        user_id: i32, 
         q:       &String,
         limit:   Option<i64>,
         offset:  Option<i64>,
@@ -819,7 +818,6 @@ impl PhotoList {
 
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
-        let reactions_list = self.get_reactions_list();
 
         let mut photos_json = Vec::new();
         let items = photos
@@ -2515,7 +2513,6 @@ impl PhotoList {
         use crate::models::NewPhoto;
 
         let _connection = establish_connection();
-        let creator = get_user(user_id);
         let mut resp_list = Vec::new();
         let mut count = (self.count).try_into().unwrap();
 

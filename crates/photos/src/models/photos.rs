@@ -22,9 +22,6 @@ use crate::utils::{
     CardUserJson,
     CardOwnerJson,
     CardCommentJson,
-    EditPhotoJson,
-    DataEditPhoto,
-    RespPhoto,
     RespComment,
     AttachPhotoResp,
     AttachmentsJson,
@@ -250,7 +247,6 @@ impl Photo {
                 }
                 else if list_include.iter().any(|&a| a==i.photo_list_id) {
                     _count += 1;
-                    let list = i.get_list().expect("E.");
                     photos_json.push(i.get_photo_json());
                     continue;
                 }

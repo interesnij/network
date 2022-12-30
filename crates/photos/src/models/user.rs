@@ -601,7 +601,6 @@ impl User {
                     (user_id == 0 && list.is_anon_user_see_el())
                     {
                     let __limit = _limit - _count;
-                    let reactions_list = list.get_reactions_list();
                     let items = photos
                         .filter(schema::photos::photo_list_id.eq(list.id))
                         .filter(schema::photos::description.ilike(&q))
