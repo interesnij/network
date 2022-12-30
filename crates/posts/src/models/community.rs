@@ -1090,7 +1090,7 @@ impl Community {
             .values(&new_community_form)
             .get_result::<Community>(&_connection)
             .expect("Error.");
-        _community.create_main_post_list()
+        _community.create_main_post_list();
         return 1;
     }
 

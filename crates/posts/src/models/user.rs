@@ -867,7 +867,7 @@ impl User {
             .values(&new_form)
             .get_result::<User>(&_connection)
             .expect("Error.");
-        _user.create_main_post_list()
+        _user.create_main_post_list();
         return 1;
     }
     pub fn get_full_name(&self) -> String {
