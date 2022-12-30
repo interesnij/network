@@ -88,6 +88,11 @@ pub async fn phone_verify(data: Json<PhoneCodeParams>) -> Result<Json<RespParams
     }
 }
 
+#[derive(Deserialize)]
+pub struct LoginUser {
+    pub phone:    String,
+    pub password: String,
+}
 #[derive(Deserialize, Serialize, Debug)]
 pub struct LoginUser2 {
     pub token:    String,
@@ -102,10 +107,15 @@ pub struct AuthResp {
     pub link:       String,
     pub s_avatar:   String,
 }
-pub async fn login(data: Json<LoginUser2>) -> Result<Json<AuthResp>, Error> { 
+pub async fn login(data: Json<LoginUser>) -> Result<Json<AuthResp>, Error> { 
+    let l_data = LoginUser2 {
+        pub token:    TOKEN,
+        pub phone:    data.phone,
+        pub password: data.password,
+    };
     let res = request_post::<LoginUser2, AuthResp> (
         USERURL.to_owned() + &"/login".to_string(),
-        &data,
+        &l_data,
         false
     ).await;
 
