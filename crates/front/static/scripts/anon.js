@@ -692,11 +692,11 @@ on('body', 'click', '#logg', function() {
   if (form.querySelector("#id_username").value){form.querySelector("#id_username").style.border = "rgba(0, 0, 0, 0.2)";}
   if (form.querySelector("#id_password").value){form.querySelector("#id_password").style.border = "rgba(0, 0, 0, 0.2)";}
 
-  //form_data = new FormData(form);
-  form_data = {
-    "phone": 7 + _user_phone,
-    "password": form.querySelector("#id_password").value
-  };
+  form_data = new FormData(form);
+  //form_data = {
+  //  "phone": 7 + _user_phone,
+  //  "password": form.querySelector("#id_password").value
+  //};
 
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link.open( 'POST', "/login", true ); 
