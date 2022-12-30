@@ -165,25 +165,24 @@ impl Community {
         }
         else {
             use crate::models::NewPostList;
-            let new_list = NewPostList{
-                    name:            "Основной список".to_string(),
-                    community_id:    Some(self.id),
-                    user_id:         self.user_id,
-                    types:           0,
-                    description:     None,
-                    image:           None,
-                    created:         chrono::Local::now().naive_utc(),
-                    count:           0,
-                    repost:          0,
-                    copy:            0,
-                    position:        0,
-                    can_see_el:      1,
-                    can_see_comment: 1,
-                    create_el:       17,
-                    create_comment:  1,
-                    copy_el:         1,
-                    reactions:       Some("1, 2".to_string()),
-                };
+            let new_list = NewPostList {
+                name:            "Основной список".to_string(),
+                community_id:    Some(self.id),
+                user_id:         self.user_id,
+                types:           0,
+                description:     None,
+                image:           None,
+                created:         chrono::Local::now().naive_utc(),
+                count:           0,
+                repost:          0,
+                copy:            0,
+                see_el:          1,
+                see_comment:     1,
+                create_el:       17,
+                create_comment:  1,
+                copy_el:         1,
+                reactions:       Some("1, 2".to_string()),
+            };
             let _posts_list = diesel::insert_into(schema::post_lists::table)
                 .values(&new_list)
                 .get_result::<PostList>(&_connection)
@@ -213,7 +212,7 @@ impl Community {
  
         if _post_list.is_err() {
             use crate::models::NewPostList;
-            let new_list = NewPostList{
+            let new_list = NewPostList {
                     name:            "Основной список".to_string(),
                     community_id:    Some(self.id),
                     user_id:         self.user_id,
@@ -224,14 +223,13 @@ impl Community {
                     count:           0,
                     repost:          0,
                     copy:            0,
-                    position:        0,
-                    can_see_el:      1,
-                    can_see_comment: 1,
+                    see_el:          1,
+                    see_comment:     1,
                     create_el:       17,
                     create_comment:  1,
                     copy_el:         1,
                     reactions:       Some("1, 2".to_string()),
-                };
+            };
             let _posts_list = diesel::insert_into(schema::post_lists::table)
                 .values(&new_list)
                 .get_result::<PostList>(&_connection)
