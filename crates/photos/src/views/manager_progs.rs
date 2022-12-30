@@ -90,7 +90,7 @@ pub async fn create_claim_list (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 8).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -160,7 +160,7 @@ pub async fn create_claim_photo (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 8).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -231,7 +231,7 @@ pub async fn create_claim_comment (
 ) -> Result<Json<i16>, Error> {
     use crate::models::ModeratedReport;
 
-    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 8).await;
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 8).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -1281,8 +1281,6 @@ pub struct AllPrivateData {
 } 
 
 pub async fn edit_user_all_private (
-    req: HttpRequest,
-    state: web::Data<AppState>,
     data: Json<AllPrivateData>
 ) -> Result<Json<i16>, Error> {
     if data.token.is_none() || data.value.is_none() || data.user_id.is_none() {

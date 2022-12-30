@@ -287,7 +287,7 @@ pub async fn upload_files (
     state:       web::Data<AppState>,
 ) -> impl Responder {
     let form = files_form(payload.borrow_mut()).await;
-    let mut is_open = false;
+    let is_open: bool;
 
     let (err, user_id, community_id) = get_owner_data(&req, state, form.token.clone(), 38).await;
     if err.is_some() { 
@@ -300,13 +300,6 @@ pub async fn upload_files (
     else {
         let list_id: i32 = path.replace("/", "").parse().unwrap();
         let list = get_photo_list(list_id).expect("E.");
-        let c_id: Option<i32>;
-        if community_id > 0 { 
-            c_id = Some(community_id);
-        }
-        else {
-            c_id = list.community_id;
-        }
 
         if list.community_id.is_some() {
             let community = list.get_community().expect("E.");
