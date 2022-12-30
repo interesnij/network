@@ -109,7 +109,7 @@ pub struct AuthResp {
 }
 pub async fn login(data: Json<LoginUser>) -> Result<Json<AuthResp>, Error> { 
     let l_data = LoginUser2 {
-        token:    TOKEN,
+        token:    TOKEN.to_string(),
         phone:    data.phone,
         password: data.password,
     };
