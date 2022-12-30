@@ -196,7 +196,7 @@ impl User {
                 .get_result::<PhotoList>(&_connection)
                 .expect("Error saving photo_list.");
 
-            let _new_posts_list_position = NewUserPhotoListPosition {
+            let _new_photos_list_position = NewUserPhotoListPosition {
                 user_id:  self.id,
                 list_id:  _photos_list.id,
                 position: 1,
@@ -245,7 +245,7 @@ impl User {
 
             let _new_photos_list_position = NewUserPhotoListPosition {
                 user_id:  self.id,
-                list_id:  _photos_list.id,
+                list_id:  _photo_list.id,
                 position: 1,
                 types:    1,
             };
