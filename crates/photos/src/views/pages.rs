@@ -1753,7 +1753,6 @@ pub async fn search_list_comments_page (
                         }
                         else {
                             let body = serde_json::to_string(&item.search_items (
-                                user_id, 
                                 &q,
                                 params.limit,
                                 params.offset
@@ -1779,7 +1778,6 @@ pub async fn search_list_comments_page (
                     }
                     else {
                         let body = serde_json::to_string(&item.search_items (
-                            user_id,
                             &q,
                             params.limit,
                             params.offset
@@ -1814,7 +1812,6 @@ pub async fn search_list_comments_page (
                         }
                         else {
                             let body = serde_json::to_string(&item.search_items (
-                                user_id,
                                 &q,
                                 params.limit,
                                 params.offset
@@ -1840,7 +1837,6 @@ pub async fn search_list_comments_page (
                     }
                     else {
                         let body = serde_json::to_string(&item.search_items (
-                            user_id,
                             &q,
                             params.limit,
                             params.offset
