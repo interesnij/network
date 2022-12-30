@@ -2509,7 +2509,6 @@ impl PhotoList {
         server_id: i16,
         files: Vec<String>
     ) -> Vec<RespPhoto> {
-        use crate::utils::get_user;
         use crate::models::NewPhoto;
 
         let _connection = establish_connection();
