@@ -694,7 +694,7 @@ on('body', 'click', '#logg', function() {
 
   form_data = new FormData(form);
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'POST', "/login", true );
+  link.open( 'POST', "/login", true ); 
   link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
@@ -713,8 +713,8 @@ on('body', 'click', '#logg', function() {
     form.querySelector("#id_username").value = '';
     form.querySelector("#id_password").value = '';
   }};
-  link.send(form_data);
-});
+  link.send(JSON.stringify(form_data));
+}); 
 
 function play_video_list(url, counter, video_pk) {
   loader = document.getElementById("video_loader");
