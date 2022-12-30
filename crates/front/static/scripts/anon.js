@@ -718,7 +718,7 @@ on('body', 'click', '#logg', function() {
     form.querySelector("#id_username").value = '';
     form.querySelector("#id_password").value = '';
   }};
-  link.send(JSON.stringify(form_data);
+  link.send(JSON.stringify(form_data));
 }); 
 
 function play_video_list(url, counter, video_pk) {
