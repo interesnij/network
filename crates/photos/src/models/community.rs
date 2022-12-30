@@ -152,6 +152,101 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
+    pub fn get_main_photo_list(&self) -> PhotoList {
+        use crate::schema::photo_lists::dsl::photo_lists;
+
+        let _connection = establish_connection();
+        let _photo_list = photo_lists
+            .filter(schema::photo_lists::community_id.eq(self.id))
+            .filter(schema::photo_lists::types.eq(0))
+            .first::<PhotoList>(&_connection);
+        if _photo_list.is_ok() {
+            return _photo_list.expect("E.");
+        }
+        else {
+            use crate::models::{NewPhotoList, NewCommunityPhotoListPosition};
+            let new_list = NewPhotoList {
+                name:            "Основной альбом".to_string(),
+                community_id:    Some(self.id),
+                user_id:         self.user_id,
+                types:           0,
+                description:     None,
+                image:           None,
+                created:         chrono::Local::now().naive_utc(),
+                count:           0,
+                repost:          0,
+                copy:            0,
+                see_el:          1,
+                see_comment:     1,
+                create_el:       17,
+                create_comment:  1,
+                copy_el:         1,
+                reactions:       Some("1, 2".to_string()),
+            };
+            let _photos_list = diesel::insert_into(schema::photo_lists::table)
+                .values(&new_list)
+                .get_result::<PhotoList>(&_connection)
+                .expect("Error saving photo_list.");
+
+            let _new_posts_list_position = NewCommunityPhotoListPosition {
+                community_id:  self.id,
+                list_id:  _photos_list.id,
+                position: 1,
+                types:    1,
+            };
+            let _photos_list_position = diesel::insert_into(schema::community_photo_list_positions::table)
+                .values(&_new_photos_list_position)
+                .execute(&_connection)
+                .expect("Error saving photo_list_position.");
+            return _photos_list;
+        }
+    }
+    pub fn create_main_photo_list(&self) -> () {
+        use crate::schema::photo_lists::dsl::photo_lists;
+
+        let _connection = establish_connection();
+        let _photo_list = photo_lists
+            .filter(schema::photo_lists::community_id.eq(self.id))
+            .filter(schema::photo_lists::types.eq(0))
+            .first::<PhotoList>(&_connection);
+ 
+        if _photo_list.is_err() {
+            use crate::models::{NewPhotoList, NewCommunityPhotoListPosition};
+            let new_list = NewPhotoList {
+                    name:            "Основной альбом".to_string(),
+                    community_id:    Some(self.id),
+                    user_id:         self.user_id,
+                    types:           0,
+                    description:     None,
+                    image:           None,
+                    created:         chrono::Local::now().naive_utc(),
+                    count:           0,
+                    repost:          0,
+                    copy:            0,
+                    see_el:          1,
+                    see_comment:     1,
+                    create_el:       17,
+                    create_comment:  1,
+                    copy_el:         1,
+                    reactions:       Some("1, 2".to_string()),
+            };
+            let _photo_list = diesel::insert_into(schema::photo_lists::table)
+                .values(&new_list)
+                .get_result::<PhotoList>(&_connection)
+                .expect("Error saving photo_list.");
+
+            let _new_photos_list_position = NewCommunityPhotoListPosition {
+                community_id:  self.id,
+                list_id:  _photos_list.id,
+                position: 1,
+                types:    1,
+            };
+            let _photos_list_position = diesel::insert_into(schema::community_photo_list_positions::table)
+                .values(&_new_photos_list_position)
+                .execute(&_connection)
+                .expect("Error saving photo_list_position.");
+        }
+    }
     pub fn edit_private (
         &self, 
         field:  &str, 

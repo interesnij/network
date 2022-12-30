@@ -160,7 +160,7 @@ pub struct NewUserJson {
 }
 
 impl User {
-    pub fn get_post_list(&self) -> PostList {
+    pub fn get_main_post_list(&self) -> PostList {
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
@@ -171,9 +171,9 @@ impl User {
             .first::<PostList>(&_connection);
         if _post_list.is_ok() {
             return _post_list.expect("E.");
-        }
+        } 
         else {
-            use crate::models::{NewPostList, NewCommunityPostListPosition};
+            use crate::models::{NewPostList, NewUserPostListPosition};
             let new_list = NewPostList {
                 name:            "Основной список".to_string(),
                 community_id:    None,
@@ -197,13 +197,13 @@ impl User {
                 .get_result::<PostList>(&_connection)
                 .expect("Error saving post_list.");
 
-            let _new_posts_list_position = NewCommunityPostListPosition {
-                community_id:  self.id,
+            let _new_posts_list_position = NewUserPostListPosition {
+                user_id:  self.id,
                 list_id:  _posts_list.id,
                 position: 1,
                 types:    1,
             };
-            let _posts_list_position = diesel::insert_into(schema::community_post_list_positions::table)
+            let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)
                 .values(&_new_posts_list_position)
                 .execute(&_connection)
                 .expect("Error saving post_list_position.");
@@ -221,7 +221,7 @@ impl User {
             .first::<PostList>(&_connection);
  
         if _post_list.is_err() {
-            use crate::models::{NewPostList, NewCommunityPostListPosition};
+            use crate::models::{NewPostList, NewUserPostListPosition};
             let new_list = NewPostList {
                     name:            "Основной список".to_string(),
                     community_id:    None,
@@ -245,13 +245,13 @@ impl User {
                 .get_result::<PostList>(&_connection)
                 .expect("Error saving post_list.");
 
-            let _new_posts_list_position = NewCommunityPostListPosition {
-                community_id:  self.id,
+            let _new_posts_list_position = NewUserPostListPosition {
+                user_id:  self.id,
                 list_id:  _posts_list.id,
                 position: 1,
                 types:    1,
             };
-            let _posts_list_position = diesel::insert_into(schema::community_post_list_positions::table)
+            let _posts_list_position = diesel::insert_into(schema::user_post_list_positions::table)
                 .values(&_new_posts_list_position)
                 .execute(&_connection)
                 .expect("Error saving post_list_position.");

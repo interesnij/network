@@ -152,7 +152,7 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
-    pub fn get_post_list(&self) -> PostList {
+    pub fn get_main_post_list(&self) -> PostList {
         use crate::schema::post_lists::dsl::post_lists;
 
         let _connection = establish_connection();
