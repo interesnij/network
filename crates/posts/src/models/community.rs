@@ -164,7 +164,7 @@ impl Community {
             return _post_list.expect("E.");
         }
         else {
-            use crate::models::NewPostList;
+            use crate::models::{NewPostList, NewCommunityPostListPosition};
             let new_list = NewPostList {
                 name:            "Основной список".to_string(),
                 community_id:    Some(self.id),
@@ -211,7 +211,7 @@ impl Community {
             .first::<PostList>(&_connection);
  
         if _post_list.is_err() {
-            use crate::models::NewPostList;
+            use crate::models::{NewPostList, NewCommunityPostListPosition};
             let new_list = NewPostList {
                     name:            "Основной список".to_string(),
                     community_id:    Some(self.id),
