@@ -197,7 +197,7 @@ impl Community {
             };
             let _posts_list_position = diesel::insert_into(schema::community_post_list_positions::table)
                 .values(&_new_posts_list_position)
-                execute(&_connection)
+                .execute(&_connection)
                 .expect("Error saving post_list_position.");
             return _posts_list;
         }
@@ -245,7 +245,7 @@ impl Community {
             };
             let _posts_list_position = diesel::insert_into(schema::community_post_list_positions::table)
                 .values(&_new_posts_list_position)
-                execute(&_connection)
+                .execute(&_connection)
                 .expect("Error saving post_list_position.");
         }
     }
