@@ -2,7 +2,6 @@ use actix_web::{
     web,
     web::block,
     web::Json,
-    HttpRequest,
 };
 
 use crate::models::{
