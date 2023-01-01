@@ -22,6 +22,7 @@ use crate::schema::{
     follows,
     user_visible_perms,
 };
+use crate::models::CommunitiesList;
 
 /*
 Типы пользоватетеля
@@ -107,6 +108,7 @@ pub struct User {
     pub last_activity: chrono::NaiveDateTime,
     pub see_all:       i16,
     pub see_community: i16,
+    pub lists:         i16,
     pub communities:   i32,
 }
 
@@ -124,6 +126,7 @@ pub struct NewUser {
     pub last_activity: chrono::NaiveDateTime,
     pub see_all:       i16,
     pub see_community: i16,
+    pub lists:         i16,
     pub communities:   i32,
 }
 #[derive(Deserialize, Serialize)]
@@ -417,6 +420,33 @@ impl User {
         }
         return false;
     }
+    pub fn plus_lists(&self, count: i32) -> bool {
+        let _connection = establish_connection();
+        let _u = diesel::update(self)
+            .set(schema::users::lists.eq(self.lists + count))
+            .execute(&_connection);
+        if _u.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    pub fn minus_lists(&self, count: i32) -> bool {
+        if self.communities > 0 {
+            let _connection = establish_connection();
+            let _u = diesel::update(self)
+                .set(schema::users::lists.eq(self.lists - count))
+                .execute(&_connection);
+            if _u.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    }
 
     pub fn create_user (
         user_id:    i32,
@@ -449,11 +479,29 @@ impl User {
             last_activity: chrono::Local::now().naive_utc(),
             see_all:       1,
             see_community: 1,
+            lists:         0,
             communities:   0,
         };
         let _new_user = diesel::insert_into(schema::users::table)
             .values(&new_form)
-            .execute(&_connection);
+            .execute(&_connection)
+            .expect("E.");
+
+        use crate::models::NewCommunitiesList;
+
+        let new_list_f = NewCommunitiesList {
+            name:     "Сообщества".to_string();
+            user_id:  _new_user.user_id,
+            types:    0,
+            position: 1,
+            count:    0,
+            repost:   0, 
+            see_el:   1
+        };
+        diesel::insert_into(schema::communities_lists::table)
+            .values(&new_list_f)
+            .execute(&_connection)
+            .expect("Error.");
         return 1;
     }
     pub fn get_full_name(&self) -> String {
@@ -1160,8 +1208,43 @@ impl User {
         return "Женский".to_string();
     }
 
+    pub fn get_main_communities_list(&self) -> CommunitiesList {
+        use crate::schema::communities_lists::dsl::communities_lists;
+
+        let _connection = establish_connection();
+        let list = communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
+            .filter(schema::communities_lists::types.eq(0))
+            .first::<CommunitiesList>(&_connection);
+        
+        if list.is_ok() {
+            return list.expect("E.");
+        }
+        else {
+            use crate::models::NewCommunitiesList;
+
+            let new_list_f = NewCommunitiesList {
+                name:     "Сообщества".to_string();
+                user_id:  self.user_id,
+                types:    0,
+                position: 1,
+                count:    0,
+                repost:   0, 
+                see_el:   1
+            };
+            let new_list = diesel::insert_into(schema::communities_lists::table)
+                .values(&new_list_f)
+                .execute(&_connection)
+                .expect("Error.");
+            
+            return new_list;
+        }
+    }
+
     pub fn join_community(&self, community_id: i32) -> i16 {
-        use crate::models::NewCommunitiesMembership;
+        use crate::models::{
+            NewCommunitiesMembership,
+        };
 
         if self.is_member_of_community(community_id) || self.is_user_in_ban(community_id) {
             return 0;
@@ -1179,6 +1262,9 @@ impl User {
             .execute(&_connection)
             .expect("Error.");
         self.plus_communities(1);
+
+        let list = self.get_main_communities_list();
+        list.create_community_item(community_id);
         return 1;
     }
     pub fn is_member_of_community(&self, community_id: i32) -> bool {
@@ -1203,8 +1289,19 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
+    pub fn get_communities_lists_ids(&self) -> Vec<CommunityList> {
+        use crate::schema::community_lists:::dsl::community_lists;
+
+        return community_lists
+            .filter(schema::community_lists::user_id.eq(self.user_id))
+            .load::<CommunityList>(&_connection)
+            .expect("E");
+    }
     pub fn leave_community(&self, community_id: i32) -> i16 {
-        use crate::schema::communities_memberships::dsl::communities_memberships;
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            community_list_items::dsl::community_list_items,
+        };
 
         if !self.is_member_of_community(community_id) {
             return 0;
@@ -1218,6 +1315,22 @@ impl User {
             .execute(&_connection)
             .expect("E");
         self.minus_communities(1);
+
+        for list in self.get_communities_lists_ids().iter() {
+            diesel::delete (
+                community_list_items
+                    .filter(schema::community_list_items::list_id.eq(list.id))
+                    .filter(schema::community_list_items::community_id.eq(community_id))
+            )
+            .execute(&_connection)
+            .expect("E");
+
+            diesel::update(&list)
+                .set(schema::communities_lists::count.eq(count - 1))
+                .execute(&_connection)
+                .expect("E.")
+        }
+        
         return 1;
     }
 }

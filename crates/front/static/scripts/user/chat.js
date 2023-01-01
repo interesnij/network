@@ -333,10 +333,11 @@ function remove_voice_console(form) {
     form_data.append("time", new Date().toLocaleString());
 
     pk = document.body.querySelector(".pk_saver").getAttribute("chat-pk");
+    form_data.append("id", pk);
 
     link_2 = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    link_2.open( 'POST', "/chat/user_progs/send_voice_message/" + pk + "/", true );
-    link_2.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link_2.open( 'POST', "/chat/user_progs/send_voice_message", true );
+    link_2.setRequestHeader('Content-Type', 'application/json');
 
     link_2.onreadystatechange = function () {
     if ( this.readyState == 4 && this.status == 200 ) {
@@ -350,7 +351,7 @@ function remove_voice_console(form) {
       CURRENT_BLOB = null;
       is_voise_sender_open = true;
     }};
-    link_2.send(form_data);
+    link_2.send(JSON.stringify(form_data));
   });
   start();
 };
@@ -433,9 +434,12 @@ function edit_favourite_count(count, type) {
 
 on('#ajax', 'click', '.u_message_unfixed', function() {
   message = this.parentElement.parentElement;
+  form_data = new FormData();
+  form_data.append("id", message.getAttribute("data-pk"));
+
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', "/chat/user_progs/unfixed_message/" + message.getAttribute("data-pk") + "/", true );
-		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    ajax_link.open( 'POST', "/chat/user_progs/unfixed_message", true );
+		ajax_link.setRequestHeader('Content-Type', 'application/json');
     ajax_link.onreadystatechange = function () {
       if ( this.readyState == 4 && this.status == 200 ) {
         fix_span = message.parentElement.parentElement.parentElement.querySelector(".count_fixed_messages")
@@ -446,8 +450,9 @@ on('#ajax', 'click', '.u_message_unfixed', function() {
         message.remove();
       }
     }
-    ajax_link.send();
+    ajax_link.send(JSON.stringify(form_data));
 });
+
 on('#ajax', 'click', '.chat_search_btn', function() {
   value = this.parentElement.previousElementSibling;
   if (!value.value) {
@@ -455,8 +460,8 @@ on('#ajax', 'click', '.chat_search_btn', function() {
   }
   chat = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', "/chat/" + chat.getAttribute("data-pk") + "/search/?q=" + value.value, true );
-		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    ajax_link.open( 'GET', "/chat/" + chat.getAttribute("data-pk") + "/search?q=" + value.value, true );
+		ajax_link.setRequestHeader('Content-Type', 'application/json');
     ajax_link.onreadystatechange = function () {
       if ( this.readyState == 4 && this.status == 200 ) {
         elem_ = document.createElement('span');
@@ -478,10 +483,13 @@ on('#ajax', 'click', '.chat_search_btn', function() {
 
 on('#ajax', 'click', '.delete_favourite_message', function() {
   pk = this.parentElement.parentElement.parentElement.parentElement.getAttribute("data-pk")
+  form_data = new FormData();
+  form_data.append("id", pk);
+  
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', "/chat/user_progs/unfavorite_messages/?list=" + [pk], true );
-		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    ajax_link.onreadystatechange = function () {
+  ajax_link.open( 'POST', "/chat/user_progs/unfavorite_messages", true );
+	ajax_link.setRequestHeader('Content-Type', 'application/json');
+  ajax_link.onreadystatechange = function () {
       if ( this.readyState == 4 && this.status == 200 ) {
         edit_favourite_count(1, "minus");
         messages = document.body.querySelectorAll( '[data-pk=' + '"' + pk + '"' + ']' );
@@ -489,8 +497,8 @@ on('#ajax', 'click', '.delete_favourite_message', function() {
           messages[i].querySelector(".favourite_icon").innerHTML = ""
         }
       }
-    }
-    ajax_link.send();
+  }
+  ajax_link.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.create_favourite_messages', function() {
   hide_chat_console();
@@ -504,15 +512,17 @@ on('#ajax', 'click', '.create_favourite_messages', function() {
     list[i].classList.remove("custom_color", "target_message")
   };
 
+  form_data = new FormData();
+  form_data.append("messages", list);
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', "/chat/user_progs/favorite_messages/?list=" + messages, true );
-		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    ajax_link.open( 'POST', "/chat/user_progs/favorite_messages", true );
+		ajax_link.setRequestHeader('Content-Type', 'application/json');
     ajax_link.onreadystatechange = function () {
       if ( this.readyState == 4 && this.status == 200 ) {
         edit_favourite_count(messages.length, "plus")
       }
     }
-    ajax_link.send();
+    ajax_link.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.remove_favourite_messages', function() {
   hide_chat_console();
@@ -525,16 +535,18 @@ on('#ajax', 'click', '.remove_favourite_messages', function() {
     };
     list[i].classList.remove("custom_color", "target_message")
   };
+  form_data = new FormData();
+  form_data.append("messages", list);
 
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', "/chat/user_progs/unfavorite_messages/?list=" + messages, true );
-		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  ajax_link.open( 'POST', "/chat/user_progs/unfavorite_messages", true );
+  ajax_link.setRequestHeader('Content-Type', 'application/json');
     ajax_link.onreadystatechange = function () {
       if ( this.readyState == 4 && this.status == 200 ) {
         edit_favourite_count(messages.length, "minus")
       }
     }
-    ajax_link.send();
+    ajax_link.send(JSON.stringify(form_data));
 });
 
 function hide_chat_console() {
@@ -549,7 +561,7 @@ on('#ajax', 'click', '.message_dropdown', function() {this.nextElementSibling.cl
 on('#ajax', 'click', '.smile_sticker_dropdown', function() {
   block = this.nextElementSibling;
   if (!block.querySelector(".card")) {
-    list_load(block, "/users/load/smiles_stickers/")
+    list_load(block, "/users/load/smiles_stickers")
   };
   block.classList.toggle("show");
 });
@@ -575,27 +587,27 @@ on('#ajax', 'click', '.hide_chat_search', function() {
 on('#ajax', 'click', '.u_chat_info', function() {
   if (this.querySelector("a")) { return };
   pk = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")
-  create_fullscreen("/chat/" + pk + "/info/", "worker_fullscreen", false, true);
+  create_fullscreen("/chat/" + pk + "/info", "worker_fullscreen", false, true);
 });
 on('#ajax', 'click', '.favourite_messages_list', function() {
-  create_fullscreen("/chat/favourites_messages/", "worker_fullscreen");
+  create_fullscreen("/chat/favourites_messages", "worker_fullscreen");
 });
 on('#ajax', 'click', '.user_chat_settings', function() {
   pk = this.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")
-  create_fullscreen("/chat/user_progs/edit/" + pk + "/", "worker_fullscreen");
+  create_fullscreen("/chat/user_progs/edit/" + pk, "worker_fullscreen");
 });
 on('#ajax', 'click', '.user_chat_settings_private', function() {
   pk = this.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")
-  create_fullscreen("/chat/user_progs/private/" + pk + "/", "worker_fullscreen");
+  create_fullscreen("/chat/user_progs/private/" + pk, "worker_fullscreen");
 });
 on('#ajax', 'click', '.show_attach_files', function() {
   pk = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")
-  create_fullscreen("/chat/" + pk + "/collections/", "item_fullscreen");
+  create_fullscreen("/chat/" + pk + "/collections", "item_fullscreen");
 });
 on('#ajax', 'click', '.select_chat_collections', function() {
   _this = this;
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  ajax_link.open( 'GET', "/chat/" + this.parentElement.getAttribute("chat-pk") + "/collections/?types=" + this.getAttribute("data-type"), true );
+  ajax_link.open( 'GET', "/chat/" + this.parentElement.getAttribute("chat-pk") + "/collections?types=" + this.getAttribute("data-type"), true );
 	ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   ajax_link.onreadystatechange = function () {
     if ( this.readyState == 4 && this.status == 200 ) {
@@ -835,7 +847,7 @@ on('#ajax', 'input', '.smile_supported', function() {
         remove_class_timeout(_this);
         setTimeout(function(){
           form = _this.parentElement.parentElement;
-          send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+          send_draft_message (form, "/chat/user_progs/save_draft_message");
       }, 2000)
     }
   };
@@ -865,7 +877,7 @@ on('#ajax', 'input', '.custom_link_input', function() {
   }
   else {
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', "/progs/check_custom_link/" + value + "/", true);
+    link.open('GET', "/progs/check_custom_link/" + value, true);
     link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     link.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -890,7 +902,7 @@ on('#ajax', 'input', '.custom_link_input', function() {
 
 on('#ajax', 'click', '.show_chat_fixed_messages', function() {
   pk = this.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute('chat-pk');
-  create_fullscreen("/chat/" + pk + "/fixed_messages/", "item_fullscreen");
+  create_fullscreen("/chat/" + pk + "/fixed_messages", "item_fullscreen");
 });
 
 on('#ajax', 'click', '.classic_smile_item', function() {
@@ -901,12 +913,12 @@ on('#ajax', 'click', '.classic_smile_item', function() {
   if (document.body.querySelector(".chatlist")) {
     show_message_form_send_btn();
     form = input.parentElement.parentElement;
-    send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+    send_draft_message (form, "/chat/user_progs/save_draft_message");
   };
   setEndOfContenteditable(input);
 });
 
-function send_comment_sticker(form_post,value) {
+function send_comment_sticker(form_post, value) {
   comment_form = false, reply_form = false, parent_form = false;
   $sticker = document.createElement("input");
   $sticker.setAttribute("name", "sticker");
@@ -916,25 +928,25 @@ function send_comment_sticker(form_post,value) {
   form_post.append($sticker);
   form = new FormData(form_post);
   if (form_post.querySelector(".comment_form")){
-    if (form_post.classList.contains("u_post_comment")) {url = '/posts/user_progs/add_comment/'}
-    else if (form_post.classList.contains("c_post_comment")) {url = '/posts/community_progs/add_comment/'}
-    else if (form_post.classList.contains("u_video_comment")) {url = '/video/user_progs/add_comment/'}
-    else if (form_post.classList.contains("c_video_comment")) {url = '/video/community_progs/add_comment/'}
-    else if (form_post.classList.contains("u_photo_comment")) {url = '/photos/user_progs/add_comment/'}
-    else if (form_post.classList.contains("c_photo_comment")) {url = '/photos/community_progs/add_comment/'}
-    else if (form_post.classList.contains("u_good_comment")) {url = '/goods/user_progs/add_comment/'}
-    else if (form_post.classList.contains("c_good_comment")) {url = '/goods/community_progs/add_comment/'};
+    if (form_post.classList.contains("u_post_comment")) {url = '/posts/user_progs/add_comment'}
+    else if (form_post.classList.contains("c_post_comment")) {url = '/posts/community_progs/add_comment'}
+    else if (form_post.classList.contains("u_video_comment")) {url = '/video/user_progs/add_comment'}
+    else if (form_post.classList.contains("c_video_comment")) {url = '/video/community_progs/add_comment'}
+    else if (form_post.classList.contains("u_photo_comment")) {url = '/photos/user_progs/add_comment'}
+    else if (form_post.classList.contains("c_photo_comment")) {url = '/photos/community_progs/add_comment'}
+    else if (form_post.classList.contains("u_good_comment")) {url = '/goods/user_progs/add_comment'}
+    else if (form_post.classList.contains("c_good_comment")) {url = '/goods/community_progs/add_comment'};
     comment_form = true
   }
   else if (form_post.querySelector(".reply_form") || form_post.querySelector(".parent_form")) {
-    if (form_post.classList.contains("u_post_comment")) {url = '/posts/user_progs/reply_comment/'}
-    else if (form_post.classList.contains("c_post_comment")) {url = '/posts/community_progs/reply_comment/'}
-    else if (form_post.classList.contains("u_video_comment")) {url = '/video/user_progs/reply_comment/'}
-    else if (form_post.classList.contains("c_video_comment")) {url = '/video/community_progs/reply_comment/'}
-    else if (form_post.classList.contains("u_photo_comment")) {url = '/photos/user_progs/reply_comment/'}
-    else if (form_post.classList.contains("c_photo_comment")) {url = '/photos/community_progs/reply_comment/'}
-    else if (form_post.classList.contains("u_good_comment")) {url = '/goods/user_progs/reply_comment/'}
-    else if (form_post.classList.contains("c_good_comment")) {url = '/goods/community_progs/reply_comment/'}
+    if (form_post.classList.contains("u_post_comment")) {url = '/posts/user_progs/reply_comment'}
+    else if (form_post.classList.contains("c_post_comment")) {url = '/posts/community_progs/reply_comment'}
+    else if (form_post.classList.contains("u_video_comment")) {url = '/video/user_progs/reply_comment'}
+    else if (form_post.classList.contains("c_video_comment")) {url = '/video/community_progs/reply_comment'}
+    else if (form_post.classList.contains("u_photo_comment")) {url = '/photos/user_progs/reply_comment'}
+    else if (form_post.classList.contains("c_photo_comment")) {url = '/photos/community_progs/reply_comment'}
+    else if (form_post.classList.contains("u_good_comment")) {url = '/goods/user_progs/reply_comment'}
+    else if (form_post.classList.contains("c_good_comment")) {url = '/goods/community_progs/reply_comment'}
   };
   if (form_post.querySelector(".reply_form")) {
     reply_form = true
@@ -942,7 +954,7 @@ function send_comment_sticker(form_post,value) {
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
   link_.open('POST', url, true);
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
   link_.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
           form_post.querySelector(".comment_text").innerHTML = "";
@@ -965,25 +977,25 @@ function send_comment_sticker(form_post,value) {
 
       }
   };
-  link_.send(form)
+  link_.send(JSON.stringify(form))
 };
 
 on('#ajax', 'click', '.classic_sticker_item', function() {
   if (document.body.querySelector(".chatlist")){
-    url = "/chat/user_progs/send_message/" + document.body.querySelector(".pk_saver").getAttribute("chat-pk") + "/";
-    send_message_sticker(url, this.getAttribute("data-pk"))
+    url = "/chat/user_progs/send_message";
+    send_message_sticker(url, this.getAttribute("data-pk"), document.body.querySelector(".pk_saver").getAttribute("chat-pk"))
   } else if (document.body.querySelector("#send_page_message_btn")){
-    url = '/chat/user_progs/send_page_message/' + document.body.querySelector("#send_page_message_btn").getAttribute("data-pk") + '/'
-    send_message_sticker(url, this.getAttribute("data-pk"))
+    url = '/chat/user_progs/send_page_message'
+    send_message_sticker(url, this.getAttribute("data-pk"), document.body.querySelector("#send_page_message_btn").getAttribute("data-pk"))
   } else if (this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.querySelector(".check_mesage_form")){
     form = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
     send_comment_sticker(form, this.getAttribute("data-pk"))
   }
 });
 
-function send_message_sticker(url, value) {
+function send_message_sticker(url, id, sticker) {
   is_chat = false; is_page = false;
-  console.log(value);
+  console.log(sticker);
   if (document.body.querySelector(".chatlist")){is_chat = true} else {is_page = true};
   if (is_chat) {
     form_post = document.body.querySelector(".customize_form")
@@ -994,14 +1006,15 @@ function send_message_sticker(url, value) {
   $sticker.setAttribute("name", "sticker");
   $sticker.setAttribute("type", "text");
   $sticker.classList.add("sticker");
-  $sticker.value = value;
+  $sticker.value = sticker;
   form_post.append($sticker);
+  form_post.append("id", id);
   form_data = new FormData(form_post);
   if (document.body.querySelector(".chatlist")){is_chat = true} else {is_page = true};
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', url, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -1027,32 +1040,32 @@ function send_message_sticker(url, value) {
       document.getElementById("item_loader").innerHTML="";
     }
   }};
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 };
 
 on('#ajax', 'click', '.user_create_chat', function() {
-  create_fullscreen("/chats/create_chat/" + this.getAttribute("data-pk") + "/", "worker_fullscreen", false, true);
+  create_fullscreen("/chats/create_chat/" + this.getAttribute("data-pk"), "worker_fullscreen", false, true);
 });
 on('#ajax', 'click', '.user_send_page_message', function() {
-  create_fullscreen("/chats/create_message/" + this.getAttribute("data-pk") + "/", "worker_fullscreen", false, true);
+  create_fullscreen("/chats/create_message/" + this.getAttribute("data-pk"), "worker_fullscreen", false, true);
 });
 
 on('#ajax', 'click', '.u_chat_photo', function() {
   photo_pk = this.getAttribute('photo-pk');
   pk = document.body.querySelector(".pk_saver").getAttribute('chat-pk')
-  create_fullscreen("/photos/user/chat_photo/" + pk + "/" + photo_pk + "/", "photo_fullscreen");
+  create_fullscreen("/photos/user/chat_photo/" + pk + "/" + photo_pk, "photo_fullscreen");
 });
 on('#ajax', 'click', '.c_chat_photo', function() {
   photo_pk = this.getAttribute('photo-pk');
   pk = document.body.querySelector(".pk_saver").getAttribute('chat-pk')
-  create_fullscreen("/photos/community/chat_photo/" + pk + "/" + photo_pk + "/", "photo_fullscreen");
+  create_fullscreen("/photos/community/chat_photo/" + pk + "/" + photo_pk, "photo_fullscreen");
 });
 
 on('#ajax', 'click', '.user_add_members', function() {
   block = this.nextElementSibling.querySelector("#chat_members");
   if (!block.querySelector(".load_pag")){
   block.classList.add("mt-4");
-  list_load(block, "/users/load/friends/")
+  list_load(block, "/users/load/friends")
 } else { block.style.display = "block"}
 });
 
@@ -1061,10 +1074,11 @@ on('#ajax', 'click', '#add_chat_btn', function() {
   this.disabled = true;
   pk = this.getAttribute("data-pk");
   form_data = new FormData(form);
+  form_data.append("id", pk);
 
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-      ajax_link.open( 'POST', '/chat/user_progs/create_chat/' + pk + '/', true );
-      ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      ajax_link.open( 'POST', '/chat/user_progs/create_chat', true );
+      ajax_link.setRequestHeader('Content-Type', 'application/json');
       ajax_link.onreadystatechange = function () {
         if ( this.readyState == 4 && this.status == 200 ) {
             elem_ = document.createElement('span');
@@ -1074,11 +1088,11 @@ on('#ajax', 'click', '#add_chat_btn', function() {
             rtr.innerHTML = ajax.innerHTML;
             pk = rtr.querySelector(".pk_saver").getAttribute("data-pk");
             document.title = elem_.querySelector('title').innerHTML;
-            window.history.pushState(null, "vfgffgfgf", "/chat/" + pk + "/");
+            window.history.pushState(null, "vfgffgfgf", "/chat/" + pk);
             get_document_opacity_1();
         }
       }
-      ajax_link.send(form_data);
+      ajax_link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#send_page_message_btn', function() {
@@ -1093,17 +1107,18 @@ on('#ajax', 'click', '#send_page_message_btn', function() {
   this.disabled = true;
   form.querySelector(".type_hidden").value = form.querySelector(".page_message_text").innerHTML;
   form_data = new FormData(form);
+  form_data.append("id", this.getAttribute("data-pk"));
 
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-      ajax_link.open( 'POST', '/chat/user_progs/send_page_message/' + this.getAttribute("data-pk") + '/', true );
-      ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      ajax_link.open( 'POST', '/chat/user_progs/send_page_message', true );
+      ajax_link.setRequestHeader('Content-Type', 'application/json');
       ajax_link.onreadystatechange = function () {
         if ( this.readyState == 4 && this.status == 200 ) {
             toast_success("Сообщение отправлено");
             close_work_fullscreen();
         } else {this.disabled = false}
       }
-      ajax_link.send(form_data);
+      ajax_link.send(JSON.stringify(form_data));
 });
 
 function send_message (form_post, url) {
@@ -1138,13 +1153,15 @@ function send_message (form_post, url) {
   $attach_input.value = _attach_value.slice(0,-1);
   form_post.append($attach_input);
 
-  form_data = new FormData(form_post);
-  message_load = form_post.parentElement.parentElement.parentElement.querySelector(".chatlist");
   pk = document.body.querySelector(".pk_saver").getAttribute("chat-pk");
+  form_data = new FormData(form_post);
+  form_post.append("id", id);
+
+  message_load = form_post.parentElement.parentElement.parentElement.querySelector(".chatlist");
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', url, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -1177,7 +1194,7 @@ function send_message (form_post, url) {
           toast_info(text)
         }
     }};
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 };
 
 on('#ajax', 'click', '.u_message_fixed', function() {
@@ -1185,9 +1202,12 @@ on('#ajax', 'click', '.u_message_fixed', function() {
   hide_chat_console();
   pk = message.getAttribute("data-pk");
 
+  form_data = new FormData();
+  form_post.append("id", id);
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/fixed_message/" + pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/fixed_message", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -1212,7 +1232,7 @@ on('#ajax', 'click', '.u_message_fixed', function() {
     objDiv = document.body.querySelector("#chatcontent");
     objDiv.scrollTop = objDiv.scrollHeight;
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.u_message_reply', function() {
@@ -1232,7 +1252,7 @@ on('#ajax', 'click', '.u_message_reply', function() {
   block.innerHTML = "<div>" + creator_p + "<div style='position:relative;padding-bottom:7px'><input type='hidden' name='parent' value='" + message.getAttribute("data-pk") + "'><div style='overflow: hidden;text-overflow:ellipsis;padding-right:5px;'><span style='white-space: nowrap;'>" + parent + "</span><span class='remove_parent_block message_form_parent_block pointer'>x</span></div></div></div>"
   setTimeout(function(){
     form = block.parentElement;
-      send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+      send_draft_message (form, "/chat/user_progs/save_draft_message");
 }, 1000)
 });
 
@@ -1243,7 +1263,7 @@ on('#ajax', 'click', '.u_message_edit', function() {
   message.style.display = "none";
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'GET', "/chat/user_progs/edit_message/" + message.getAttribute("data-pk") + "/", true );
+  link_.open( 'GET', "/chat/user_progs/edit_message/" + message.getAttribute("data-pk"), true );
   link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -1272,22 +1292,25 @@ function send_draft_message (form_post, url) {
   text = form_post.querySelector(".type_hidden");
   text.value = form_post.querySelector(".message_text").innerHTML.replace("data:image", '');
   setEndOfContenteditable(text_val);
-  form_data = new FormData(form_post);
+  
   pk = document.body.querySelector(".pk_saver").getAttribute("chat-pk");
+  form_data = new FormData(form_post);
+  form_data.append("id", pk);
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', url, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
   }};
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 };
 
 on('#ajax', 'click', '#message_post_btn', function() {
   form_post = this.parentElement.parentElement.parentElement;
-  send_message (form_post, "/chat/user_progs/send_message/" + document.body.querySelector(".pk_saver").getAttribute("chat-pk") + "/")
+
+  send_message (form_post, "/chat/user_progs/send_message")
 });
 
 on('#ajax', 'keydown', '.message_text', function(e) {
@@ -1296,7 +1319,7 @@ on('#ajax', 'keydown', '.message_text', function(e) {
     e.preventDefault();
   form_post = this.parentElement.parentElement;
 
-  send_message (form_post, "/chat/user_progs/send_message/" + document.body.querySelector(".pk_saver").getAttribute("chat-pk") + "/")
+  send_message (form_post, "/chat/user_progs/send_message")
 }});
 on('#ajax', 'keydown', '.page_message_text', function(e) {
   if (e.shiftKey && e.keyCode === 13) {this.append("\n");}
@@ -1309,7 +1332,7 @@ on('#ajax', 'click', '.chat_ajax', function(e) {
   e.preventDefault();
 	var url = this.getAttribute('href');
   var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', url, true );
+    ajax_link.open( 'GET', url + "?ajax=2", true ); 
 		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     ajax_link.onreadystatechange = function () {
       if ( this.readyState == 4 && this.status == 200 ) {
@@ -1319,6 +1342,17 @@ on('#ajax', 'click', '.chat_ajax', function(e) {
 
         rtr = document.getElementById('ajax');
         rtr.innerHTML = ajax.innerHTML;
+
+        _meta = rtr.querySelector(".main-container");
+        _title = _meta.getAttribute("data-title");
+        _uri = "http://трезвый.рус" + _meta.getAttribute("data-uri");
+        _description = _meta.getAttribute("data-description");
+        _image = "http://трезвый.рус" + _meta.getAttribute("data-image");
+        document.title = _title;
+        document.querySelector('meta[name="url"]').setAttribute("content", _uri);
+        document.querySelector('meta[name="title"]').setAttribute("content", _title);
+        document.querySelector('meta[name="description"]').setAttribute("content", _description);
+        document.querySelector('meta[name="image"]').setAttribute("content", _image);
 
         width = rtr.querySelector(".main_chat_block").offsetWidth - 14;
         rtr.querySelector(".fixed_header_chat").style.width = width + "px";
@@ -1372,7 +1406,7 @@ on('#ajax', 'click', '.u_message_delete', function() {
   list = get_toggle_messages();
   for (var i = 0; i < list.length; i++){
     list[i].classList.remove("custom_color", "target_message");
-    remove_item_and_show_restore_block(list[i], "/chat/user_progs/delete_message/", "u_message_restore", "Сообщение удалено")
+    remove_item_and_show_restore_block(list[i], "/chat/user_progs/delete_message", "u_message_restore", "Сообщение удалено")
   };
   hide_chat_console()
 });
@@ -1380,7 +1414,7 @@ on('#ajax', 'click', '.u_message_delete', function() {
 on('#ajax', 'click', '.remove_parent_block', function() {
   form = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   setTimeout(function(){
-    send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+    send_draft_message (form, "/chat/user_progs/save_draft_message");
 }, 1000)
   this.parentElement.parentElement.parentElement.remove()
 });
@@ -1388,10 +1422,13 @@ on('#ajax', 'click', '.remove_parent_block', function() {
 on('#ajax', 'click', '.u_message_restore', function() {
   item = this.parentElement.nextElementSibling;
   pk = this.getAttribute("data-pk");
+  form_data = new FormData();
+  form_data.append("id", pk);
+
   block = this.parentElement;
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/restore_message/" + pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/restore_message", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -1399,7 +1436,7 @@ on('#ajax', 'click', '.u_message_restore', function() {
     item.style.display = "flex";
     item.classList.remove("custom_color")
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.edit_message_form_remove', function() {
@@ -1414,8 +1451,8 @@ on('#ajax', 'change', '#u_photo_message_attach', function() {
   }
   form_data = new FormData(this.parentElement);
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/chat/user_progs/add_attach_photo/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/chat/user_progs/add_attach_photo", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -1428,7 +1465,7 @@ on('#ajax', 'change', '#u_photo_message_attach', function() {
     close_work_fullscreen();
     show_message_form_send_btn();
   }
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.edit_message_post_btn', function() {
@@ -1461,12 +1498,13 @@ on('#ajax', 'click', '.edit_message_post_btn', function() {
   $attach_input.value = _attach_value.slice(0,-1);
   form_post.append($attach_input);
 
-  form_data = new FormData(form_post);
   message = form_post.parentElement.previousElementSibling;
+  form_data = new FormData(form_post);
+  form_data.append("id", message.getAttribute("data-pk"));
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/chat/user_progs/edit_message/" + message.getAttribute("data-pk") + "/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/chat/user_progs/edit_message", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -1478,17 +1516,17 @@ on('#ajax', 'click', '.edit_message_post_btn', function() {
     message.style.display = "flex"
   }};
 
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 
 on('#ajax', 'click', '.u_message_transfer', function() {
-  create_fullscreen('/users/load/chats/', "item_fullscreen");
+  create_fullscreen('/users/load/chats', "item_fullscreen");
   hide_chat_console();
 });
 
 on('#ajax', 'click', '.go_transfer_messages', function() {
-  url = "/chat/" + this.getAttribute("data-pk") + "/";
+  url = "/chat/" + this.getAttribute("data-pk");
   list = get_toggle_messages();
   get_document_opacity_1();
   saver = document.createElement("div");
@@ -1555,88 +1593,109 @@ on('#ajax', 'click', '.go_transfer_messages', function() {
 };
 setTimeout(function(){
   form = document.body.querySelector(".customize_form");
-    send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+    send_draft_message (form, "/chat/user_progs/save_draft_message");
 }, 1000)
 });
 
 on('#ajax', 'click', '.on_full_chat_notify', function() {
   document.body.querySelector(".notify_box").innerHTML= ''
-  chat_send_change(this, "/chat/user_progs/beep_on/", "off_full_chat_notify", "Откл. уведомления");
+  chat_send_change(this, "/chat/user_progs/beep_on", "off_full_chat_notify", "Откл. уведомления");
 });
 on('#ajax', 'click', '.off_full_chat_notify', function() {
   document.body.querySelector(".notify_box").innerHTML= ' <svg style="width: 14px;" enable-background="new 0 0 24 24" height="14px" viewBox="0 0 24 24" width="17px" fill="currentColor"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4.34 2.93L2.93 4.34 7.29 8.7 7 9H3v6h4l5 5v-6.59l4.18 4.18c-.65.49-1.38.88-2.18 1.11v2.06c1.34-.3 2.57-.92 3.61-1.75l2.05 2.05 1.41-1.41L4.34 2.93zM10 15.17L7.83 13H5v-2h2.83l.88-.88L10 11.41v3.76zM19 12c0 .82-.15 1.61-.41 2.34l1.53 1.53c.56-1.17.88-2.48.88-3.87 0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zm-7-8l-1.88 1.88L12 7.76zm4.5 8c0-1.77-1.02-3.29-2.5-4.03v1.79l2.48 2.48c.01-.08.02-.16.02-.24z"/></svg>'
-  chat_send_change(this, "/chat/user_progs/beep_off/", "on_full_chat_notify", "Вкл. уведомления");
+  chat_send_change(this, "/chat/user_progs/beep_off", "on_full_chat_notify", "Вкл. уведомления");
 });
 
 on('#ajax', 'click', '.remove_user_from_chat', function() {
   item = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   user_pk = item.getAttribute("data-pk");
+  form_data = new FormData();
+  form_data.append("user_id", user_pk);
+  form_data.append("chat_id", item.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/" + item.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/remove_member/" + user_pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/remove_member", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
     item.remove()
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.user_exit_in_user_chat', function() {
   if (this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")){
     pk = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk");
   } else { pk = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")}
+  
+  form_data = new FormData();
+  form_data.append("id", pk);
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/exit_user_from_user_chat/" + pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/exit_user_from_user_chat", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
-    ajax_get_reload("/chat/");
+    ajax_get_reload("/chat");
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.u_clean_chat_messages', function() {
+  form_data = new FormData();
+  form_data.append("id", this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/clean_messages/" + this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/clean_messages", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
-    ajax_get_reload("/chat/");
+    ajax_get_reload("/chat");
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.close_support_chat', function() {
+  form_data = new FormData();
+  form_data.append("id", this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/delete_support_chat/" + this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/delete_support_chat", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
-    ajax_get_reload("/chat/");
+    ajax_get_reload("/chat");
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.refresh_support_chat', function() {
+  form_data = new FormData();
+  form_data.append("id", this.getAttribute("chat-pk"));
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/refresh_support_chat/" + this.getAttribute("chat-pk") + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/refresh_support_chat", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
-    ajax_get_reload("/chat/" + this.getAttribute("chat-pk") + "/");
+    ajax_get_reload("/chat/" + this.getAttribute("chat-pk"));
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 on('body', 'click', '.add_perm_user_chat', function() {
   _this = this;
   item = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   user_pk = item.getAttribute("data-pk");
+  form_data = new FormData();
+  form_data.append("user_id", user_pk);
+  form_data.append("chat_id", item.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/" + item.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/add_admin/" + user_pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/add_admin", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -1645,15 +1704,19 @@ on('body', 'click', '.add_perm_user_chat', function() {
     _this.innerHTML = "Расжаловать";
     item.querySelector('.member_role').innerHTML = "Администратор"
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 on('body', 'click', '.remove_perm_user_chat', function() {
   _this = this;
   item = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   user_pk = item.getAttribute("data-pk");
+  form_data = new FormData();
+  form_data.append("user_id", user_pk);
+  form_data.append("chat_id", item.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/" + item.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/remove_admin/" + user_pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/remove_admin", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -1662,18 +1725,19 @@ on('body', 'click', '.remove_perm_user_chat', function() {
     _this.innerHTML = "Сделать админом";
     item.querySelector('.member_role').innerHTML = "Участник"
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#u_chat_settings_btn', function() {
   form = this.parentElement.parentElement.parentElement;
   pk = form.getAttribute("data-pk");
   form_data = new FormData(form);
+  form_data.append("id", pk);
   this.disabled = true;
 
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-      ajax_link.open( 'POST', '/chat/user_progs/edit/' + pk + '/', true );
-      ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      ajax_link.open( 'POST', '/chat/user_progs/edit', true );
+      ajax_link.setRequestHeader('Content-Type', 'application/json');
       ajax_link.onreadystatechange = function () {
         if ( this.readyState == 4 && this.status == 200 ) {
             elem_ = document.createElement('span');
@@ -1682,16 +1746,16 @@ on('#ajax', 'click', '#u_chat_settings_btn', function() {
             close_work_fullscreen();
         }
       };
-      ajax_link.send(form_data);
+      ajax_link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#add_chat_exclude_users_btn', function() {
   form = this.parentElement.parentElement;
-  post_include_exclude_users(form, '/chat/user_progs/load_exclude_users/' + form.parentElement.getAttribute("chat-pk") + '/')
+  post_include_exclude_users(form, '/chat/user_progs/load_exclude_users')
 });
 on('#ajax', 'click', '#add_chat_include_users_btn', function() {
   form = this.parentElement.parentElement;
-  post_include_exclude_users(form, '/chat/user_progs/load_include_users/' + form.parentElement.getAttribute("chat-pk") + '/')
+  post_include_exclude_users(form, '/chat/user_progs/load_include_users')
 });
 
 
@@ -1701,7 +1765,7 @@ on('#ajax', 'click', '.u_add_members_in_chat', function() {
   } else if (this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")){
     pk = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk")
   } else {pk=null};
-  create_fullscreen("/chat/user_progs/invite_members/?chat_pk=" + pk, "worker_fullscreen");
+  create_fullscreen("/chat/user_progs/invite_members?chat_pk=" + pk, "worker_fullscreen");
 });
 on('#ajax', 'click', '#append_friends_to_chat_btn', function() {
   form = this.parentElement.parentElement, is_chat = false;
@@ -1713,10 +1777,11 @@ on('#ajax', 'click', '#append_friends_to_chat_btn', function() {
 
   if (is_chat) {
     form_data = new FormData(form);
+    form_data.append("id", pk);
 
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-      ajax_link.open( 'POST', "/chat/user_progs/invite_members/?chat_pk=" + pk, true );
-      ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      ajax_link.open( 'POST', "/chat/user_progs/invite_members", true );
+      ajax_link.setRequestHeader('Content-Type', 'application/json');
       ajax_link.onreadystatechange = function () {
         if ( this.readyState == 4 && this.status == 200 ) {
             elem_ = document.createElement('span');
@@ -1729,7 +1794,8 @@ on('#ajax', 'click', '#append_friends_to_chat_btn', function() {
             message_load.querySelector(".items_empty") ? message_load.querySelector(".items_empty").style.display = "none" : null;
         }
       };
-      ajax_link.send(form_data);
+      ajax_link.send(JSON.stringify(form_data));
+      
     } else {
       users_block = form.querySelector(".card-header");
       users_list = users_block.querySelectorAll(".custom_color");
@@ -1802,9 +1868,12 @@ on('#ajax', 'click', '.communities_toggle', function() {
 
 on('#ajax', 'click', '.like_support_manager', function() {
   _this = this;
+
+  form_data = new FormData();
+  form_data.append("id", this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/like_manager/" + this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/like_manager", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -1819,13 +1888,16 @@ on('#ajax', 'click', '.like_support_manager', function() {
     next.remove("btn_danger");
     next.add("btn_default");
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.dislike_support_manager', function() {
   _this = this;
+  form_data = new FormData();
+  form_data.append("id", this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk"));
+  
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/chat/user_progs/dislike_manager/" + this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/chat/user_progs/dislike_manager", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -1840,5 +1912,5 @@ on('#ajax', 'click', '.dislike_support_manager', function() {
     next.remove("btn_success");
     next.add("btn_default");
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });

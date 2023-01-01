@@ -10,7 +10,7 @@ use diesel::{
 };
 use crate::schema;
 use crate::models::{
-    Community, User, 
+    Community, User, CommunitiesList,
     Owner, Moderated,
 };
 use crate::errors::Error;
@@ -123,6 +123,13 @@ pub fn get_user(id: i32) -> Result<User, Error> {
     let connection = establish_connection();
     return Ok(users
         .filter(schema::users::id.eq(id))
+        .first(&connection)?);
+}
+pub fn get_communities_list(id: i32) -> Result<CommunitiesList, Error> {
+    use crate::schema::communities_lists::dsl::communities_lists;
+    let connection = establish_connection();
+    return Ok(communities_lists
+        .filter(schema::communities_lists::id.eq(id))
         .first(&connection)?);
 }
 pub fn get_owner(id: i32) -> Result<Owner, Error> {

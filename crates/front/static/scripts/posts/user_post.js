@@ -4,14 +4,14 @@ on('#ajax', 'click', '#u_edit_link_btn', function() {
   form_data = new FormData(form);
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
 
-  link.open( 'POST', "/users/settings/edit_link/", true )
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/users/settings/edit_link", true )
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
     close_work_fullscreen();
     toast_info("Ссылка изменена!");
-    d_value = "/" + value + "/";
+    d_value = "/" + value;
     document.body.querySelector(".edit_user_custom_link").innerHTML = "@" + value;
     document.body.querySelector(".userpic").setAttribute("data-pk", d_value);
     old_links = document.body.querySelectorAll(".request_link");
@@ -20,15 +20,18 @@ on('#ajax', 'click', '#u_edit_link_btn', function() {
     };
   }};
 
-  link.send(form_data);
+  link.send(JSON.stringify(form_data));
 });
 
 on('body', 'click', '.comment_delete', function() {
   saver = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
   type = this.parentElement.getAttribute("data-type");
+  form_data = new FormData();
+  form_data.append("types", type);
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/users/progs/delete_comment/?types=" + type, true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/users/progs/delete_comment", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -39,13 +42,15 @@ on('body', 'click', '.comment_delete', function() {
     div.innerHTML = "Комментарий удалён. <span class='comment_recover pointer underline' data-type='" + type + "'>Восстановить</span>";
     saver.style.display = "none"; saver.parentElement.insertBefore(div, saver)
   }};
-  link.send( );
+  link.send(JSON.stringify(form_data));
 });
 on('body', 'click', '.comment_recover', function() {
   type = this.getAttribute("data-type");
+  form_data = new FormData();
+  form_data.append("types", type);
   block = this.parentElement; next = block.nextElementSibling;
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/users/progs/recover_comment/?types=" + type, true );
+  link.open( 'POST', "/users/progs/recover_comment", true );
   link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
   link.onreadystatechange = function () {
@@ -53,19 +58,20 @@ on('body', 'click', '.comment_recover', function() {
     block.remove();
     next.style.display = "block";
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 
 on('#ajax', 'change', '.create_video_hide_file', function() {
   form = this.parentElement.parentElement.parentElement;
   pk = form.getAttribute("data-pk");
-
+  form_data.append("id", pk);
   form_data = new FormData(form);
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
 
-  link.open( 'POST', "/video/add_video/" + pk + "/", true )
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/video/add_video", true )
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -77,37 +83,38 @@ on('#ajax', 'change', '.create_video_hide_file', function() {
   link.upload.onload = function() {
     document.body.querySelector(".create_header").innerHTML = "Видеозапись загружена!"
   }
-  link.send(form_data);
+  link.send(JSON.stringify(form_data));
 });
 
 on('body', 'change', '.case_all_input', function() {
   _this = this, case_audio = false, case_video = false, id_video_upload_start = false, is_video_edit_window_loaded = true;
   if (this.classList.contains("add_photos_in_list")) {
-    url = "/photos/add_photos_in_list/"
+    url = "/photos/add_photos_in_list"
   } else if (this.classList.contains("add_tracks_in_list")) {
-    url = "/music/add_tracks_in_list/";
+    url = "/music/add_tracks_in_list";
     case_audio = true;
   } else if (this.classList.contains("add_docs_in_list")) {
-    url = "/docs/add_docs_in_list/"
+    url = "/docs/add_docs_in_list"
   } else if (this.classList.contains("add_video_in_list")) {
     if (_this.files[0].type != "video/mp4") {
       toast_info("Пока работаем только с mp4");
       return
     };
-    url = "/video/add_video_in_list/";
+    url = "/video/add_video_in_list";
     case_video = true;
   };
 
-  form = this.parentElement.parentElement
-  if (form.getAttribute("data-pk")) {
-    url = url + form.getAttribute("data-pk") + "/"
-  };
+  form = this.parentElement.parentElement;
   form_data = new FormData(form);
+
+  if (form.getAttribute("data-pk")) {
+    form_data.append("id", form.getAttribute("data-pk"));
+  };
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
 
   link_.open( 'POST', url, true )
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -135,7 +142,7 @@ on('body', 'change', '.case_all_input', function() {
       if (!id_video_upload_start) {
         close_work_fullscreen();
         id_video_upload_start = true;
-        create_fullscreen("/video/edit_new_video/", "worker_fullscreen", false, true);
+        create_fullscreen("/video/edit_new_video", "worker_fullscreen", false, true);
       };
       if (is_video_edit_window_loaded) {
         try {
@@ -162,17 +169,20 @@ on('body', 'change', '.case_all_input', function() {
       } else { info.innerHTML = "" }
     } catch { null }
   };
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('body', 'click', '.photo_attach_list_remove', function() {
   block = this.parentElement.parentElement;
   if (block.parentElement.classList.contains("attach_block")){
-    remove_file_attach(), is_full_attach()
+    remove_file_attach(), 
+    is_full_attach()
   } else if (block.classList.contains("comment_attach_block")){
-    remove_file_dropdown(); is_full_dropdown()
+    remove_file_dropdown(); 
+    is_full_dropdown()
   } else if (block.classList.contains("message_attach_block")){
-    remove_file_message_attach(); is_full_message_attach()
+    remove_file_message_attach(); 
+    is_full_message_attach()
   }
   block.remove();
 });
@@ -210,10 +220,11 @@ on('#ajax', 'click', '#add_post_btn', function() {
 
   lenta_load = form_post.parentElement.nextElementSibling;
   pk = form_post.parentElement.parentElement.getAttribute("data-uuid");
+  form_data.append("list_id", pk);
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/posts/add_post_in_list/" + pk + "/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/posts/add_post_in_list", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -245,7 +256,7 @@ on('#ajax', 'click', '#add_post_btn', function() {
     }
   };
 
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('body', 'click', '.comment_edit', function() {
@@ -253,10 +264,12 @@ on('body', 'click', '.comment_edit', function() {
   clear_comment_dropdown();
 
   type = _this.parentElement.getAttribute("data-type");
+  form_data = new FormData();
+  form_data.append("types", type);
   _this.parentElement.style.display = "none";
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/users/progs/edit_comment/?types=" + type, true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/users/progs/edit_comment", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -269,7 +282,7 @@ on('body', 'click', '.comment_edit', function() {
     parent.parentElement.querySelector(".attach_container") ? parent.parentElement.querySelector(".attach_container").style.display = "none" : null;
     parent.append(response);
   }};
-  link.send( null );
+  link.send(JSON.stringify(form_data));
 });
 
 on('body', 'click', '.comment_edit_btn', function() {
@@ -306,9 +319,10 @@ on('body', 'click', '.comment_edit_btn', function() {
   form.append($attach_input);
 
   form_comment = new FormData(form);
+  form_comment.append("types", type);
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-  link_.open('POST', "/users/progs/edit_comment/", true);
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open('POST', "/users/progs/edit_comment", true);
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
@@ -319,7 +333,7 @@ on('body', 'click', '.comment_edit_btn', function() {
           toast_success("Комментарий изменен");
       }
   };
-  link_.send(form_comment)
+  link_.send(JSON.stringify(form_comment))
 });
 
 /*!
@@ -328,9 +342,12 @@ on('body', 'click', '.comment_edit_btn', function() {
 on('#ajax', 'click', '.post_remove', function() {
   item = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   pk = item.getAttribute("data-pk");
+  form_data = new FormData();
+  form_data.append("id", pk);
+
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/posts/delete_post/" + pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/posts/delete_post", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -349,16 +366,19 @@ on('#ajax', 'click', '.post_remove', function() {
     add_list_in_all_stat("deleted_user_post",pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
   }};
 
-  link.send( );
+  link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.post_restore', function() {
   item = this.parentElement.nextElementSibling;
   pk = this.getAttribute("data-pk");
+  form_data = new FormData();
+  form_data.append("id", pk);
+
   block = this.parentElement;
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link.open( 'GET', "/posts/recover_post/" + pk + "/", true );
-  link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link.open( 'POST', "/posts/recover_post", true );
+  link.setRequestHeader('Content-Type', 'application/json');
 
   link.onreadystatechange = function () {
   if ( link.readyState == 4 && link.status == 200 ) {
@@ -367,26 +387,26 @@ on('#ajax', 'click', '.post_restore', function() {
     main_container = document.body.querySelector(".main-container");
     add_list_in_all_stat("restored_user_post",pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
   }};
-  link.send();
+  link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.post_fixed', function() {
   item = this.parentElement.parentElement.parentElement.parentElement.parentElement;
-  pk = item.getAttribute("data-pk");
-  send_change(this, "/posts/fixed/", "post_unfixed", "Открепить");
+  pk = item.getAttribute("data-pk"); 
+  send_change(this, "/posts/fixed", "post_unfixed", "Открепить");
   main_container = document.body.querySelector(".main-container");
   add_list_in_all_stat("fixed_user_post",pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
 });
 on('#ajax', 'click', '.post_unfixed', function() {
   item = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   pk = item.getAttribute("data-pk");
-  send_change(this, "/posts/unfixed/", "post_fixed", "Закрепить");
+  send_change(this, "/posts/unfixed", "post_fixed", "Закрепить");
   main_container = document.body.querySelector(".main-container");
   add_list_in_all_stat("unfixed_user_post",pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
 });
 
 on('#ajax', 'click', '.post_off_comment', function() {
-  send_change(this, "/posts/off_comment/", "post_on_comment", "Вкл. комментарии");
+  send_change(this, "/posts/off_comment", "post_on_comment", "Вкл. комментарии");
   post = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
   post.querySelector(".load_comments_list").style.display = "none";
   post.querySelector(".load_comments").style.setProperty('display', 'none', 'important');
@@ -394,7 +414,7 @@ on('#ajax', 'click', '.post_off_comment', function() {
   add_list_in_all_stat("off_comment_user_post",post.getAttribute("data-pk"),main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
 })
 on('#ajax', 'click', '.post_on_comment', function() {
-  send_change(this, "/posts/on_comment/", "post_off_comment", "Выкл. комментарии");
+  send_change(this, "/posts/on_comment", "post_off_comment", "Выкл. комментарии");
   post = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
   post.querySelector(".load_comments_list").style.display = "unset"
   post.querySelector(".load_comments").style.setProperty('display', 'unset', 'important');
@@ -405,10 +425,8 @@ on('#ajax', 'click', '.post_on_comment', function() {
 on('body', 'click', '.react_window_toggle', function() {
   react_section = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   pk = this.getAttribute("data-pk");
-  send_reaction(
-    react_section,
-    pk,
-    "/users/progs/send_reaction/?types=" + react_section.getAttribute("data-type") + "&reaction=" + pk);
+  send_reaction(react_section, pk, "/users/progs/send_reaction"
+  );
 
   main_container = document.body.querySelector(".main-container");
   //add_list_in_all_stat("dislike_user_post_comment",comment_pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
@@ -416,10 +434,7 @@ on('body', 'click', '.react_window_toggle', function() {
 on('body', 'click', '.send_react', function() {
   react_section = this.parentElement.parentElement.parentElement;
   pk = this.parentElement.getAttribute("data-react");
-  send_reaction(
-    react_section,
-    pk,
-    "/users/progs/send_reaction/?types=" + react_section.getAttribute("data-type") + "&reaction=" + pk);
+  send_reaction(react_section, pk, "/users/progs/send_reaction");
 
   main_container = document.body.querySelector(".main-container");
   //add_list_in_all_stat("dislike_user_post_comment",comment_pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"));
@@ -432,59 +447,70 @@ on('body', 'click', '.delete_list', function() {
   type = parent.getAttribute('data-type');
   community_id = parent.getAttribute('data-community-id').trim();
   pk = type.slice(3);
+
+  form_data = new FormData();
+  form_data.append("list_id", pk);
+
   if (type.indexOf('lpo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/posts/delete_community_list/" + community_id + "/";
+      url = "/posts/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/posts/delete_user_list/";
+      url = "/posts/delete_user_list";
     }
   }
   else if (type.indexOf('lph') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/photos/delete_community_list/" + community_id + "/";
+      url = "/photos/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/photos/delete_user_list/";
+      url = "/photos/delete_user_list";
     }
   }
   else if (type.indexOf('ldo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/docs/delete_community_list/" + community_id + "/";
+      url = "/docs/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/docs/delete_user_list/";
+      url = "/docs/delete_user_list";
     }
   }
   else if (type.indexOf('lgo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/goods/delete_community_list/" + community_id + "/";
+      url = "/goods/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/goods/delete_user_list/";
+      url = "/goods/delete_user_list";
     }
   }
   else if (type.indexOf('lmu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/music/delete_community_list/" + community_id + "/";
+      url = "/music/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/music/delete_user_list/";
+      url = "/music/delete_user_list";
     }
   }
   else if (type.indexOf('lsu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/survey/delete_community_list/" + community_id + "/";
+      url = "/survey/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/survey/delete_user_list/";
+      url = "/survey/delete_user_list";
     }
   }
   else if (type.indexOf('lvi') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/video/delete_community_list/" + community_id + "/";
+      url = "/video/delete_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/video/delete_user_list/";
+      url = "/video/delete_user_list";
     }
   }
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'GET', url + pk + "/" , true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', url, true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -500,7 +526,7 @@ on('body', 'click', '.delete_list', function() {
     //main_container = document.body.querySelector(".main-container");
     //add_list_in_all_stat(stat_class,type.slice(3),main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"))
   }}
-  link_.send();
+  link_.send(JSON.stringify(form_data));
 });
 on('body', 'click', '.recover_list', function() {
   _this = this;
@@ -509,59 +535,70 @@ on('body', 'click', '.recover_list', function() {
   type = parent.getAttribute('data-type');
   community_id = parent.getAttribute('data-community-id').trim();
   pk = type.slice(3);
+
+  form_data = new FormData();
+  form_data.append("list_id", pk);
+
   if (type.indexOf('lpo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/posts/recover_community_list/" + community_id + "/";
+      url = "/posts/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/posts/recover_user_list/";
+      url = "/posts/recover_user_list";
     }
   }
   else if (type.indexOf('lph') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/photos/recover_community_list/" + community_id + "/";
+      url = "/photos/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/photos/recover_user_list/";
+      url = "/photos/recover_user_list";
     }
   }
   else if (type.indexOf('ldo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/docs/recover_community_list/" + community_id + "/";
+      url = "/docs/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/docs/recover_user_list/";
+      url = "/docs/recover_user_list";
     }
   }
   else if (type.indexOf('lgo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/goods/recover_community_list/" + community_id + "/";
+      url = "/goods/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/goods/recover_user_list/";
+      url = "/goods/recover_user_list";
     }
   }
   else if (type.indexOf('lmu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/music/recover_community_list/" + community_id + "/";
+      url = "/music/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/music/recover_user_list/";
+      url = "/music/recover_user_list";
     }
   }
   else if (type.indexOf('lsu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/survey/recover_community_list/" + community_id + "/";
+      url = "/survey/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/survey/recover_user_list/";
+      url = "/survey/recover_user_list";
     }
   }
   else if (type.indexOf('lvi') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/video/recover_community_list/" + community_id + "/";
+      url = "/video/recover_community_list/" + community_id;
+      form_data.append("community_id", community_id);
     } else {
-      url = "/video/recover_user_list/";
+      url = "/video/recover_user_list";
     }
   }
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'GET', url + pk + "/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', url, true );
+  link_.setRequestHeader('Content-Type', 'application/json');
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
     hide_icons = parent.parentElement.querySelectorAll(".hide_delete");
@@ -578,7 +615,7 @@ on('body', 'click', '.recover_list', function() {
     //main_container = document.body.querySelector(".main-container");
     //add_list_in_all_stat(stat_class,type.slice(3),main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"))
   }}
-  link_.send();
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'change', '#u_photo_post_attach', function() {
@@ -590,7 +627,7 @@ on('#ajax', 'change', '#u_photo_post_attach', function() {
       return;
   }
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/photos/add_attach_photo/", true );
+  link_.open( 'POST', "/photos/add_attach_photo", true );
   link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
   link_.onreadystatechange = function () {
@@ -609,7 +646,7 @@ on('#ajax', 'change', '#u_photo_post_attach', function() {
     }
     close_work_fullscreen();
   }
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'change', '#u_photo_post_comment_attach', function() {
@@ -621,8 +658,8 @@ on('#ajax', 'change', '#u_photo_post_comment_attach', function() {
       return;
   }
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/photos/add_attach_photo/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/photos/add_attach_photo", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -634,7 +671,7 @@ on('#ajax', 'change', '#u_photo_post_comment_attach', function() {
     }
     close_work_fullscreen();
   }
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.photo_load_several', function() {
@@ -670,9 +707,11 @@ on('#ajax', 'click', '.photo_load_one', function() {
 on('#ajax', 'click', '.u_create_video_attach_btn', function() {
   form_data = new FormData(document.querySelector("#create_video_form"));
   user_pk = document.body.querySelector(".pk_saver").getAttribute("data-pk");
+  form_data.append("user_id", user_pk);
+
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/video/create_video_attach/" + user_pk + "/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/video/create_video_attach", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -685,7 +724,7 @@ on('#ajax', 'click', '.u_create_video_attach_btn', function() {
     close_work_fullscreen();
   }};
 
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#create_repost_btn', function() {
@@ -709,8 +748,8 @@ on('#ajax', 'click', '#create_repost_btn', function() {
   form_data = new FormData(form_post);
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/progs/create_repost/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/progs/create_repost", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( link_.readyState == 4 && link_.status == 200 ) {
@@ -718,7 +757,7 @@ on('#ajax', 'click', '#create_repost_btn', function() {
     toast_info("Репост сделан!")
   }};
 
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#create_copy_btn', function() {
@@ -740,18 +779,20 @@ on('#ajax', 'click', '#create_copy_btn', function() {
   form_data = new FormData(form_post);
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', "/progs/create_copy/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( link_.readyState == 4 && link_.status == 200 ) {
     close_work_fullscreen();
     toast_info("Объект копирован!")
   }};
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#create_list_btn', function() {
   form_post = this.parentElement.parentElement.parentElement;
+  form_data = new FormData(form_post);
+
   if (!form_post.querySelector("#id_name").value){
     form_post.querySelector("#id_name").style.border = "1px #FF0000 solid";
     toast_error("Название - обязательное поле!");
@@ -761,10 +802,11 @@ on('#ajax', 'click', '#create_list_btn', function() {
   is_community = false;
   folder = form_post.getAttribute("data-folder");
   if (form_post.getAttribute("community-pk") && form_post.getAttribute("community-pk") !== "") {
-    url = folder + "/add_community_list/" + community_id + "/";
+    url = folder + "/add_community_list";
+    form_data.append("community_id", community_id);
     is_community = true;
   } else {
-    url = folder + "/add_user_list/";
+    url = folder + "/add_user_list";
   }
   if (form_post.querySelector(".reactions_collector")) {
     react_value = form_post.querySelector(".reactions_collector");
@@ -777,11 +819,9 @@ on('#ajax', 'click', '#create_list_btn', function() {
     react_value.value = react_value.value.slice(0, -2);
   }
 
-  form_data = new FormData(form_post);
-
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', url, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( link_.readyState == 4 && link_.status == 200 ) {
@@ -891,7 +931,7 @@ on('#ajax', 'click', '#create_list_btn', function() {
     close_work_fullscreen();
   }};
 
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#edit_list_btn', function() {
@@ -915,16 +955,18 @@ on('#ajax', 'click', '#edit_list_btn', function() {
     return
   } else { this.disabled = true }
   pk = form.getAttribute("data-pk");
+  form_data.append("list_id", pk);
   folder = form.getAttribute("data-folder");
   if (form.getAttribute("community-pk") && form.getAttribute("community-pk") !== "") {
-    url = folder + "/edit_community_list/" + pk + "/";
+    form_data.append("community_id", form.getAttribute("community-pk"));
+    url = folder + "/edit_community_list";
   } else {
-    url = folder + "/edit_user_list/" + pk + "/";
+    url = folder + "/edit_user_list";
   }
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', url, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
@@ -945,7 +987,7 @@ on('#ajax', 'click', '#edit_list_btn', function() {
     //main_container = document.body.querySelector(".main-container");
     //add_list_in_all_stat(stat_class,pk,main_container.getAttribute("data-type"),main_container.getAttribute("data-pk"))
   }}
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '#create_claim_btn', function() {
@@ -965,8 +1007,8 @@ on('#ajax', 'click', '#create_claim_btn', function() {
   form_data = new FormData(form_post);
 
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'POST', "/progs/create_claim/", true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/progs/create_claim", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( link_.readyState == 4 && link_.status == 200 ) {
@@ -974,33 +1016,40 @@ on('#ajax', 'click', '#create_claim_btn', function() {
     toast_info("Жалоба отправлена!")
   }};
 
-  link_.send(form_data);
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.remove_list_in_user_collections', function() {
   _this = this;
   a = "u" + _this.getAttribute("data-pk");
   form = _this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
-  input = form.querySelector(".item_type").value
+  //input = form.querySelector(".item_type").value
+  form_data = new FormData();
+  form_data.append("types", form.querySelector(".item_type").value);
+
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'GET', "/progs/uncopy_user_list/?types=" + form.querySelector(".item_type").value, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/progs/uncopy_user_list", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( link_.readyState == 4 && link_.status == 200 ) {
     close_work_fullscreen()
   }};
 
-  link_.send();
+  link_.send(JSON.stringify(form_data));
 });
 on('#ajax', 'click', '.remove_list_in_community_collections', function() {
   _this = this;
   pk = _this.getAttribute("data-pk");
   type = _this.getAttribute("data-type");
+  form_data = new FormData();
+  form_data.append("types", type);
+  form_data.append("id", pk);
+
   block = _this.parentElement.parentElement.parentElement;
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  link_.open( 'GET', "/progs/uncopy_community_list/" + pk + "/?types=" + type, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.open( 'POST', "/progs/uncopy_community_list", true );
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( link_.readyState == 4 && link_.status == 200 ) {
@@ -1010,7 +1059,7 @@ on('#ajax', 'click', '.remove_list_in_community_collections', function() {
     block.classList.add("communities_toggle", "pointer");
   }};
 
-  link_.send();
+  link_.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.video_load_one', function() {

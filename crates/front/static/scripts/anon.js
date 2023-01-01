@@ -501,7 +501,7 @@ var ready = (callback) => {
   if (document.readyState != "loading") callback();
   else document.addEventListener("DOMContentLoaded", callback);
 };
-function send_user_form (url) {
+function send_user_form(url) {
   form_data = new FormData();
   form_data.append("first_name", document.body.querySelector(".first_name").value);
   form_data.append("last_name", document.body.querySelector(".last_name").value);
@@ -511,12 +511,13 @@ function send_user_form (url) {
 
   request_2 = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
   request_2.open( 'POST', url, true );
+  request.setRequestHeader('Content-Type', 'application/json');
   request_2.onreadystatechange = function() {
       if (request_2.readyState == 4 && request_2.status == 200) {
         window.location.href = "/"
       }
   }
-  request_2.send(form_data);
+  request_2.send(JSON.stringify(form_data));
 };
 on('#ajax', 'click', '#code_send', function() {
   _form = document.body.querySelector(".final_process_form");
@@ -536,7 +537,7 @@ on('#ajax', 'click', '#code_send', function() {
   form_data.append("code", code);
   var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
     request.open('POST', "/phone_verify", true);
-    request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    request.setRequestHeader('Content-Type', 'application/json');
     request.onreadystatechange = function() { 
         if (request.readyState == 4 && request.status == 200) {
           var div = document.getElementById('jsondata');
@@ -548,7 +549,7 @@ on('#ajax', 'click', '#code_send', function() {
             }
         }
     };
-    request.send(form_data)
+    request.send(JSON.stringify(form_data))
 });
 
 function phone_check() {
@@ -582,7 +583,7 @@ on('#ajax', 'click', '#phone_send', function() {
 
   var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
   request.open('POST', "/phone_send", true);
-  request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  request.setRequestHeader('Content-Type', 'application/json');
   request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
           var div = document.getElementById('jsondata');
@@ -591,8 +592,8 @@ on('#ajax', 'click', '#phone_send', function() {
             document.querySelector('#phone_send').setAttribute("disabled", "true")
           }
       }
-  };
-  request.send(form_data);
+  }; 
+  request.send(JSON.stringify(form_data));
 });
 
 function create_hide_input (name, value, _class) {
@@ -693,11 +694,6 @@ on('body', 'click', '#logg', function() {
   if (form.querySelector("#id_password").value){form.querySelector("#id_password").style.border = "rgba(0, 0, 0, 0.2)";}
 
   form_data = new FormData(form);
-  //form_data = {
-  //  "phone": 7 + _user_phone,
-  //  "password": form.querySelector("#id_password").value
-  //};
-
   link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link.open( 'POST', "/login", true ); 
   link.setRequestHeader('Content-Type', 'application/json');
@@ -897,7 +893,7 @@ function list_block_load(target_block, response_block, link) {
 
 function ajax_get_reload(url) { 
   var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-  ajax_link.open('GET', url + "?ajax=2", true);
+  ajax_link.open('GET', url + "?ajax=2", true); 
   ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   ajax_link.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {

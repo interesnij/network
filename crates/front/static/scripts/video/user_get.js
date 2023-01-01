@@ -1,5 +1,5 @@
 on('#ajax', 'click', '.add_video', function() {
-  create_fullscreen("/video/add_video_in_list/" + this.parentElement.parentElement.getAttribute("data-pk") + "/", "worker_fullscreen", false, true);
+  create_fullscreen("/video/add_video_in_list/" + this.parentElement.parentElement.getAttribute("data-pk"), "worker_fullscreen", false, true);
 });
 on('#ajax', 'click', '.uri_click', function() {
   this.nextElementSibling.style.display = "block";
@@ -14,7 +14,7 @@ on('#ajax', 'click', '.load_attach_video_list', function() {
 on('#ajax', 'click', '.load_video_list', function() {
   parent = this.parentElement.parentElement.parentElement;
   videolist_pk = parent.getAttribute("videolist-pk");
-  create_fullscreen("/video/load_list/" + videolist_pk + "/", "item_fullscreen", false, true);
+  create_fullscreen("/video/load_list/" + videolist_pk, "item_fullscreen", false, true);
 });
 
 on('#ajax', 'click', '.video_list_detail', function() {
@@ -27,7 +27,7 @@ on('#ajax', 'click', '.video_list_detail', function() {
     }
   }
 
-  play_video_list("/video/load_video/" + video_pk + "/", counter, video_pk)
+  play_video_list("/video/load_video/" + video_pk, counter, video_pk)
 });
 
 on('#ajax', 'click', '.post_video', function() {
@@ -48,7 +48,7 @@ on('#ajax', 'click', '.post_video', function() {
   video_pk = this.getAttribute("video-pk");
   pk = this.parentElement.parentElement.parentElement.getAttribute("data-pk");
   counter = this.getAttribute('video-counter') - 1;
-  play_video_list("/video/load_post_video/" + pk + "/", counter, video_pk)
+  play_video_list("/video/load_post_video/" + pk, counter, video_pk)
 });
 
 on('#ajax', 'click', '.message_video', function() {
@@ -69,7 +69,7 @@ on('#ajax', 'click', '.message_video', function() {
   video_pk = this.getAttribute("video-pk");
   uuid = this.parentElement.parentElement.parentElement.parentElement.getAttribute("data-uuid");
   counter = this.getAttribute('video-counter') - 1;
-  play_video_list("/video/load_message_video/" + uuid + "/", counter, video_pk)
+  play_video_list("/video/load_message_video/" + uuid, counter, video_pk)
 });
 
 on('#ajax', 'click', '.play_comment_video', function() {
@@ -89,7 +89,7 @@ on('#ajax', 'click', '.play_comment_video', function() {
   comment_pk = this.getAttribute("comment-pk");
   video_pk = this.getAttribute("video-pk");
   counter = this.getAttribute('video-counter') - 1;
-  play_video_list("/video/load_comment_video/" + video_pk + "/", counter, video_pk);
+  play_video_list("/video/load_comment_video/" + video_pk, counter, video_pk);
 });
 
 on('body', 'click', '.video_fullscreen_resize', function() {

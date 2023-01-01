@@ -44,13 +44,15 @@ function phone_check() {
     else
         document.getElementById("phone_send").setAttribute("disabled", "true");
 };
+
 function post_include_exclude_users(form, url) {
   form.querySelector(".form_btn").disabled = true;
   form_data = new FormData(form);
+  form_data.append("id", form.getAttribute("data-pk"));
 
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
       ajax_link.open( 'POST', url, true );
-      ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      ajax_link.setRequestHeader('Content-Type', 'application/json');
       ajax_link.onreadystatechange = function () {
         if ( this.readyState == 4 && this.status == 200 ) {
             collector = document.body.querySelector(".collector_active");
@@ -67,7 +69,7 @@ function post_include_exclude_users(form, url) {
             close_work_fullscreen();
         }
       };
-      ajax_link.send(form_data);
+      ajax_link.send(JSON.stringify(form_data));
 };
 
 function setEndOfContenteditable(contentEditableElement) {
@@ -152,19 +154,22 @@ function remove_class_timeout(el) {
 };
 
 function remove_item_and_show_restore_block(item, url, _class, title) {
+  form_data = new FormData();
+  form_data.append("id", item.getAttribute("data-pk"));
+
   ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    ajax_link.open( 'GET', url + item.getAttribute("data-pk") + "/", true );
-		ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    ajax_link.onreadystatechange = function () {
-      if ( this.readyState == 4 && this.status == 200 ) {
-        p = document.createElement("div");
-        p.classList.add("media", "p-1");
-        p.innerHTML = "<span style='width:100%' class='" + _class + " pointer border p-2' data-pk='" + item.getAttribute("data-pk") + "'>" + title + ". <span class='underline'>Восстановить</span></span>";
-        item.parentElement.insertBefore(p, item), item.style.display = "none";
-        item.classList.remove("custom_color");
-      }
+  ajax_link.open('POST', url, true);
+	ajax_link.setRequestHeader('Content-Type', 'application/json');
+  ajax_link.onreadystatechange = function () {
+    if ( this.readyState == 4 && this.status == 200 ) {
+      p = document.createElement("div");
+      p.classList.add("media", "p-1");
+      p.innerHTML = "<span style='width:100%' class='" + _class + " pointer border p-2' data-pk='" + item.getAttribute("data-pk") + "'>" + title + ". <span class='underline'>Восстановить</span></span>";
+      item.parentElement.insertBefore(p, item), item.style.display = "none";
+      item.classList.remove("custom_color");
     }
-    ajax_link.send();
+  }
+  ajax_link.send(JSON.stringify(form_data));
 };
 
 function send_change_items(array, link) {
@@ -185,7 +190,7 @@ function send_change_items(array, link) {
 
 function profile_list_block_attach(_this, url, actions_class) {
   var request = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-  request.open( 'GET', "/users/load" + url + _this.parentElement.parentElement.parentElement.getAttribute("data-uuid") + "/", true );
+  request.open( 'GET', "/users/load" + url + _this.parentElement.parentElement.parentElement.getAttribute("data-uuid"), true );
   request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   request.onreadystatechange = function () {
     if ( request.readyState == 4 && request.status == 200 ){
@@ -245,119 +250,77 @@ function get_preview(response, type) {
   };
 };
 
-function post_and_load_object_page(form, url_post, url_1, url_2, stat_type) {
-    form_data = new FormData(form);
-    pk = document.body.querySelector(".pk_saver").getAttribute("data-pk");
-    var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    ajax_link.open('POST', url_post + pk + "/", true);
-    ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    ajax_link.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            elem_ = document.createElement('span');
-            elem_.innerHTML = ajax_link.responseText;
-            ajax = elem_.querySelector("#reload_block");
-            rtr = document.getElementById('ajax');
-
-            prev_container = rtr.querySelector(".main-container");
-            next_container = ajax.querySelector(".main-container");
-            add_list_in_all_stat("created_" + next_container.getAttribute("data-type"),next_container.getAttribute("data-pk"),prev_container.getAttribute("data-type"),prev_container.getAttribute("data-pk"))
-
-            rtr.innerHTML = ajax.innerHTML;
-            window.scrollTo(0, 0);
-            document.title = elem_.querySelector('title').innerHTML;
-            uuid = rtr.querySelector(".uuid_saver").getAttribute("data-uuid");
-            window.history.pushState(null, "vfgffgfgf", url_1 + pk + url_2 + uuid + '/');
-            get_document_opacity_1();
-            add_list_in_all_stat(stat_type,pk,prev_container.getAttribute("data-type"),prev_container.getAttribute("data-pk"))
-        }
-    }
-    ajax_link.send(form_data)
-};
-
-function edit_and_load_object_page(form, url_post, url_1, url_2) {
-    form_data = new FormData(form);
-    pk = form.getAttribute("data-pk");
-    uuid = form.getAttribute("data-uuid");
-    var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    ajax_link.open('POST', url_post + pk + "/" + uuid + "/", true);
-    ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-    ajax_link.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            elem_ = document.createElement('span');
-            elem_.innerHTML = ajax_link.responseText;
-            ajax = elem_.querySelector("#reload_block");
-            rtr = document.getElementById('ajax');
-            rtr.innerHTML = ajax.innerHTML;
-            window.scrollTo(0, 0);
-            document.title = elem_.querySelector('title').innerHTML;
-            uuid = rtr.querySelector(".pk_saver").getAttribute("data-uuid");
-            window.history.pushState(null, "vfgffgfgf", url_1 + pk + url_2 + uuid + '/')
-        }
-    }
-    ajax_link.send(form_data)
-};
-
 function send_form_and_toast(url, form, toast) {
     form_data = new FormData(form);
+    form_data.append("id", document.body.querySelector(".pk_saver").getAttribute("data-pk"));
+
     ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
     ajax_link.open('POST', url, true);
-    ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    ajax_link.setRequestHeader('Content-Type', 'application/json');
     ajax_link.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             toast_info(toast);
         }
     }
-    ajax_link.send(form_data);
+    ajax_link.send(JSON.stringify(form_data));
 };
 
-function send_form_and_close_window(url, form) {
+function send_form_and_close_window(url, pk, form) {
     form_data = new FormData(form);
+    if (pk != 0) {
+      form_data.append("id", pk);
+    }
     ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
     ajax_link.open('POST', url, true);
-    ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    ajax_link.setRequestHeader('Content-Type', 'application/json');
     ajax_link.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             close_work_fullscreen();
         }
     }
-    ajax_link.send(form_data);
+    ajax_link.send(JSON.stringify(form_data));
 };
 
 function get_with_pk_and_reload(url) {
     pk = document.body.querySelector(".pk_saver").getAttribute("data-pk");
+    form_data = new FormData();
+    form_data.append("id", pk);
     link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link_.open('GET', url + pk + "/", true);
-    link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link_.open('POST', url, true);
+    link_.setRequestHeader('Content-Type', 'application/json');
     link_.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             this_page_reload(document.location.href);
         }
     };
-    link_.send();
+    link_.send(JSON.stringify(form_data));
 };
 
 function post_with_pk_and_reload(parent, url) {
-    pk = document.body.querySelector(".pk_saver").getAttribute("data-pk");
     form_data = new FormData(parent);
+    form_data.append("id", document.body.querySelector(".pk_saver").getAttribute("data-pk"));
 
     link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link_.open('POST', url + pk + "/", true);
-    link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link_.open('POST', url, true);
+    link_.setRequestHeader('Content-Type', 'application/json');
     link_.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             this_page_reload(document.location.href);
         }
     };
-    link_.send(form_data);
+    link_.send(JSON.stringify(form_data));
 };
 
 function send_change(span, _link, new_class, html) {
     parent = span.parentElement;
     item = span.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+    form_data = new FormData();
     item.getAttribute("data-pk") ? pk = item.getAttribute("data-pk") : pk = item.getAttribute("good-pk");
+    form_data.append("id", pk);
+    
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', _link + pk + "/", true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
             new_span = document.createElement("span");
@@ -367,15 +330,17 @@ function send_change(span, _link, new_class, html) {
             parent.append(new_span)
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 
 function chat_send_change(span, _link, new_class, html) {
     parent = span.parentElement;
     item = parent.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
+    form_data = new FormData();
+    form_data.append("id", item.getAttribute("chat-pk"));
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', _link + item.getAttribute("chat-pk") + "/", true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
             new_span = document.createElement("span");
@@ -385,15 +350,17 @@ function chat_send_change(span, _link, new_class, html) {
             parent.append(new_span)
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 
 function mob_send_change(span, _link, new_class, html) {
     parent = span.parentElement;
     item = span.parentElement.parentElement.parentElement.parentElement.parentElement;
+    form_data = new FormData();
     item.getAttribute("data-pk") ? pk = item.getAttribute("data-pk") : pk = item.getAttribute("good-pk"); link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', _link + pk + "/", true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    form_data.append("id", pk);
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
             new_span = document.createElement("span");
@@ -403,16 +370,18 @@ function mob_send_change(span, _link, new_class, html) {
             parent.append(new_span)
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 
 function send_good_change(span, _link, new_class, html) {
     parent = span.parentElement;
     item = span.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
-    pk = item.getAttribute("good-pk");
+    form_data = new FormData();
+    form_data.append("id", item.getAttribute("good-pk"));
+
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', _link + pk + "/", true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
             new_span = document.createElement("span");
@@ -422,15 +391,17 @@ function send_good_change(span, _link, new_class, html) {
             parent.append(new_span)
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 function send_mob_good_change(span, _link, new_class, html) {
     parent = span.parentElement;
     item = parent.parentElement.parentElement.parentElement.parentElement;
-    pk = item.getAttribute("good-pk");
+    form_data = new FormData();
+    form_data.append("id", item.getAttribute("good-pk"));
+
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', _link + pk + "/", true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
             new_span = document.createElement("span");
@@ -440,17 +411,18 @@ function send_mob_good_change(span, _link, new_class, html) {
             parent.append(new_span)
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 
 function send_photo_change(span, _link, new_class, html) {
     parent = span.parentElement;
     item = span.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
-    photo_pk = item.getAttribute("data-pk");
-    pk = item.getAttribute("owner-pk");
+    form_data = new FormData();
+    form_data.append("id", item.getAttribute("data-pk"));
+
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.open('GET', _link + pk + "/" + photo_pk + "/", true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
             new_span = document.createElement("a");
@@ -460,7 +432,7 @@ function send_photo_change(span, _link, new_class, html) {
             parent.append(new_span)
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 
 class ToastManager {
@@ -574,7 +546,7 @@ function elementInViewport(el) {
     return ((bounds.top + bounds.height > 0) && (window.innerHeight - bounds.top > 0));
 };
 
-function send_comment(form, block, link) {
+function send_comment(form, block, link, pk) {
   text_val = form.querySelector(".smile_supported");
   _val = format_text(text_val);
   _text = _val.innerHTML;
@@ -582,6 +554,7 @@ function send_comment(form, block, link) {
     toast_error("Напишите или прикрепите что-нибудь");
     return
   };
+
 
   $content_input = document.createElement("input");
   $content_input.setAttribute("name", "content");
@@ -604,6 +577,8 @@ function send_comment(form, block, link) {
   form.append($attach_input);
 
   form_comment = new FormData(form);
+  form_comment.append("id", pk);
+  
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
   link_.open('POST', link, true);
   link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
@@ -629,7 +604,7 @@ function send_comment(form, block, link) {
           }
       }
   };
-  link_.send(form_comment)
+  link_.send(JSON.stringify(form_comment))
 };
 
 function load_chart() {
@@ -721,29 +696,15 @@ function get_document_opacity_1() {
   overlay.style.opacity = "0";
 };
 
-function post_update_votes(post, uuid) {
-  link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-  link_.open('GET', "/posts/user_progs/update_votes/" + uuid + "/", true);
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-  link_.onreadystatechange = function() {
-      if (this.readyState == 4 && this.status == 200) {
-          jsonResponse = JSON.parse(link_.responseText);
-          post.querySelector(".likes_count").innerHTML = jsonResponse.like_count;
-          post.querySelector(".dislikes_count").innerHTML = jsonResponse.dislike_count;
-      }
-  };
-
-  link_.send();
-};
-
 function send_reaction(item, pk, _link) {
     reactions_block = item.querySelector(".react_items");
+    form_data = new FormData();
+    form_data.append("reaction", pk);
+    form_data.append("types", react_section.getAttribute("data-type"));
 
     link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    link.overrideMimeType("application/json");
-    link.open('GET', _link, true);
-    link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+    link.open('POST', _link, true);
+    link.setRequestHeader('Content-Type', 'application/json');
     link.onreadystatechange = function() {
         if (link.readyState == 4 && link.status == 200) {
           jsonResponse = JSON.parse(link.responseText).data;
@@ -866,7 +827,7 @@ function send_reaction(item, pk, _link) {
             }
         }
     };
-    link.send(null)
+    link.send(JSON.stringify(form_data))
 };
 
 function get_image_priview(ggg, img) {
@@ -914,10 +875,18 @@ function change_position(el) {
     post_array.push({key:array[i].getAttribute("data-pk"),value: count});
   };
   var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("POST", "/users/progs/change_position/" + document.body.querySelector(".pk_saver").getAttribute("data-pk") + "/?types=" + parent.getAttribute("data-type") + "&community_id=" + parent.getAttribute("data-community-id"));
+
+  form_data = new FormData();
+  form_data.append("user_id", document.body.querySelector(".pk_saver").getAttribute("data-pk"));
+  form_data.append("types", parent.getAttribute("data-type"));
+  form_data.append("community_id", parent.getAttribute("data-community-id"));
+  // list {key: id, value: position}
+  form_data.append("array", post_array);
+
+  xmlhttp.open("POST", "/users/progs/change_position", true);
   xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xmlhttp.setRequestHeader('X-CSRFToken', token);
-  xmlhttp.send(JSON.stringify(post_array));
+  xmlhttp.send(JSON.stringify(form_data));
 };
 
 function minus_new_followers() {

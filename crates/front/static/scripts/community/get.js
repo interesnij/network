@@ -4,7 +4,7 @@ on('#ajax', 'change', '#sub_category', function() {
     document.getElementById('subcat').innerHTML = "";
   } else {
     var link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-    link.open( 'GET', "/communities/progs/cat/" + val + "/", true );
+    link.open( 'GET', "/communities/progs/cat/" + val, true );
     link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     link.onreadystatechange = function () {
       if ( link.readyState == 4 ) {
@@ -20,5 +20,5 @@ on('#ajax', 'change', '#sub_category', function() {
 });
 
 on('#ajax', 'click', '.user_community_create_window', function() {
-  create_fullscreen("/communities/create_community/", "worker_fullscreen", false, true);
+  create_fullscreen("/communities/create_community", "worker_fullscreen", false, true);
 });

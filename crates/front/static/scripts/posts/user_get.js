@@ -4,16 +4,16 @@ on('body', 'click', '.load_comments_list', function() {
   parent = this.parentElement;
   type = parent.getAttribute('data-type');
   if (type.indexOf('pos') !== -1) {
-      url = "/posts/load_comments/" + type.slice(3) + "/";
+      url = "/posts/load_comments/" + type.slice(3);
   }
   else if (type.indexOf('goo') !== -1) {
-      url = "/goods/load_comments/" + type.slice(3) + "/";
+      url = "/goods/load_comments/" + type.slice(3);
   }
   else if (type.indexOf('vid') !== -1) {
-      url = "/goods/load_comments/" + type.slice(3) + "/";
+      url = "/goods/load_comments/" + type.slice(3);
   }
   else if (type.indexOf('pho') !== -1) {
-      url = "/photos/load_comments/" + type.slice(3) + "/";
+      url = "/photos/load_comments/" + type.slice(3);
   }
 
   block = parent.parentElement.parentElement.parentElement;
@@ -59,55 +59,56 @@ on('body', 'click', '.create_list', function() {
   community_id = parent.getAttribute('data-community-id').trim();
   if (type.indexOf('lpo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/posts/add_community_list/" + community_id + "/";
+      url = "/posts/add_community_list/" + community_id;
     } else {
-      url = "/posts/add_user_list/";
+      url = "/posts/add_user_list";
     }
   }
   else if (type.indexOf('lph') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/photos/add_community_list/" + community_id + "/";
+      url = "/photos/add_community_list/" + community_id;
     } else {
-      url = "/photos/add_user_list/";
+      url = "/photos/add_user_list";
     }
   }
   else if (type.indexOf('ldo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/docs/add_community_list/" + community_id + "/";
+      url = "/docs/add_community_list/" + community_id;
     } else {
-      url = "/docs/add_user_list/";
+      url = "/docs/add_user_list";
     }
   }
   else if (type.indexOf('lgo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/goods/add_community_list/" + community_id + "/";
+      url = "/goods/add_community_list/" + community_id;
     } else {
-      url = "/goods/add_user_list/";
+      url = "/goods/add_user_list";
     }
   }
   else if (type.indexOf('lmu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/music/add_community_list/" + community_id + "/";
+      url = "/music/add_community_list/" + community_id;
     } else {
-      url = "/music/add_user_list/";
+      url = "/music/add_user_list";
     }
   }
   else if (type.indexOf('lsu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/survey/add_community_list/" + community_id + "/";
+      url = "/survey/add_community_list/" + community_id;
     } else {
-      url = "/survey/add_user_list/";
+      url = "/survey/add_user_list";
     }
   }
   else if (type.indexOf('lvi') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/video/add_community_list/" + community_id + "/";
+      url = "/video/add_community_list/" + community_id;
     } else {
-      url = "/video/add_user_list/";
+      url = "/video/add_user_list";
     }
   }
   create_fullscreen(url, "worker_fullscreen", false, true);
 });
+
 on('body', 'click', '.edit_list', function() {
   parent = this.parentElement;
   type = parent.getAttribute('data-type');
@@ -115,60 +116,60 @@ on('body', 'click', '.edit_list', function() {
   pk = type.slice(3);
   if (type.indexOf('lpo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/posts/edit_community_list/" + community_id + "/";
+      url = "/posts/edit_community_list/" + community_id;
     } else {
-      url = "/posts/edit_user_list/";
+      url = "/posts/edit_user_list";
     }
   }
   else if (type.indexOf('lph') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/photos/edit_community_list/" + community_id + "/";
+      url = "/photos/edit_community_list/" + community_id;
     } else {
-      url = "/photos/edit_user_list/";
+      url = "/photos/edit_user_list";
     }
   }
   else if (type.indexOf('ldo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/docs/edit_community_list/" + community_id + "/";
+      url = "/docs/edit_community_list/" + community_id;
     } else {
-      url = "/docs/edit_user_list/";
+      url = "/docs/edit_user_list";
     }
   }
   else if (type.indexOf('lgo') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/goods/edit_community_list/" + community_id + "/";
+      url = "/goods/edit_community_list/" + community_id;
     } else {
-      url = "/goods/edit_user_list/";
+      url = "/goods/edit_user_list";
     }
   }
   else if (type.indexOf('lmu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/music/edit_community_list/" + community_id + "/";
+      url = "/music/edit_community_list/" + community_id;
     } else {
-      url = "/music/edit_user_list/";
+      url = "/music/edit_user_list";
     }
   }
   else if (type.indexOf('lsu') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/survey/edit_community_list/" + community_id + "/";
+      url = "/survey/edit_community_list/" + community_id;
     } else {
-      url = "/survey/edit_user_list/";
+      url = "/survey/edit_user_list";
     }
   }
   else if (type.indexOf('lvi') !== -1) {
     if (community_id && community_id !== "") {
-      url = "/video/edit_community_list/" + community_id + "/";
+      url = "/video/edit_community_list/" + community_id;
     } else {
-      url = "/video/edit_user_list/";
+      url = "/video/edit_user_list";
     }
   }
-  create_fullscreen(url + pk + "/", "worker_fullscreen", false, true);
+  create_fullscreen(url + pk, "worker_fullscreen", false, true);
 });
 
 on('body', 'click', '.item_reactions', function() {
   react = this.parentElement.parentElement.parentElement;
-  create_fullscreen(
-    "/load/reactions/?types="
+  create_fullscreen (
+    "/load/reactions?types="
     + react.parentElement.getAttribute("data-type")
     + "&reaction="
     + react.getAttribute("data-react")
@@ -188,10 +189,10 @@ on('#ajax', 'click', '.post_list_change', function() {
     list = parent.querySelectorAll(".list");
     pk = this.getAttribute("data-pk");
     if (this.classList.contains("community")) {
-      url = "/comunities/" + pk + "/wall/" + this.getAttribute("list-pk") + "/";
+      url = "/comunities/" + pk + "/wall/" + this.getAttribute("list-pk");
     }
     else {
-      url = "/users/" + pk + "/wall/" + this.getAttribute("list-pk") + "/";
+      url = "/users/" + pk + "/wall/" + this.getAttribute("list-pk");
     }
     for (var i = 0; i < list.length; i++) {
       list[i].classList.remove("active");
@@ -237,7 +238,7 @@ on('#ajax', 'click', '.wall_fullscreen', function(e) {
   e.preventDefault();
   card = this.parentElement.parentElement.parentElement.parentElement;
   pk = card.getAttribute('data-pk');
-  create_fullscreen("/posts/load_post/" + pk + "/", "worker_fullscreen", false, true);
+  create_fullscreen("/posts/load_post/" + pk, "worker_fullscreen", false, true);
 });
 
 on('#ajax', 'click', '.fullscreen', function(e) {
@@ -254,7 +255,7 @@ on('#ajax', 'click', '.fullscreen', function(e) {
   else if (e.target.classList.contains("action")) {null}
   else {
     pk = card.getAttribute('data-pk');
-    create_fullscreen("/posts/load_post/" + pk + "/", "worker_fullscreen", false, true);
+    create_fullscreen("/posts/load_post/" + pk, "worker_fullscreen", false, true);
   }
 });
 
@@ -272,7 +273,7 @@ on('#ajax', 'click', '.fix_fullscreen', function(e) {
   else if (e.target.classList.contains("action")) {null}
   else {
     pk = card.getAttribute('data-pk');
-    create_fullscreen("/posts/load_fix_post/" + pk + "/", "worker_fullscreen", false, true);
+    create_fullscreen("/posts/load_fix_post/" + pk, "worker_fullscreen", false, true);
   }
 });
 
@@ -336,9 +337,9 @@ on('#ajax', 'click', '#repost_for_wall', function() {
   form = parent.parentElement.parentElement.parentElement.parentElement.parentElement;
   copy_case = form.querySelector("#toggle_case_item_copy");
   if (copy_case && copy_case.classList.contains("underline")) {
-    url = "/users/load/lists_for_copy/?types=" + form.querySelector(".item_type").value
+    url = "/users/load/lists_for_copy?types=" + form.querySelector(".item_type").value
   } else {
-    url = "/users/load/lists_for_copy/"
+    url = "/users/load/lists_for_copy"
   };
   create_fullscreen(url, "worker_fullscreen")
 });
@@ -356,9 +357,9 @@ on('#ajax', 'click', '#u_repost_for_community', function() {
   form = parent.parentElement.parentElement.parentElement.parentElement.parentElement;
   copy_case = form.querySelector("#toggle_case_item_copy");
   if (copy_case && copy_case.classList.contains("underline")) {
-    url = "/users/load/communities_lists_for_copy/?types=" + form.querySelector(".item_type").value
+    url = "/users/load/communities_lists_for_copy?types=" + form.querySelector(".item_type").value
   } else {
-    url = "/users/load/communities_lists_for_copy/"
+    url = "/users/load/communities_lists_for_copy"
   };
   create_fullscreen(url, "worker_fullscreen");
 });
@@ -372,7 +373,7 @@ on('#ajax', 'click', '#repost_for_message', function() {
   parent.querySelector("#repost_radio_community").removeAttribute("checked");
   current_block = parent.nextElementSibling;
   current_block.querySelector(".collector").innerHTML = "";
-  create_fullscreen("/users/load/chat_items/", "worker_fullscreen");
+  create_fullscreen("/users/load/chat_items", "worker_fullscreen");
 });
 
 on('#ajax', 'click', '.post_edit', function() {
@@ -387,120 +388,120 @@ on('#ajax', 'click', '.post_edit', function() {
     block.querySelector(".attach_container") ? block.querySelector(".attach_container").style.display = "none" : null;
     block.querySelector(".card-footer").style.display = "none";
 
-    list_load(div, "/posts/edit_post/" + block.getAttribute("data-pk") + "/");
+    list_load(div, "/posts/edit_post/" + block.getAttribute("data-pk"));
   }
 });
 
 on('#ajax', 'click', '.u_load_comment_photo', function() {
   this.classList.add("current_file_dropdown");
   document.body.querySelector(".attach_block") ? (attach_block = document.body.querySelector(".attach_block"), attach_block.innerHTML = "", attach_block.classList.remove("attach_block")) : null;
-  create_fullscreen('/users/load/photos/', "item_fullscreen");
+  create_fullscreen('/users/load/photos', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_load_comment_video', function() {
   this.classList.add("current_file_dropdown");
   clear_attach_block();
-  create_fullscreen('/users/load/video/', "item_fullscreen");
+  create_fullscreen('/users/load/video', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_load_comment_music', function() {
   this.classList.add("current_file_dropdown");
   clear_attach_block();
-  create_fullscreen('/users/load/music/', "item_fullscreen");
+  create_fullscreen('/users/load/music', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_load_comment_doc', function() {
   this.classList.add("current_file_dropdown");
   clear_attach_block();
-  create_fullscreen('/users/load/docs/', "item_fullscreen");
+  create_fullscreen('/users/load/docs', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_load_comment_good', function() {
   this.classList.add("current_file_dropdown");
   clear_attach_block();
-  create_fullscreen('/users/load/goods/', "item_fullscreen");
+  create_fullscreen('/users/load/goods', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_load_comment_article', function() {
   this.classList.add("current_file_dropdown");
   clear_attach_block();
-  create_fullscreen('/users/load/articles/', "item_fullscreen");
+  create_fullscreen('/users/load/articles', "item_fullscreen");
 });
 
 on('#ajax', 'click', '.u_select_photo', function() {
   this.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   this.parentElement.classList.remove("show");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/photos/', "item_fullscreen");
+  create_fullscreen('/users/load/photos', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_select_survey', function() {
   this.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   this.parentElement.classList.remove("show");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/surveys/', "item_fullscreen");
+  create_fullscreen('/users/load/surveys', "item_fullscreen");
 });
 
 on('#ajax', 'click', '.u_select_video', function() {
   this.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   this.parentElement.classList.remove("show");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/video/', "item_fullscreen");
+  create_fullscreen('/users/load/video', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_select_music', function() {
   this.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   this.parentElement.classList.remove("show");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/music/', "item_fullscreen");
+  create_fullscreen('/users/load/music', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_select_doc', function() {
   this.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   this.parentElement.classList.remove("show");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/docs/', "item_fullscreen");
+  create_fullscreen('/users/load/docs', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_select_good', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/goods/', "item_fullscreen");
+  create_fullscreen('/users/load/goods', "item_fullscreen");
 });
 on('#ajax', 'click', '.u_select_article', function() {
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("attach_block");
   this.parentElement.classList.remove("show");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/articles/', "item_fullscreen");
+  create_fullscreen('/users/load/articles', "item_fullscreen");
 });
 
 on('#ajax', 'click', '.m_select_photo', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("message_attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/photos/', "item_fullscreen");
+  create_fullscreen('/users/load/photos', "item_fullscreen");
 });
 on('#ajax', 'click', '.m_select_video', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("message_attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/video/', "item_fullscreen");
+  create_fullscreen('/users/load/video', "item_fullscreen");
 });
 on('#ajax', 'click', '.m_select_music', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("message_attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/music/', "item_fullscreen");
+  create_fullscreen('/users/load/music', "item_fullscreen");
 });
 on('#ajax', 'click', '.m_select_doc', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("message_attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/docs/', "item_fullscreen");
+  create_fullscreen('/users/load/docs', "item_fullscreen");
 });
 on('#ajax', 'click', '.m_select_good', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("message_attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/goods/', "item_fullscreen");
+  create_fullscreen('/users/load/goods', "item_fullscreen");
 });
 on('#ajax', 'click', '.m_select_article', function() {
   this.parentElement.classList.remove("show");
   this.parentElement.parentElement.parentElement.parentElement.previousElementSibling.classList.add("message_attach_block");
   clear_comment_dropdown();
-  create_fullscreen('/users/load/articles/', "item_fullscreen");
+  create_fullscreen('/users/load/articles', "item_fullscreen");
 });
 
 on('#ajax', 'click', '.delete_thumb', function(e) {

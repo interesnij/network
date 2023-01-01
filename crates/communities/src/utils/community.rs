@@ -17,6 +17,23 @@ pub struct AttachCommunityResp {
     pub s_avatar:     Option<String>,
 } 
 
+#[derive(Serialize, Deserialize)]
+pub struct EditListJson {
+    pub id:                   i32,
+    pub name:                 String,
+    pub position:             i16,
+    pub see_el_exclude_users: Vec<CardUserJson>,
+    pub see_el_include_users: Vec<CardUserJson>,
+}
+
+#[derive(Serialize, Deserialize, Queryable)]
+pub struct CardCommunitiesList {
+    pub id:       i32,
+    pub name:     String,
+    pub position: i16,
+    pub count:    i32,
+}
+
 ////////
 #[derive(Serialize)]
 // универсальный сериализатор для списков пользователей
@@ -97,6 +114,17 @@ pub struct CommunityDetailJson {
     pub cover:       Option<String>,
     pub user_id:     i32,
 }
+#[derive(Deserialize, Serialize)]
+pub struct RespListJson {
+    pub id:   i32,
+    pub name: String,
+}
+#[derive(Deserialize, Serialize)]
+pub struct DataListJson {
+    pub id:    i32,
+    pub name:  String,
+    pub types: i16,
+}
 #[derive(Serialize)]
 pub struct NewCommunityJson {
     pub name:  String,
@@ -105,12 +133,12 @@ pub struct NewCommunityJson {
 }
 
 #[derive(Serialize, Queryable)]
-pub struct CardCommunityJson {
-    pub id:    i32,
-    pub name:  String, 
-    pub link:  String,
-    pub image: Option<String>,
-    pub count: i32,
+pub struct CardCommunityJson { 
+    pub id:      i32,
+    pub name:    String, 
+    pub link:    String,
+    pub image:   Option<String>,
+    pub members: i32,
 }
 
 ////////

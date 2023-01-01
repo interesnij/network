@@ -26,7 +26,7 @@ function add_file_message_attach(){
   else if (files_block.classList.contains("files_9")){ files_block.classList.add("files_10"), files_block.classList.remove("files_9")};
   setTimeout(function(){
     form = files_block.parentElement;
-      send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+      send_draft_message (form, "/chat/user_progs/save_draft_message");
 }, 1000)
 };
 function remove_file_message_attach(){
@@ -43,7 +43,7 @@ function remove_file_message_attach(){
   else if (files_block.classList.contains("files_10")){ files_block.classList.add("files_9"), files_block.classList.remove("files_10")};
   setTimeout(function(){
     form = files_block.parentElement;
-      send_draft_message (form, "/chat/user_progs/save_draft_message/" + form.parentElement.parentElement.parentElement.getAttribute("chat-pk") + "/");
+      send_draft_message (form, "/chat/user_progs/save_draft_message");
 }, 1000)
 };
 

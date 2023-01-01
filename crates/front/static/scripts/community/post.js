@@ -12,8 +12,8 @@ on('#ajax', 'click', '#add_community_btn', function() {
 
   	form_data = new FormData(form);
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
-      ajax_link.open( 'POST', '/communities/create_community/', true );
-      ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+      ajax_link.open( 'POST', '/communities/create_community', true );
+      ajax_link.setRequestHeader('Content-Type', 'application/json');
       ajax_link.onreadystatechange = function () {
         if ( this.readyState == 4 && this.status == 200 ) {
             elem_ = document.createElement('span');
@@ -26,23 +26,23 @@ on('#ajax', 'click', '#add_community_btn', function() {
             document.title = elem_.querySelector('title').innerHTML;
             close_work_fullscreen();
             if_list(rtr);
-            window.history.pushState(null, "vfgffgfgf", "/public" + pk + "/");
+            window.history.pushState(null, "vfgffgfgf", "/public" + pk);
 
         } else { this.disabled = false }
       }
-      ajax_link.send(form_data);
+      ajax_link.send(JSON.stringify(form_data));
 });
 
 on('#ajax', 'click', '.member_create', function() {
-  get_with_pk_and_reload("/communities/progs/add_member/")
+  get_with_pk_and_reload("/communities/progs/add_member")
 });
 on('#ajax', 'click', '.member_delete', function() {
-  get_with_pk_and_reload("/communities/progs/delete_member/")
+  get_with_pk_and_reload("/communities/progs/delete_member")
 });
 
 on('#ajax', 'click', '.member_follow_create', function() {
-  get_with_pk_and_reload("/follows/add_member/")
+  get_with_pk_and_reload("/users/add_member")
 });
 on('#ajax', 'click', '.member_follow_delete', function() {
-  get_with_pk_and_reload("/follows/delete_member/")
+  get_with_pk_and_reload("/users/delete_member")
 });

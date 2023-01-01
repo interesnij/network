@@ -6,18 +6,18 @@ on('#ajax', 'click', '.load_attach_survey_list', function() {
 on('#ajax', 'click', '.load_survey_list', function() {
   parent = this.parentElement.parentElement.parentElement;
   surveylist_pk = parent.getAttribute("surveylist-pk");
-  create_fullscreen("/surveys/load_list/" + surveylist_pk + "/", "item_fullscreen", false, true);
+  create_fullscreen("/surveys/load_list/" + surveylist_pk, "item_fullscreen", false, true);
 });
 
 on('#ajax', 'click', '.add_survey', function() {
-  create_fullscreen('/survey/add_survey_in_list/' + this.parentElement.getAttribute("data-pk") + "/", "worker_fullscreen", true, true);
+  create_fullscreen('/survey/add_survey_in_list/' + this.parentElement.getAttribute("data-pk"), "worker_fullscreen", true, true);
 });
 on('#ajax', 'click', '.survey_edit', function() {
-  create_fullscreen('/survey/edit/' + this.parentElement.parentElement.parentElement.getAttribute("data-pk") + "/", "worker_fullscreen", true, true);
+  create_fullscreen('/survey/edit/' + this.parentElement.parentElement.parentElement.getAttribute("data-pk"), "worker_fullscreen", true, true);
 });
 
 on('#ajax', 'click', '.survey_info', function() {
-  create_fullscreen('/survey/voters/' + this.parentElement.parentElement.parentElement.getAttribute("data-pk") + "/", "worker_fullscreen");
+  create_fullscreen('/survey/voters/' + this.parentElement.parentElement.parentElement.getAttribute("data-pk"), "worker_fullscreen");
 });
 
 on('#ajax', 'click', '#need_time_end', function() {

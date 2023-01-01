@@ -79,9 +79,10 @@ CREATE TABLE users (
     link          VARCHAR(100) NOT NULL,
     s_avatar      VARCHAR(100),
     last_activity TIMESTAMP NOT NULL,
-    see_all        SMALLINT NOT NULL,   -- кто может видеть открытый профиль
-    see_community SMALLINT NOT NULL,    -- кто может видеть сообщества
-    communities   INT NOT NULL          -- кол-во сообществ
+    see_all       SMALLINT NOT NULL,   -- кто может видеть открытый профиль
+    see_community SMALLINT NOT NULL,   -- кто может видеть сообщества
+    lists         SMALLINT NOT NULL    -- кол-во списков
+    communities   INT NOT NULL         -- кол-во сообществ
 );
 
 -- Категории сообществ -------
@@ -101,6 +102,66 @@ CREATE TABLE community_subcategorys (
     position    SMALLINT NOT NULL      -- порядковый номер
 );
 
+/*
+Тип списка
+0 основной список
+5 пользовательский список
+45 удаленный пользовательский список
+80 закрытый основной список
+85 закрытый пользовательский список
+120 замороженный основной список
+125 замороженный пользовательский список
+165 полностью удаленный пользовательский список
+190 полностью удаленный пользовательский список приватный
+
+списки фото
+ниже цифра выбора приватности тех или иных действий пользователей
+1 Все пользователи
+2 Все друзья и все подписчики
+3 Все друзья и подписчики, кроме
+4 Все друзья и некоторые подписчики
+5 Все подписчики и друзья, кроме
+6 Все подписчики и некоторые друзья
+7 Все друзья
+8 Все подписчики
+9 Друзья, кроме
+10 Некоторые друзья
+11 Подписчики, кроме
+12 Некоторые подписчики
+13 Только я
+*/
+CREATE TABLE communities_lists (
+    id             SERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL, -- название
+    user_id        INT NOT NULL,          -- id пользователя (которое выше)
+    types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
+    position       SMALLINT NOT NULL,     -- порядок следования
+    count          INT NOT NULL,          -- кол-во фото
+    repost         INT NOT NULL,          -- кол-во репостов
+    see_el         SMALLINT NOT NULL,     -- кто может видеть сообщества списка
+
+    CONSTRAINT fk_communities_lists_user
+        FOREIGN KEY(user_id)
+            REFERENCES users(id)
+);
+CREATE INDEX communities_lists_user_id_idx ON communities_lists (user_id);
+
+/*
+включения и исключения для пользователей касательно конкретного списка сообществ -------
+ниже цифра поля types, которая означает какое либо включение или
+исключение:
+1 может видеть сообщества 
+11 не может видеть сообщества
+*/
+CREATE TABLE community_list_perms (
+    id      SERIAL PRIMARY KEY,
+    user_id INT NOT NULL,       -- id пользователя
+    list_id INT NOT NULL,       -- id списка 
+    types   SMALLINT NOT NULL   -- статус доступа
+);
+CREATE UNIQUE INDEX community_list_perms_unq ON community_list_perms (user_id, list_id);
+
+
 CREATE TABLE communitys (
     id          SERIAL PRIMARY KEY,     -- id объекта
     name        VARCHAR(100) NOT NULL,  -- название
@@ -109,12 +170,22 @@ CREATE TABLE communitys (
     link        VARCHAR(100) NOT NULL,  -- красивая ссылка
     s_avatar    VARCHAR(100),           -- маленький аватар
     category_id INT NOT NULL,           -- id категории
-    user_id     INT NOT NULL,           -- id создателя
+    user_id     INT NOT NULL,           -- id создателя 
     members     INT NOT NULL,
 
     UNIQUE(link)
 );
 CREATE INDEX communitys_user_id_idx ON communitys (user_id);
+
+
+CREATE TABLE community_list_items (
+    id           SERIAL PRIMARY KEY,
+    list_id      INT NOT NULL,       -- id списка
+    community_id INT NOT NULL,       -- id сообщества 
+    visited      INT NOT NULL 
+);
+CREATE UNIQUE INDEX community_list_items_unq ON community_list_items (community_id, list_id);
+
 
 /*
 Члены сообщества -------

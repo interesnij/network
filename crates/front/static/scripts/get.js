@@ -18,7 +18,7 @@ on('#ajax', 'keydown', '.search_main_form', function(e) {
     window.history.replaceState(null, null, new_url);
 
     var ajax_link = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject('Microsoft.XMLHTTP');
-    ajax_link.open('GET', '/search/?s=' + section + '&q=' + value, true);
+    ajax_link.open('GET', '/search?s=' + section + '&q=' + value, true);
     ajax_link.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
     ajax_link.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -127,7 +127,7 @@ on('#ajax', 'click', '.select_item_reaction', function() {
 on('#ajax', 'click', '.smile_dropdown', function() {
   block = this.nextElementSibling;
   if (!block.querySelector(".card")) {
-    list_load(block, "/users/load/smiles/")
+    list_load(block, "/users/load/smiles")
   };
   block.classList.toggle("show");
 });
@@ -137,18 +137,18 @@ on('body', 'click', '.comment_btn', function() {
   type = this.getAttribute('data-types');
   pk = type.slice(3);
   if (type.indexOf('pos') !== -1) {
-    url = "/posts/add_comment/" + pk + "/";
+    url = "/posts/add_comment";
   }
   else if (type.indexOf('goo') !== -1) {
-    url = "/goods/add_comment/" + pk + "/";
+    url = "/goods/add_comment";
   }
   else if (type.indexOf('pho') !== -1) {
-    url = "/photos/add_comment/" + pk + "/";
+    url = "/photos/add_comment";
   }
   else if (type.indexOf('vid') !== -1) {
-    url = "/video/add_comment/" + pk + "/";
+    url = "/video/add_comment";
   }
-  send_comment(form, form.parentElement.previousElementSibling, url);
+  send_comment(form, form.parentElement.previousElementSibling, url, pk);
 });
 
 on('body', 'click', '.reply_comment_btn', function() {
@@ -157,19 +157,19 @@ on('body', 'click', '.reply_comment_btn', function() {
   type = this.getAttribute('data-types');
   pk = type.slice(3);
   if (type.indexOf('cpo') !== -1) {
-    url = "/posts/add_reply/" + pk + "/";
+    url = "/posts/add_reply";
   }
   else if (type.indexOf('cgo') !== -1) {
-    url = "/goods/add_reply/" + pk + "/";
+    url = "/goods/add_reply";
   }
   else if (type.indexOf('cph') !== -1) {
-    url = "/photos/add_reply/" + pk + "/";
+    url = "/photos/add_reply";
   }
   else if (type.indexOf('cvi') !== -1) {
-    url = "/video/add_reply/" + pk + "/";
+    url = "/video/add_reply";
   }
 
-  send_comment(form, block, url);
+  send_comment(form, block, url, pk);
 
   form.parentElement.style.display = "none";
   block.classList.add("replies_open")
@@ -178,7 +178,7 @@ on('body', 'click', '.reply_comment_btn', function() {
 on('body', 'click', '.reply_parent_btn', function() {
   form = this.parentElement.parentElement.parentElement.parentElement;
   block = form.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
-  send_comment(form, block, '/users/progs/reply_comment/')
+  send_comment(form, block, '/users/progs/reply_comment', 0)
 
   form.parentElement.style.display = "none";
   block.classList.add("replies_open");
@@ -312,7 +312,7 @@ on('#ajax', 'click', '.item_stat_f', function() {
   var parent, pk, uuid, loader
   parent = this.parentElement.parentElement.parentElement.parentElement.parentElement;
   uuid = parent.getAttribute("data-uuid");
-  create_fullscreen("/stat/item/" + uuid + "/", "item_fullscreen", false, true);
+  create_fullscreen("/stat/item/" + uuid, "item_fullscreen", false, true);
 });
 
 on('#ajax', 'click', '.item_fullscreen_hide', function() {
@@ -355,14 +355,14 @@ function private_users_send(form_post, url, action, val) {
   form.append("value", val);
   link_ = window.XMLHttpRequest ? new XMLHttpRequest() : new ActiveXObject( 'Microsoft.XMLHTTP' );
   link_.open( 'POST', url, true );
-  link_.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  link_.setRequestHeader('Content-Type', 'application/json');
 
   link_.onreadystatechange = function () {
   if ( this.readyState == 4 && this.status == 200 ) {
     form_post.querySelector(".collector_active").innerHTML = "";
     toast_success("Настройки изменены")
   }};
-  link_.send(form);
+  link_.send(JSON.stringify(form));
 }
 
 on('#ajax', 'click', '.select_perm_dropdown', function() {
@@ -388,28 +388,28 @@ on('#ajax', 'click', '.select_perm_dropdown', function() {
     if (form_post.classList.contains("chat_edit")) {
       // работаем с приватностью пользовательского чата
       if (val == 'd') {
-        create_fullscreen("/chat/user_progs/load_exclude_users/" + form_post.getAttribute("data-pk") + "/?action=" + action, "worker_fullscreen");
+        create_fullscreen("/chat/user_progs/load_exclude_users/" + form_post.getAttribute("data-pk") + "?action=" + action, "worker_fullscreen");
       }
       else if (val == 'e') {
-        create_fullscreen("/chat/user_progs/load_include_users/" + form_post.getAttribute("data-pk") + "/?action=" + action, "worker_fullscreen");
+        create_fullscreen("/chat/user_progs/load_include_users/" + form_post.getAttribute("data-pk") + "?action=" + action, "worker_fullscreen");
       }
       else {
         if (is_new_value) {
-          private_users_send(form_post, "/chat/user_progs/private/" + form_post.getAttribute("data-pk") + "/", action, val)
+          private_users_send(form_post, "/chat/user_progs/private/" + form_post.getAttribute("data-pk"), action, val)
         }
       }
   }
   else if (form_post.classList.contains("type_profile")) {
     // работаем с приватностью профиля пользователя
     if (val == 'e') {
-      create_fullscreen("/users/settings/load_exclude_users/?action=" + action, "worker_fullscreen");
+      create_fullscreen("/users/settings/load_exclude_users?action=" + action, "worker_fullscreen");
     }
     else if (val == 'f') {
-      create_fullscreen("/users/settings/load_include_users/?action=" + action, "worker_fullscreen");
+      create_fullscreen("/users/settings/load_include_users?action=" + action, "worker_fullscreen");
     }
     else {
       if (is_new_value) {
-        private_users_send(form_post, "/users/settings/private/", action, val)
+        private_users_send(form_post, "/users/settings/private", action, val)
       }
     }
   }
@@ -417,14 +417,14 @@ on('#ajax', 'click', '.select_perm_dropdown', function() {
     // работаем с приватностью профиля пользователя
     c_pk = form_post.getAttribute("data-pk");
     if (val == 'h') {
-      create_fullscreen("/communities/manage/load_exclude_users/" + c_pk + "/?action=" + action, "worker_fullscreen");
+      create_fullscreen("/communities/manage/load_exclude_users/" + c_pk + "?action=" + action, "worker_fullscreen");
     }
     else if (val == 'i') {
-      create_fullscreen("/communities/manage/load_include_users/" + c_pk + "/?action=" + action, "worker_fullscreen");
+      create_fullscreen("/communities/manage/load_include_users/" + c_pk + "?action=" + action, "worker_fullscreen");
     }
     else {
       if (is_new_value) {
-        private_users_send(form_post, "/communities/manage/private/" + c_pk + "/", action, val)
+        private_users_send(form_post, "/communities/manage/private/" + c_pk, action, val)
       }
     }
   }
@@ -442,16 +442,16 @@ on('#ajax', 'click', '.select_perm_dropdown', function() {
     input.setAttribute("value", val);
 
       if (val == 'e') {
-        create_fullscreen("/users/load/list_exclude_users/?action=" + action + "&target=user&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
+        create_fullscreen("/users/load/list_exclude_users?action=" + action + "&target=user&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
       }
       else if (val == 'f') {
-        create_fullscreen("/users/load/list_include_users/?action=" + action + "&target=user&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
+        create_fullscreen("/users/load/list_include_users?action=" + action + "&target=user&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
       }
       else if (val == 'h') {
-        create_fullscreen("/users/load/list_exclude_users/?action=" + action + "&community_pk=" + form_post.getAttribute("community-pk") + "&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
+        create_fullscreen("/users/load/list_exclude_users?action=" + action + "&community_pk=" + form_post.getAttribute("community-pk") + "&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
       }
       else if (val == 'i') {
-        create_fullscreen("/users/load/list_include_users/?action=" + action + "&community_pk=" + form_post.getAttribute("community-pk") + "&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
+        create_fullscreen("/users/load/list_include_users?action=" + action + "&community_pk=" + form_post.getAttribute("community-pk") + "&list=" + form_post.getAttribute("data-list"), "worker_fullscreen")
       }
       else {
         collector.innerHTML = ""

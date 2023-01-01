@@ -684,13 +684,13 @@ impl Community {
         let count = Community::count_communities() + 1;
         let link = "/public".to_string() + &count.to_string() + &"/".to_string();
         let new_community_form = NewCommunity {
-                name:        name,
-                types:       types,
-                link:        link,
-                category_id: category_id,
-                user_id:     user_id,
-                members:     0,
-            };
+            name:        name,
+            types:       types,
+            link:        link,
+            category_id: category_id,
+            user_id:     user_id,
+            members:     0,
+        };
         let new_community = diesel::insert_into(schema::communitys::table)
             .values(&new_community_form)
             .get_result::<Community>(&_connection)
