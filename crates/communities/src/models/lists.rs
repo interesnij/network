@@ -91,8 +91,8 @@ impl CommunitiesList {
         &self, community_id: i32,
     ) -> i16 {
         let _connection = establish_connection();
-        let new_item = NewCommunityItem {
-            list_id: list_id,
+        let new_item = NewCommunityListItem {
+            list_id: self.id,
             community_id: community_id,
             visited: 0,
         };
@@ -102,7 +102,7 @@ impl CommunitiesList {
             .expect("Error.");
         
         diesel::update(self)
-            .set(schema::communities_lists::count.eq(count + 1))
+            .set(schema::communities_lists::count.eq(self.count + 1))
             .execute(&_connection)
             .expect("E.");
         return 1;
@@ -111,7 +111,7 @@ impl CommunitiesList {
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<AttachOwner>>
+        _users: Option<Vec<i32>>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
         if value < 1 || value > 19 || (is_ie_mode && _users.is_none()) {
@@ -151,7 +151,7 @@ impl CommunitiesList {
         };
         if _users.is_some() && is_ie_mode {
             for _user in _users.unwrap().iter() {
-                let _new_perm = NewCommunitiesListPerms {
+                let _new_perm = NewCommunityListPerms {
                     user_id: _user.id,
                     list_id: self.id,
                     types:   value,
@@ -182,30 +182,6 @@ impl CommunitiesList {
             see_el_exclude_users: self.get_limit_see_el_exclude_users(Some(20), Some(0)),
             see_el_include_users: self.get_limit_see_el_include_users(Some(20), Some(0)),
         }); 
-    }
-    pub fn get_owner_meta(&self) -> Result<CardUserJson, Error> {
-        use crate::schema::users::dsl::users;
-
-        let _connection = establish_connection();
-            
-        let _user = users
-            .filter(schema::users::id.eq(self.user_id))
-            .filter(schema::users::types.lt(31))
-            .select((
-                schema::users::user_id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar.nullable(),
-            ))
-            .first::<CardUserJson>(&_connection)
-            .expect("E");
-
-        return Ok(CardOwnerJson {
-            name:  _user.first_name.clone() + &" ".to_string() + &_user.last_name.clone(),
-            link:  _user.link,
-            image: _user.image,
-        })
     }
 
     pub fn get_str_id(&self) -> String {
@@ -270,7 +246,10 @@ impl CommunitiesList {
             .expect("E.");
     }
     pub fn get_items_ids(&self) -> Vec<i32> {
-        use crate::schema::community_list_items::dsl::community_list_items;
+        use crate::schema::{
+            community_list_items::dsl::community_list_items,
+            communitys::dsl::communitys,
+        };
 
         let _connection = establish_connection();
         let ids = community_list_items
@@ -716,7 +695,7 @@ impl CommunitiesList {
 
 
 #[derive(Debug, Serialize, Identifiable)]
-pub struct CommunityListItems {
+pub struct CommunityListItem {
     pub id:           i32,
     pub list_id:      i32,
     pub community_id: i32,
@@ -724,13 +703,13 @@ pub struct CommunityListItems {
 } 
 #[derive(Deserialize, Insertable)]
 #[table_name="community_list_items"]
-pub struct NewCommunityListItems { 
+pub struct NewCommunityListItem { 
     pub list_id:      i32,
     pub community_id: i32,
     pub visited:      i32,
 }
 
-impl CommunityListItems {
+impl CommunityListItem {
     pub fn delete_community_item (
         list_id: i32, community_id: i32,
     ) -> i16 { 
