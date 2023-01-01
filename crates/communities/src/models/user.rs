@@ -401,7 +401,7 @@ impl User {
         use crate::utils::get_count_for_ru;
 
         return get_count_for_ru (
-            self.count_lists(),
+            self.count_lists().into(),
             " список".to_string(),
             " списка".to_string(),
             " списков".to_string(),
@@ -411,7 +411,7 @@ impl User {
         use crate::utils::get_count_for_ru_alt;
 
         return get_count_for_ru_alt (
-            self.count_lists(),
+            self.count_lists().into(),
             " список".to_string(),
             " списка".to_string(),
             " списков".to_string(),

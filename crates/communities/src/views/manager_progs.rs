@@ -484,7 +484,7 @@ pub async fn close_moderation (
 }
 
 pub async fn unsuspend_moderation (
-    data: Json<ModerationParams,
+    data: Json<ModerationParams>,
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<i16>, Error> {
