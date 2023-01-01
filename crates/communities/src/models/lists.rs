@@ -11,6 +11,7 @@ use diesel::{
 use crate::schema::{
     communities_lists,
     community_list_items,
+    community_list_perms,
 };
 use crate::errors::Error;
 use serde::{Serialize, Deserialize};
@@ -777,4 +778,25 @@ impl CommunityListItems {
             .execute(&_connection)
             .expect("E.");
     }
+}
+
+
+/*
+CommunityListPerm
+1 может видеть список
+11 не может видеть список
+*/
+#[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
+pub struct CommunityListPerm {
+    pub id:      i32,
+    pub user_id: i32,
+    pub list_id: i32,
+    pub types:   i16,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="community_list_perms"]
+pub struct NewCommunityListPerm {
+    pub user_id: i32,
+    pub list_id: i32,
+    pub types:   i16,
 }
