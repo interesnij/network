@@ -288,35 +288,6 @@ impl CommunitiesList {
             .expect("E.");
     }
 
-    pub fn search_items (
-        &self,
-        q:       &String,
-        limit:   Option<i64>,
-        offset:  Option<i64>,
-    ) -> Vec<CardCommunityJson> {
-        use crate::schema::communitys::dsl::communitys;
-
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let _connection = establish_connection();
-
-        return communitys
-            .filter(schema::communitys::list_id.eq(self.id))
-            .filter(schema::communitys::name.ilike(&q))
-            .filter(schema::communitys::types.lt(31))
-            .limit(_limit)
-            .offset(_offset)
-            .order(schema::communitys::members.desc())
-            .select((
-                schema::communitys::id,
-                schema::communitys::name,
-                schema::communitys::link,
-                schema::communitys::image,
-                schema::communitys::members,
-            ))
-            .load::<CardCommunityJson>(&_connection)
-            .expect("E.");
-    }
-
     pub fn get_paginate_items (
         &self,
         limit:  Option<i64>,
@@ -424,8 +395,8 @@ impl CommunitiesList {
         offset: Option<i64>,
     ) -> Vec<CardUserJson> {
         use crate::schema::{
-            photo_list_perms::dsl::photo_list_perms,
-            item_users::dsl::item_users,
+            community_list_perms::dsl::community_list_perms,
+            users::dsl::users,
         };
 
         let _connection = establish_connection();
@@ -506,7 +477,7 @@ impl CommunitiesList {
 
         let _connection = establish_connection();
         let _name: String;
-        let c_name = data.name.clone();
+        let c_name = name.clone();
         if c_name.len() > 99 {
             _name = c_name[..100].to_string();
         }
@@ -566,12 +537,17 @@ impl CommunitiesList {
             name: _name,
         };
     }
-    pub fn edit_list(list_id: i32, name: String, position: i16) -> RespListJson {
+    pub fn edit_list (
+        list_id: i32, 
+        name: String, 
+        position: i16,
+        see_el_users: Option<Vec<i32>>
+    ) -> RespListJson {
         use crate::schema::community_list_perms::dsl::community_list_perms;
 
         let _connection = establish_connection();
         let _name: String;
-        let c_name = data.name.clone();
+        let c_name = name.clone();
         if c_name.len() > 99 {
             _name = c_name[..100].to_string();
         }
