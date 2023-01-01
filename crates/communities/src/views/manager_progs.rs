@@ -16,6 +16,7 @@ use crate::utils::{
 use crate::models::ModeratedLog;
 use serde::{Deserialize, Serialize}; 
 use crate::errors::Error;
+use crate::AppState;
 
 
 pub fn manager_urls(config: &mut web::ServiceConfig) {

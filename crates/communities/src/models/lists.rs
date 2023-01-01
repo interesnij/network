@@ -654,7 +654,7 @@ impl CommunitiesList {
     pub fn unclose_item(&self) -> i16 {
         let _connection = establish_connection();
         let o_1 = diesel::update(self)
-            .set(schema::community_lists::types.eq(self.types - 80))
+            .set(schema::communities_lists::types.eq(self.types - 80))
             .execute(&_connection);
 
         let creator = self.get_creator().expect("E");
@@ -672,7 +672,7 @@ impl CommunitiesList {
         let _connection = establish_connection();
 
         let o_1 = diesel::update(self)
-            .set(schema::community_lists::types.eq(self.types + 40))
+            .set(schema::communities_lists::types.eq(self.types + 40))
             .execute(&_connection);
 
         let creator = self.get_creator().expect("E");
@@ -689,7 +689,7 @@ impl CommunitiesList {
         let _connection = establish_connection();
 
         let o_1 = diesel::update(self)
-            .set(schema::community_lists::types.eq(self.types - 40))
+            .set(schema::communities_lists::types.eq(self.types - 40))
             .execute(&_connection);
 
         let creator = self.get_creator().expect("E");
@@ -706,7 +706,7 @@ impl CommunitiesList {
     pub fn suspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let o_1 = diesel::update(self)
-            .set(schema::community_lists::types.eq(self.types + 120))
+            .set(schema::communities_lists::types.eq(self.types + 120))
             .execute(&_connection);
 
         let creator = self.get_creator().expect("E");
@@ -722,7 +722,7 @@ impl CommunitiesList {
     pub fn unsuspend_item(&self) -> i16 {
         let _connection = establish_connection();
         let o_1 = diesel::update(self)
-            .set(schema::community_lists::types.eq(self.types - 120))
+            .set(schema::communities_lists::types.eq(self.types - 120))
             .execute(&_connection);
 
         let creator = self.get_creator().expect("E");

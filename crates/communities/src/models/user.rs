@@ -394,7 +394,7 @@ impl User {
         );
     }
 
-    pub fn count_lists(&self) -> i32 {
+    pub fn count_lists(&self) -> i16 {
         return self.lists;
     }
     pub fn count_lists_ru(&self) -> String {
@@ -516,7 +516,7 @@ impl User {
 
         let new_list_f = NewCommunitiesList {
             name:     "Сообщества".to_string(),
-            user_id:  _new_user.user_id,
+            user_id:  user_id,
             types:    0,
             position: 1,
             count:    0,

@@ -17,6 +17,7 @@ use crate::utils::{
     EditTokenPageResp,
 }; 
 use crate::errors::Error;
+use crate::AppState;
 
 
 pub fn owner_urls(config: &mut web::ServiceConfig) {
@@ -52,11 +53,14 @@ pub struct TokensData {
     pub community_id: Option<i32>,
 }
 
-pub async fn create_token_page(req: HttpRequest) -> Result<Json<Vec<OwnerService>>, Error> {
+pub async fn create_token_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<Vec<OwnerService>>, Error> {
     let params_some = web::Query::<SmallData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() { 
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -82,11 +86,14 @@ pub async fn create_token_page(req: HttpRequest) -> Result<Json<Vec<OwnerService
     }
 }
 
-pub async fn edit_token_page(req: HttpRequest) -> Result<Json<EditTokenPageResp>, Error> {
+pub async fn edit_token_page (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<EditTokenPageResp>, Error> {
     let params_some = web::Query::<ObjectData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -134,11 +141,14 @@ pub async fn edit_token_page(req: HttpRequest) -> Result<Json<EditTokenPageResp>
     }
 }
 
-pub async fn get_token(req: HttpRequest) -> Result<Json<TokenDetailJson>, Error> {
+pub async fn get_token (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<TokenDetailJson>, Error> {
     let params_some = web::Query::<TokenData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -187,11 +197,14 @@ pub async fn get_token(req: HttpRequest) -> Result<Json<TokenDetailJson>, Error>
     }
 }
 
-pub async fn get_tokens(req: HttpRequest) -> Result<Json<Vec<TokenJson>>, Error> {
+pub async fn get_tokens (
+    state: web::Data<AppState>,
+    req: HttpRequest
+) -> Result<Json<Vec<TokenJson>>, Error> {
     let params_some = web::Query::<TokensData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
-        let (err, user_id) = get_user_owner_data(params.token.clone(), params.user_id, 31);
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -244,8 +257,12 @@ pub struct AddTokenData {
     services_ids: Option<Vec<i32>>,
 }
 
-pub async fn create_token(data: Json<AddTokenData>) -> Result<Json<TokenDetailJson>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn create_token (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<AddTokenData>
+) -> Result<Json<TokenDetailJson>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     } 
@@ -285,8 +302,12 @@ pub struct EditTokenData {
     description:  Option<String>,
     services_ids: Option<Vec<i32>>,
 }
-pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJson>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn edit_token (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<EditTokenData>
+) -> Result<Json<TokenDetailJson>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -328,8 +349,12 @@ pub async fn edit_token(data: Json<EditTokenData>) -> Result<Json<TokenDetailJso
     }
 }
 
-pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn delete_token (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ObjectData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -361,8 +386,12 @@ pub async fn delete_token(data: Json<ObjectData>) -> Result<Json<i16>, Error> {
     }
 }
 
-pub async fn get_secret_key(data: Json<ObjectData>) -> Result<Json<String>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn get_secret_key (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ObjectData>
+) -> Result<Json<String>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
@@ -392,8 +421,12 @@ pub async fn get_secret_key(data: Json<ObjectData>) -> Result<Json<String>, Erro
         }
     }
 }
-pub async fn get_service_key(data: Json<ObjectData>) -> Result<Json<String>, Error> {
-    let (err, user_id) = get_user_owner_data(data.token.clone(), data.user_id, 31);
+pub async fn get_service_key (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<ObjectData>
+) -> Result<Json<String>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         Err(Error::BadRequest(err.unwrap()))
     }
