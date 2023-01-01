@@ -19,7 +19,7 @@ use crate::utils::{
     get_communities_list,
     get_limit_offset, CardCommunityJson,
     EditListJson, CardCommunitiesList,
-    DataListJson, RespListJson, 
+    DataListJson, RespListJson, CardUserJson, 
 };
 use actix_web::web::Json;
 use crate::models::{

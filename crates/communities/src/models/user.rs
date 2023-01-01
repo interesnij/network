@@ -1315,7 +1315,7 @@ impl User {
             .is_ok();
     }
     pub fn get_communities_lists_ids(&self) -> Vec<CommunityList> {
-        use crate::schema::community_lists:::dsl::community_lists;
+        use crate::schema::community_lists::dsl::community_lists;
 
         return community_lists
             .filter(schema::community_lists::user_id.eq(self.user_id))
