@@ -121,7 +121,7 @@ impl CommunitiesList {
         let _connection = establish_connection();
         let _update_field = match field {
             "see_el" => diesel::update(self)
-                .set(schema::photo_lists::see_el.eq(value))
+                .set(schema::communities_lists::see_el.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             _ => 0,
@@ -151,8 +151,8 @@ impl CommunitiesList {
         };
         if _users.is_some() && is_ie_mode {
             for _user in _users.unwrap().iter() {
-                let _new_perm = NewCommunityListPerms {
-                    user_id: _user.id,
+                let _new_perm = NewCommunityListPerm {
+                    user_id: *_user,
                     list_id: self.id,
                     types:   value,
                 };
