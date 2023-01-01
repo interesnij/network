@@ -1317,6 +1317,7 @@ impl User {
     pub fn get_communities_lists_ids(&self) -> Vec<CommunitiesList> {
         use crate::schema::communities_lists::dsl::communities_lists;
 
+        let _connection = establish_connection();
         return communities_lists
             .filter(schema::communities_lists::user_id.eq(self.user_id))
             .load::<CommunitiesList>(&_connection)
@@ -1350,7 +1351,7 @@ impl User {
             .execute(&_connection)
             .expect("E");
 
-            diesel::update(&list)
+            diesel::update(list)
                 .set(schema::communities_lists::count.eq(list.count - 1))
                 .execute(&_connection)
                 .expect("E.");
