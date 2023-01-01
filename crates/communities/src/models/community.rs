@@ -388,7 +388,6 @@ impl Community {
             // здесь копировать включенных/исключенных не надо, ведь они
             // могут набираться из подписчиков. Можно их получать оттуда,
             // из таблицы users
-            use crate::models::NewCommunityVisiblePerm;
             for user_id in users_ids.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.id,

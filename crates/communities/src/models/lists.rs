@@ -3,9 +3,7 @@ use diesel::{
     Queryable,
     Insertable,
     RunQueryDsl,
-    NullableExpressionMethods,
     ExpressionMethods,
-    PgTextExpressionMethods,
     QueryDsl,
 };
 use crate::schema::{
@@ -18,11 +16,11 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     get_communities_list,
-    get_limit_offset, CardCommunityJson,
+    get_limit_offset,
     EditListJson, CardCommunitiesList,
-    DataListJson, RespListJson, CardUserJson, 
+    RespListJson, CardUserJson, 
 };
-use actix_web::web::Json;
+
 use crate::models::{
     User, Community,
 };
@@ -452,8 +450,6 @@ impl CommunitiesList {
         see_el: i16,
         see_el_users: Option<Vec<i32>>
     ) -> RespListJson {
-        use crate::models::NewCommunitiesList;
-
         let _connection = establish_connection();
         let _name: String;
         let c_name = name.clone();
@@ -728,7 +724,7 @@ impl CommunityListItem {
     }
     pub fn plus_visited(&self) -> () {
         let _connection = establish_connection();
-        let o_1 = diesel::update(self)
+        diesel::update(self)
             .set(schema::community_list_items::visited.eq(self.visited + 1))
             .execute(&_connection)
             .expect("E.");

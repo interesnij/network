@@ -250,7 +250,6 @@ pub async fn get_tokens (
 #[derive(Deserialize)]
 pub struct AddTokenData {
     token:        Option<String>,
-    user_id:      Option<i32>,
     community_id: Option<i32>,
     name:         Option<String>,
     description:  Option<String>,
@@ -297,7 +296,6 @@ pub async fn create_token (
 pub struct EditTokenData {
     token:        Option<String>,
     id:           Option<i32>,
-    user_id:      Option<i32>,
     name:         Option<String>,
     description:  Option<String>,
     services_ids: Option<Vec<i32>>,
