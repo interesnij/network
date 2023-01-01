@@ -81,7 +81,7 @@ CREATE TABLE users (
     last_activity TIMESTAMP NOT NULL,
     see_all       SMALLINT NOT NULL,   -- кто может видеть открытый профиль
     see_community SMALLINT NOT NULL,   -- кто может видеть сообщества
-    lists         SMALLINT NOT NULL    -- кол-во списков
+    lists         SMALLINT NOT NULL,   -- кол-во списков
     communities   INT NOT NULL         -- кол-во сообществ
 );
 

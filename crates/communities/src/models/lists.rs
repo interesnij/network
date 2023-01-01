@@ -90,7 +90,7 @@ impl CommunitiesList {
         &self, community_id: i32,
     ) -> i16 {
         let _connection = establish_connection();
-        let new_item = NewCommunitiesList {
+        let new_item = NewCommunityItem {
             list_id: list_id,
             community_id: community_id,
             visited: 0,
@@ -103,7 +103,7 @@ impl CommunitiesList {
         diesel::update(self)
             .set(schema::communities_lists::count.eq(count + 1))
             .execute(&_connection)
-            .expect("E.")
+            .expect("E.");
         return 1;
     }
     pub fn edit_private (
@@ -765,6 +765,9 @@ impl CommunityListItems {
                 .filter(schema::community_list_items::list_id.eq(list_id))
                 .filter(schema::community_list_items::community_id.eq(community_id))
         )
+        .execute(&_connection)
+        .expect("E.");
+
         return 1;
     }
     pub fn plus_visited(&self) -> () {

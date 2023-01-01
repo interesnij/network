@@ -109,11 +109,11 @@ pub async fn get_claim_page(req: HttpRequest) -> Result<Json<ReportResp>, Error>
             else {
                 let mut list = Vec::new();
                 let card = CardCommunityJson { 
-                    id:    target.id,
-                    name:  target.name,
-                    link:  target.link,
-                    image: target.s_avatar,
-                    count: target.members,
+                    id:      target.id,
+                    name:    target.name,
+                    link:    target.link,
+                    image:   target.s_avatar,
+                    members: target.members,
                 };
                 list.push(KeyValue {
                     value: 1,

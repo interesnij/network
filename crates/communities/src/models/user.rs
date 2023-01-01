@@ -393,6 +393,31 @@ impl User {
             " сообществ".to_string(),
         );
     }
+
+    pub fn count_lists(&self) -> i32 {
+        return self.lists;
+    }
+    pub fn count_lists_ru(&self) -> String {
+        use crate::utils::get_count_for_ru;
+
+        return get_count_for_ru (
+            self.count_lists(),
+            " список".to_string(),
+            " списка".to_string(),
+            " списков".to_string(),
+        );
+    }
+    pub fn count_lists_ru_alt(&self) -> String {
+        use crate::utils::get_count_for_ru_alt;
+
+        return get_count_for_ru_alt (
+            self.count_lists(),
+            " список".to_string(),
+            " списка".to_string(),
+            " списков".to_string(),
+        );
+    }
+
     pub fn plus_communities(&self, count: i32) -> bool {
         let _connection = establish_connection();
         let _u = diesel::update(self)
@@ -420,7 +445,7 @@ impl User {
         }
         return false;
     }
-    pub fn plus_lists(&self, count: i32) -> bool {
+    pub fn plus_lists(&self, count: i16) -> bool {
         let _connection = establish_connection();
         let _u = diesel::update(self)
             .set(schema::users::lists.eq(self.lists + count))
@@ -432,7 +457,7 @@ impl User {
             return false;
         }
     }
-    pub fn minus_lists(&self, count: i32) -> bool {
+    pub fn minus_lists(&self, count: i16) -> bool {
         if self.communities > 0 {
             let _connection = establish_connection();
             let _u = diesel::update(self)
@@ -490,7 +515,7 @@ impl User {
         use crate::models::NewCommunitiesList;
 
         let new_list_f = NewCommunitiesList {
-            name:     "Сообщества".to_string();
+            name:     "Сообщества".to_string(),
             user_id:  _new_user.user_id,
             types:    0,
             position: 1,
@@ -1223,8 +1248,8 @@ impl User {
         else {
             use crate::models::NewCommunitiesList;
 
-            let new_list_f = NewCommunitiesList {
-                name:     "Сообщества".to_string();
+            let new_list_f = NewCommunitiesList { 
+                name:     "Сообщества".to_string(),
                 user_id:  self.user_id,
                 types:    0,
                 position: 1,
@@ -1234,7 +1259,7 @@ impl User {
             };
             let new_list = diesel::insert_into(schema::communities_lists::table)
                 .values(&new_list_f)
-                .execute(&_connection)
+                .get_result::<CommunitiesList>(&_connection)
                 .expect("Error.");
             
             return new_list;
@@ -1328,9 +1353,8 @@ impl User {
             diesel::update(&list)
                 .set(schema::communities_lists::count.eq(count - 1))
                 .execute(&_connection)
-                .expect("E.")
+                .expect("E.");
         }
-        
         return 1;
     }
 }
