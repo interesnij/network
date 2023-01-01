@@ -150,7 +150,7 @@ impl CommunitiesList {
         };
         if _users.is_some() && is_ie_mode {
             for _user in _users.unwrap().iter() {
-                let _new_perm = NewCommunityListPerms {
+                let _new_perm = NewCommunitiesListPerms {
                     user_id: _user.id,
                     list_id: self.id,
                     types:   value,

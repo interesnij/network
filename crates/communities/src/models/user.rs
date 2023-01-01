@@ -1314,12 +1314,12 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn get_communities_lists_ids(&self) -> Vec<CommunityList> {
+    pub fn get_communities_lists_ids(&self) -> Vec<CommunitiesList> {
         use crate::schema::communities_lists::dsl::communities_lists;
 
         return communities_lists
             .filter(schema::communities_lists::user_id.eq(self.user_id))
-            .load::<CommunityList>(&_connection)
+            .load::<CommunitiesList>(&_connection)
             .expect("E");
     }
     pub fn leave_community(&self, community_id: i32) -> i16 {
@@ -1351,7 +1351,7 @@ impl User {
             .expect("E");
 
             diesel::update(&list)
-                .set(schema::communities_lists::count.eq(count - 1))
+                .set(schema::communities_lists::count.eq(list.count - 1))
                 .execute(&_connection)
                 .expect("E.");
         }
