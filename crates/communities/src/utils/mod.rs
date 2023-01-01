@@ -221,20 +221,17 @@ pub async fn get_owner_data (
     }
 }
 
-pub async fn get_user_owner_data ( 
+pub async fn get_user_owner_data (
+    req:           &HttpRequest,
+    state:         web::Data<AppState>,
     token:         Option<String>,  // токен
-    user_id:       Option<i32>,     // возможный id request_user'а,
     service_types: i16              // тип сервиса и роли в нем
 ) -> (Option<String>, i32) {
-    // проверка токена на допуск к объектам пользователя
-    // нам нужно узнать по токену тип владельца.
-    // заодним мы выясним id пользователя.
     if token.is_some() {
         use crate::schema::owners::dsl::owners;
         let _connection = establish_connection();
-        let _token = token.as_deref().unwrap();
         let owner_res = owners
-            .filter(schema::owners::service_key.eq(_token))
+            .filter(schema::owners::service_key.eq(token.unwrap()))
             .first::<Owner>(&_connection);
         if owner_res.is_ok() {
             let owner = owner_res.expect("E");
@@ -242,23 +239,19 @@ pub async fn get_user_owner_data (
                 return (Some("This role is not allowed in this service!".to_string()), 0);
             }
             else if owner.types == 1 {
-                if user_id.is_some() {
-                    let _id = user_id.unwrap();
-                    let _user = get_user(_id);
-                    if _user.is_ok() {
-                        return (None, _id);
-                    } 
-                    else {
-                        return (Some("user not found!".to_string()), 0);
-                    }
-                }
-                else {
-                    // параметра user_id нет - значит пользователь анонимный
-                    return (None, 0);
+                match Authorization::<Bearer>::parse(req) {
+                    Ok(ok) => {
+                        let token = ok.as_ref().token().to_string();
+                        return match verify_jwt(token, state.key.as_ref()).await {
+                            Ok(ok) => (None, ok.id),
+                            Err(_) => (Some("401 Unauthorized".to_string()), 0),
+                        }
+
+                    },
+                    Err(_) => return (None, 0),
                 }
             }
             else if owner.types == 2 {
-                // это токен пользователя
                 return (None, owner.user_id);
             }
             else {

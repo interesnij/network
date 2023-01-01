@@ -639,7 +639,7 @@ impl CommunitiesList {
     pub fn close_item(&self) -> i16 {
         let _connection = establish_connection();
         let o_1 = diesel::update(self)
-            .set(schema::community_lists::types.eq(self.types + 80))
+            .set(schema::communities_lists::types.eq(self.types + 80))
             .execute(&_connection);
         let creator = self.get_creator().expect("E");
         creator.minus_lists(1);

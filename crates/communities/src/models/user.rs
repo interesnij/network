@@ -1315,10 +1315,10 @@ impl User {
             .is_ok();
     }
     pub fn get_communities_lists_ids(&self) -> Vec<CommunityList> {
-        use crate::schema::community_lists::dsl::community_lists;
+        use crate::schema::communities_lists::dsl::communities_lists;
 
-        return community_lists
-            .filter(schema::community_lists::user_id.eq(self.user_id))
+        return communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
             .load::<CommunityList>(&_connection)
             .expect("E");
     }
