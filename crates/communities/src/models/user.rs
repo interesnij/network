@@ -1314,6 +1314,22 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
+    pub fn get_communities_lists(&self) -> Vec<CardCommunitiesList> {
+        use crate::schema::communities_lists::dsl::communities_lists;
+
+        let _connection = establish_connection();
+        return communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
+            .order(schema::communities_lists::position.desc())
+            .select((
+                schema::communities_lists::id,
+                schema::communities_lists::name,
+                schema::communities_lists::position,
+                schema::communities_lists::count,
+            ))
+            .load::<CardCommunitiesList>(&_connection)
+            .expect("E");
+    }
     pub fn get_communities_lists_ids(&self) -> Vec<CommunitiesList> {
         use crate::schema::communities_lists::dsl::communities_lists;
 
@@ -1323,6 +1339,7 @@ impl User {
             .load::<CommunitiesList>(&_connection)
             .expect("E");
     }
+
     pub fn leave_community(&self, community_id: i32) -> i16 {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,

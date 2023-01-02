@@ -706,15 +706,15 @@ pub struct NewCommunityListItem {
 }
 
 impl CommunityListItem {
-    pub fn delete_community_item (
-        list_id: i32, community_id: i32,
+    pub fn delete_community_items (
+        list_ids: Vec<i32>, community_id: i32,
     ) -> i16 { 
         use crate::schema::community_list_items::dsl::community_list_items;
 
         let _connection = establish_connection();
         diesel::delete (
             community_list_items
-                .filter(schema::community_list_items::list_id.eq(list_id))
+                .filter(schema::community_list_items::list_id.eq_any(list_ids))
                 .filter(schema::community_list_items::community_id.eq(community_id))
         )
         .execute(&_connection)

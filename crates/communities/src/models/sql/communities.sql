@@ -256,7 +256,8 @@ CREATE UNIQUE INDEX community_notifications_unq ON community_notifications (id, 
 CREATE TABLE community_banned_users (
     id           SERIAL PRIMARY KEY,
     community_id INT NOT NULL,
-    user_id      INT NOT NULL
+    user_id      INT NOT NULL,
+    ban_to       TIMESTAMP 
 );
 CREATE UNIQUE INDEX community_banned_users_unq ON community_banned_users (community_id, user_id);
 

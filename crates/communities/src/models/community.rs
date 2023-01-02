@@ -626,34 +626,50 @@ impl Community {
         return self.types < 10;
     }
 
-    pub fn create_banned_user(&self, user_id: i32) -> i16 {
+    pub fn create_banned_user(&self, user: User, ban_types: i16) -> i16 {
+        use crate::models::CommunityListItem;
+        use chrono::Duration;
+
+        let ban_to: Option<chrono::NaiveDateTime> = match ban_types {
+            1 => Some(chrono::Local::now().naive_utc() + Duration::hours(1)),
+            2 => Some(chrono::Local::now().naive_utc() + Duration::days(1)),
+            3 => Some(chrono::Local::now().naive_utc() + Duration::days(7)),
+            4 => Some(chrono::Local::now().naive_utc() + Duration::mounts(1)),
+            5 => Some(chrono::Local::now().naive_utc() + Duration::years(1)),
+            _ => None,
+        }
+
         let _connection = establish_connection();
         let new_banned_user = NewCommunityBannedUser {
             community_id: self.id,
-            user_id:      user_id,
+            user_id:      user.id,
+            ban_to:       ban_to,
         };
         let banned_user = diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
             .execute(&_connection);
-
+        
+        CommunityListItem::delete_community_items(user.get_communities_lists_ids(), self.id)
         if banned_user.is_ok() {
-            return 1;
+            return 1; 
         }
         else {
             return 0;
         }
     }
-    pub fn delete_banned_user(&self, user_id: i32) -> i16 {
+    pub fn delete_banned_user(&self, user: User) -> i16 {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
         let banned_user = diesel::delete (
             community_banned_users
                 .filter(schema::community_banned_users::community_id.eq(self.id))
-                .filter(schema::community_banned_users::user_id.eq(user_id))
+                .filter(schema::community_banned_users::user_id.eq(user.id))
             )
             .execute(&_connection);
 
+        let list = user.get_main_communities_list();
+        list.create_community_item(self.id);
         if banned_user.is_ok() {
             return 1;
         }
@@ -2052,12 +2068,14 @@ pub struct CommunityBannedUser {
     pub id:           i32,
     pub community_id: i32,
     pub user_id:      i32,
+    pub ban_to:       Option<chrono::NaiveDateTime>,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="community_banned_users"]
 pub struct NewCommunityBannedUser {
     pub community_id: i32,
     pub user_id:      i32,
+    pub ban_to:       Option<chrono::NaiveDateTime>,
 }
 
 /////// CommunityFollow //////
