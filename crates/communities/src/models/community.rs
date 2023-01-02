@@ -637,7 +637,7 @@ impl Community {
             4 => Some(chrono::Local::now().naive_utc() + Duration::days(30)),
             5 => Some(chrono::Local::now().naive_utc() + Duration::days(366)),
             _ => None,
-        }
+        };
 
         let _connection = establish_connection();
         let new_banned_user = NewCommunityBannedUser {

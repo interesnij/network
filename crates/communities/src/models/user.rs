@@ -1331,13 +1331,14 @@ impl User {
             .load::<CardCommunitiesList>(&_connection)
             .expect("E");
     }
-    pub fn get_communities_lists_ids(&self) -> Vec<CommunitiesList> {
+    pub fn get_communities_lists_ids(&self) -> Vec<i32> {
         use crate::schema::communities_lists::dsl::communities_lists;
 
         let _connection = establish_connection();
         return communities_lists
             .filter(schema::communities_lists::user_id.eq(self.user_id))
-            .load::<CommunitiesList>(&_connection)
+            .select(schema::communities_lists::id)
+            .load::<i32>(&_connection)
             .expect("E");
     }
 
