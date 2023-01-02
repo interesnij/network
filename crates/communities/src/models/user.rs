@@ -1361,7 +1361,7 @@ impl User {
             .expect("E");
         self.minus_communities(1);
 
-        for list in self.get_communities_lists_ids().iter() {
+        for list in self.get_communities_lists().iter() {
             diesel::delete (
                 community_list_items
                     .filter(schema::community_list_items::list_id.eq(list.id))
