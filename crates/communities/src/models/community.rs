@@ -27,6 +27,7 @@ use crate::utils::{
     CommunityCategoryJson, CardUserJson,
     CommunityPrivateJson, NewCommunityJson,
     AttachCommunityResp, CardCommunityJson,
+    CommunityDetailJson,
 };
 use crate::errors::Error;
 use crate::models::{

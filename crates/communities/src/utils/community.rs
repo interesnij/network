@@ -79,13 +79,6 @@ pub struct EditLinkResp {
 }
 
 #[derive(Deserialize)]
-pub struct ObjectData {
-    pub token:   Option<String>,
-    pub user_id: Option<i32>,
-    pub id:      Option<i32>,
-}
-
-#[derive(Deserialize)]
 pub struct SmallData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
@@ -118,9 +111,6 @@ pub struct CommunityDetailJson {
     pub image:       Option<String>,
     pub avatar_id:   Option<i32>,
     pub verified:    i16,
-    
-    
-    pub user_id:     i32,
 }
 #[derive(Deserialize, Serialize)]
 pub struct RespListJson {
