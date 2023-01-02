@@ -1,4 +1,3 @@
-//use crate::schema;
 use actix_web::{
     HttpRequest,
     HttpResponse,
@@ -14,7 +13,7 @@ use crate::utils::{
     ErrorParams, CardUserJson,
     RegListData, SearchRegListData,
     TargetListData, SearchTargetListData,
-    UsersData, UserDetailJson, TestCardUsers,
+    UsersData, UserDetailJson,
 };
 use crate::models::{User, Owner, TokenJson};
 use crate::errors::Error;
@@ -61,7 +60,7 @@ pub async fn test_all_tokens() -> Result<Json<Vec<TokenJson>>, Error> {
 pub async fn all_users_page (
     req: HttpRequest, 
     state: web::Data<AppState>
-) -> Result<Json<TestCardUsers>, Error> {
+) -> Result<Json<Vec<CardUserJson>>, Error> {
     use actix_web_httpauth::headers::authorization::{Authorization, Bearer};
     use actix_web::http::header::Header;
  
@@ -69,10 +68,6 @@ pub async fn all_users_page (
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, _user_id) = get_user_owner_data(&req, state, params.token.clone(), 0).await;
-        let auth_check = match Authorization::<Bearer>::parse(&req) {
-            Ok(ok) => 1,
-            Err(_) => 0,
-        };
         if err.is_some() {
             let body = serde_json::to_string(&ErrorParams {
                 error: err.unwrap(),
@@ -84,10 +79,7 @@ pub async fn all_users_page (
                 params.limit,
                 params.offset
             )).await?;
-            Ok(Json(TestCardUsers {
-                users: _res,
-                auth:  auth_check,
-            }))
+            Ok(Json(_res))
         }
     } 
     else {

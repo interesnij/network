@@ -26,7 +26,7 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     CommunityCategoryJson, CardUserJson,
     CommunityPrivateJson, NewCommunityJson,
-    AttachCommunityResp, 
+    AttachCommunityResp, CardCommunityJson,
 };
 use crate::errors::Error;
 use crate::models::{
@@ -249,6 +249,27 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn get_all_communities (
+        &self, 
+        limit:  Option<i64>,
+        offset: Option<i64>
+    ) -> Vec<CardCommunityJson> {
+        use crate::schema::communitys::dsl::communitys;
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        return communitys
+            .filter(schema::communitys::types.lt(20))
+            .select((
+                schema::communitys::user_id,
+                schema::communitys::name,
+                schema::communitys::link,
+                schema::communitys::s_avatar.nullable(),
+                schema::communitys::members,
+            ))
+            .load::<CardCommunityJson>(&_connection)
+            .expect("E.");
+    }
     pub fn get_communities_for_attach(ids: Vec<i32>) -> Vec<AttachCommunityResp> {
         use crate::schema::communitys::dsl::communitys;
 
@@ -648,7 +669,7 @@ impl Community {
         let banned_user = diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
             .execute(&_connection);
-        if ban_to.is_none() {
+        if ban_to.is_none() { 
             CommunityListItem::delete_community_items(user.get_communities_lists_ids(), self.id);
         }
             if banned_user.is_ok() {

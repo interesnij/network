@@ -176,6 +176,46 @@ impl User {
             .load::<CardCommunityJson>(&_connection)
             .expect("E.");
     }
+    pub fn get_communities_of_list (
+        &self,
+        list_id: Option<i32>,
+        limit:   Option<i64>,
+        offset:  Option<i64>
+    ) -> Vec<CardCommunityJson> {
+        use crate::schema::{
+            community_list_items::dsl::community_list_items,
+            communitys::dsl::communitys,
+        };
+        let current_list_id: i32;
+        if list_id.is_some() {
+            current_list_id = list_id.unwrap();
+        }
+        else {
+            current_list_id = self.get_main_communities_list().id;
+        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let communities_ids = community_list_items
+            .filter(schema::community_list_items::list_id.eq(current_list_id))
+            .order(schema::community_list_items::visited.desc())
+            .select(schema::community_list_items::community_id)
+            .limit(_limit)
+            .offset(_offset)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        return communitys
+            .filter(schema::communitys::id.eq_any(communities_ids))
+            .filter(schema::communitys::types.lt(20))
+            .select((
+                schema::communitys::user_id,
+                schema::communitys::name,
+                schema::communitys::link,
+                schema::communitys::s_avatar.nullable(),
+                schema::communitys::members,
+            ))
+            .load::<CardCommunityJson>(&_connection)
+            .expect("E.");
+    }
     pub fn get_limit_communities(&self, limit: Option<i64>) -> Vec<CardCommunityJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,

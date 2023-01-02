@@ -22,12 +22,6 @@ pub struct AttachUserResp {
 } 
 
 #[derive(Serialize, Queryable)]
-pub struct TestCardUsers {
-    pub users:    Vec<CardUserJson>,
-    pub auth:     i32,
-} 
-
-#[derive(Serialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
     pub id:         i32,
