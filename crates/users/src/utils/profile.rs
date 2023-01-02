@@ -13,6 +13,8 @@ pub struct UserDetailJson {
     pub image:         Option<String>,
     pub birthday:      String,
     pub last_activity: String,
+    pub verified:      i16,
+    pub slug:          String,
 }
 
 ////////

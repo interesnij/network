@@ -67,6 +67,12 @@ pub struct KeyValue {
     pub info:  String,
 }
 
+#[derive(Deserialize)]
+pub struct ObjectData {
+    pub token: Option<String>,
+    pub id:    Option<i32>,
+}
+
 #[derive(Serialize)]
 pub struct EditLinkResp {
     pub link: String,
@@ -102,16 +108,18 @@ pub struct CommunitySubcategoryJson {
 }
 ////////
 #[derive(Serialize)]
-pub struct CommunityDetailJson {
+pub struct CommunityDetailJson { 
     pub id:          i32,
     pub name:        String,
-    pub description: Option<String>,
     pub status:      Option<String>,
-    pub types:       i16,
-    pub perm:        String,
-    pub link:        String, // community.get_link()
-    pub image:       String,
+    pub slug:        String,
+    pub description: Option<String>,
     pub cover:       Option<String>,
+    pub image:       Option<String>,
+    pub avatar_id:   Option<i32>,
+    pub verified:    i16,
+    
+    
     pub user_id:     i32,
 }
 #[derive(Deserialize, Serialize)]

@@ -13,7 +13,7 @@ use crate::utils::{
     ErrorParams, CardUserJson,
     RegListData, SearchRegListData,
     TargetListData, SearchTargetListData,
-    UsersData, UserDetailJson,
+    UsersData, UserDetailJson, ObjectData,
 };
 use crate::models::{User, Owner, TokenJson};
 use crate::errors::Error;
@@ -94,7 +94,7 @@ pub async fn profile_page (
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<UserDetailJson>, Error> {
-    let params_some = web::Query::<UsersData>::from_query(&req.query_string());
+    let params_some = web::Query::<ObjectData>::from_query(&req.query_string());
     if params_some.is_ok() { 
         let params = params_some.unwrap();
         let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 1).await;
@@ -104,22 +104,22 @@ pub async fn profile_page (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if params.target_id.is_none() {
+        else if params.id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'target_id' not found!".to_string(),
+                error: "parametr 'id' not found!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else {
             let owner: User;
-            let owner_res = get_user(params.target_id.unwrap());
+            let owner_res = get_user(params.id.unwrap());
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
             else {
                 // если список по id не найден...
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "owner not found!".to_string(),
+                    error: "user not found!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }

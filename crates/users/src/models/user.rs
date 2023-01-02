@@ -502,6 +502,15 @@ impl User {
               b = "".to_string();
           },
         };
+
+        let verified: i16;
+        if self.is_verified() {
+            verified = 1;
+        }
+        else {
+            verified = 0;
+        }
+
         let user_json = UserDetailJson {
              id:            self.id, 
              first_name:    self.first_name.clone(),
@@ -512,6 +521,8 @@ impl User {
              image:         image,
              birthday:      b,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
+             verified:      verified,
+             slug:          self.get_slug(),
          };
          return user_json;
     }

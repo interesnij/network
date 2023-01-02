@@ -249,6 +249,50 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn get_community_detail_json(&self) -> CommunityDetailJson {
+        let description: Option<String>;
+        let cover: Option<String>; 
+        let image: Option<String>;
+        let avatar_id: Option<i32>;
+
+        let info = self.get_info_model();
+        match info {
+          Ok(_ok) => {
+            description = _ok.description;
+            cover = _ok.cover;
+            image = _ok.image;
+            avatar_id = _ok.avatar_id;
+          },
+          Err(_error) => {
+            description = None;
+            cover = None;
+            image = None;
+            avatar_id = None;
+          },
+        };
+
+        let verified: i16;
+        if self.is_verified() {
+            verified = 1;
+        }
+        else {
+            verified = 0;
+        }
+
+        let user_json = CommunityDetailJson {
+             id:          self.id, 
+             name:        self.name.clone(),
+             status:      self.status.clone(),
+             slug:        self.get_slug(),
+             description: description,
+             cover:       cover,
+             image:       image,
+             avatar_id:   avatar_id,
+             verified:    verified,
+         };
+         return user_json;
+    }
+
     pub fn get_all_communities (
         limit:  Option<i64>,
         offset: Option<i64>
