@@ -12,7 +12,7 @@ use crate::errors::Error;
 use crate::models::{User, Community, Owner, TokenJson};
 use crate::utils::{
     CardCommunityJson, RegListData,
-    get_owner_data,
+    get_owner_data, ErrorParams,
 };
 
 

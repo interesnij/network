@@ -250,7 +250,6 @@ pub struct NewCommunity {
 
 impl Community {
     pub fn get_all_communities (
-        &self, 
         limit:  Option<i64>,
         offset: Option<i64>
     ) -> Vec<CardCommunityJson> {
