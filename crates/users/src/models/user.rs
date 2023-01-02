@@ -503,12 +503,12 @@ impl User {
           },
         };
 
-        let verified: i16;
-        if self.is_verified() {
-            verified = 1;
+        let identified: i16;
+        if self.is_identified() {
+            identified = 1;
         }
         else {
-            verified = 0;
+            identified = 0;
         }
 
         let user_json = UserDetailJson {
@@ -521,7 +521,7 @@ impl User {
              image:         image,
              birthday:      b,
              last_activity: self.last_activity.format("%d-%m-%Y в %H:%M").to_string(),
-             verified:      verified,
+             identified:    identified,
              slug:          self.get_slug(),
          };
          return user_json;

@@ -110,7 +110,7 @@ pub struct CommunityDetailJson {
     pub cover:       Option<String>,
     pub image:       Option<String>,
     pub avatar_id:   Option<i32>,
-    pub verified:    i16,
+    pub identified:  i16,
 }
 #[derive(Deserialize, Serialize)]
 pub struct RespListJson {

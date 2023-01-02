@@ -259,9 +259,9 @@ impl Community {
         let info = self.get_info_model();
         match info {
           Ok(_ok) => {
-            description = _ok.description;
+            description = _ok.description; 
             cover = _ok.cover;
-            image = _ok.image;
+            image = _ok.b_avatar;
             avatar_id = _ok.avatar_id;
           },
           Err(_error) => {
@@ -272,12 +272,12 @@ impl Community {
           },
         };
 
-        let verified: i16;
-        if self.is_verified() {
-            verified = 1;
+        let identified: i16;
+        if self.is_identified() {
+            identified = 1;
         }
         else {
-            verified = 0;
+            identified = 0;
         }
 
         let user_json = CommunityDetailJson {
@@ -289,7 +289,7 @@ impl Community {
              cover:       cover,
              image:       image,
              avatar_id:   avatar_id,
-             verified:    verified,
+             identified:  identified,
          };
          return user_json;
     }
