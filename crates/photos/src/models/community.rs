@@ -1229,17 +1229,17 @@ impl Community {
         return self.types > 40 || self.types < 60;
     }
     pub fn is_private(&self) -> bool {
-        return self.types == 3;
+        return self.types == 3 || self.types == 9 || self.types == 15;
     }
     pub fn is_close(&self) -> bool {
-        return self.types == 2;
+        return self.types == 2 || self.types == 8 || self.types == 14;
     }
     pub fn is_public(&self) -> bool {
-        return self.types == 1;
+        return self.types == 1 || self.types == 7 || self.types == 13;
     }
     pub fn is_open(&self) -> bool {
-        return self.types < 10;
-    }
+        return self.types < 20;
+    }E
     pub fn is_user_in_ban(&self, user_id: i32) -> bool {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
