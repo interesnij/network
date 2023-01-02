@@ -13,7 +13,7 @@ use crate::models::{User, Community, Owner, TokenJson};
 use crate::utils::{
     CardCommunityJson, RegListData,
     get_owner_data,
-}
+};
 
 
 pub fn pages_urls(config: &mut web::ServiceConfig) {
