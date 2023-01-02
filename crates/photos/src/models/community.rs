@@ -1239,7 +1239,7 @@ impl Community {
     }
     pub fn is_open(&self) -> bool {
         return self.types < 20;
-    }E
+    }
     pub fn is_user_in_ban(&self, user_id: i32) -> bool {
         use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
