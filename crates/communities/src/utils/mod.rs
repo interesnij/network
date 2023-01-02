@@ -178,8 +178,14 @@ pub fn get_community_permission(community: &Community, user_id: i32)
     else if community.is_user_in_ban(user_id) {
         return (false, community.name.clone() + &": сообщество добавило Вас в чёрный список".to_string())
     }
-    else { 
-        return (true, "Открыто".to_string())
+    else {
+        if (community.types > 6 || community.is_user_member(user_id))
+        || community.is_public() {
+            return (true, "Открыто".to_string())
+        }
+        else {
+            return (false, "Закрыто".to_string()) 
+        }
     }
 }
 
@@ -198,11 +204,13 @@ pub fn get_anon_community_permission(community: &Community)
         }
         else { return (false, "Закрыто".to_string())}
     }
-    else if community.is_user_in_ban(user_id) {
-        return (false, community.name.clone() + &": сообщество добавило Вас в чёрный список".to_string())
-    }
     else { 
-        return (true, "Открыто".to_string())
+        if community.is_public() {
+            return (true, "Открыто".to_string())
+        }
+        else {
+            return (false, "Закрыто".to_string()) 
+        }
     }
 }
 
