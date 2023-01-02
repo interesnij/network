@@ -30,7 +30,7 @@ use crate::utils::{
 };
 use crate::errors::Error;
 use crate::models::{
-    TokenDetailJson, TokenJson,
+    TokenDetailJson, TokenJson, User,
 };
 
 /////// CommunityCategories //////
@@ -634,8 +634,8 @@ impl Community {
             1 => Some(chrono::Local::now().naive_utc() + Duration::hours(1)),
             2 => Some(chrono::Local::now().naive_utc() + Duration::days(1)),
             3 => Some(chrono::Local::now().naive_utc() + Duration::days(7)),
-            4 => Some(chrono::Local::now().naive_utc() + Duration::mounts(1)),
-            5 => Some(chrono::Local::now().naive_utc() + Duration::years(1)),
+            4 => Some(chrono::Local::now().naive_utc() + Duration::days(30)),
+            5 => Some(chrono::Local::now().naive_utc() + Duration::days(366)),
             _ => None,
         }
 
@@ -648,9 +648,10 @@ impl Community {
         let banned_user = diesel::insert_into(schema::community_banned_users::table)
             .values(&new_banned_user)
             .execute(&_connection);
-        
-        CommunityListItem::delete_community_items(user.get_communities_lists_ids(), self.id)
-        if banned_user.is_ok() {
+        if ban_to.is_none() {
+            CommunityListItem::delete_community_items(user.get_communities_lists_ids(), self.id);
+        }
+            if banned_user.is_ok() {
             return 1; 
         }
         else {

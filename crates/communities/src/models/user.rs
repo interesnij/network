@@ -5,6 +5,7 @@ use crate::utils::{
     get_limit,
     CardUserJson,
     CardCommunityJson,
+    CardCommunitiesList,
 };
 use diesel::{
     Queryable,
@@ -951,7 +952,7 @@ impl User {
     }
 
     pub fn is_online(&self) -> bool {
-        use chrono::Duration;
+        use chrono::Duration; 
         return (self.last_activity + Duration::seconds(300)) > chrono::Local::now().naive_utc();
     }
     pub fn get_online_status(&self) -> String {
