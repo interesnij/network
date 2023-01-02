@@ -1331,6 +1331,15 @@ impl User {
             .load::<CardCommunitiesList>(&_connection)
             .expect("E");
     }
+    pub fn get_communities_lists_obj(&self) -> Vec<CommunitiesList> {
+        use crate::schema::communities_lists::dsl::communities_lists;
+
+        let _connection = establish_connection();
+        return communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
+            .load::<CommunitiesList>(&_connection)
+            .expect("E");
+    }
     pub fn get_communities_lists_ids(&self) -> Vec<i32> {
         use crate::schema::communities_lists::dsl::communities_lists;
 
@@ -1361,7 +1370,7 @@ impl User {
             .expect("E");
         self.minus_communities(1);
 
-        for list in self.get_communities_lists().iter() {
+        for list in self.get_communities_lists_obj().iter() {
             diesel::delete (
                 community_list_items
                     .filter(schema::community_list_items::list_id.eq(list.id))
