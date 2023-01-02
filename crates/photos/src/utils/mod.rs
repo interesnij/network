@@ -313,7 +313,7 @@ pub fn get_user_permission(user: &User, user_id: i32)
         }
         else { return (false, "Закрыто".to_string())}
     }
-    else if user.types 3 10 {
+    else if user.types > 30 {
         if user.is_closed() {
             return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
         }
