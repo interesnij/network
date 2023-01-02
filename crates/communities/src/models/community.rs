@@ -250,6 +250,13 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn is_identified_send(&self) -> bool {
+        return self.types > 6 && self.types < 10;
+    }
+    pub fn is_identified(&self) -> bool {
+        return self.types > 13 && self.types < 16;
+    }
+
     pub fn get_community_detail_json(&self) -> CommunityDetailJson {
         let description: Option<String>;
         let cover: Option<String>; 
