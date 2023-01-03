@@ -634,7 +634,7 @@ pub async fn restore_community (
 
             let copy_community = MinimalData { 
                 token:   Some(TOKEN.to_string()),
-                community_id: Some(owner.id),
+                community_id: Some(c_id),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
