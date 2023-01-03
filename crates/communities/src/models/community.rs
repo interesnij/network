@@ -24,7 +24,7 @@ use diesel::{
 use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection, get_limit_offset,
-    CommunityCategoryJson, CardUserJson,
+    CommunityCategoryJson, CardUserJson, KeyValue,
     CommunityPrivateJson, NewCommunityJson,
     AttachCommunityResp, CardCommunityJson,
     CommunityDetailJson, EditNotifyResp, EditPrivateResp,

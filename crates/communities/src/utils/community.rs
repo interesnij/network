@@ -69,6 +69,12 @@ pub struct ObjectData {
     pub id:           Option<i32>,
 }
 
+#[derive(Deserialize)]
+pub struct MinimalData {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+}
+
 #[derive(Serialize)]
 pub struct EditNotifyResp {
     pub community_id:       i32,
