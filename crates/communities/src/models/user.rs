@@ -143,6 +143,93 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_common_friends_of_community (
+        &self, 
+        community_id: i32, 
+        limit: i64, 
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            communities_memberships::dsl::communities_memberships,
+        };
+
+        let _connection = establish_connection();
+        let self_friends = self.get_friends_ids();
+        let members_of_community = communities_memberships
+            .filter(schema::communities_memberships::community_id.eq(community_id))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::communities_memberships::user_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let mut stack = Vec::new();
+        let mut count = 0;
+        for member in members_of_community.iter() {
+            if self_friends.iter().any(|i| i==&member.user_id) && count < limit {
+                stack.push(member.user_id);
+                count += 1;
+            }
+        }
+        return users
+            .filter(schema::users::user_id.eq_any(stack))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::user_id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+    }
+
+    pub fn search_common_friends_of_community (
+        &self,
+        community_id: i32,
+        q: &String,
+        limit: i64,
+        offset: i64
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            communities_memberships::dsl::communities_memberships,
+        };
+
+        let _connection = establish_connection();
+        let self_friends = self.get_friends_ids();
+        let members_of_community = communities_memberships
+            .filter(schema::communities_memberships::community_id.eq(community_id))
+            .limit(limit)
+            .offset(offset)
+            .select(schema::communities_memberships::user_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let mut stack = Vec::new();
+        let mut count = 0;
+        for member in members_of_community.iter() {
+            if self_friends.iter().any(|i| i==&member.user_id) && count < limit {
+                stack.push(member.user_id);
+                count += 1;
+            }
+        }
+        return users
+            .filter(schema::users::user_id.eq_any(stack))
+            .filter(schema::users::types.lt(31))
+            .filter(schema::users::first_name.ilike(&q))
+            .or_filter(schema::users::first_name.ilike(&q))
+            .select((
+                schema::users::user_id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+    }
+
     pub fn get_communities (
         &self, 
         limit:  Option<i64>,

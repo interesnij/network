@@ -321,6 +321,28 @@ impl Community {
             .load::<CardCommunityJson>(&_connection)
             .expect("E.");
     }
+    pub fn search_all_communities (
+        q:      &String,
+        limit:  Option<i64>,
+        offset: Option<i64>
+    ) -> Vec<CardCommunityJson> {
+        use crate::schema::communitys::dsl::communitys;
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        return communitys
+            .filter(schema::users::name.ilike(&q))
+            .filter(schema::communitys::types.lt(20))
+            .select((
+                schema::communitys::user_id,
+                schema::communitys::name,
+                schema::communitys::link,
+                schema::communitys::s_avatar.nullable(),
+                schema::communitys::members,
+            ))
+            .load::<CardCommunityJson>(&_connection)
+            .expect("E.");
+    }
     pub fn get_communities_for_attach(ids: Vec<i32>) -> Vec<AttachCommunityResp> {
         use crate::schema::communitys::dsl::communitys;
 

@@ -970,7 +970,7 @@ pub async fn search_user_blacklist_page (
             let q = params.q.clone().unwrap();
             if q.is_empty() {
                 let body = serde_json::to_string(&ErrorParams {
-                    error: "Field 'q' is required!".to_string(),
+                    error: "Field 'q' is empty!".to_string(),
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }

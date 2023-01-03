@@ -150,19 +150,7 @@ pub fn get_moderation(id: i32) -> Result<Moderated, Error> {
 pub fn get_community_permission(community: &Community, user_id: i32)
     -> (bool, String) {
 
-    let request_user = get_user(user_id).expect("E.");
-    if request_user.types > 30 {
-        if request_user.is_closed() {
-            return (false, "Ваш профиль заблокирован за нарушение правил сайта".to_string())
-        }
-        else if request_user.is_deleted() {
-            return (false, "Ваш профиль удален".to_string())
-        }
-        else if request_user.is_suspended() {
-            return (false, "Ваш профиль будет разморожен ".to_string() + &request_user.get_longest_penalties())
-        }
-        else { return (false, "Закрыто".to_string())}
-    }
+    e
     else if community.types > 20 {
         if community.is_closed() {
             return (false, community.name.clone() + &": сообщество заблокировано за нарушение правил сайта".to_string())
