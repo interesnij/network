@@ -23,6 +23,7 @@ use serde::{Serialize, Deserialize};
 pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/create_user", web::post().to(create_user));
     config.route("/delete_user", web::post().to(delete_user));
+    config.route("/restore_user", web::post().to(restore_user));
     config.route("/edit_user_name", web::post().to(edit_user_name));
     config.route("/update_last_activity", web::post().to(update_last_activity));
     config.route("/edit_user_link", web::post().to(edit_user_link));
@@ -37,6 +38,7 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     
     config.route("/create_community", web::post().to(create_community));
     config.route("/delete_community", web::post().to(delete_community));
+    config.route("/restore_community", web::post().to(restore_community));
     config.route("/edit_community_name", web::post().to(edit_community_name));
     config.route("/edit_community_link", web::post().to(edit_community_link));
     config.route("/edit_community_avatar", web::post().to(edit_community_avatar));
@@ -126,6 +128,25 @@ pub async fn delete_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
         if data.token.as_deref().unwrap() == TOKEN {
             let user = get_user(data.id.unwrap()).expect("E.");
             let _res = block(move || user.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn restore_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).expect("E.");
+            let _res = block(move || user.restore_item()).await?;
             Ok(Json(_res))
         }
         else {
@@ -485,6 +506,25 @@ pub async fn delete_community(data: Json<ItemParams>) -> Result<Json<i16>, Error
         if data.token.as_deref().unwrap() == TOKEN {
             let community = get_community(data.id.unwrap()).expect("E.");
             let _res = block(move || community.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn restore_community(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let community = get_community(data.id.unwrap()).expect("E.");
+            let _res = block(move || community.restore_item()).await?;
             Ok(Json(_res))
         }
         else {

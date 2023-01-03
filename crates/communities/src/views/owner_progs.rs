@@ -7,6 +7,7 @@ use actix_web::{
 use serde::Deserialize;
 use crate::models::{
     TokenDetailJson, TokenJson, Community, Owner, OwnerService,
+    NewUserJson, 
 };
 use crate::utils::{ 
     get_user_owner_data, 
@@ -14,7 +15,7 @@ use crate::utils::{
     get_owner, 
     //get_user, 
     ErrorParams, ObjectData, SmallData,
-    EditTokenPageResp,
+    EditTokenPageResp, ItemParams, 
 }; 
 use crate::errors::Error;
 use crate::AppState;
@@ -31,6 +32,21 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/create_token", web::post().to(create_token));
     config.route("/edit_token", web::post().to(edit_token));
     config.route("/delete_token", web::post().to(delete_token));
+
+    config.route("/create_user", web::post().to(create_user));
+    config.route("/delete_user", web::post().to(delete_user));
+    config.route("/restore_user", web::post().to(restore_user));
+    config.route("/edit_user_name", web::post().to(edit_user_name));
+    config.route("/update_last_activity", web::post().to(update_last_activity));
+    config.route("/edit_user_link", web::post().to(edit_user_link));
+    config.route("/edit_user_avatar", web::post().to(edit_user_avatar));
+    config.route("/edit_user_password", web::post().to(edit_user_password)); 
+    config.route("/create_friend", web::post().to(create_friend));
+    config.route("/create_follow", web::post().to(create_follow));
+    config.route("/create_block_user", web::post().to(create_block_user));
+    config.route("/delete_friend", web::post().to(delete_friend));
+    config.route("/delete_follow", web::post().to(delete_follow));
+    config.route("/delete_block_user", web::post().to(delete_block_user));
 }
 
  /*
@@ -38,6 +54,407 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     Токены приложения - для приложений, которые работают как наше пользовательское,
     работающее не для себя, а для других в том числе.
  */
+
+ static TOKEN: &str = "111";
+
+#[derive(Deserialize)]
+pub struct AddTargetParams {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub target_id: Option<i32>,
+}
+
+// manager send!
+// создаем пользователя сервиса, создателя списков, постов, комментов
+pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.first_name.is_none() {
+        Err(Error::BadRequest("Field 'first_name' is required!".to_string()))
+    }
+    else if data.is_man.is_none() {
+        Err(Error::BadRequest("Field 'is_man' is required!".to_string()))
+    }
+    else if data.password.is_none() {
+        Err(Error::BadRequest("Field 'password' is required!".to_string()))
+    }
+    else if data.last_name.is_none() {
+        Err(Error::BadRequest("Field 'last_name' is required!".to_string()))
+    }
+    else if data.types.is_none() {
+        Err(Error::BadRequest("Field 'types' is required!".to_string()))
+    }
+    else if data.link.is_none() {
+        Err(Error::BadRequest("Field 'link' is required!".to_string()))
+    }
+    else {
+        let is_man: bool;
+        if data.is_man.unwrap() != 1 {
+            is_man = false;
+        }
+        else {
+            is_man = true;
+        }
+        if data.token.as_deref().unwrap() == TOKEN {
+            let _res = block(move || User::create_user(
+                data.user_id.unwrap(),
+                data.first_name.as_deref().unwrap().to_string(),
+                data.last_name.as_deref().unwrap().to_string(),
+                data.types.unwrap(),
+                is_man,
+                data.password.as_deref().unwrap().to_string(),
+                data.link.as_deref().unwrap().to_string(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn delete_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).expect("E.");
+            let _res = block(move || user.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn restore_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).expect("E.");
+            let _res = block(move || user.restore_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct UserNameParams {
+    pub token:      Option<String>,
+    pub user_id:    Option<i32>,
+    pub first_name: Option<String>,
+    pub last_name:  Option<String>,
+}
+// manager send!
+pub async fn edit_user_name(data: Json<UserNameParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.first_name.is_none() {
+        Err(Error::BadRequest("Field 'first_name' is required!".to_string()))
+    }
+    else if data.last_name.is_none() {
+        Err(Error::BadRequest("Field 'last_name' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.edit_name(
+                data.first_name.as_deref().unwrap(),
+                data.last_name.as_deref().unwrap()
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn update_last_activity(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).expect("E.");
+            let _res = block(move || user.update_last_activity()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct UserLinkParams {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub link:    Option<String>,
+}
+// manager send!
+pub async fn edit_user_link(data: Json<UserLinkParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.link.is_none() {
+        Err(Error::BadRequest("Field 'link' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.edit_link (
+                data.link.as_deref().unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct UserAvatarParams {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub avatar:  Option<String>,
+}
+// manager send!
+pub async fn edit_user_avatar(data: Json<UserAvatarParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.avatar.is_none() {
+        Err(Error::BadRequest("Field 'avatar' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.edit_link(
+                data.avatar.as_deref().unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct UserPasswordParams {
+    pub token:    Option<String>,
+    pub user_id:  Option<i32>,
+    pub password: Option<String>,
+}
+// manager send!
+pub async fn edit_user_password(data: Json<UserPasswordParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.password.is_none() {
+        Err(Error::BadRequest("Field 'password' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.edit_password (
+                data.password.as_deref().unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+
+// manager send!
+pub async fn create_friend(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.target_id.is_none() {
+        Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.frend_user (
+                data.target_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn create_follow(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.target_id.is_none() {
+        Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.follow_user (
+                data.target_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn create_block_user(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.target_id.is_none() {
+        Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.block_user (
+                data.target_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn delete_friend(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.target_id.is_none() {
+        Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.unfrend_user (
+                data.target_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn delete_follow(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.target_id.is_none() {
+        Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.unfollow_user (
+                data.target_id.unwrap(), 
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn delete_block_user(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.target_id.is_none() {
+        Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.user_id.unwrap()).expect("E.");
+            let _res = block(move || user.unblock_user (
+                data.target_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
 
 #[derive(Deserialize)]
 pub struct TokenData {
