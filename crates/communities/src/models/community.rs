@@ -331,7 +331,7 @@ impl Community {
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         return communitys
-            .filter(schema::users::name.ilike(&q))
+            .filter(schema::communitys::name.ilike(&q))
             .filter(schema::communitys::types.lt(20))
             .select((
                 schema::communitys::user_id,
