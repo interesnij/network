@@ -631,7 +631,7 @@ pub async fn restore_account (
         if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
             let body = block(move || owner.restore_item()).await?;
 
-            let copy_community = MinimalData {
+            let copy_community = MinimalData { 
                 token:   Some(TOKEN.to_string()),
                 community_id: Some(owner.id),
             };

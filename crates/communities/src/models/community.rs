@@ -766,6 +766,62 @@ impl Community {
         }
         return 0;
     }
+    pub fn delete_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let _case = match self.types {
+            1 => 21,
+            2 => 22,
+            3 => 23,
+            7 => 27,
+            8 => 28,
+            9 => 29,
+            13 => 33,
+            14 => 34,
+            15 => 35,
+            _ => 0,
+        };
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
+
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        return 0;
+    }
+    pub fn restore_item(&self) -> i16 {
+        let _connection = establish_connection();
+        let _case = match self.types {
+            21 => 1,
+            22 => 2,
+            23 => 3,
+            27 => 7,
+            28 => 8,
+            29 => 9,
+            33 => 13,
+            34 => 14,
+            35 => 15,
+            _ => 0,
+        };
+        if _case != 0 {
+            let o = diesel::update(self)
+                .set(schema::communitys::types.eq(_case))
+                .execute(&_connection);
+
+            if o.is_ok() {
+                return 1;
+            }
+            else {
+                return 0;
+            }
+        }
+        return 0;
+    }
     pub fn get_longest_penalties(&self) -> String {
         return "".to_string();
     }
