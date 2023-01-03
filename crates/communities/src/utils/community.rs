@@ -88,7 +88,7 @@ pub struct EditNameResp {
     pub name:         String,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct SmallData {
     pub token:        Option<String>,
     pub community_id: Option<i32>,

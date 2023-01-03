@@ -5,7 +5,7 @@ use actix_web::{
     HttpRequest,
 };
 use crate::utils::{
-    get_user, get_user_owner_data,
+    get_user, get_user_owner_data, get_community,
     ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditLinkResp,
     KeyValue, EditNotifyResp, COMMUNITIES_SERVICES, TOKEN, 
@@ -340,7 +340,7 @@ pub async fn edit_link (
             let link = data.link.clone();
             let body = block(move || owner.edit_link(data.link.as_deref().unwrap())).await?;
             if body == 1 {
-                let copy_community = EditNameData {
+                let copy_community = EditLinkData {
                     token:        Some(TOKEN.to_string()),
                     community_id: Some(owner.id),
                     link:         link,
