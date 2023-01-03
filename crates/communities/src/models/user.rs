@@ -146,8 +146,8 @@ impl User {
     pub fn get_common_friends_of_community (
         &self, 
         community_id: i32, 
-        limit: i64, 
-        offset: i64
+        limit: Option<i64>, 
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
@@ -155,6 +155,7 @@ impl User {
         };
 
         let _connection = establish_connection();
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let self_friends = self.get_friends_ids();
         let members_of_community = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(community_id))
@@ -189,8 +190,8 @@ impl User {
         &self,
         community_id: i32,
         q: &String,
-        limit: i64,
-        offset: i64
+        limit: Option<i64>,
+        offset: Option<i64>
     ) -> Vec<CardUserJson> {
         use crate::schema::{
             users::dsl::users,
@@ -199,7 +200,7 @@ impl User {
 
         let _connection = establish_connection();
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        
+
         let self_friends = self.get_friends_ids();
         let members_of_community = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(community_id))
