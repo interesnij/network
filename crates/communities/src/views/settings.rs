@@ -525,7 +525,7 @@ pub async fn edit_private (
     }
 }
 
-pub async fn delete_account (
+pub async fn delete_community (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<SmallData>
@@ -589,7 +589,7 @@ pub async fn delete_account (
         }
     }
 }
-pub async fn restore_account (
+pub async fn restore_community (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<MinimalData>
