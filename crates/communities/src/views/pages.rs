@@ -498,7 +498,7 @@ pub async fn search_common_members_page (
                 else {
                     let user = get_user(user_id).expect("E.");
                     let body = block(move || user.search_common_friends_of_community (
-                        owner.id,
+                        owner.id, 
                         &q,
                         params.limit,
                         params.offset

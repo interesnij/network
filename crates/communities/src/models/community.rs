@@ -27,7 +27,7 @@ use crate::utils::{
     CommunityCategoryJson, CardUserJson,
     CommunityPrivateJson, NewCommunityJson,
     AttachCommunityResp, CardCommunityJson,
-    CommunityDetailJson,
+    CommunityDetailJson, EditNotifyResp, EditPrivateResp,
 };
 use crate::errors::Error;
 use crate::models::{
@@ -250,6 +250,127 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn get_notify_json(&self) -> EditNotifyResp {
+        let notify = self.get_notify_model().expect("E.");
+        return EditNotifyResp {
+            community_id:         self.id,
+            connection_request:   notify.connection_request,
+            connection_confirmed: notify.connection_confirmed,
+        }
+    }
+    pub fn get_private_field(value: i16) -> KeyValue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Подписчики",
+            3 => "Персонал",
+            4 => "Администраторы",
+            5 => "Владелец сообщества",
+            6 => "Подписчики, кроме",
+            7 => "Некоторые подписчики",
+            _ => "Ошибка",
+        };
+        return KeyValue {
+            value: value,
+            info:  info.to_string(),
+        }
+    }
+    pub fn get_private_json(&self) -> EditPrivateResp {
+        let see_member_exclude_members:    Option<Vec<CardUserJson>>;
+        let see_member_exclude_members:    Option<Vec<CardUserJson>>;
+        let see_info_exclude_member:   Option<Vec<CardUserJson>>;
+        let see_info_exclude_member:   Option<Vec<CardUserJson>>;
+        let see_settings_exclude_member: Option<Vec<CardUserJson>>;
+        let see_settings_exclude_member: Option<Vec<CardUserJson>>;
+        let see_log_include_member: Option<Vec<CardUserJson>>;
+        let see_log_include_member: Option<Vec<CardUserJson>>;
+        let see_stat_include_member: Option<Vec<CardUserJson>>;
+        let see_stat_include_member: Option<Vec<CardUserJson>>;
+
+        let private = self.get_private_model().expect("E.");
+        
+        if private.see_member == 6 {
+            see_member_exclude_members = Some(self.get_limit_see_member_exclude_members(Some(20), Some(0)));
+        }
+        else {
+            see_member_exclude_members = None;
+        }
+        if private.see_member == 7 {
+            see_member_include_members = Some(self.get_limit_see_member_include_members(Some(20), Some(0)));
+        }
+        else {
+            see_member_include_members = None;
+        }
+
+        if private.see_info == 6 {
+            see_info_exclude_members = Some(self.get_limit_see_info_exclude_members(Some(20), Some(0)));
+        }
+        else {
+            see_info_exclude_members = None;
+        }
+        if private.see_info == 7 {
+            see_info_include_members = Some(self.get_limit_see_info_include_members(Some(20), Some(0)));
+        }
+        else {
+            see_info_include_members = None;
+        }
+
+        if private.see_settings == 6 {
+            see_settings_exclude_members = Some(self.get_limit_see_settings_exclude_members(Some(20), Some(0)));
+        }
+        else {
+            see_settings_exclude_members = None;
+        }
+        if private.see_settings == 7 {
+            see_settings_include_members = Some(self.get_limit_see_settings_include_members(Some(20), Some(0)));
+        }
+        else {
+            see_settings_include_members = None;
+        }
+
+        if private.see_log == 6 {
+            see_log_exclude_members = Some(self.get_limit_see_log_exclude_members(Some(20), Some(0)));
+        }
+        else {
+            see_log_exclude_members = None;
+        }
+        if private.see_log == 7 {
+            see_log_include_members = Some(self.get_limit_see_log_include_members(Some(20), Some(0)));
+        }
+        else {
+            see_log_include_members = None;
+        }
+
+        if private.see_stat == 6 {
+            see_stat_exclude_members = Some(self.get_limit_see_stat_exclude_members(Some(20), Some(0)));
+        }
+        else {
+            see_stat_exclude_members = None;
+        }
+        if private.see_stat == 7 {
+            see_stat_include_members = Some(self.get_limit_see_stat_include_members(Some(20), Some(0)));
+        }
+        else {
+            see_stat_include_members = None;
+        }
+    
+        return EditPrivateResp {
+            see_member:                   Community::get_private_field(private.see_member),
+            see_info:                     Community::get_private_field(private.see_info),
+            see_settings:                 Community::get_private_field(private.see_settings),
+            see_log:                      Community::get_private_field(private.see_log),
+            see_stat:                     Community::get_private_field(private.see_stat),
+            see_member_exclude_members:   see_member_exclude_members,
+            see_member_include_members:   see_member_include_members,
+            see_info_exclude_members:     see_info_exclude_members,
+            see_info_include_members:     see_info_include_members,
+            see_settings_exclude_members: see_settings_exclude_members,
+            see_settings_include_members: see_settings_include_members,
+            see_log_exclude_members:      see_log_exclude_members,
+            see_log_include_members:      see_log_include_members,
+            see_stat_exclude_members:     see_stat_exclude_members,
+            see_stat_include_members:     see_stat_include_members,
+        };
+    }
     pub fn is_identified_send(&self) -> bool {
         return self.types > 6 && self.types < 10;
     }

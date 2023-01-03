@@ -2,6 +2,8 @@ use serde::{Serialize, Deserialize};
 use crate::models::OwnerService;
 
 
+pub static TOKEN: &str = "111";
+
 // список url сервисов, на которых присутствуют копии сообществ.
 pub const COMMUNITIES_SERVICES: &'static [&'static str] = &[
     "194.58.90.123:9003", // сервис записей
@@ -34,13 +36,6 @@ pub struct CardCommunitiesList {
     pub count:    i32,
 }
 
-////////
-#[derive(Serialize)]
-// универсальный сериализатор для списков пользователей
-pub struct UsersJson {
-    pub users:     Vec<CardUserJson>,
-    pub next_page: i32,
-}
 #[derive(Serialize, Deserialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
@@ -69,19 +64,34 @@ pub struct KeyValue {
 
 #[derive(Deserialize)]
 pub struct ObjectData {
-    pub token: Option<String>,
-    pub id:    Option<i32>,
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub id:           Option<i32>,
 }
 
 #[derive(Serialize)]
+pub struct EditNotifyResp {
+    pub community_id:       Option<i32>,
+    pub connection_request: Option<i16>,
+    pub new_member:         Option<i16>,
+} 
+
+#[derive(Serialize)]
 pub struct EditLinkResp {
-    pub link: String,
+    pub community_id: i32,
+    pub link:         String,
+}
+
+#[derive(Serialize)]
+pub struct EditNameResp {
+    pub community_id: i32,
+    pub name:         String,
 }
 
 #[derive(Deserialize)]
 pub struct SmallData {
-    pub token:   Option<String>,
-    pub user_id: Option<i32>,
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
 }
 
 ////////
@@ -112,11 +122,13 @@ pub struct CommunityDetailJson {
     pub avatar_id:   Option<i32>,
     pub identified:  i16,
 }
+
 #[derive(Deserialize, Serialize)]
 pub struct RespListJson {
     pub id:   i32,
     pub name: String,
 }
+
 #[derive(Deserialize, Serialize)]
 pub struct DataListJson {
     pub id:    i32,
@@ -139,13 +151,6 @@ pub struct CardCommunityJson {
     pub members: i32,
 }
 
-////////
-#[derive(Serialize)]
-// универсальный сериализатор для списков пользователей
-pub struct CommunityInvitesJson {
-    pub users:     Vec<CardCommunityInviteJson>,
-    pub next_page: i32,
-}
 #[derive(Serialize)]
 // это объект пользователя
 pub struct CardCommunityInviteJson {
