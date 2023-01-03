@@ -329,14 +329,14 @@ impl Community {
     }
     pub fn get_private_json(&self) -> EditPrivateResp {
         let see_member_exclude_members:    Option<Vec<CardUserJson>>;
-        let see_member_exclude_members:    Option<Vec<CardUserJson>>;
+        let see_member_include_members:    Option<Vec<CardUserJson>>;
         let see_info_exclude_members:   Option<Vec<CardUserJson>>;
-        let see_info_exclude_members:   Option<Vec<CardUserJson>>;
+        let see_info_include_members:   Option<Vec<CardUserJson>>;
         let see_settings_exclude_members: Option<Vec<CardUserJson>>;
-        let see_settings_exclude_members: Option<Vec<CardUserJson>>;
+        let see_settings_include_members: Option<Vec<CardUserJson>>;
+        let see_log_exclude_members: Option<Vec<CardUserJson>>;
         let see_log_include_members: Option<Vec<CardUserJson>>;
-        let see_log_include_members: Option<Vec<CardUserJson>>;
-        let see_stat_include_members: Option<Vec<CardUserJson>>;
+        let see_stat_exclude_members: Option<Vec<CardUserJson>>;
         let see_stat_include_members: Option<Vec<CardUserJson>>;
 
         let private = self.get_private_model().expect("E.");
