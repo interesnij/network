@@ -250,6 +250,24 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn edit_name(&self, name: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::communitys::name.eq(name),
+            ))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+    pub fn edit_link(&self, link: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::communitys::link.eq(link))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
     pub fn get_notify_model(&self) -> Result<CommunityNotification, Error> {
         let notify = self.find_notify_model();
         if notify.is_ok() {

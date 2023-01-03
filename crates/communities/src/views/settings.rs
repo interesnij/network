@@ -5,7 +5,7 @@ use actix_web::{
     HttpRequest,
 };
 use crate::utils::{
-    get_user, get_user_owner_data, get_community,
+    get_user, get_owner_data, get_community,
     ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditLinkResp,
     KeyValue, EditNotifyResp, COMMUNITIES_SERVICES, TOKEN, 
