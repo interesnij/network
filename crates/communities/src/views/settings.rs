@@ -11,7 +11,7 @@ use crate::utils::{
     KeyValue, EditNotifyResp, COMMUNITIES_SERVICES, TOKEN, 
 };
 use crate::AppState;
-use crate::models::User;
+use crate::models::{User, Community};
 use crate::errors::Error;
 use serde::{Deserialize, Serialize};
 
@@ -303,7 +303,7 @@ pub async fn edit_link (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
             {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -323,7 +323,7 @@ pub async fn edit_link (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let owner_res = get_community(c_id);
         if owner_res.is_ok() {
@@ -385,7 +385,7 @@ pub async fn edit_name (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
             {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -405,7 +405,7 @@ pub async fn edit_name (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let owner_res = get_community(c_id);
         if owner_res.is_ok() {
@@ -469,7 +469,7 @@ pub async fn edit_private (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
             {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -495,7 +495,7 @@ pub async fn edit_private (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let owner_res = get_community(c_id);
         if owner_res.is_ok() {
@@ -538,7 +538,7 @@ pub async fn delete_account (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
             {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -552,7 +552,7 @@ pub async fn delete_account (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let owner_res = get_community(c_id);
         if owner_res.is_ok() {
@@ -602,7 +602,7 @@ pub async fn restore_account (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
             {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -616,7 +616,7 @@ pub async fn restore_account (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let owner_res = get_community(c_id);
         if owner_res.is_ok() {
@@ -669,7 +669,7 @@ pub async fn edit_notify (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
             {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -683,7 +683,7 @@ pub async fn edit_notify (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let owner_res = get_community(c_id);
         if owner_res.is_ok() {
