@@ -7,8 +7,9 @@ use actix_web::{
 use crate::utils::{
     get_user, get_owner_data, get_community,
     ErrorParams, SmallData, EditPrivateResp, 
-    EditNameResp, EditLinkResp,
-    KeyValue, EditNotifyResp, COMMUNITIES_SERVICES, TOKEN, 
+    EditNameResp, EditLinkResp, MinimalData,
+    KeyValue, EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
+    ObjectData,
 };
 use crate::AppState;
 use crate::models::{User, Community};
@@ -342,7 +343,7 @@ pub async fn edit_link (
             if body == 1 {
                 let copy_community = EditLinkData {
                     token:        Some(TOKEN.to_string()),
-                    community_id: Some(owner.id),
+                    community_id: Some(c_id),
                     link:         link,
                 };
                 for link in COMMUNITIES_SERVICES.iter() {
@@ -425,7 +426,7 @@ pub async fn edit_name (
 
             let copy_community = EditNameData {
                 token:      Some(TOKEN.to_string()),
-                community_id: Some(owner.id),
+                community_id: Some(c_id),
                 name: name,
             };
     
@@ -568,7 +569,7 @@ pub async fn delete_account (
             let body = block(move || owner.delete_item()).await?;
             let copy_community = SmallData {
                 token:   Some(TOKEN.to_string()),
-                community_id: Some(owner.id),
+                community_id: Some(c_id),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
@@ -593,7 +594,7 @@ pub async fn restore_account (
     state: web::Data<AppState>,
     data: Json<MinimalData>
 ) -> Result<Json<i16>, Error> {
-    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
      if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
