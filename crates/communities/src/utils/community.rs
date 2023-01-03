@@ -69,7 +69,7 @@ pub struct ObjectData {
     pub id:           Option<i32>,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct MinimalData {
     pub token:        Option<String>,
     pub community_id: Option<i32>,
