@@ -5,14 +5,14 @@ use actix_web::{
     HttpRequest,
 };
 use crate::utils::{
-    get_user, get_owner_data, get_community,
+    get_owner_data, get_community,
     ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditLinkResp, MinimalData,
-    KeyValue, EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
+    EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
     ObjectData,
 };
 use crate::AppState;
-use crate::models::{User, Community};
+use crate::models::Community;
 use crate::errors::Error;
 use serde::{Deserialize, Serialize};
 

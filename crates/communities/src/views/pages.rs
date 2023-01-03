@@ -6,10 +6,10 @@ use actix_web::{
     web::block,
     web::Json,
 };
-use serde::Deserialize;
+
 use crate::AppState;
 use crate::errors::Error;
-use crate::models::{User, Community, Owner, TokenJson};
+use crate::models::Community;
 use crate::utils::{
     CardCommunityJson, RegListData, ErrorParams, ObjectData,
     CommunityDetailJson, CardUserJson, SearchRegListData,

@@ -278,8 +278,6 @@ impl Community {
         }
     }
     pub fn create_notify_model(&self) -> Result<CommunityNotification, Error> {
-        use crate::models::NewCommunityNotification;
-
         let _connection = establish_connection();
         let _new_notify = NewCommunityNotification {
             community_id:         self.id,
