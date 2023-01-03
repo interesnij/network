@@ -4,7 +4,7 @@ use actix_web::{
     web::Json,
     HttpRequest,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use crate::models::{
     TokenDetailJson, TokenJson, Community, Owner, OwnerService,
     NewUserJson, User, 
@@ -100,7 +100,7 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
             is_man = true;
         }
         if data.token.as_deref().unwrap() == TOKEN {
-            let _res = block(move || User::create_user(
+            let _res = block(move || User::create_user (
                 data.user_id.unwrap(),
                 data.first_name.as_deref().unwrap().to_string(),
                 data.last_name.as_deref().unwrap().to_string(),

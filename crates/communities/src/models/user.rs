@@ -604,6 +604,15 @@ impl User {
         return false;
     }
 
+    pub fn edit_password(&self, password: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set(schema::users::password.eq(password))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
+
     pub fn create_user (
         user_id:    i32,
         first_name: String,
@@ -612,7 +621,7 @@ impl User {
         is_man:     bool,
         password:   String,
         link:       String,
-    ) -> i32 {
+    ) -> i16 {
         use crate::schema::users::dsl::users;
 
         let _connection = establish_connection();
