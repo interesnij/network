@@ -159,8 +159,8 @@ impl User {
         let self_friends = self.get_friends_ids();
         let members_of_community = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(community_id))
-            .limit(limit)
-            .offset(offset)
+            .limit(_limit)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -204,8 +204,8 @@ impl User {
         let self_friends = self.get_friends_ids();
         let members_of_community = communities_memberships
             .filter(schema::communities_memberships::community_id.eq(community_id))
-            .limit(limit)
-            .offset(offset)
+            .limit(_limit)
+            .offset(_offset)
             .select(schema::communities_memberships::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
