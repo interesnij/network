@@ -1096,7 +1096,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
     pub fn search_members (
@@ -1131,7 +1132,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
 
@@ -1158,7 +1160,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
 
@@ -1188,7 +1191,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
     pub fn search_administrators (
@@ -1224,7 +1228,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
 
@@ -1254,7 +1259,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
     pub fn search_editors (
@@ -1290,7 +1296,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
 
@@ -1320,7 +1327,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
     pub fn search_moderators (
@@ -1356,7 +1364,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
 
@@ -1386,7 +1395,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
     pub fn search_avertisers (
@@ -1422,7 +1432,8 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
         return _users;
     }
 

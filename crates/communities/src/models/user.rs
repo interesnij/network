@@ -166,7 +166,7 @@ impl User {
         let mut stack = Vec::new();
         let mut count = 0;
         for member_id in members_of_community.iter() {
-            if self_friends.iter().any(|i| i==&member_id) && count < limit {
+            if self_friends.iter().any(|i| i==member_id) && count < limit {
                 stack.push(member_id);
                 count += 1;
             }
@@ -209,7 +209,7 @@ impl User {
         let mut stack = Vec::new();
         let mut count = 0;
         for member_id in members_of_community.iter() {
-            if self_friends.iter().any(|i| i==&member_id) && count < limit {
+            if self_friends.iter().any(|i| i==member_id) && count < limit {
                 stack.push(member_id);
                 count += 1;
             }
