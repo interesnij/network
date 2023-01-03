@@ -1071,7 +1071,7 @@ impl Community {
         return items_ids;
     }
 
-    pub fn get_members(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_members(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1097,14 +1097,14 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
     pub fn search_members (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1132,10 +1132,10 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
 
-    pub fn get_6_members(&self) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_6_members(&self) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1159,10 +1159,10 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
 
-    pub fn get_administrators(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_administrators(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1189,14 +1189,14 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
     pub fn search_administrators (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1225,10 +1225,10 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
 
-    pub fn get_editors(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_editors(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1255,14 +1255,14 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
     pub fn search_editors (
         &self,
         q:      &String,
         limit: Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1291,10 +1291,10 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
 
-    pub fn get_moderators(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_moderators(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1321,14 +1321,14 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
     pub fn search_moderators (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1357,10 +1357,10 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
 
-    pub fn get_advertisers(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_advertisers(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1387,14 +1387,14 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
     pub fn search_avertisers (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             users::dsl::users,
@@ -1423,7 +1423,7 @@ impl Community {
                 schema::users::s_avatar.nullable(),
             ))
             .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+        return _users;
     }
 
     pub fn get_private_model(&self) -> Result<CommunityPrivate, Error> {
