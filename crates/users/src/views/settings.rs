@@ -771,7 +771,7 @@ pub async fn restore_account (
     
         for link in USERS_SERVICES.iter() {
             let client = reqwest::Client::new();
-            let _res = client.post(link.to_string() + &"/delete_user".to_string())
+            let _res = client.post(link.to_string() + &"/restore_user".to_string())
                 .form(&copy_user)
                 .send()
                 .await;

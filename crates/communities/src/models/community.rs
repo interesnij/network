@@ -250,13 +250,48 @@ pub struct NewCommunity {
 }
 
 impl Community {
+    pub fn get_notify_model(&self) -> Result<CommunityNotification, Error> {
+        let notify = self.find_notify_model();
+        if notify.is_ok() {
+            return notify;
+        }
+        else {
+            return self.create_notify_model();
+        }
+    }
+    pub fn create_notify_model(&self) -> Result<CommunityNotification, Error> {
+        use crate::models::NewCommunityNotification;
+
+        let _connection = establish_connection();
+        let _new_notify = NewCommunityNotification {
+            community_id:         self.id,
+            connection_request:   true,
+            connection_confirmed: true,
+            community_invite:     true
+        };
+        let _notify = diesel::insert_into(schema::community_notifications::table)
+            .values(&_new_notify)
+            .get_result::<CommunityNotification>(&_connection)?;
+
+        return Ok(_notify);
+    }
+    pub fn find_notify_model(&self) -> Result<CommunityNotification, Error> {
+        use crate::schema::community_notifications::dsl::community_notifications;
+
+        let _connection = establish_connection();
+        let notify = community_notifications
+            .filter(schema::community_notifications::community_id.eq(self.id))
+            .first(&_connection)?;
+        return Ok(notify);
+    }
+
     pub fn get_notify_json(&self) -> EditNotifyResp {
         let notify = self.get_notify_model().expect("E.");
         return EditNotifyResp {
-            community_id:         self.id,
-            connection_request:   notify.connection_request,
-            connection_confirmed: notify.connection_confirmed,
-        }
+            community_id:       self.id,
+            connection_request: notify.connection_request,
+            new_member:         notify.connection_confirmed,
+        } 
     }
     pub fn get_private_field(value: i16) -> KeyValue {
         let info = match value {

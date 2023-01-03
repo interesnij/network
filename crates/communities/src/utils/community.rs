@@ -71,9 +71,9 @@ pub struct ObjectData {
 
 #[derive(Serialize)]
 pub struct EditNotifyResp {
-    pub community_id:       Option<i32>,
-    pub connection_request: Option<i16>,
-    pub new_member:         Option<i16>,
+    pub community_id:       i32,
+    pub connection_request: i16,
+    pub new_member:         i16,
 } 
 
 #[derive(Serialize)]
