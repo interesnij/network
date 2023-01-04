@@ -6,10 +6,9 @@ use actix_web::{
 };
 use crate::utils::{
     get_owner_data, get_community,
-    ErrorParams, EditPrivateResp, 
-    EditNameResp, EditLinkResp, MinimalData,
-    EditNotifyResp,
-    ObjectData, CardUserJson, RegListData, SearchRegListData,
+    ErrorParams, EditPrivateResp, ObjectData,
+    EditNameResp, EditLinkResp, EditNotifyResp,
+    CardUserJson, RegListData, SearchRegListData,
 };
 use crate::AppState;
 use crate::models::Community;
