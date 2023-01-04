@@ -465,7 +465,7 @@ pub async fn create_ban (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let types = data.types;
             let body = block(move || community.create_banned_user (
                 user,
@@ -556,7 +556,7 @@ pub async fn delete_ban (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let types = data.types;
             let target_id = data.id;
             let body = block(move || community.delete_banned_user (
@@ -642,7 +642,7 @@ pub async fn create_administrator (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let target_id = data.id;
             let body = block(move || community.create_administrator (
                 data.id.unwrap(),
@@ -720,7 +720,7 @@ pub async fn create_editor (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let target_id = data.id;
             let body = block(move || community.create_editor (
                 data.id.unwrap(),
@@ -798,7 +798,7 @@ pub async fn create_advertiser (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let target_id = data.id;
             let body = block(move || community.create_advertiser (
                 data.id.unwrap(),
@@ -876,7 +876,7 @@ pub async fn create_moderator (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let target_id = data.id;
             let body = block(move || community.create_moderator (
                 data.id.unwrap(),
@@ -954,7 +954,7 @@ pub async fn delete_staff (
             return Err(Error::BadRequest(body));
         }
 
-        if community_id > 0 || community.is_user_see_settings(user_id)) {
+        if community_id > 0 || community.is_user_see_settings(user_id) {
             let target_id = data.id;
             let body = block(move || community.delete_staff_member (
                 data.id.unwrap(),
