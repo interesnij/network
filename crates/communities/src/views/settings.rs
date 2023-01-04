@@ -36,7 +36,6 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/moderators/", web::get().to(moderators_settings_page));
     config.route("/settings/advertisers/", web::get().to(advertisers_settings_page));
     config.route("/settings/search-blacklist/", web::get().to(search_blacklist_settings_page));
-    config.route("/settings/search-members/", web::get().to(search_members_settings_page));
     config.route("/settings/search-administrators/", web::get().to(search_administrators_settings_page));
     config.route("/settings/search-editors/", web::get().to(search_editors_settings_page));
     config.route("/settings/search-moderators/", web::get().to(search_moderators_settings_page));
