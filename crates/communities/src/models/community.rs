@@ -1627,7 +1627,7 @@ impl Community {
             .expect("E.");
         return _users;
     }
-    pub fn search_avertisers (
+    pub fn search_advertisers (
         &self,
         q:      &String,
         limit:  Option<i64>,
