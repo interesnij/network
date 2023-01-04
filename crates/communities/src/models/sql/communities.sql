@@ -313,7 +313,7 @@ CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (targ
 12 не может приглашать в сообщества
 20 пользователь заблокирован у владельца блока сообществ
 */
-*/
+
 CREATE TABLE user_visible_perms (
   id         SERIAL PRIMARY KEY,
   user_id    INT NOT NULL,
