@@ -440,11 +440,11 @@ impl User {
         };
         return 1;
     }
-    pub fn edit_private (
+    pub fn edit_private ( 
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<i32>>
+        _users: Option<Vec<AttachOwner>>
     ) -> i16 {
         use crate::schema::item_users::dsl::item_users;
         use crate::models::ItemUser;

@@ -458,7 +458,7 @@ pub struct NewUserPostNotification {
 #[derive(Queryable, Serialize, Deserialize, Identifiable)]
 pub struct CommunityPostNotification {
     pub id:              i32,
-    pub user_id:         i32,
+    pub community_id:    i32,
     pub comment:         bool,
     pub comment_reply:   bool,
     pub mention:         bool,
@@ -469,7 +469,7 @@ pub struct CommunityPostNotification {
 #[derive(Deserialize, Insertable)]
 #[table_name="community_post_notifications"]
 pub struct NewCommunityPostNotification {
-    pub user_id:         i32,
+    pub community_id:    i32,
     pub comment:         bool,
     pub comment_reply:   bool,
     pub mention:         bool,

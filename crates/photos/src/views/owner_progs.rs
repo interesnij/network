@@ -80,7 +80,7 @@ pub struct StaffValueParams {
     pub token:        Option<String>,
     pub user_id:      Option<i32>,
     pub community_id: Option<i32>,
-    pub value:        Option<i16>,
+    pub level:        Option<i16>,
 }
 pub async fn update_staff_member(data: Json<StaffValueParams>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
@@ -92,15 +92,15 @@ pub async fn update_staff_member(data: Json<StaffValueParams>) -> Result<Json<i1
     else if data.community_id.is_none() {
         Err(Error::BadRequest("Field 'community_id' is required!".to_string()))
     }
-    else if data.value.is_none() {
-        Err(Error::BadRequest("Field 'value' is required!".to_string()))
+    else if data.level.is_none() {
+        Err(Error::BadRequest("Field 'level' is required!".to_string()))
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            let user = get_user(data.id.unwrap()).expect("E.");
+            let user = get_user(data.user_id.unwrap()).expect("E.");
             let _res = block(move || user.update_staff_member (
                 data.community_id.unwrap(),
-                data.value.unwrap()
+                data.level.unwrap()
             )).await?;
             Ok(Json(_res)) 
         }

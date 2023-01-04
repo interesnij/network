@@ -135,12 +135,12 @@ pub async fn update_staff_member(data: Json<StaffValueParams>) -> Result<Json<i1
     else if data.community_id.is_none() {
         Err(Error::BadRequest("Field 'community_id' is required!".to_string()))
     }
-    else if data.value.is_none() {
-        Err(Error::BadRequest("Field 'value' is required!".to_string()))
+    else if data.level.is_none() {
+        Err(Error::BadRequest("Field 'level' is required!".to_string()))
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            let user = get_user(data.id.unwrap()).expect("E.");
+            let user = get_user(data.user_id.unwrap()).expect("E.");
             let _res = block(move || user.update_staff_member (
                 data.community_id.unwrap(),
                 data.level.unwrap()

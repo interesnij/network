@@ -166,7 +166,7 @@ impl Community {
 
         let _connection = establish_connection();
         let _new_notify = NewCommunityPostNotification {
-            community_id:    self.id,
+            community_id:    self.id, 
             comment:         true,
             comment_reply:   true,
             mention:         true,
