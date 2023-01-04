@@ -1559,8 +1559,6 @@ impl User {
     }
 
     pub fn follow_community(&self, community: Community) -> i16 {
-        use crate::schema::community_follows::dsl::community_follows;
-
         if self.is_follow_of_community(community.id) 
             || 
             !community.is_close() 
@@ -1661,7 +1659,6 @@ impl User {
 
         if community.is_private() {
             use crate::schema::community_invites::dsl::community_invites;
-            use crate::models::CommunityInvite;
 
             if !self.is_invite_of_community(community.id) {
                     return 0;
@@ -1676,7 +1673,7 @@ impl User {
         }
         else if community.is_close() {
             use crate::schema::community_follows::dsl::community_follows;
-            use crate::models::CommunityFollow;
+
             if !self.is_follow_of_community(community.id) {
                 return 0;
             }

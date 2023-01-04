@@ -9,7 +9,7 @@ use crate::schema::{
     community_notifications,
     community_visible_perms,
     community_banned_users,
-    community_follows,
+
     featured_communities,
 };
 use diesel::{
