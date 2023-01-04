@@ -215,7 +215,7 @@ pub async fn create_invites (
         
         let body = block(move || owner.invite_in_community ( 
             data.community_id.unwrap(),
-            data.users.as_deref().unwrap()
+            data.users.as_deref().unwrap().to_vec(),
         )).await?;
         Ok(Json(body))
     }
@@ -317,7 +317,7 @@ pub async fn create_follow (
             return Err(Error::BadRequest(body));
         }
         
-        let body = block(move || owner.follow_community ( 
+        let body = block(move || user.follow_community ( 
             community, 
         )).await?;
         Ok(Json(body))
