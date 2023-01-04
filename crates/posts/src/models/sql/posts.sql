@@ -323,7 +323,7 @@ CREATE TABLE user_post_notifications (
 
 CREATE UNIQUE INDEX user_post_notifications_unq ON user_post_notifications (user_id, id);
 
--- Уведомления записей сообщества -------
+-- Уведомления записей сообщества ------- 
 CREATE TABLE community_post_notifications (
   id              SERIAL PRIMARY KEY,            -- id записи
   community_id    INT NOT NULL,                  -- id сообщества

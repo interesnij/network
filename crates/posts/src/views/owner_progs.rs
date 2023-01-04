@@ -118,6 +118,42 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
 }
 
 // manager send!
+#[derive(Deserialize)]
+pub struct StaffValueParams {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub user_id:      Option<i32>,
+    pub level:        Option<i16>,
+}
+pub async fn update_staff_member(data: Json<StaffValueParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.community_id.is_none() {
+        Err(Error::BadRequest("Field 'community_id' is required!".to_string()))
+    }
+    else if data.value.is_none() {
+        Err(Error::BadRequest("Field 'value' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).expect("E.");
+            let _res = block(move || user.update_staff_member (
+                data.community_id.unwrap(),
+                data.level.unwrap()
+            )).await?;
+            Ok(Json(_res)) 
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
 pub async fn delete_user(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))

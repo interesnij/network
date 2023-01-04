@@ -788,7 +788,7 @@ pub async fn create_administrator (
                 community_id: Some(c_id),
                 user_id:      target_id,
                 level:        Some(5),
-            };
+            }; 
     
             for link in COMMUNITIES_SERVICES.iter() {
                 let client = reqwest::Client::new(); 

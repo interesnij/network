@@ -544,7 +544,7 @@ impl Community {
             .expect("E.");
     }  
 
-    pub fn edit_notify (
+    pub fn edit_notify ( 
         &self, 
         field: &str, 
         value: i16

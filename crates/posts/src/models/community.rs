@@ -247,6 +247,45 @@ impl Community {
                 .expect("Error saving post_list_position.");
         }
     }
+    pub fn edit_notify ( 
+        &self, 
+        field: &str, 
+        value: i16
+    ) -> i16 {
+        use crate::utils::from_i16_to_bool;
+
+        let _connection = establish_connection();
+        let notify = self.get_notify_model().expect("E.");
+        let _bool = from_i16_to_bool(value);
+        let _update_field = match field {
+            "comment" => diesel::update(&notify)
+                .set(schema::community_post_notifications::comment.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "comment_reply" => diesel::update(&notify)
+                .set(schema::community_post_notifications::comment_reply.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "mention" => diesel::update(&notify)
+                .set(schema::community_post_notifications::mention.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "comment_mention" => diesel::update(&notify)
+                .set(schema::community_post_notifications::comment_mention.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "repost" => diesel::update(&notify)
+                .set(schema::community_post_notifications::repost.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "reactions" => diesel::update(&notify)
+                .set(schema::community_post_notifications::reactions.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+        };
+        return 1;
+    }
     pub fn edit_private (
         &self, 
         field:  &str, 

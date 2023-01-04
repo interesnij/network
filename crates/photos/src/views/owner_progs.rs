@@ -46,7 +46,7 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/create_ban_user", web::post().to(create_ban_user));
     config.route("/delete_member", web::post().to(delete_member));
     config.route("/delete_ban_user", web::post().to(delete_ban_user));
-    config.route("/update_staff_member", web::post().to(update_staff_member));
+    config.route("/update_staff_member", web::post().to(update_staff_member)); 
 
     config.route("/get_attach_photo_lists", web::get().to(get_attach_photo_lists));
     config.route("/get_attach_photos", web::get().to(get_attach_photos));
@@ -72,6 +72,42 @@ pub struct AddTargetParams {
     pub token:     Option<String>,
     pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
+}
+
+// manager send!
+#[derive(Deserialize)]
+pub struct StaffValueParams {
+    pub token:        Option<String>,
+    pub user_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub value:        Option<i16>,
+}
+pub async fn update_staff_member(data: Json<StaffValueParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.community_id.is_none() {
+        Err(Error::BadRequest("Field 'community_id' is required!".to_string()))
+    }
+    else if data.value.is_none() {
+        Err(Error::BadRequest("Field 'value' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let user = get_user(data.id.unwrap()).expect("E.");
+            let _res = block(move || user.update_staff_member (
+                data.community_id.unwrap(),
+                data.value.unwrap()
+            )).await?;
+            Ok(Json(_res)) 
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
 }
 
 // manager send!
