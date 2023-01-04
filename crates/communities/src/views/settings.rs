@@ -9,7 +9,7 @@ use crate::utils::{
     ErrorParams, SmallData, EditPrivateResp, 
     EditNameResp, EditLinkResp, MinimalData,
     EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
-    ObjectData, CardUserJson, RegListData,
+    ObjectData, CardUserJson, RegListData, SearchRegListData,
 };
 use crate::AppState;
 use crate::models::Community;
@@ -1049,7 +1049,7 @@ pub async fn search_blacklist_settings_page (
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<Vec<CardUserJson>>, Error> {
-    let params_some = web::Query::<RegListData>::from_query(&req.query_string());
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 31).await;
@@ -1128,7 +1128,7 @@ pub async fn search_advertisers_settings_page (
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<Vec<CardUserJson>>, Error> {
-    let params_some = web::Query::<RegListData>::from_query(&req.query_string());
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 31).await;
@@ -1207,7 +1207,7 @@ pub async fn search_administrators_settings_page (
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<Vec<CardUserJson>>, Error> {
-    let params_some = web::Query::<RegListData>::from_query(&req.query_string());
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 31).await;
@@ -1286,7 +1286,7 @@ pub async fn search_editors_settings_page (
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<Vec<CardUserJson>>, Error> {
-    let params_some = web::Query::<RegListData>::from_query(&req.query_string());
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 31).await;
@@ -1365,7 +1365,7 @@ pub async fn search_moderators_settings_page (
     req: HttpRequest,
     state: web::Data<AppState>
 ) -> Result<Json<Vec<CardUserJson>>, Error> {
-    let params_some = web::Query::<RegListData>::from_query(&req.query_string());
+    let params_some = web::Query::<SearchRegListData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
         let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 31).await;
