@@ -8,6 +8,7 @@ use crate::utils::{
     get_owner_data, get_community, get_user,
     ErrorParams, SmallData, MinimalData, EditCommunityPrivateData,
     EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
+    ObjectData,
 };
 use crate::AppState;
 use crate::models::{Community, User};
@@ -117,9 +118,9 @@ pub async fn edit_link (
 
 #[derive(Serialize, Deserialize)] 
 pub struct EditNameData {
-    pub token:      Option<String>,
+    pub token:        Option<String>,
     pub community_id: Option<i32>,
-    pub name: Option<String>,
+    pub name:         Option<String>,
 }
 
 pub async fn edit_name (
@@ -198,6 +199,74 @@ pub async fn edit_name (
     }
 }
 
+#[derive(Serialize, Deserialize)] 
+pub struct EditStatusData {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub status:       Option<String>,
+}
+
+pub async fn edit_status (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<EditStatusData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if (user_id == 0 && community_id == 0)
+        || 
+        (community_id == 0 && data.community_id.is_none())
+            {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.status.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'status' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: Community;
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = data.community_id.unwrap();
+        }
+        let owner_res = get_community(c_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+            let name = data.name.clone();
+            let body = block(move || owner.edit_status (
+                data.status.as_deref().unwrap(),
+            )).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+    }
+}
 
 pub async fn edit_community_private (
     req: HttpRequest,

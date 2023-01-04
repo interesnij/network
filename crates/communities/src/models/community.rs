@@ -260,6 +260,16 @@ impl Community {
             .expect("E.");
         return 1;
     }
+    pub fn edit_status(&self, name: &str) -> i16 {
+        let _connection = establish_connection();
+        let _o = diesel::update(self)
+            .set((  
+                schema::communitys::status.eq(status),
+            ))
+            .execute(&_connection)
+            .expect("E.");
+        return 1;
+    }
     pub fn edit_link(&self, link: &str) -> i16 {
         let _connection = establish_connection();
         let _o = diesel::update(self)
