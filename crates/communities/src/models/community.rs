@@ -260,7 +260,7 @@ impl Community {
             .expect("E.");
         return 1;
     }
-    pub fn edit_status(&self, name: &str) -> i16 {
+    pub fn edit_status(&self, status: &str) -> i16 {
         let _connection = establish_connection();
         let _o = diesel::update(self)
             .set((  

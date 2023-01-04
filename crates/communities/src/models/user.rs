@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     get_limit_offset,
-    get_limit,
+    get_limit, get_user,
     CardUserJson, KeyValue,
     CardCommunityJson,
     CardCommunitiesList,
@@ -1603,8 +1603,6 @@ impl User {
     }
 
     pub fn invite_in_community(&self, community_id: i32, users_ids: Vec<i32>) -> i16 {
-        use crate::schema::community_invites::dsl::community_invites;
-
         if !self.is_member_of_community(community_id) {
             return 0;
         } 
@@ -1641,9 +1639,9 @@ impl User {
         } 
         let _connection = establish_connection();
         diesel::delete (
-            community_follows
-                .filter(schema::community_follows::user_id.eq(self.user_id))
-                .filter(schema::community_follows::community_id.eq(community_id))
+            community_invites
+                .filter(schema::community_invites::user_id.eq(self.user_id))
+                .filter(schema::community_invites::community_id.eq(community_id))
             )
           .execute(&_connection)
           .expect("E");
@@ -1736,7 +1734,7 @@ impl User {
         let _connection = establish_connection();
         return community_invites
             .filter(schema::community_invites::user_id.eq(self.user_id))
-            .filter(schema::community_invites::community_id.eq(community.id))
+            .filter(schema::community_invites::community_id.eq(community_id))
             .select(schema::community_invites::id)
             .first::<i32>(&_connection)
             .is_ok();
@@ -1897,15 +1895,15 @@ pub struct CommunityFollow {
     pub user_id:      i32,
     pub community_id: i32,
     pub view:         bool,
-    pub visited:      i32,
+    pub visited:      i16,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="community_follows"]
 pub struct NewCommunityFollow {
-    pub user_id:      i32,
+    pub user_id:      i32, 
     pub community_id: i32,
     pub view:         bool,
-    pub visited:      i32,
+    pub visited:      i16,
 }
 
 /////// CommunityInvite //////

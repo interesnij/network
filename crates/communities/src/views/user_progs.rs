@@ -54,7 +54,7 @@ pub async fn edit_user_private_page (
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
-            else if {
+            else {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "owner not found!".to_string(),
                 }).unwrap();

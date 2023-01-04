@@ -20,7 +20,7 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/edit_private", web::post().to(edit_community_private));
     config.route("/settings/edit_link", web::post().to(edit_link));
     config.route("/settings/edit_name", web::post().to(edit_name));
-    config.route("/settings/edit_notify", web::post().to(edit_notify));
+    //config.route("/settings/edit_notify", web::post().to(edit_notify));
     config.route("/settings/delete_community", web::post().to(delete_community));
     config.route("/settings/restore_community", web::post().to(restore_community));
     config.route("/settings/edit_status", web::post().to(edit_status));
