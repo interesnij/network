@@ -28,6 +28,10 @@ use crate::AppState;
 
 pub static TOKEN: &str = "111";
 
+pub fn from_i16_to_bool(value: i16) -> bool {
+    return value > 0;
+}
+
 pub fn get_limit (
     limit: Option<i64>,
     default_limit: i64

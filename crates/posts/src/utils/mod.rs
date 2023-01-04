@@ -291,6 +291,10 @@ pub async fn get_user_owner_data (
     }
 }
 
+pub fn from_i16_to_bool(value: i16) -> bool {
+    return value > 0;
+}
+
 pub fn get_user_permission(user: &User, user_id: i32)
     -> (bool, String) {
     

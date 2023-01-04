@@ -44,6 +44,10 @@ pub fn get_limit (
     _limit
 }
 
+pub fn from_i16_to_bool(value: i16) -> bool {
+    return value > 0;
+}
+
 pub fn get_limit_offset (
     limit: Option<i64>,
     offset: Option<i64>,

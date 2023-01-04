@@ -542,7 +542,36 @@ impl Community {
             ))
             .load::<AttachCommunityResp>(&_connection)
             .expect("E.");
+    }  
+
+    pub fn edit_notify (
+        &self, 
+        field: &str, 
+        value: i16
+    ) -> i16 {
+        use crate::utils::from_i16_to_bool;
+
+        let _connection = establish_connection();
+        let notify = self.get_notify_model().expect("E.");
+        let _bool = from_i16_to_bool(value);
+        let _update_field = match field {
+            "connection_request" => diesel::update(&notify)
+                .set(schema::community_notifications::connection_request.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "new_member" => diesel::update(&notify)
+                .set(schema::community_notifications::connection_confirmed.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            "community_invite" => diesel::update(&notify)
+                .set(schema::community_notifications::community_invite.eq(_bool))
+                .execute(&_connection)
+                .expect("E."),
+            _ => 0,
+        };
+        return 1;
     }
+
     pub fn edit_private (
         &self, 
         field:     &str, 

@@ -359,6 +359,10 @@ pub fn get_anon_user_permission(user: &User)
     }
 }
 
+pub fn from_i16_to_bool(value: i16) -> bool {
+    return value > 0;
+}
+
 pub fn get_community_permission(community: &Community, user_id: i32)
     -> (bool, String) {
 
