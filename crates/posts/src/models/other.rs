@@ -430,22 +430,6 @@ pub struct NewFeaturedUserCommunitie {
 }
 
 
-/////// ListUserCommunitiesKey //////
-#[derive(Queryable, Serialize, Deserialize, Identifiable)]
-pub struct ListUserCommunitiesKey {
-    pub id:    i32,
-    pub types: i16,
-    pub name:  String,
-    pub owner: i32,
-}
-#[derive(Deserialize, Insertable, AsChangeset)]
-#[table_name="list_user_communities_keys"]
-pub struct NewListUserCommunitiesKey {
-    pub types: i16,
-    pub name:  String,
-    pub owner: i32,
-}
-
 /////// UserPostNotification //////
 #[derive(Queryable, Serialize, Deserialize, Identifiable)]
 pub struct UserPostNotification {
