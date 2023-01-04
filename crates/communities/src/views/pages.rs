@@ -477,7 +477,14 @@ pub async fn search_common_members_page (
         }
         else {
             let owner: Community;
-            let owner_res = get_community(params.id.unwrap());
+            let c_id: i32;
+            if community_id > 0 {
+                c_id = community_id;
+            }
+            else {
+                c_id = params.community_id.unwrap();
+            }
+            let owner_res = get_community(c_id);
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
