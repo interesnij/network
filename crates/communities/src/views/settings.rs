@@ -98,7 +98,7 @@ pub async fn edit_notifies_page (
 pub async fn edit_private_page (
     req: HttpRequest,
     state: web::Data<AppState>
-) -> Result<Json<EditPrivateCommunityResp>, Error> {
+) -> Result<Json<EditCommunityPrivateResp>, Error> {
     let params_some = web::Query::<ObjectData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();

@@ -62,7 +62,7 @@ pub struct KeyValue {
     pub info:  String,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct ObjectData {
     pub token:        Option<String>,
     pub community_id: Option<i32>,

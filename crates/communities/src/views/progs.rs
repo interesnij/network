@@ -253,7 +253,6 @@ pub async fn edit_status (
             return Err(Error::BadRequest(body));
         }
         if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
-            let name = data.name.clone();
             let body = block(move || owner.edit_status (
                 data.status.as_deref().unwrap(),
             )).await?;
@@ -626,7 +625,6 @@ pub async fn delete_ban (
         }
 
         if community_id > 0 || community.is_user_see_settings(user_id) {
-            let types = data.types;
             let target_id = data.id;
             let body = block(move || community.delete_banned_user (
                 user,
@@ -635,7 +633,7 @@ pub async fn delete_ban (
             let copy_community = ObjectData { 
                 token:        Some(TOKEN.to_string()),
                 community_id: Some(c_id),
-                user_id:      target_id,
+                id:           target_id,
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
