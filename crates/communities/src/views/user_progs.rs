@@ -294,20 +294,31 @@ pub async fn create_follow (
         Err(Error::BadRequest(body))
     }
     else {
-        let owner: User;
-        let owner_res = get_user(user_id);
-        if owner_res.is_ok() {
-            owner = owner_res.expect("E");
+        let user: User;
+        let user_res = get_user(user_id);
+        if user_res.is_ok() {
+            user = user_res.expect("E");
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
-                error: "owner not found!".to_string(),
+                error: "user not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        let community: Community;
+        let community_res = get_community(data.community_id.unwrap());
+        if community_res.is_ok() {
+            community = community_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
         
         let body = block(move || owner.follow_community ( 
-            data.community_id.unwrap(),
+            community, 
         )).await?;
         Ok(Json(body))
     }
@@ -392,7 +403,7 @@ pub async fn join_community (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        let community: User;
+        let community: Community;
         let community_res = get_community(data.community_id.unwrap());
         if community_res.is_ok() {
             community = community_res.expect("E");

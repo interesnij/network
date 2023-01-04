@@ -1608,18 +1608,18 @@ impl User {
         } 
         let _connection = establish_connection();
         for user_id in users_ids.iter() {
-            let user = get_user(user_id).expect("Error.");
+            let user = get_user(*user_id).expect("Error.");
             if user.is_user_invite(self.user_id) && (
                 !user.is_invite_of_community(community_id)
                 || 
                 !user.is_member_of_community(community_id)
                 ||
-                !user.is_ban_of_community(community_id)
+                !user.is_user_in_ban(community_id)
                 ||
                 !user.is_follow_of_community(community_id)
             ) {
                 let new_invite = NewCommunityInvite {
-                    user_id:        user_id,
+                    user_id:        *user_id,
                     community_id:   community_id,
                     invite_creator: self.user_id,
                 };

@@ -721,7 +721,7 @@ pub async fn create_administrator (
                 token:        Some(TOKEN.to_string()),
                 community_id: Some(c_id),
                 user_id:      target_id,
-                level:        5,
+                level:        Some(5),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
@@ -799,7 +799,7 @@ pub async fn create_editor (
                 token:        Some(TOKEN.to_string()),
                 community_id: Some(c_id),
                 user_id:      target_id,
-                level:        3,
+                level:        Some(3),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
@@ -877,7 +877,7 @@ pub async fn create_advertiser (
                 token:        Some(TOKEN.to_string()),
                 community_id: Some(c_id),
                 user_id:      target_id,
-                level:        4,
+                level:        Some(4),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
@@ -955,7 +955,7 @@ pub async fn create_moderator (
                 token:        Some(TOKEN.to_string()),
                 community_id: Some(c_id),
                 user_id:      target_id,
-                level:        2,
+                level:        Some(2),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
@@ -1033,7 +1033,7 @@ pub async fn delete_staff (
                 token:        Some(TOKEN.to_string()),
                 community_id: Some(c_id),
                 user_id:      target_id,
-                level:        0,
+                level:        Some(0),
             };
     
             for link in COMMUNITIES_SERVICES.iter() {
