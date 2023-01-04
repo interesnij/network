@@ -394,7 +394,7 @@ impl User {
             diesel::update(&member)
                 .set(schema::communities_memberships::level.eq(value))
                 .execute(&_connection)
-                .expect("E.")
+                .expect("E.");
             return 1;
         }
         else {
