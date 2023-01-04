@@ -22,7 +22,7 @@ use crate::schema::{
     community_visible_perms,
 };
 
-use crate::models::{Post, PostList, SearchAllComments};
+use crate::models::{Post, PostList, SearchAllComments, CommunityPostNotification};
 
 /*
 Community
@@ -152,6 +152,43 @@ pub struct NewCommunityJson {
 }
 
 impl Community {
+    pub fn get_notify_model(&self) -> Result<CommunityPostNotification, Error> {
+        let notify = self.find_notify_model();
+        if notify.is_ok() {
+            return notify;
+        }
+        else {
+            return self.create_notify_model();
+        }
+    }
+    pub fn create_notify_model(&self) -> Result<CommunityPostNotification, Error> {
+        use crate::models::NewCommunityPostNotification;
+
+        let _connection = establish_connection();
+        let _new_notify = NewCommunityPostNotification {
+            community_id:    self.id,
+            comment:         true,
+            comment_reply:   true,
+            mention:         true,
+            comment_mention: true,
+            repost:          true,
+            reactions:       true,
+        };
+        let _notify = diesel::insert_into(schema::community_post_notifications::table)
+            .values(&_new_notify)
+            .get_result::<CommunityPostNotification>(&_connection)?;
+
+        return Ok(_notify);
+    }
+    pub fn find_notify_model(&self) -> Result<CommunityPostNotification, Error> {
+        use crate::schema::community_post_notifications::dsl::community_post_notifications;
+
+        let _connection = establish_connection();
+        let notify = community_post_notifications
+            .filter(schema::community_post_notifications::user_id.eq(self.id))
+            .first(&_connection)?;
+        return Ok(notify);
+    }
     pub fn get_main_post_list(&self) -> PostList {
         use crate::schema::post_lists::dsl::post_lists;
 

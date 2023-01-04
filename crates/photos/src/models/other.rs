@@ -20,6 +20,8 @@ use crate::schema::{
     notify_user_communities,
     news_user_communities,
     featured_user_communities,
+    user_photo_notifications,
+    community_photo_notifications,
 };
 //use crate::errors::Error;
 use serde::{Serialize, Deserialize};
@@ -398,4 +400,52 @@ pub struct NewFeaturedUserCommunitie {
     pub community_id: Option<i32>,
     pub mute:         bool,
     pub sleep:        Option<chrono::NaiveDateTime>
+}
+
+/////// UserPhotoNotification //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct UserPhotoNotification {
+    pub id:              i32,
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="user_photo_notifications"]
+pub struct NewUserPhotoNotification {
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
+}
+
+/////// CommunityPhotoNotification //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct CommunityPhotoNotification {
+    pub id:              i32,
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="community_photo_notifications"]
+pub struct NewCommunityPhotoNotification {
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
 }

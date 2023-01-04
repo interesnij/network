@@ -25,7 +25,7 @@ use crate::schema::{
     user_visible_perms,
 };
 
-use crate::models::{Post, PostList, SearchAllComments,};
+use crate::models::{Post, PostList, SearchAllComments, UserPostNotification};
 
 /*
 Типы пользоватетеля
@@ -160,6 +160,43 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_notify_model(&self) -> Result<UserPostNotification, Error> {
+        let notify = self.find_notify_model();
+        if notify.is_ok() {
+            return notify;
+        }
+        else {
+            return self.create_notify_model();
+        }
+    }
+    pub fn create_notify_model(&self) -> Result<UserPostNotification, Error> {
+        use crate::models::NewUserPostNotification;
+
+        let _connection = establish_connection();
+        let _new_notify = NewUserPostNotification {
+            user_id:         self.id,
+            comment:         true,
+            comment_reply:   true,
+            mention:         true,
+            comment_mention: true,
+            repost:          true,
+            reactions:       true,
+        };
+        let _notify = diesel::insert_into(schema::user_post_notifications::table)
+            .values(&_new_notify)
+            .get_result::<UserPostNotification>(&_connection)?;
+
+        return Ok(_notify);
+    }
+    pub fn find_notify_model(&self) -> Result<UserPostNotification, Error> {
+        use crate::schema::user_post_notifications::dsl::user_post_notifications;
+
+        let _connection = establish_connection();
+        let notify = user_post_notifications
+            .filter(schema::user_post_notifications::user_id.eq(self.id))
+            .first(&_connection)?;
+        return Ok(notify);
+    }
     pub fn get_main_post_list(&self) -> PostList {
         use crate::schema::post_lists::dsl::post_lists;
 

@@ -25,7 +25,7 @@ use crate::schema::{
     user_visible_perms,
 };
 
-use crate::models::{Photo, PhotoList, SearchAllComments,};
+use crate::models::{Photo, PhotoList, SearchAllComments, UserPhotoNotification};
 
 /*
 Типы пользоватетеля
@@ -159,6 +159,43 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_notify_model(&self) -> Result<UserPhotoNotification, Error> {
+        let notify = self.find_notify_model();
+        if notify.is_ok() {
+            return notify;
+        }
+        else {
+            return self.create_notify_model();
+        }
+    }
+    pub fn create_notify_model(&self) -> Result<UserPhotoNotification, Error> {
+        use crate::models::NewUserPhotoNotification;
+
+        let _connection = establish_connection();
+        let _new_notify = NewUserPhotoNotification {
+            user_id:         self.id,
+            comment:         true,
+            comment_reply:   true,
+            mention:         true,
+            comment_mention: true,
+            repost:          true,
+            reactions:       true,
+        };
+        let _notify = diesel::insert_into(schema::user_photo_notifications::table)
+            .values(&_new_notify)
+            .get_result::<UserPhotoNotification>(&_connection)?;
+
+        return Ok(_notify);
+    }
+    pub fn find_notify_model(&self) -> Result<UserPhotoNotification, Error> {
+        use crate::schema::user_photo_notifications::dsl::user_photo_notifications;
+
+        let _connection = establish_connection();
+        let notify = user_photo_notifications
+            .filter(schema::user_photo_notifications::user_id.eq(self.id))
+            .first(&_connection)?;
+        return Ok(notify);
+    }
     pub fn get_main_photo_list(&self) -> PhotoList {
         use crate::schema::photo_lists::dsl::photo_lists;
 

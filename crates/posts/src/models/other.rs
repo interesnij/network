@@ -21,6 +21,8 @@ use crate::schema::{
     notify_user_communities,
     news_user_communities,
     featured_user_communities,
+    user_post_notifications,
+    community_post_notifications,
 };
 //use crate::errors::Error;
 use serde::{Serialize, Deserialize};
@@ -425,4 +427,69 @@ pub struct NewFeaturedUserCommunitie {
     pub community_id: Option<i32>,
     pub mute:         bool,
     pub sleep:        Option<chrono::NaiveDateTime>
+}
+
+
+/////// ListUserCommunitiesKey //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct ListUserCommunitiesKey {
+    pub id:    i32,
+    pub types: i16,
+    pub name:  String,
+    pub owner: i32,
+}
+#[derive(Deserialize, Insertable, AsChangeset)]
+#[table_name="list_user_communities_keys"]
+pub struct NewListUserCommunitiesKey {
+    pub types: i16,
+    pub name:  String,
+    pub owner: i32,
+}
+
+/////// UserPostNotification //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct UserPostNotification {
+    pub id:              i32,
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="user_post_notifications"]
+pub struct NewUserPostNotification {
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
+}
+
+/////// CommunityPostNotification //////
+#[derive(Queryable, Serialize, Deserialize, Identifiable)]
+pub struct CommunityPostNotification {
+    pub id:              i32,
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="community_post_notifications"]
+pub struct NewCommunityPostNotification {
+    pub user_id:         i32,
+    pub comment:         bool,
+    pub comment_reply:   bool,
+    pub mention:         bool,
+    pub comment_mention: bool,
+    pub repost:          bool,
+    pub reactions:       bool
 }
