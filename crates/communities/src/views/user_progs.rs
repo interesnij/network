@@ -16,7 +16,7 @@ use crate::errors::Error;
 use serde::{Deserialize, Serialize};
 
 
-pub fn progs_urls(config: &mut web::ServiceConfig) {
+pub fn user_urls(config: &mut web::ServiceConfig) {
     config.route("/get_user_private", web::get().to(edit_user_private_page));
     config.route("/edit_user_private", web::post().to(edit_user_private));
     config.route("/edit_user_all_private", web::post().to(edit_user_all_private));
