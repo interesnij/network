@@ -6,15 +6,14 @@ use actix_web::{
 };
 use crate::utils::{
     get_owner_data, get_community,
-    ErrorParams, SmallData, EditPrivateResp, 
+    ErrorParams, EditPrivateResp, 
     EditNameResp, EditLinkResp, MinimalData,
-    EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
+    EditNotifyResp,
     ObjectData, CardUserJson, RegListData, SearchRegListData,
 };
 use crate::AppState;
 use crate::models::Community;
 use crate::errors::Error;
-use serde::{Deserialize, Serialize};
 
 
 pub fn settings_urls(config: &mut web::ServiceConfig) {
