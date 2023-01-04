@@ -215,7 +215,7 @@ pub async fn create_invites (
         
         let body = block(move || owner.invite_in_community ( 
             data.community_id.unwrap(),
-            data.users.unwrap().clone()
+            data.users.as_deref().unwrap()
         )).await?;
         Ok(Json(body))
     }
