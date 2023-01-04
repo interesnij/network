@@ -20,7 +20,7 @@ pub fn progs_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/edit_private", web::post().to(edit_community_private));
     config.route("/settings/edit_link", web::post().to(edit_link));
     config.route("/settings/edit_name", web::post().to(edit_name));
-    //config.route("/settings/edit_notify", web::post().to(edit_notify));
+    config.route("/settings/edit_notify", web::post().to(edit_notify));
     config.route("/settings/delete_community", web::post().to(delete_community));
     config.route("/settings/restore_community", web::post().to(restore_community));
     config.route("/settings/edit_status", web::post().to(edit_status));
@@ -324,6 +324,74 @@ pub async fn edit_community_private (
                 data.field.as_deref().unwrap(),
                 data.value.unwrap(),
                 data.users.clone()
+            )).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+    }
+}
+
+pub async fn edit_notify (
+    req: HttpRequest,
+    state: web::Data<AppState>, 
+    data: Json<EditCommunityPrivateData>
+) -> Result<Json<i16>, Error> {
+    let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
+     if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body)) 
+    }
+    else if (user_id == 0 && community_id == 0)
+        || 
+        (community_id == 0 && data.community_id.is_none())
+            {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.value.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'value' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.field.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'field' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: Community;
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = data.community_id.unwrap();
+        }
+        let owner_res = get_community(c_id);
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+            let body = block(move || owner.edit_notify ( 
+                data.field.as_deref().unwrap(),
+                data.value.unwrap(),
             )).await?;
             Ok(Json(body))
         }
