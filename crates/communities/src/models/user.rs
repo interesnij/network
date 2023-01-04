@@ -3,9 +3,10 @@ use crate::utils::{
     establish_connection,
     get_limit_offset,
     get_limit,
-    CardUserJson,
+    CardUserJson, KeyValue,
     CardCommunityJson,
     CardCommunitiesList,
+    EditUserPrivateResp,
 };
 use diesel::{
     Queryable,
@@ -22,8 +23,10 @@ use crate::schema::{
     friends,
     follows,
     user_visible_perms,
+    community_follows,
+    community_invites,
 };
-use crate::models::CommunitiesList;
+use crate::models::{CommunitiesList, Community};
 
 /*
 Типы пользоватетеля
@@ -109,6 +112,7 @@ pub struct User {
     pub last_activity: chrono::NaiveDateTime,
     pub see_all:       i16,
     pub see_community: i16,
+    pub invite:        i16,
     pub lists:         i16,
     pub communities:   i32,
 }
@@ -127,6 +131,7 @@ pub struct NewUser {
     pub last_activity: chrono::NaiveDateTime,
     pub see_all:       i16,
     pub see_community: i16,
+    pub invite:        i16,
     pub lists:         i16,
     pub communities:   i32,
 }
@@ -143,6 +148,101 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_private_field(value: i16) -> KeyValue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Все друзья и все подписчики",
+            3 => "Все друзья и подписчики, кроме",
+            4 => "Все друзья и некоторые подписчики",
+            5 => "Все подписчики и друзья, кроме",
+            6 => "Все подписчики и некоторые друзья",
+            7 => "Все друзья",
+            8 => "Все подписчики",
+            9 => "Друзья, кроме",
+            10 => "Некоторые друзья",
+            11 => "Подписчики, кроме",
+            12 => "Некоторые подписчики",
+            13 => "Только я",
+            _ => "Ошибка",
+        };
+        return KeyValue {
+            value: value,
+            info:  info.to_string(),
+        }
+    }
+    pub fn get_private_json(&self) -> EditUserPrivateResp {
+        let see_community_exclude_friends:    Option<Vec<CardUserJson>>;
+        let see_community_exclude_follows:    Option<Vec<CardUserJson>>;
+        let see_community_include_friends:    Option<Vec<CardUserJson>>;
+        let see_community_include_follows:    Option<Vec<CardUserJson>>;
+        let invite_exclude_friends:   Option<Vec<CardUserJson>>;
+        let invite_exclude_follows:   Option<Vec<CardUserJson>>;
+        let invite_include_friends:   Option<Vec<CardUserJson>>;
+        let invite_include_follows:   Option<Vec<CardUserJson>>;
+        
+        if self.see_community == 5 || self.see_community == 9 {
+            see_community_exclude_friends = Some(self.get_limit_see_community_exclude_friends(Some(20), Some(0)));
+        }
+        else {
+            see_community_exclude_friends = None;
+        }
+        if self.see_community == 3 || self.see_community == 11 {
+            see_community_exclude_follows = Some(self.get_limit_see_community_exclude_follows(Some(20), Some(0)));
+        }
+        else {
+            see_community_exclude_follows = None;
+        }
+        if self.see_community == 6 || self.see_community == 10 {
+            see_community_include_friends = Some(self.get_limit_see_community_include_friends(Some(20), Some(0)));
+        }
+        else {
+            see_community_include_friends = None;
+        }
+        if self.see_community == 4 || self.see_community == 12 {
+            see_community_include_follows = Some(self.get_limit_see_community_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_community_include_follows = None;
+        }
+
+        if self.invite == 5 || self.invite == 9 {
+            invite_exclude_friends = Some(self.get_limit_invite_exclude_friends(Some(20), Some(0)));
+        }
+        else {
+            invite_exclude_friends = None;
+        }
+        if self.invite == 3 || self.invite == 11 {
+            invite_exclude_follows = Some(self.get_limit_invite_exclude_follows(Some(20), Some(0)));
+        }
+        else {
+            invite_exclude_follows = None;
+        }
+        if self.invite == 6 || self.invite == 10 {
+            invite_include_friends = Some(self.get_limit_invite_include_friends(Some(20), Some(0)));
+        }
+        else {
+            invite_include_friends = None;
+        }
+        if self.invite == 4 || self.invite == 12 {
+            invite_include_follows = Some(self.get_limit_invite_include_follows(Some(20), Some(0)));
+        }
+        else {
+            invite_include_follows = None;
+        }
+    
+        return EditUserPrivateResp {
+            see_community:                 User::get_private_field(self.see_community),
+            invite:                        User::get_private_field(self.invite),
+            see_community_exclude_friends: see_community_exclude_friends,
+            see_community_exclude_follows: see_community_exclude_follows,
+            see_community_include_friends: see_community_include_friends,
+            see_community_include_follows: see_community_include_follows,
+            invite_exclude_friends:        invite_exclude_friends,
+            invite_exclude_follows:        invite_exclude_follows,
+            invite_include_friends:        invite_include_friends,
+            invite_include_follows:        invite_include_follows,
+        };
+    }
     pub fn get_common_friends_of_community (
         &self, 
         community_id: i32, 
@@ -427,13 +527,17 @@ impl User {
                 .set(schema::users::see_community.eq(value))
                 .execute(&_connection)
                 .expect("E."),
+            "invite" => diesel::update(self)
+                .set(schema::users::invite.eq(value))
+                .execute(&_connection)
+                .expect("E."),
             _ => 0,
         }; 
         if is_ie_mode {
             // нужно удалить из списка тех, кто был туда внесен
             // с противоположными правами.
             use crate::schema::user_visible_perms::dsl::user_visible_perms;
-            match value { 
+            match value {  
                 0 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
@@ -448,6 +552,13 @@ impl User {
                     )
                     .execute(&_connection)
                     .expect("E"),
+                2 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(12))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
                 10 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
@@ -459,6 +570,13 @@ impl User {
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
                         .filter(schema::user_visible_perms::types.eq(1))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                12 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(2))
                     )
                     .execute(&_connection)
                     .expect("E"),
@@ -644,6 +762,7 @@ impl User {
             last_activity: chrono::Local::now().naive_utc(),
             see_all:       1,
             see_community: 1,
+            invite:        1,
             lists:         0,
             communities:   0,
         };
@@ -815,28 +934,41 @@ impl User {
     }
 
     pub fn get_limit_see_all_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_follows_for_types(11, limit, offset); 
+        return self.get_ie_follows_for_types(10, limit, offset); 
     }
     pub fn get_limit_see_all_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_follows_for_types(1, limit, offset); 
+        return self.get_ie_follows_for_types(0, limit, offset); 
     }
     pub fn get_limit_see_all_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_friends_for_types(11, limit, offset); 
+        return self.get_ie_friends_for_types(10, limit, offset); 
     }
     pub fn get_limit_see_all_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_friends_for_types(1, limit, offset); 
+        return self.get_ie_friends_for_types(0, limit, offset); 
     }
 
     pub fn get_limit_see_community_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_follows_for_types(12, limit, offset); 
+        return self.get_ie_follows_for_types(11, limit, offset); 
     }
     pub fn get_limit_see_community_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_follows_for_types(2, limit, offset); 
+        return self.get_ie_follows_for_types(1, limit, offset); 
     }
     pub fn get_limit_see_community_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
-        return self.get_ie_friends_for_types(12, limit, offset); 
+        return self.get_ie_friends_for_types(11, limit, offset); 
     }
     pub fn get_limit_see_community_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(1, limit, offset); 
+    }
+
+    pub fn get_limit_invite_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(12, limit, offset); 
+    }
+    pub fn get_limit_invite_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(2, limit, offset); 
+    }
+    pub fn get_limit_invite_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(12, limit, offset); 
+    }
+    pub fn get_limit_invite_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_friends_for_types(2, limit, offset); 
     }
 
@@ -878,6 +1010,26 @@ impl User {
             10 => self.is_friend_perm_exists(user_id, 0),
             11 => !self.is_follow_perm_exists(user_id, 10),
             12 => self.is_follow_perm_exists(user_id, 0),
+            _ => false,
+        };
+    }
+    pub fn is_user_invite(&self, user_id: i32) -> bool {
+        if self.user_id == user_id {
+            return true;
+        }
+        return match self.see_all {
+            1 => true,
+            2 => self.is_connected_with_user_with_id(user_id) || self.is_self_followers_user_with_id(user_id),
+            3 => self.is_connected_with_user_with_id(user_id) || !self.is_follow_perm_exists(user_id, 12),
+            4 => self.is_connected_with_user_with_id(user_id) || self.is_follow_perm_exists(user_id, 2),
+            5 => self.is_self_followers_user_with_id(user_id) || !self.is_friend_perm_exists(user_id, 12),
+            6 => self.is_self_followers_user_with_id(user_id) || self.is_friend_perm_exists(user_id, 2),
+            7 => self.is_connected_with_user_with_id(user_id),
+            8 => self.is_self_followers_user_with_id(user_id),
+            9 => !self.is_friend_perm_exists(user_id, 12),
+            10 => self.is_friend_perm_exists(user_id, 2),
+            11 => !self.is_follow_perm_exists(user_id, 12),
+            12 => self.is_follow_perm_exists(user_id, 2),
             _ => false,
         };
     }
@@ -1406,18 +1558,142 @@ impl User {
         }
     }
 
-    pub fn join_community(&self, community_id: i32) -> i16 {
+    pub fn follow_community(&self, community: Community) -> i16 {
+        use crate::schema::community_follows::dsl::community_follows;
+
+        if self.is_follow_of_community(community.id) 
+            || 
+            !community.is_close() 
+            || 
+            self.is_member_of_community(community.id) 
+            || 
+            self.is_user_in_ban(community.id) {
+            return 0;
+        } 
+        let _connection = establish_connection();
+
+        let new_follow = NewCommunityFollow {
+            user_id:      self.user_id,
+            community_id: community.id,
+            view:         false,
+            visited:      1, 
+        };
+        diesel::insert_into(schema::community_follows::table)
+            .values(&new_follow)
+            .execute(&_connection)
+            .expect("Error.");
+        return 1;
+    }
+    pub fn unfollow_community(&self, community_id: i32) -> i16 {
+        use crate::schema::community_follows::dsl::community_follows;
+
+        if !self.is_follow_of_community(community_id) {
+            return 0;
+        } 
+        let _connection = establish_connection();
+        diesel::delete (
+            community_follows
+                .filter(schema::community_follows::user_id.eq(self.user_id))
+                .filter(schema::community_follows::community_id.eq(community_id))
+            )
+          .execute(&_connection)
+          .expect("E");
+        
+        return 1;
+    }
+
+    pub fn invite_in_community(&self, community_id: i32, users_ids: Vec<i32>) -> i16 {
+        use crate::schema::community_invites::dsl::community_invites;
+
+        if !self.is_member_of_community(community_id) {
+            return 0;
+        } 
+        let _connection = establish_connection();
+        for user_id in users_ids.iter() {
+            let user = get_user(user_id).expect("Error.");
+            if user.is_user_invite(self.user_id) && (
+                !user.is_invite_of_community(community_id)
+                || 
+                !user.is_member_of_community(community_id)
+                ||
+                !user.is_ban_of_community(community_id)
+                ||
+                !user.is_follow_of_community(community_id)
+            ) {
+                let new_invite = NewCommunityInvite {
+                    user_id:        user_id,
+                    community_id:   community_id,
+                    invite_creator: self.user_id,
+                };
+                diesel::insert_into(schema::community_invites::table)
+                    .values(&new_invite)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
+        }
+        return 1;
+    }
+    pub fn uninvite_community(&self, community_id: i32) -> i16 {
+        use crate::schema::community_invites::dsl::community_invites;
+
+        if !self.is_invite_of_community(community_id) {
+            return 0;
+        } 
+        let _connection = establish_connection();
+        diesel::delete (
+            community_follows
+                .filter(schema::community_follows::user_id.eq(self.user_id))
+                .filter(schema::community_follows::community_id.eq(community_id))
+            )
+          .execute(&_connection)
+          .expect("E");
+        
+        return 1;
+    }
+
+    pub fn join_community(&self, community: Community) -> i16 {
         use crate::models::{
             NewCommunitiesMembership,
         };
 
-        if self.is_member_of_community(community_id) || self.is_user_in_ban(community_id) {
+        if self.is_member_of_community(community.id) || self.is_user_in_ban(community.id) {
             return 0;
-        }
+        } 
         let _connection = establish_connection();
+
+        if community.is_private() {
+            use crate::schema::community_invites::dsl::community_invites;
+            use crate::models::CommunityInvite;
+
+            if !self.is_invite_of_community(community.id) {
+                    return 0;
+            }
+            diesel::delete (
+                community_invites
+                    .filter(schema::community_invites::user_id.eq(self.user_id))
+                    .filter(schema::community_invites::community_id.eq(community.id))
+                )
+                .execute(&_connection)
+                .expect("E");
+        }
+        else if community.is_close() {
+            use crate::schema::community_follows::dsl::community_follows;
+            use crate::models::CommunityFollow;
+            if !self.is_follow_of_community(community.id) {
+                return 0;
+            }
+            diesel::delete (
+                community_follows
+                    .filter(schema::community_follows::user_id.eq(self.user_id))
+                    .filter(schema::community_follows::community_id.eq(community.id))
+                )
+                .execute(&_connection)
+                .expect("E");
+        }
+
         let new_member = NewCommunitiesMembership {
             user_id:      self.user_id,
-            community_id: community_id,
+            community_id: community.id,
             level:        1,
             created:      chrono::Local::now().naive_utc(),
             visited:      1, 
@@ -1429,7 +1705,7 @@ impl User {
         self.plus_communities(1);
 
         let list = self.get_main_communities_list();
-        list.create_community_item(community_id);
+        list.create_community_item(community.id);
         return 1;
     }
     pub fn is_member_of_community(&self, community_id: i32) -> bool {
@@ -1440,6 +1716,28 @@ impl User {
             .filter(schema::communities_memberships::user_id.eq(self.user_id))
             .filter(schema::communities_memberships::community_id.eq(community_id))
             .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_follow_of_community(&self, community_id: i32) -> bool {
+        use crate::schema::community_follows::dsl::community_follows;
+
+        let _connection = establish_connection();
+        return community_follows
+            .filter(schema::community_follows::user_id.eq(self.user_id))
+            .filter(schema::community_follows::community_id.eq(community_id))
+            .select(schema::community_follows::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_invite_of_community(&self, community_id: i32) -> bool {
+        use crate::schema::community_invites::dsl::community_invites;
+
+        let _connection = establish_connection();
+        return community_invites
+            .filter(schema::community_invites::user_id.eq(self.user_id))
+            .filter(schema::community_invites::community_id.eq(community.id))
+            .select(schema::community_invites::id)
             .first::<i32>(&_connection)
             .is_ok();
     }
@@ -1570,8 +1868,10 @@ pub struct NewFollow {
 
 0 может видеть профиль
 1 может видеть сообщества
+2 может приглашать в сообщества
 10 не может видеть профиль
 11 не может видеть сообщества
+12 не может приглашать в сообщества
 20 пользователь заблокирован у владельца блока сообществ
 */
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
@@ -1588,4 +1888,38 @@ pub struct NewUserVisiblePerm {
     pub user_id:   i32,
     pub target_id: i32,
     pub types:     i16,
+}
+
+/////// CommunityFollow //////
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct CommunityFollow {
+    pub id:           i32,
+    pub user_id:      i32,
+    pub community_id: i32,
+    pub view:         bool,
+    pub visited:      i32,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="community_follows"]
+pub struct NewCommunityFollow {
+    pub user_id:      i32,
+    pub community_id: i32,
+    pub view:         bool,
+    pub visited:      i32,
+}
+
+/////// CommunityInvite //////
+#[derive(Debug, Queryable, Serialize, Identifiable)]
+pub struct CommunityInvite {
+    pub id:             i32,
+    pub user_id:        i32,
+    pub community_id:   i32,
+    pub invite_creator: i32,
+}
+#[derive(Deserialize, Insertable)]
+#[table_name="community_invites"]
+pub struct NewCommunityInvite {
+    pub user_id:        i32,
+    pub community_id:   i32,
+    pub invite_creator: i32,
 }

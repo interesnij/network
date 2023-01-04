@@ -151,7 +151,7 @@ impl PostList {
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<AttachOwner>>
+        _users: Option<Vec<i32>>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12,18,19].iter().any(|&i| i==value);
         if value < 1 || value > 19 || (is_ie_mode && _users.is_none()) {

@@ -347,7 +347,7 @@ impl User {
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<AttachOwner>>
+        _users: Option<Vec<i32>>
     ) -> i16 {
         use crate::schema::item_users::dsl::item_users;
         use crate::models::ItemUser;

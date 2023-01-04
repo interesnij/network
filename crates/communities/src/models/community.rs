@@ -27,7 +27,7 @@ use crate::utils::{
     CommunityCategoryJson, CardUserJson, KeyValue,
     CommunityPrivateJson, NewCommunityJson,
     AttachCommunityResp, CardCommunityJson,
-    CommunityDetailJson, EditNotifyResp, EditPrivateResp,
+    CommunityDetailJson, EditNotifyResp, EditCommunityPrivateResp,
 };
 use crate::errors::Error;
 use crate::models::{
@@ -325,7 +325,7 @@ impl Community {
             info:  info.to_string(),
         }
     }
-    pub fn get_private_json(&self) -> EditPrivateResp {
+    pub fn get_private_json(&self) -> EditCommunityPrivateResp {
         let see_member_exclude_members:    Option<Vec<CardUserJson>>;
         let see_member_include_members:    Option<Vec<CardUserJson>>;
         let see_info_exclude_members:   Option<Vec<CardUserJson>>;
@@ -404,7 +404,7 @@ impl Community {
             see_stat_include_members = None;
         }
     
-        return EditPrivateResp {
+        return EditCommunityPrivateResp {
             see_member:                   Community::get_private_field(private.see_member),
             see_info:                     Community::get_private_field(private.see_info),
             see_settings:                 Community::get_private_field(private.see_settings),
@@ -972,8 +972,9 @@ impl Community {
             .execute(&_connection);
         if ban_to.is_none() { 
             CommunityListItem::delete_community_items(user.get_communities_lists_ids(), self.id);
+            user.leave_community(self.id);
         }
-            if banned_user.is_ok() {
+        if banned_user.is_ok() {
             return 1; 
         }
         else {
@@ -1174,7 +1175,7 @@ impl Community {
             Err(_error) => 0,
         };
     }
-    pub fn create_advertisor(&self, user_id: i32) -> i16 {
+    pub fn create_advertiser(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
 
         let _connection = establish_connection();

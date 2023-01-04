@@ -24,11 +24,11 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/get_delete_account", web::get().to(delete_account_page));
     config.route("/settings/get_notifies", web::get().to(edit_notifies_page));
 
+    config.route("/settings/edit_private", web::post().to(edit_private)); 
     config.route("/settings/edit_link", web::post().to(edit_link));
     config.route("/settings/edit_name", web::post().to(edit_name));
     config.route("/settings/edit_password", web::post().to(edit_password));
     config.route("/settings/edit_phone", web::post().to(edit_phone));
-    config.route("/settings/edit_private", web::post().to(edit_private));
     config.route("/settings/edit_notify", web::post().to(edit_notify));
     config.route("/settings/delete_account", web::post().to(delete_account));
     config.route("/settings/restore_account", web::post().to(restore_account));

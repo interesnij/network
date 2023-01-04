@@ -2,6 +2,7 @@ pub mod pages;
 pub mod progs;
 pub mod owner_progs;
 pub mod manager_progs;
+pub mod user_progs;
 pub mod settings;
 
 pub use self::{
@@ -10,4 +11,5 @@ pub use self::{
     owner_progs::*,
     manager_progs::*,
     settings::*,
+    user_progs::*,
 };

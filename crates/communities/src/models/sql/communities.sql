@@ -81,6 +81,7 @@ CREATE TABLE users (
     last_activity TIMESTAMP NOT NULL,
     see_all       SMALLINT NOT NULL,   -- кто может видеть открытый профиль
     see_community SMALLINT NOT NULL,   -- кто может видеть сообщества
+    invite        SMALLINT NOT NULL,   -- кто может приглашать в сообщества
     lists         SMALLINT NOT NULL,   -- кол-во списков
     communities   INT NOT NULL         -- кол-во сообществ
 );
@@ -306,9 +307,12 @@ CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (targ
 приватность
 0 может видеть профиль
 1 может видеть сообщества
+2 может приглашать в сообщества
 10 не может видеть профиль
 11 не может видеть сообщества
+12 не может приглашать в сообщества
 20 пользователь заблокирован у владельца блока сообществ
+*/
 */
 CREATE TABLE user_visible_perms (
   id         SERIAL PRIMARY KEY,

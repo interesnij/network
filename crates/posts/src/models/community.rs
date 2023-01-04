@@ -251,7 +251,7 @@ impl Community {
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<AttachOwner>>
+        _users: Option<Vec<i32>>
     ) -> i16 { 
         let is_ie_mode = vec![6,7].iter().any(|&i| i==value);
         if value < 1 || value > 7 || (is_ie_mode && _users.is_none()) {

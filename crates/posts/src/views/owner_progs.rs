@@ -46,6 +46,7 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/create_ban_user", web::post().to(create_ban_user));
     config.route("/delete_member", web::post().to(delete_member));
     config.route("/delete_ban_user", web::post().to(delete_ban_user));
+    config.route("/update_staff_member", web::post().to(update_staff_member));
 
     config.route("/get_attach_post_lists", web::get().to(get_attach_post_lists));
     config.route("/get_attach_posts", web::get().to(get_attach_posts));

@@ -226,8 +226,25 @@ pub struct SearchRegListData {
     pub offset:       Option<i64>,
 }
 
-#[derive(Serialize)]
-pub struct EditPrivateResp {
+#[derive(Serialize, Deserialize)]
+pub struct EditCommunityPrivateData {
+    pub token:   Option<String>,
+    pub community_id: Option<i32>,
+    pub field:   Option<String>,
+    pub value:   Option<i16>,
+    pub users:   Option<Vec<i32>>,
+}
+#[derive(Serialize, Deserialize)]
+pub struct EditUserPrivateData {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub field:   Option<String>,
+    pub value:   Option<i16>,
+    pub users:   Option<Vec<i32>>,
+}
+
+#[derive(Serialize)] 
+pub struct EditCommunityPrivateResp {
     pub see_member:                   KeyValue,
     pub see_info:                     KeyValue,
     pub see_settings:                 KeyValue,
@@ -248,6 +265,33 @@ pub struct EditPrivateResp {
 
     pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
     pub see_stat_include_members:     Option<Vec<CardUserJson>>,
+}
+
+#[derive(Deserialize, Serialize, Clone)]
+pub struct AttachOwner {
+    pub id:         i32,
+    pub first_name: String,
+    pub last_name:  String,
+    pub types:      i16,
+    pub link:       String,
+    pub s_avatar:   Option<String>,
+    pub see_all:    i16,
+}
+
+#[derive(Serialize)] 
+pub struct EditUserPrivateResp {
+    pub see_community:                 KeyValue,
+    pub invite:                        KeyValue,
+
+    pub see_community_exclude_friends: Option<Vec<CardUserJson>>,
+    pub see_community_include_friends: Option<Vec<CardUserJson>>,
+    pub see_community_exclude_follows: Option<Vec<CardUserJson>>,
+    pub see_community_include_follows: Option<Vec<CardUserJson>>,
+
+    pub invite_exclude_friends:        Option<Vec<CardUserJson>>,
+    pub invite_include_friends:        Option<Vec<CardUserJson>>,
+    pub invite_exclude_follows:        Option<Vec<CardUserJson>>,
+    pub invite_include_follows:        Option<Vec<CardUserJson>>,
 }
 
 #[derive(Serialize)]

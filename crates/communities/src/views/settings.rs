@@ -6,7 +6,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_owner_data, get_community,
-    ErrorParams, EditPrivateResp, ObjectData,
+    ErrorParams, EditPrivateCommunityResp, ObjectData,
     EditNameResp, EditLinkResp, EditNotifyResp,
     CardUserJson, RegListData, SearchRegListData,
 };
@@ -20,7 +20,7 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/get_name", web::get().to(edit_name_page));
     config.route("/settings/get_private", web::get().to(edit_private_page));
     config.route("/settings/get_notifies", web::get().to(edit_notifies_page));
-
+    
     config.route("/settings/blacklist/", web::get().to(blacklist_settings_page));
     config.route("/settings/administrators/", web::get().to(administrators_settings_page));
     config.route("/settings/editors/", web::get().to(editors_settings_page));
@@ -98,7 +98,7 @@ pub async fn edit_notifies_page (
 pub async fn edit_private_page (
     req: HttpRequest,
     state: web::Data<AppState>
-) -> Result<Json<EditPrivateResp>, Error> {
+) -> Result<Json<EditPrivateCommunityResp>, Error> {
     let params_some = web::Query::<ObjectData>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
