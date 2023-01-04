@@ -171,6 +171,8 @@ pub struct InvitesData {
     pub users:        Option<Vec<i32>>,
 } 
 pub async fn create_invites (
+    req: HttpRequest,
+    state: web::Data<AppState>,
     data: Json<InvitesData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -224,6 +226,8 @@ pub struct CData {
     pub community_id: Option<i32>,
 } 
 pub async fn delete_invite (
+    req: HttpRequest,
+    state: web::Data<AppState>,
     data: Json<CData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -266,6 +270,8 @@ pub async fn delete_invite (
 }
 
 pub async fn create_follow (
+    req: HttpRequest,
+    state: web::Data<AppState>,
     data: Json<CData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -307,6 +313,8 @@ pub async fn create_follow (
     }
 }
 pub async fn delete_follow (
+    req: HttpRequest,
+    state: web::Data<AppState>,
     data: Json<CData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -349,6 +357,8 @@ pub async fn delete_follow (
 }
 
 pub async fn join_community (
+    req: HttpRequest,
+    state: web::Data<AppState>,
     data: Json<CData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
@@ -401,7 +411,9 @@ pub async fn join_community (
     }
 }
 pub async fn leave_community (
-    data: Json<CData>
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: Json<CData> 
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
      if err.is_some() {

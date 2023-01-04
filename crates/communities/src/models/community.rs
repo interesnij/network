@@ -2417,24 +2417,6 @@ pub struct NewCommunityBannedUser {
     pub ban_to:       Option<chrono::NaiveDateTime>,
 }
 
-/////// CommunityFollow //////
-#[derive(Debug, Queryable, Serialize, Identifiable)]
-pub struct CommunityFollow {
-    pub id:           i32,
-    pub user_id:      i32,
-    pub community_id: i32,
-    pub view:         bool,
-    pub visited:      i16,
-}
-#[derive(Deserialize, Insertable)]
-#[table_name="community_follows"]
-pub struct NewCommunityFollow {
-    pub user_id:      i32,
-    pub community_id: i32,
-    pub view:         bool,
-    pub visited:      i16,
-}
-
 /////// FeaturedCommunitie //////
 #[derive(Debug, Queryable, Serialize, Identifiable)]
 pub struct FeaturedCommunitie {
