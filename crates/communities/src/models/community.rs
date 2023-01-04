@@ -2045,7 +2045,7 @@ impl Community {
         }
     }
 
-    pub fn get_follows_users(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_follows_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_follows::dsl::community_follows,
             users::dsl::users,
@@ -2070,15 +2070,16 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
     pub fn search_follows_users (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             community_follows::dsl::community_follows,
             users::dsl::users,
@@ -2105,11 +2106,12 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
 
-    pub fn get_banned_user(&self, limit: Option<i64>, offset: Option<i64>) -> Result<Vec<CardUserJson>, Error> {
+    pub fn get_banned_user(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         use crate::schema::{
             community_banned_users::dsl::community_banned_users,
             users::dsl::users,
@@ -2134,15 +2136,16 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
     pub fn search_banned_user (
         &self,
         q:      &String,
         limit:  Option<i64>,
         offset: Option<i64>
-    ) -> Result<Vec<CardUserJson>, Error> {
+    ) -> Vec<CardUserJson> {
         use crate::schema::{
             community_banned_users::dsl::community_banned_users,
             users::dsl::users,
@@ -2169,8 +2172,9 @@ impl Community {
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
             ))
-            .load::<CardUserJson>(&_connection)?;
-        return Ok(_users);
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
     }
 
     pub fn get_token_detail(&self, token_id: i32) -> TokenDetailJson {

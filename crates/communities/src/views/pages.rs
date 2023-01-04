@@ -83,15 +83,22 @@ pub async fn profile_page (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if params.id.is_none() {
+        else if community_id == 0 && params.community_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'id' not found!".to_string(),
+                error: "Permission Denied!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else {
             let owner: Community;
-            let owner_res = get_community(params.id.unwrap());
+            let c_id: i32;
+            if community_id > 0 {
+                c_id = community_id;
+            }
+            else {
+                c_id = params.community_id.unwrap();
+            }
+            let owner_res = get_community(c_id);
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
@@ -154,16 +161,23 @@ pub async fn members_page (
                 error: err.unwrap(),
             }).unwrap();
             Err(Error::BadRequest(body))
-        }
-        else if params.id.is_none() {
+        } 
+        else if community_id == 0 && params.community_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'id' not found!".to_string(),
+                error: "Permission Denied!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else {
             let owner: Community;
-            let owner_res = get_community(params.id.unwrap());
+            let c_id: i32;
+            if community_id > 0 {
+                c_id = community_id;
+            }
+            else {
+                c_id = params.community_id.unwrap();
+            }
+            let owner_res = get_community(c_id);
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
@@ -236,15 +250,15 @@ pub async fn common_members_page (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if params.id.is_none() {
+        else if params.community_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'id' not found!".to_string(),
+                error: "Field 'community_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else {
             let owner: Community;
-            let owner_res = get_community(params.id.unwrap());
+            let owner_res = get_community(params.community_id.unwrap());
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
@@ -358,15 +372,15 @@ pub async fn search_members_page (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if params.id.is_none() {
+        else if params.community_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'id' not found!".to_string(),
+                error: "Field 'community_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
         else {
             let owner: Community;
-            let owner_res = get_community(params.id.unwrap());
+            let owner_res = get_community(params.community_id.unwrap());
             if owner_res.is_ok() {
                 owner = owner_res.expect("E");
             }
@@ -449,9 +463,9 @@ pub async fn search_common_members_page (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-        else if params.id.is_none() {
+        else if params.community_id.is_none() {
             let body = serde_json::to_string(&ErrorParams {
-                error: "parametr 'id' not found!".to_string(),
+                error: "Field 'community_id' is required!".to_string(),
             }).unwrap();
             Err(Error::BadRequest(body))
         }
