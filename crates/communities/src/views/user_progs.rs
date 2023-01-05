@@ -472,8 +472,8 @@ pub struct GetCommunitiesParams {
     pub token:     Option<String>,
     pub target_id: Option<i32>,
     pub list_id:   Option<i32>,
-    pub limit:     Option<i32>,
-    pub offset:    Option<i32>,
+    pub limit:     Option<i64>,
+    pub offset:    Option<i64>,
 }
 pub async fn get_communities_for_list (
     req: HttpRequest,
@@ -516,6 +516,7 @@ pub async fn get_communities_for_list (
                     params.offset,
                 )).await?;
                 Ok(Json(body))
+            }
             else {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "Permission Denied!".to_string(),
@@ -536,7 +537,7 @@ pub async fn get_communities_for_list (
 pub struct GetCommunitiesLimitParams {
     pub token:     Option<String>,
     pub target_id: Option<i32>,
-    pub limit:     Option<i32>,
+    pub limit:     Option<i64>,
 }
 pub async fn get_limit_communities (
     req: HttpRequest,
@@ -577,6 +578,7 @@ pub async fn get_limit_communities (
                     params.limit,
                 )).await?;
                 Ok(Json(body))
+            }
             else {
                 let body = serde_json::to_string(&ErrorParams {
                     error: "Permission Denied!".to_string(),
