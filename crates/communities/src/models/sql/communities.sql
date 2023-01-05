@@ -247,9 +247,9 @@ CREATE UNIQUE INDEX community_privates_unq ON community_privates (id, community_
 CREATE TABLE community_notifications (
     id                   SERIAL PRIMARY KEY,
     community_id         INT NOT NULL,
-    connection_request   BOOLEAN NOT NULL DEFAULT true,
-    connection_confirmed BOOLEAN NOT NULL DEFAULT true,
-    community_invite     BOOLEAN NOT NULL DEFAULT true
+    connection_request   SMALLINT NOT NULL,
+    connection_confirmed SMALLINT NOT NULL,
+    community_invite     SMALLINT NOT NULL
 );
 CREATE UNIQUE INDEX community_notifications_unq ON community_notifications (id, community_id);
 
