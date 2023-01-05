@@ -261,7 +261,7 @@ pub fn get_anon_user_permission(user: &User)
         }
         else { return (false, "Закрыто".to_string());}
     }
-    else if !user.is_anon_user_see_all() && !user.is_anon_user_see_el() {
+    else if !user.is_anon_user_see_el() {
         return (false, user.get_full_name() + &": Ошибка доступа".to_string())
     }
     else {

@@ -348,8 +348,8 @@ pub async fn process_signup (
     // записываем уведомления профиля нового пользователя
     let _user_notification = NewUserNotification {
         user_id:              _new_user.id,
-        connection_request:   true,
-        connection_confirmed: true,
+        connection_request:   1,
+        connection_confirmed: 1,
     };
     diesel::insert_into(schema::user_notifications::table)
         .values(&_user_notification)
