@@ -6,7 +6,7 @@ use crate::utils::{
     CardUserJson,
     CardPhotoListJson,
     AttachOwner, KeyValue, 
-    EditPrivateResp, EditNotifyResp,
+    UserEditPrivateResp, EditNotifyResp,
 };
 use diesel::{
     Queryable,
@@ -204,7 +204,7 @@ impl User {
             info:  info.to_string(),
         }
     }
-    pub fn get_private_json(&self) -> EditPrivateResp {
+    pub fn get_private_json(&self) -> UserEditPrivateResp {
         let see_all_users:        Option<Vec<CardUserJson>>;
         let see_el_users:         Option<Vec<CardUserJson>>;
         let see_comment_users:    Option<Vec<CardUserJson>>;
@@ -309,17 +309,17 @@ impl User {
         }
     
         return EditPrivateResp {
-            see_all:              User::get_private_field(private.see_all),
-            see_el:               User::get_private_field(private.see_el),
-            see_comment:          User::get_private_field(private.see_comment),
-            create_el:            User::get_private_field(private.create_el),
-            create_comment:       User::get_private_field(private.create_comment),
-            copy_el:              User::get_private_field(private.copy_el),
+            see_all:              User::get_private_field(self.see_all),
+            see_el:               User::get_private_field(self.see_el),
+            see_comment:          User::get_private_field(self.see_comment),
+            create_el:            User::get_private_field(self.create_el),
+            create_comment:       User::get_private_field(self.create_comment),
+            copy_el:              User::get_private_field(self.copy_el),
             see_all_users:        see_all_users,
             see_el_users:         see_el_users,
             see_comment_users:    see_comment_users,
             create_el_users:      create_el_users,
-            create_comment_users: create_comment_users
+            create_comment_users: create_comment_users,
             copy_el_users:        copy_el_users,
         };
     }

@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::{AttachmentsJson, KeyValue};
+use crate::utils::AttachmentsJson;
 use crate::models::{
     OwnerService,
 };
@@ -80,8 +80,22 @@ pub struct SmallCommunityData {
 }
 
 #[derive(Serialize)]
-pub struct EditPrivateResp {
+pub struct UserEditPrivateResp {
     pub see_all:              KeyValue,
+    pub see_el:               KeyValue,
+    pub see_comment:          KeyValue,
+    pub create_el:            KeyValue,
+    pub create_comment:       KeyValue,
+    pub copy_el:              KeyValue,
+    pub see_all_users:        Option<Vec<CardUserJson>>;
+    pub see_el_users:         Option<Vec<CardUserJson>>;
+    pub see_comment_users:    Option<Vec<CardUserJson>>;
+    pub create_el_users:      Option<Vec<CardUserJson>>;
+    pub create_comment_users: Option<Vec<CardUserJson>>;
+    pub copy_el_users:        Option<Vec<CardUserJson>>; 
+}
+#[derive(Serialize)]
+pub struct CommunityEditPrivateResp {
     pub see_el:               KeyValue,
     pub see_comment:          KeyValue,
     pub create_el:            KeyValue,

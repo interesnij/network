@@ -6,7 +6,7 @@ use crate::utils::{
     CardUserJson,
     CardPostListJson,
     AttachOwner, KeyValue,
-    EditPrivateResp, EditNotifyResp,
+    CommunityEditPrivateResp, EditNotifyResp,
 };
 use diesel::{
     Queryable,
@@ -185,70 +185,57 @@ impl Community {
             info:  info.to_string(),
         }
     }
-    pub fn get_private_json(&self) -> EditPrivateResp {
-        let see_all_users:        Option<Vec<CardUserJson>>;
+    pub fn get_private_json(&self) -> CommunityEditPrivateResp {
         let see_el_users:         Option<Vec<CardUserJson>>;
         let see_comment_users:    Option<Vec<CardUserJson>>;
         let create_el_users:      Option<Vec<CardUserJson>>;
         let create_comment_users: Option<Vec<CardUserJson>>;
         let copy_el_users:        Option<Vec<CardUserJson>>; 
-        
-        let private = self.get_private_model().expect("E.");
-        
-        if private.see_all == 6 {
-            see_all_users = Some(self.get_limit_see_all_exclude_members(Some(20), Some(0)));
-        }
-        else if private.see_all == 7 {
-            see_all_users = Some(self.get_limit_see_all_include_members(Some(20), Some(0)));
-        }
-        else {
-            see_all_users = None;
-        }
 
-        if private.see_el == 6 {
+        if self.see_el == 6 {
             see_el_users = Some(self.get_limit_see_el_exclude_members(Some(20), Some(0)));
         }
-        else if private.see_el == 7 {
+        else if self.see_el == 7 {
             see_el_users = Some(self.get_limit_see_el_include_members(Some(20), Some(0)));
         }
         else {
             see_el_users = None;
         }
 
-        if private.see_comment == 6 {
+        if self.see_comment == 6 {
             see_comment_users = Some(self.get_limit_see_comment_exclude_members(Some(20), Some(0)));
         }
-        else if private.see_comment == 7 {
+        else if self.see_comment == 7 {
             see_comment_users = Some(self.get_limit_see_comment_include_members(Some(20), Some(0)));
         }
         else {
             see_comment_users = None;
         }
 
-        if private.create_el == 6 {
+        if self.create_el == 6 {
             create_el_users = Some(self.get_limit_create_el_exclude_members(Some(20), Some(0)));
         }
-        else if private.create_el == 7 {
+        else if self.create_el == 7 {
             create_el_users = Some(self.get_limit_create_el_include_members(Some(20), Some(0)));
         }
         else {
             create_el_users = None;
         }
 
-        if private.create_comment == 6 {
+        if self.create_comment == 6 {
             create_comment_users = Some(self.get_limit_create_comment_exclude_members(Some(20), Some(0)));
         }
-        else if private.create_comment == 7 {
+        else if self.create_comment == 7 {
             create_comment_users = Some(self.get_limit_create_comment_include_members(Some(20), Some(0)));
         }
         else {
             create_comment_users = None;
         }
 
-        if private.copy_el == 6 {
+        if self.copy_el == 6 {
             copy_el_users = Some(self.get_limit_copy_el_exclude_members(Some(20), Some(0)));
         }
-        else if private.copy_el == 7 {
+        else if self.copy_el == 7 {
             copy_el_users = Some(self.get_limit_copy_el_include_members(Some(20), Some(0)));
         }
         else {
@@ -256,17 +243,15 @@ impl Community {
         }
     
         return EditPrivateResp {
-            see_all:              Community::get_private_field(private.see_all),
-            see_el:               Community::get_private_field(private.see_el),
-            see_comment:          Community::get_private_field(private.see_comment),
-            create_el:            Community::get_private_field(private.create_el),
-            create_comment:       Community::get_private_field(private.create_comment),
-            copy_el:              Community::get_private_field(private.copy_el),
-            see_all_users:        see_all_users,
+            see_el:               Community::get_private_field(self.see_el),
+            see_comment:          Community::get_private_field(self.see_comment),
+            create_el:            Community::get_private_field(self.create_el),
+            create_comment:       Community::get_private_field(self.create_comment),
+            copy_el:              Community::get_private_field(self.copy_el),
             see_el_users:         see_el_users,
             see_comment_users:    see_comment_users,
             create_el_users:      create_el_users,
-            create_comment_users: create_comment_users
+            create_comment_users: create_comment_users,
             copy_el_users:        copy_el_users,
         };
     }
