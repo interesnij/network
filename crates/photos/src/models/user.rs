@@ -406,7 +406,6 @@ impl User {
         field: &str, 
         value: i16
     ) -> i16 {
-        use crate::utils::from_i16_to_bool;
 
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
@@ -443,11 +442,8 @@ impl User {
         &self, 
         field:  &str, 
         value:  i16, 
-        _users: Option<Vec<AttachOwner>>
+        _users: Option<Vec<i32>>
     ) -> i16 {
-        use crate::schema::item_users::dsl::item_users;
-        use crate::models::ItemUser;
-
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
         if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
             return 0;
@@ -590,25 +586,16 @@ impl User {
             };
         };
         if _users.is_some() && is_ie_mode {
-            /*
-            это сервис не пользователей, потому мы добавим всех 
-            включенных / исключенных пользователей для приватности в таблицу 
-            пользователей item_users, чтобы выводить сведения при изменении приватности
-            и в других подобных случаях.
-            */
-
-            for _user in _users.unwrap().iter() {
+            for user_id in _users.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
-                    target_id: _user.id,
+                    target_id: *user_id,
                     types:     value,
                 };
                 diesel::insert_into(schema::user_visible_perms::table)
                     .values(&_new_perm)
                     .execute(&_connection)
                     .expect("Error.");
-                
-                ItemUser::check_or_create(_user);
             }
         }
         

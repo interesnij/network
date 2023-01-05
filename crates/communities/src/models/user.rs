@@ -606,10 +606,10 @@ impl User {
             };
         };
         if _users.is_some() && is_ie_mode {
-            for _user in _users.unwrap().iter() {
+            for user_id in _users.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
                     user_id:   self.user_id,
-                    target_id: *_user,
+                    target_id: *user_id,
                     types:     value,
                 };
                 diesel::insert_into(schema::user_visible_perms::table)

@@ -262,16 +262,9 @@ impl PhotoList {
             };
         };
         if _users.is_some() && is_ie_mode {
-            /*
-            это сервис не пользователей, потому мы добавим всех 
-            включенных / исключенных пользователей для приватности в таблицу 
-            пользователей item_users, чтобы выводить сведения при изменении приватности
-            и в других подобных случаях.
-            */
-            use crate::models::ItemUser;
-            for _user in _users.unwrap().iter() {
+            for user_id in _users.unwrap().iter() {
                 let _new_perm = NewPhotoListPerm {
-                    user_id:      _user.id,
+                    user_id:      *user_id,
                     photo_list_id: self.id,
                     types:        value,
                 };
@@ -279,8 +272,6 @@ impl PhotoList {
                     .values(&_new_perm)
                     .execute(&_connection)
                     .expect("Error.");
-                
-                ItemUser::check_or_create(_user);
             }
         }
         

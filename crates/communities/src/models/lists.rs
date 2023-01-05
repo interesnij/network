@@ -148,9 +148,9 @@ impl CommunitiesList {
             };
         };
         if _users.is_some() && is_ie_mode {
-            for _user in _users.unwrap().iter() {
+            for user_id in _users.unwrap().iter() {
                 let _new_perm = NewCommunityListPerm {
-                    user_id: *_user,
+                    user_id: *user_id,
                     list_id: self.id,
                     types:   value,
                 };

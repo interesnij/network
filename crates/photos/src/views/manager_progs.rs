@@ -1235,7 +1235,7 @@ pub struct UPrivateParams {
     pub token:   Option<String>,
     pub field:   Option<String>,
     pub value:   Option<i16>,
-    pub users:   Option<Vec<AttachOwner>>,
+    pub users:   Option<Vec<i32>>,
 }
 
 pub async fn edit_user_private (
@@ -1280,7 +1280,7 @@ pub struct AllPrivateData {
     pub token:   Option<String>,
     pub user_id: Option<i32>,
     pub value:   Option<i16>,
-    pub users:   Option<Vec<AttachOwner>>,
+    pub users:   Option<Vec<i32>>,
 } 
 
 pub async fn edit_user_all_private (
@@ -1315,7 +1315,7 @@ pub struct CPrivateParams {
     pub community_id: Option<i32>,
     pub field:        Option<String>,
     pub value:        Option<i16>,
-    pub users:        Option<Vec<AttachOwner>>,
+    pub users:        Option<Vec<i32>>,
 }
 
 pub async fn edit_community_private (
@@ -1374,7 +1374,7 @@ pub struct LPrivateParams {
     pub list_id: Option<i32>,
     pub field:   Option<String>,
     pub value:   Option<i16>,
-    pub users:   Option<Vec<AttachOwner>>,
+    pub users:   Option<Vec<i32>>,
 }
 
 pub async fn edit_list_private (

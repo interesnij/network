@@ -289,7 +289,6 @@ impl Community {
         field: &str, 
         value: i16
     ) -> i16 {
-        use crate::utils::from_i16_to_bool;
 
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
@@ -455,25 +454,16 @@ impl Community {
             };
         };
         if _users.is_some() && is_ie_mode {
-            /*
-            это сервис не пользователей, потому мы добавим всех 
-            включенных / исключенных пользователей для приватности в таблицу 
-            пользователей item_users, чтобы выводить сведения при изменении приватности
-            и в других подобных случаях.
-            */
-            use crate::models::ItemUser;
-            for _user in _users.unwrap().iter() {
+            for user_id in _users.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.community_id,
-                    target_id:    _user.id,
+                    target_id:    *user_id,
                     types:        value,
                 };
                 diesel::insert_into(schema::community_visible_perms::table)
                     .values(&_new_perm)
                     .execute(&_connection)
                     .expect("Error.");
-                
-                ItemUser::check_or_create(_user);
             }
         }
         

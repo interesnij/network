@@ -171,7 +171,6 @@ impl User {
         field: &str, 
         value: i16
     ) -> EditNotifyResp {
-        use crate::utils::from_i16_to_bool;
 
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
