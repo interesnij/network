@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::utils::AttachmentsJson;
+use crate::utils::{AttachmentsJson, KeyValue};
 use crate::models::{
     OwnerService,
 };
