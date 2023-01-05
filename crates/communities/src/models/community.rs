@@ -367,7 +367,7 @@ impl Community {
             see_member_members = Some(self.get_limit_see_member_include_members(Some(20), Some(0)));
         }
         else {
-            see_member_include_members = None;
+            see_member_members = None;
         }
 
         if private.see_info == 6 {
