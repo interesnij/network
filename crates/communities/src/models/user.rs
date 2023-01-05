@@ -194,7 +194,7 @@ impl User {
     }
     pub fn get_private_json(&self) -> EditUserPrivateResp {
         let see_community_users: Option<Vec<CardUserJson>>;
-        let invite_userss:       Option<Vec<CardUserJson>>;
+        let invite_users:        Option<Vec<CardUserJson>>;
         
         if self.see_community == 5 || self.see_community == 9 {
             see_community_users = Some(self.get_limit_see_community_exclude_friends(Some(20), Some(0)));
@@ -360,7 +360,7 @@ impl User {
     }
     pub fn get_communities_of_list (
         &self,
-        list_id: Option<i32>,
+        list_id: Option<i32>, 
         limit:   Option<i64>,
         offset:  Option<i64>
     ) -> Vec<CardCommunityJson> {

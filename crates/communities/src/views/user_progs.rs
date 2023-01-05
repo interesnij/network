@@ -478,7 +478,7 @@ pub struct GetCommunitiesParams {
 pub async fn get_communities_for_list (
     req: HttpRequest,
     state: web::Data<AppState>
-) -> Result<Json<CardCommunityJson>, Error> {
+) -> Result<Json<Vec<CardCommunityJson>>, Error> {
     let params_some = web::Query::<GetCommunitiesParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
@@ -542,7 +542,7 @@ pub struct GetCommunitiesLimitParams {
 pub async fn get_limit_communities (
     req: HttpRequest,
     state: web::Data<AppState>
-) -> Result<Json<CardCommunityJson>, Error> {
+) -> Result<Json<Vec<CardCommunityJson>>, Error> {
     let params_some = web::Query::<GetCommunitiesLimitParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();

@@ -416,11 +416,11 @@ impl Community {
             see_settings:         Community::get_private_field(private.see_settings),
             see_log:              Community::get_private_field(private.see_log),
             see_stat:             Community::get_private_field(private.see_stat),
-            see_member_members:   see_member_exclude_members,
-            see_info_members:     see_info_exclude_members,
-            see_settings_members: see_settings_exclude_members,
-            see_log_members:      see_log_exclude_members,
-            see_stat_members:     see_stat_exclude_members,
+            see_member_members:   see_member_members,
+            see_info_members:     see_info_members,
+            see_settings_members: see_settings_members,
+            see_log_members:      see_log_members,
+            see_stat_members:     see_stat_members,
         };
     }
     pub fn is_identified_send(&self) -> bool {
