@@ -453,9 +453,9 @@ impl User {
             see_all:          User::get_private_field(private.see_all),
             see_info:         User::get_private_field(private.see_info),
             see_friend:       User::get_private_field(private.see_friend),
-            see_all_users:    see_all_friends,
-            see_info_users:   see_info_friends,
-            see_friend_users: see_friend_friends,
+            see_all_users:    see_all_users,
+            see_info_users:   see_info_users,
+            see_friend_users: see_friend_users,
         };
     }
 
