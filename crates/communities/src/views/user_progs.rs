@@ -7,7 +7,7 @@ use actix_web::{
 use crate::utils::{
     get_community, get_user, get_user_owner_data,
     ErrorParams, SmallData, TOKEN,
-    EditUserPrivateResp,
+    EditUserPrivateResp, CardCommunityJson,
 };
 use crate::AppState;
 use crate::models::{Community, User};
@@ -25,6 +25,8 @@ pub fn user_urls(config: &mut web::ServiceConfig) {
     config.route("/delete_follow", web::post().to(delete_follow));
     config.route("/join_community", web::post().to(join_community));
     config.route("/leave_community", web::post().to(leave_community));
+    config.route("/get_list_communities", web::get().to(get_communities_for_list));
+    config.route("/get_limit_communities", web::get().to(get_limit_communities));
 }  
 
 pub async fn edit_user_private_page (
@@ -69,7 +71,7 @@ pub async fn edit_user_private_page (
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-}
+} 
 
 #[derive(Serialize, Deserialize)]
 pub struct EditPrivateData {
@@ -461,5 +463,132 @@ pub async fn leave_community (
             data.community_id.unwrap(),
         )).await?;
         Ok(Json(body))
+    }
+}
+
+
+#[derive(Deserialize)]
+pub struct GetCommunitiesParams {
+    pub token:     Option<String>,
+    pub target_id: Option<i32>,
+    pub list_id:   Option<i32>,
+    pub limit:     Option<i32>,
+    pub offset:    Option<i32>,
+}
+pub async fn get_communities_for_list (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<CardCommunityJson>, Error> {
+    let params_some = web::Query::<GetCommunitiesParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: User;
+            let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "user not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if (user_id > 0 && owner.is_user_see_community(user_id))
+            || 
+            (user_id < 1 && owner.is_anon_user_see_community()) {
+                let body = block(move || owner.get_communities_of_list(
+                    params.list_id,
+                    params.limit,
+                    params.offset,
+                )).await?;
+                Ok(Json(body))
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+} 
+
+#[derive(Deserialize)]
+pub struct GetCommunitiesLimitParams {
+    pub token:     Option<String>,
+    pub target_id: Option<i32>,
+    pub limit:     Option<i32>,
+}
+pub async fn get_limit_communities (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<CardCommunityJson>, Error> {
+    let params_some = web::Query::<GetCommunitiesLimitParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: User;
+            let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "user not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if (user_id > 0 && owner.is_user_see_community(user_id))
+            || 
+            (user_id < 1 && owner.is_anon_user_see_community()) {
+                let body = block(move || owner.get_limit_communities (
+                    params.limit,
+                )).await?;
+                Ok(Json(body))
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
     }
 }

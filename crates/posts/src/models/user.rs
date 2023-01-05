@@ -3,9 +3,9 @@ use crate::utils::{
     establish_connection,
     get_limit_offset,
     CardPostJson,
-    CardUserJson,
-    CardPostListJson,
-    AttachOwner,
+    CardUserJson, EditNotifyResp,
+    CardPostListJson, KeyValue,
+    AttachOwner, EditPrivateResp, 
 };
 use diesel::{
     Queryable,
@@ -160,6 +160,293 @@ pub struct NewUserJson {
 }
 
 impl User {
+    pub fn get_notify_field(value: i16) -> KeyValue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Все друзья и все подписчики",
+            3 => "Все друзья и подписчики, кроме",
+            4 => "Все друзья и некоторые подписчики",
+            5 => "Все подписчики и друзья, кроме",
+            6 => "Все подписчики и некоторые друзья",
+            7 => "Все друзья",
+            8 => "Все подписчики",
+            9 => "Друзья, кроме",
+            10 => "Некоторые друзья",
+            11 => "Подписчики, кроме",
+            12 => "Некоторые подписчики",
+            13 => "Никто",
+            _ => "Ошибка",
+        };
+        return KeyValue {
+            value: value,
+            info:  info.to_string(),
+        }
+    } 
+    pub fn get_private_field(value: i16) -> KeyValue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Все друзья и все подписчики",
+            3 => "Все друзья и подписчики, кроме",
+            4 => "Все друзья и некоторые подписчики",
+            5 => "Все подписчики и друзья, кроме",
+            6 => "Все подписчики и некоторые друзья",
+            7 => "Все друзья",
+            8 => "Все подписчики",
+            9 => "Друзья, кроме",
+            10 => "Некоторые друзья",
+            11 => "Подписчики, кроме",
+            12 => "Некоторые подписчики",
+            13 => "Только я",
+            _ => "Ошибка",
+        };
+        return KeyValue {
+            value: value,
+            info:  info.to_string(),
+        }
+    }
+    
+    pub fn get_private_json(&self) -> EditPrivateResp {
+        let see_all_users:        Option<Vec<CardUserJson>>;
+        let see_el_users:         Option<Vec<CardUserJson>>;
+        let see_comment_users:    Option<Vec<CardUserJson>>;
+        let create_el_users:      Option<Vec<CardUserJson>>;
+        let create_comment_users: Option<Vec<CardUserJson>>;
+        let copy_el_users:        Option<Vec<CardUserJson>>; 
+        
+        let private = self.get_private_model().expect("E.");
+        
+        if private.see_all == 5 || private.see_all == 9 {
+            see_all_users = Some(self.get_limit_see_all_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.see_all == 3 || private.see_all == 11 {
+            see_all_users = Some(self.get_limit_see_all_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.see_all == 6 || private.see_all == 10 {
+            see_all_users = Some(self.get_limit_see_all_include_friends(Some(20), Some(0)));
+        }
+        else if private.see_all == 4 || private.see_all == 12 {
+            see_all_users = Some(self.get_limit_see_all_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_all_users = None;
+        }
+
+        if private.see_el == 5 || private.see_el == 9 {
+            see_el_users = Some(self.get_limit_see_el_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.see_el == 3 || private.see_el == 11 {
+            see_el_users = Some(self.get_limit_see_el_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.see_el == 6 || private.see_el == 10 {
+            see_el_users = Some(self.get_limit_see_el_include_friends(Some(20), Some(0)));
+        }
+        else if private.see_el == 4 || private.see_el == 12 {
+            see_el_users = Some(self.get_limit_see_el_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_el_users = None;
+        }
+
+        if private.see_comment == 5 || private.see_comment == 9 {
+            see_comment_users = Some(self.get_limit_see_comment_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.see_comment == 3 || private.see_comment == 11 {
+            see_comment_users = Some(self.get_limit_see_comment_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.see_comment == 6 || private.see_comment == 10 {
+            see_comment_users = Some(self.get_limit_see_comment_include_friends(Some(20), Some(0)));
+        }
+        else if private.see_comment == 4 || private.see_comment == 12 {
+            see_comment_users = Some(self.get_limit_see_comment_include_follows(Some(20), Some(0)));
+        }
+        else {
+            see_comment_users = None;
+        }
+
+        if private.create_el == 5 || private.create_el == 9 {
+            create_el_users = Some(self.get_limit_create_el_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.create_el == 3 || private.create_el == 11 {
+            create_el_users = Some(self.get_limit_create_el_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.create_el == 6 || private.create_el == 10 {
+            create_el_users = Some(self.get_limit_create_el_include_friends(Some(20), Some(0)));
+        }
+        else if private.create_el == 4 || private.create_el == 12 {
+            create_el_users = Some(self.get_limit_create_el_include_follows(Some(20), Some(0)));
+        }
+        else {
+            create_el_users = None;
+        }
+
+        if private.create_comment == 5 || private.create_comment == 9 {
+            create_comment_users = Some(self.get_limit_create_comment_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.create_comment == 3 || private.create_comment == 11 {
+            create_comment_users = Some(self.get_limit_create_comment_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.create_comment == 6 || private.create_comment == 10 {
+            create_comment_users = Some(self.get_limit_create_comment_include_friends(Some(20), Some(0)));
+        }
+        else if private.create_comment == 4 || private.create_comment == 12 {
+            create_comment_users = Some(self.get_limit_create_comment_include_follows(Some(20), Some(0)));
+        }
+        else {
+            create_comment_users = None;
+        }
+
+        if private.copy_el == 5 || private.copy_el == 9 {
+            copy_el_users = Some(self.get_limit_copy_el_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.copy_el == 3 || private.copy_el == 11 {
+            copy_el_users = Some(self.get_limit_copy_el_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.copy_el == 6 || private.copy_el == 10 {
+            copy_el_users = Some(self.get_limit_copy_el_include_friends(Some(20), Some(0)));
+        }
+        else if private.copy_el == 4 || private.copy_el == 12 {
+            copy_el_users = Some(self.get_limit_copy_el_include_follows(Some(20), Some(0)));
+        }
+        else {
+            copy_el_users = None;
+        }
+    
+        return EditPrivateResp {
+            see_all:              User::get_private_field(private.see_all),
+            see_el:               User::get_private_field(private.see_el),
+            see_comment:          User::get_private_field(private.see_comment),
+            create_el:            User::get_private_field(private.create_el),
+            create_comment:       User::get_private_field(private.create_comment),
+            copy_el:              User::get_private_field(private.copy_el),
+            see_all_users:        see_all_users,
+            see_el_users:         see_el_users,
+            see_comment_users:    see_comment_users,
+            create_el_users:      create_el_users,
+            create_comment_users: create_comment_users
+            copy_el_users:        copy_el_users,
+        };
+    }
+    pub fn get_notify_json(&self) -> EditNotifyResp {
+        let comment_users:         Option<Vec<CardUserJson>>;
+        let comment_reply_users:   Option<Vec<CardUserJson>>;
+        let mention_users:         Option<Vec<CardUserJson>>;
+        let comment_mention_users: Option<Vec<CardUserJson>>;
+        let repost_users:          Option<Vec<CardUserJson>>;
+        let reactions_users:       Option<Vec<CardUserJson>>;
+        
+        let notify = self.get_notify_model().expect("E.");
+        
+        if notify.comment == 5 || notify.comment == 9 {
+            comment_users = Some(self.get_limit_comment_exclude_friends(Some(20), Some(0)));
+        }
+        else if notify.comment == 3 || notify.comment == 11 {
+            comment_users = Some(self.get_limit_comment_exclude_follows(Some(20), Some(0)));
+        }
+        else if notify.comment == 6 || notify.comment == 10 {
+            comment_users = Some(self.get_limit_comment_include_friends(Some(20), Some(0)));
+        }
+        else if notify.comment == 4 || notify.comment == 12 {
+            comment_users = Some(self.get_limit_comment_include_follows(Some(20), Some(0)));
+        }
+        else {
+            comment_users = None;
+        }
+
+        if notify.comment_reply == 5 || notify.comment_reply == 9 {
+            comment_reply_users = Some(self.get_limit_comment_reply_exclude_friends(Some(20), Some(0)));
+        }
+        else if notify.comment_reply == 3 || notify.comment_reply == 11 {
+            comment_reply_users = Some(self.get_limit_comment_reply_exclude_follows(Some(20), Some(0)));
+        }
+        else if notify.comment_reply == 6 || notify.comment_reply == 10 {
+            comment_reply_users = Some(self.get_limit_comment_reply_include_friends(Some(20), Some(0)));
+        }
+        else if notify.comment_reply == 4 || notify.comment_reply == 12 {
+            comment_reply_users = Some(self.get_limit_comment_reply_include_follows(Some(20), Some(0)));
+        }
+        else {
+            comment_reply_users = None;
+        }
+
+        if notify.mention == 5 || notify.mention == 9 {
+            mention_users = Some(self.get_limit_mention_exclude_friends(Some(20), Some(0)));
+        }
+        else if notify.mention == 3 || notify.mention == 11 {
+            mention_users = Some(self.get_limit_mention_exclude_follows(Some(20), Some(0)));
+        }
+        else if notify.mention == 6 || notify.mention == 10 {
+            mention_users = Some(self.get_limit_mention_include_friends(Some(20), Some(0)));
+        }
+        else if notify.mention == 4 || notify.mention == 12 {
+            mention_users = Some(self.get_limit_mention_include_follows(Some(20), Some(0)));
+        }
+        else {
+            mention_users = None;
+        }
+
+        if notify.comment_mention == 5 || notify.comment_mention == 9 {
+            comment_mention_users = Some(self.get_limit_comment_mention_exclude_friends(Some(20), Some(0)));
+        }
+        else if notify.comment_mention == 3 || notify.comment_mention == 11 {
+            comment_mention_users = Some(self.get_limit_comment_mention_exclude_follows(Some(20), Some(0)));
+        }
+        else if notify.comment_mention == 6 || notify.comment_mention == 10 {
+            comment_mention_users = Some(self.get_limit_comment_mention_include_friends(Some(20), Some(0)));
+        }
+        else if notify.comment_mention == 4 || notify.comment_mention == 12 {
+            comment_mention_users = Some(self.get_limit_comment_mention_include_follows(Some(20), Some(0)));
+        }
+        else {
+            comment_mention_users = None;
+        }
+
+        if notify.repost == 5 || notify.repost == 9 {
+            repost_users = Some(self.get_limit_repost_exclude_friends(Some(20), Some(0)));
+        }
+        else if notify.repost == 3 || notify.repost == 11 {
+            repost_users = Some(self.get_limit_repost_exclude_follows(Some(20), Some(0)));
+        }
+        else if notify.repost == 6 || notify.repost == 10 {
+            repost_users = Some(self.get_limit_repost_include_friends(Some(20), Some(0)));
+        }
+        else if notify.repost == 4 || notify.repost == 12 {
+            repost_users = Some(self.get_limit_repost_include_follows(Some(20), Some(0)));
+        }
+        else {
+            repost_users = None;
+        }
+
+        if notify.reactions == 5 || notify.reactions == 9 {
+            reactions_users = Some(self.get_limit_reactions_exclude_friends(Some(20), Some(0)));
+        }
+        else if notify.reactions == 3 || notify.reactions == 11 {
+            reactions_users = Some(self.get_limit_reactions_exclude_follows(Some(20), Some(0)));
+        }
+        else if notify.reactions == 6 || notify.reactions == 10 {
+            reactions_users = Some(self.get_limit_reactions_include_friends(Some(20), Some(0)));
+        }
+        else if notify.reactions == 4 || notify.reactions == 12 {
+            reactions_users = Some(self.get_limit_reactions_include_follows(Some(20), Some(0)));
+        }
+        else {
+            reactions_users = None;
+        }
+    
+        return EditNotifyResp {
+            comment:               User::get_notify_field(notify.comment),
+            comment_reply:         User::get_notify_field(notify.comment_reply),
+            mention:               User::get_notify_field(notify.mention),
+            comment_mention:       User::get_notify_field(notify.comment_mention),
+            repost:                User::get_notify_field(notify.repost),
+            reactions:             User::get_notify_field(notify.reactions),
+            comment_users:         comment_users,
+            comment_reply_users:   comment_reply_users,
+            mention_users:         mention_users,
+            comment_mention_users: comment_mention_users,
+            repost_users:          repost_users
+            reactions_users:       reactions_users,
+        };
+    }
     pub fn get_notify_model(&self) -> Result<UserPostNotification, Error> {
         let notify = self.find_notify_model();
         if notify.is_ok() {
@@ -407,9 +694,14 @@ impl User {
     pub fn edit_notify ( 
         &self, 
         field: &str, 
-        value: i16
+        value: i16,
+        _users: Option<Vec<i32>>
     ) -> i16 {
-
+        let is_ie_mode = vec![6,7].iter().any(|&i| i==value);
+        if value < 1 || value > 7 || (is_ie_mode && _users.is_none()) {
+            return 0; 
+        }
+        
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
         let _update_field = match field {
@@ -439,6 +731,111 @@ impl User {
                 .expect("E."),
             _ => 0,
         };
+        if is_ie_mode {
+            // нужно удалить из списка тех, кто был туда внесен
+            // с противоположными правами.
+            use crate::schema::user_visible_perms::dsl::user_visible_perms;
+            match value { 
+                51 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(61))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                52 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(62))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                53 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(63))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                54 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(64))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                55 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(65))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                56 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(66))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                61 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(51))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                62 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(52))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                63 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(53))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                64 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(54))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                65 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(55))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                66 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::community_id.eq(self.community_id))
+                        .filter(schema::user_visible_perms::types.eq(56))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                _ => 0,
+            };
+        };
+        if _users.is_some() && is_ie_mode {
+            for user_id in _users.unwrap().iter() {
+                let _new_perm = NewUserVisiblePerm {
+                    community_id: self.user_id,
+                    target_id:    *user_id,
+                    types:        value,
+                };
+                diesel::insert_into(schema::user_visible_perms::table)
+                    .values(&_new_perm)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
+        }
         return 1;
     }
     pub fn edit_private (
@@ -1174,6 +1571,81 @@ impl User {
     pub fn get_limit_see_all_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_follows_for_types(0, limit, offset); 
     }
+
+    pub fn get_limit_comment_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(61, limit, offset); 
+    }
+    pub fn get_limit_comment_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(51, limit, offset); 
+    } 
+    pub fn get_limit_comment_reply_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(62, limit, offset); 
+    }
+    pub fn get_limit_comment_reply_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(52, limit, offset); 
+    }
+    pub fn get_limit_mention_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(63, limit, offset); 
+    }
+    pub fn get_limit_mention_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(53, limit, offset); 
+    }
+    pub fn get_limit_comment_mention_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(64, limit, offset); 
+    }
+    pub fn get_limit_comment_mention_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(54, limit, offset); 
+    }
+    pub fn get_limit_repost_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(65, limit, offset); 
+    }
+    pub fn get_limit_repost_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(55, limit, offset); 
+    }
+    pub fn get_limit_reactions_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(66, limit, offset); 
+    }
+    pub fn get_limit_reactions_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_for_types(56, limit, offset); 
+    }
+
+    pub fn get_limit_comment_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(61, limit, offset); 
+    }
+    pub fn get_limit_comment_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(51, limit, offset); 
+    } 
+    pub fn get_limit_comment_reply_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(62, limit, offset); 
+    }
+    pub fn get_limit_comment_reply_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(52, limit, offset); 
+    }
+    pub fn get_limit_mention_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(63, limit, offset); 
+    }
+    pub fn get_limit_mention_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(53, limit, offset); 
+    }
+    pub fn get_limit_comment_mention_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(64, limit, offset); 
+    }
+    pub fn get_limit_comment_mention_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(54, limit, offset); 
+    }
+    pub fn get_limit_repost_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(65, limit, offset); 
+    }
+    pub fn get_limit_repost_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(55, limit, offset); 
+    }
+    pub fn get_limit_reactions_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(66, limit, offset); 
+    }
+    pub fn get_limit_reactions_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_for_types(56, limit, offset); 
+    }
+
 
     pub fn is_user_see_all(&self, user_id: i32) -> bool {
         if self.user_id == user_id {
@@ -2630,6 +3102,20 @@ types
 14 не может создавать комменты к записям
 15 не может копировать списки / записи
 20 пользователь заблокирован у владельца записей
+
+51 не создает уведомление о комментарии
+52 не создает уведомление о ответе
+53 не создает уведомление о упоминании в посте
+54 не создает уведомление о упоминании в комменте
+55 не создает уведомление о репосте
+56 не создает уведомление о реакции
+
+61 не создает уведомление о комментарии
+62 не создает уведомление о ответе
+63 не создает уведомление о упоминании в посте
+64 не создает уведомление о упоминании в комменте
+65 не создает уведомление о репосте
+66 не создает уведомление о реакции
 */
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct UserVisiblePerm {

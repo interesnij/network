@@ -193,76 +193,46 @@ impl User {
         }
     }
     pub fn get_private_json(&self) -> EditUserPrivateResp {
-        let see_community_exclude_friends:    Option<Vec<CardUserJson>>;
-        let see_community_exclude_follows:    Option<Vec<CardUserJson>>;
-        let see_community_include_friends:    Option<Vec<CardUserJson>>;
-        let see_community_include_follows:    Option<Vec<CardUserJson>>;
-        let invite_exclude_friends:   Option<Vec<CardUserJson>>;
-        let invite_exclude_follows:   Option<Vec<CardUserJson>>;
-        let invite_include_friends:   Option<Vec<CardUserJson>>;
-        let invite_include_follows:   Option<Vec<CardUserJson>>;
+        let see_community_users: Option<Vec<CardUserJson>>;
+        let invite_userss:       Option<Vec<CardUserJson>>;
         
         if self.see_community == 5 || self.see_community == 9 {
-            see_community_exclude_friends = Some(self.get_limit_see_community_exclude_friends(Some(20), Some(0)));
+            see_community_users = Some(self.get_limit_see_community_exclude_friends(Some(20), Some(0)));
+        }
+        else if self.see_community == 3 || self.see_community == 11 {
+            see_community_users = Some(self.get_limit_see_community_exclude_follows(Some(20), Some(0)));
+        }
+        else if self.see_community == 6 || self.see_community == 10 {
+            see_community_users = Some(self.get_limit_see_community_include_friends(Some(20), Some(0)));
+        }
+        else if self.see_community == 4 || self.see_community == 12 {
+            see_community_users = Some(self.get_limit_see_community_include_follows(Some(20), Some(0)));
         }
         else {
-            see_community_exclude_friends = None;
-        }
-        if self.see_community == 3 || self.see_community == 11 {
-            see_community_exclude_follows = Some(self.get_limit_see_community_exclude_follows(Some(20), Some(0)));
-        }
-        else {
-            see_community_exclude_follows = None;
-        }
-        if self.see_community == 6 || self.see_community == 10 {
-            see_community_include_friends = Some(self.get_limit_see_community_include_friends(Some(20), Some(0)));
-        }
-        else {
-            see_community_include_friends = None;
-        }
-        if self.see_community == 4 || self.see_community == 12 {
-            see_community_include_follows = Some(self.get_limit_see_community_include_follows(Some(20), Some(0)));
-        }
-        else {
-            see_community_include_follows = None;
+            see_community_users = None;
         }
 
         if self.invite == 5 || self.invite == 9 {
-            invite_exclude_friends = Some(self.get_limit_invite_exclude_friends(Some(20), Some(0)));
+            invite_users = Some(self.get_limit_invite_exclude_friends(Some(20), Some(0)));
+        }
+        else if self.invite == 3 || self.invite == 11 {
+            invite_users = Some(self.get_limit_invite_exclude_follows(Some(20), Some(0)));
+        }
+        else if self.invite == 6 || self.invite == 10 {
+            invite_users = Some(self.get_limit_invite_include_friends(Some(20), Some(0)));
+        }
+        else if self.invite == 4 || self.invite == 12 {
+            invite_users = Some(self.get_limit_invite_include_follows(Some(20), Some(0)));
         }
         else {
-            invite_exclude_friends = None;
-        }
-        if self.invite == 3 || self.invite == 11 {
-            invite_exclude_follows = Some(self.get_limit_invite_exclude_follows(Some(20), Some(0)));
-        }
-        else {
-            invite_exclude_follows = None;
-        }
-        if self.invite == 6 || self.invite == 10 {
-            invite_include_friends = Some(self.get_limit_invite_include_friends(Some(20), Some(0)));
-        }
-        else {
-            invite_include_friends = None;
-        }
-        if self.invite == 4 || self.invite == 12 {
-            invite_include_follows = Some(self.get_limit_invite_include_follows(Some(20), Some(0)));
-        }
-        else {
-            invite_include_follows = None;
+            invite_users = None;
         }
     
         return EditUserPrivateResp {
-            see_community:                 User::get_private_field(self.see_community),
-            invite:                        User::get_private_field(self.invite),
-            see_community_exclude_friends: see_community_exclude_friends,
-            see_community_exclude_follows: see_community_exclude_follows,
-            see_community_include_friends: see_community_include_friends,
-            see_community_include_follows: see_community_include_follows,
-            invite_exclude_friends:        invite_exclude_friends,
-            invite_exclude_follows:        invite_exclude_follows,
-            invite_include_friends:        invite_include_friends,
-            invite_include_follows:        invite_include_follows,
+            see_community:       User::get_private_field(self.see_community),
+            invite:              User::get_private_field(self.invite),
+            see_community_users: see_community_users,
+            invite_users:        invite_users,
         };
     }
     pub fn get_common_friends_of_community (

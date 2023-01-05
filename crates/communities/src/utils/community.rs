@@ -245,26 +245,16 @@ pub struct EditUserPrivateData {
 
 #[derive(Serialize)] 
 pub struct EditCommunityPrivateResp {
-    pub see_member:                   KeyValue,
-    pub see_info:                     KeyValue,
-    pub see_settings:                 KeyValue,
-    pub see_log:                      KeyValue,
-    pub see_stat:                     KeyValue,
-
-    pub see_member_exclude_members:   Option<Vec<CardUserJson>>,
-    pub see_member_include_members:   Option<Vec<CardUserJson>>,
-
-    pub see_info_exclude_members:     Option<Vec<CardUserJson>>,
-    pub see_info_include_members:     Option<Vec<CardUserJson>>,
-
-    pub see_settings_exclude_members: Option<Vec<CardUserJson>>,
-    pub see_settings_include_members: Option<Vec<CardUserJson>>,
-
-    pub see_log_exclude_members:      Option<Vec<CardUserJson>>,
-    pub see_log_include_members:      Option<Vec<CardUserJson>>,
-
-    pub see_stat_exclude_members:     Option<Vec<CardUserJson>>,
-    pub see_stat_include_members:     Option<Vec<CardUserJson>>,
+    pub see_member:           KeyValue,
+    pub see_info:             KeyValue,
+    pub see_settings:         KeyValue,
+    pub see_log:              KeyValue,
+    pub see_stat:             KeyValue,
+    pub see_member_members:   Option<Vec<CardUserJson>>,
+    pub see_info_members:     Option<Vec<CardUserJson>>,
+    pub see_settings_members: Option<Vec<CardUserJson>>,
+    pub see_log_members:      Option<Vec<CardUserJson>>,
+    pub see_stat_members:     Option<Vec<CardUserJson>>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -280,18 +270,10 @@ pub struct AttachOwner {
 
 #[derive(Serialize)] 
 pub struct EditUserPrivateResp {
-    pub see_community:                 KeyValue,
-    pub invite:                        KeyValue,
-
-    pub see_community_exclude_friends: Option<Vec<CardUserJson>>,
-    pub see_community_include_friends: Option<Vec<CardUserJson>>,
-    pub see_community_exclude_follows: Option<Vec<CardUserJson>>,
-    pub see_community_include_follows: Option<Vec<CardUserJson>>,
-
-    pub invite_exclude_friends:        Option<Vec<CardUserJson>>,
-    pub invite_include_friends:        Option<Vec<CardUserJson>>,
-    pub invite_exclude_follows:        Option<Vec<CardUserJson>>,
-    pub invite_include_follows:        Option<Vec<CardUserJson>>,
+    pub see_community:       KeyValue,
+    pub invite:              KeyValue,
+    pub see_community_users: Option<Vec<CardUserJson>>,
+    pub invite_users:        Option<Vec<CardUserJson>>,
 }
 
 #[derive(Serialize)]

@@ -352,100 +352,75 @@ impl Community {
         }
     }
     pub fn get_private_json(&self) -> EditCommunityPrivateResp {
-        let see_member_exclude_members:    Option<Vec<CardUserJson>>;
-        let see_member_include_members:    Option<Vec<CardUserJson>>;
-        let see_info_exclude_members:   Option<Vec<CardUserJson>>;
-        let see_info_include_members:   Option<Vec<CardUserJson>>;
-        let see_settings_exclude_members: Option<Vec<CardUserJson>>;
-        let see_settings_include_members: Option<Vec<CardUserJson>>;
-        let see_log_exclude_members: Option<Vec<CardUserJson>>;
-        let see_log_include_members: Option<Vec<CardUserJson>>;
-        let see_stat_exclude_members: Option<Vec<CardUserJson>>;
-        let see_stat_include_members: Option<Vec<CardUserJson>>;
+        let see_member_members:   Option<Vec<CardUserJson>>;
+        let see_info_members:     Option<Vec<CardUserJson>>;
+        let see_settings_members: Option<Vec<CardUserJson>>;
+        let see_log_members:      Option<Vec<CardUserJson>>;
+        let see_stat_members:     Option<Vec<CardUserJson>>;
 
         let private = self.get_private_model().expect("E.");
         
         if private.see_member == 6 {
-            see_member_exclude_members = Some(self.get_limit_see_member_exclude_members(Some(20), Some(0)));
+            see_member_members = Some(self.get_limit_see_member_exclude_members(Some(20), Some(0)));
         }
-        else {
-            see_member_exclude_members = None;
-        }
-        if private.see_member == 7 {
-            see_member_include_members = Some(self.get_limit_see_member_include_members(Some(20), Some(0)));
+        else if private.see_member == 7 {
+            see_member_members = Some(self.get_limit_see_member_include_members(Some(20), Some(0)));
         }
         else {
             see_member_include_members = None;
         }
 
         if private.see_info == 6 {
-            see_info_exclude_members = Some(self.get_limit_see_info_exclude_members(Some(20), Some(0)));
+            see_info_members = Some(self.get_limit_see_info_exclude_members(Some(20), Some(0)));
+        }
+        else if private.see_info == 7 {
+            see_info_members = Some(self.get_limit_see_info_include_members(Some(20), Some(0)));
         }
         else {
-            see_info_exclude_members = None;
-        }
-        if private.see_info == 7 {
-            see_info_include_members = Some(self.get_limit_see_info_include_members(Some(20), Some(0)));
-        }
-        else {
-            see_info_include_members = None;
+            see_info_members = None;
         }
 
         if private.see_settings == 6 {
-            see_settings_exclude_members = Some(self.get_limit_see_settings_exclude_members(Some(20), Some(0)));
+            see_settings_members = Some(self.get_limit_see_settings_exclude_members(Some(20), Some(0)));
+        }
+        else if private.see_settings == 7 {
+            see_settings_members = Some(self.get_limit_see_settings_include_members(Some(20), Some(0)));
         }
         else {
-            see_settings_exclude_members = None;
-        }
-        if private.see_settings == 7 {
-            see_settings_include_members = Some(self.get_limit_see_settings_include_members(Some(20), Some(0)));
-        }
-        else {
-            see_settings_include_members = None;
+            see_settings_members = None;
         }
 
         if private.see_log == 6 {
-            see_log_exclude_members = Some(self.get_limit_see_log_exclude_members(Some(20), Some(0)));
+            see_log_members = Some(self.get_limit_see_log_exclude_members(Some(20), Some(0)));
+        }
+        else if private.see_log == 7 {
+            see_log_members = Some(self.get_limit_see_log_include_members(Some(20), Some(0)));
         }
         else {
-            see_log_exclude_members = None;
-        }
-        if private.see_log == 7 {
-            see_log_include_members = Some(self.get_limit_see_log_include_members(Some(20), Some(0)));
-        }
-        else {
-            see_log_include_members = None;
+            see_log_members = None;
         }
 
         if private.see_stat == 6 {
-            see_stat_exclude_members = Some(self.get_limit_see_stat_exclude_members(Some(20), Some(0)));
+            see_stat_members = Some(self.get_limit_see_stat_exclude_members(Some(20), Some(0)));
+        }
+        else if private.see_stat == 7 {
+            see_stat_members = Some(self.get_limit_see_stat_include_members(Some(20), Some(0)));
         }
         else {
-            see_stat_exclude_members = None;
-        }
-        if private.see_stat == 7 {
-            see_stat_include_members = Some(self.get_limit_see_stat_include_members(Some(20), Some(0)));
-        }
-        else {
-            see_stat_include_members = None;
+            see_stat_members = None;
         }
     
         return EditCommunityPrivateResp {
-            see_member:                   Community::get_private_field(private.see_member),
-            see_info:                     Community::get_private_field(private.see_info),
-            see_settings:                 Community::get_private_field(private.see_settings),
-            see_log:                      Community::get_private_field(private.see_log),
-            see_stat:                     Community::get_private_field(private.see_stat),
-            see_member_exclude_members:   see_member_exclude_members,
-            see_member_include_members:   see_member_include_members,
-            see_info_exclude_members:     see_info_exclude_members,
-            see_info_include_members:     see_info_include_members,
-            see_settings_exclude_members: see_settings_exclude_members,
-            see_settings_include_members: see_settings_include_members,
-            see_log_exclude_members:      see_log_exclude_members,
-            see_log_include_members:      see_log_include_members,
-            see_stat_exclude_members:     see_stat_exclude_members,
-            see_stat_include_members:     see_stat_include_members,
+            see_member:           Community::get_private_field(private.see_member),
+            see_info:             Community::get_private_field(private.see_info),
+            see_settings:         Community::get_private_field(private.see_settings),
+            see_log:              Community::get_private_field(private.see_log),
+            see_stat:             Community::get_private_field(private.see_stat),
+            see_member_members:   see_member_exclude_members,
+            see_info_members:     see_info_exclude_members,
+            see_settings_members: see_settings_exclude_members,
+            see_log_members:      see_log_exclude_members,
+            see_stat_members:     see_stat_exclude_members,
         };
     }
     pub fn is_identified_send(&self) -> bool {

@@ -17,7 +17,7 @@ use crate::utils::{
     get_community_permission,
     get_anon_community_permission,
     get_owner_data, 
-    ErrorParams,
+    ErrorParams, SmallCommunityData,
     SearchTargetListData, SearchRegListData,
     CardPhotoListJson, CardPhotoJson,
 };
@@ -57,6 +57,11 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/search_community_comments", web::get().to(search_community_comments_page));
     config.route("/search_list_comments", web::get().to(search_list_comments_page));
     config.route("/search_photo_comments", web::get().to(search_photo_comments_page));
+
+    config.route("/user_notify", web::get().to(user_notifies_page));
+    config.route("/user_privates", web::get().to(user_privates_page));
+    config.route("/community_notifies", web::get().to(community_notifies_page));
+    config.route("/community_privates", web::get().to(community_privates_page));
 }
 
 pub async fn index_page() -> impl Responder {
@@ -2023,6 +2028,218 @@ pub async fn search_photo_comments_page (
                         HttpResponse::Ok().body(body)
                     }
                 }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn user_privates_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
+    let params_some = web::Query::<TokenParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 0).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else if user_id < 1 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else {
+            let user: User;
+            let user_res = get_post(user_id);
+            if user_res.is_ok() {
+                user = user_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "user not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+            let body = serde_json::to_string(&user.get_private_json().unwrap();
+            HttpResponse::Ok().body(body)
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn user_notifies_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
+    let params_some = web::Query::<TokenParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 0).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else if user_id < 1 {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else {
+            let user: User;
+            let user_res = get_post(user_id);
+            if user_res.is_ok() {
+                user = user_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "user not found!".to_string(),
+                }).unwrap();
+                return HttpResponse::Ok().body(body);
+            }
+            let body = serde_json::to_string(&user.get_notify_json().unwrap();
+            HttpResponse::Ok().body(body)
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn community_privates_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
+    let params_some = web::Query::<SmallCommunityData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_owner_data(&req, state, params.token.clone(), 0).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else if (user_id < 1 && community_id < 1)
+            || 
+            (community_id < 1 && params.community_id.is_none())
+             {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: Community;
+            let c_id: i32;
+            if community_id > 0 {
+                c_id = community_id;
+            }
+            else {
+                c_id = params.community_id.unwrap();
+            }
+            let owner_res = get_community(c_id);
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "community not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+                let body = serde_json::to_string(&owner.get_private_json().unwrap();
+                HttpResponse::Ok().body(body)
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied!".to_string(),
+                }).unwrap();
+                Err(Error::BadRequest(body))
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Parametrs not found!".to_string(),
+        }).unwrap();
+        HttpResponse::Ok().body(body)
+    }
+}
+
+pub async fn community_notifies_page (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> impl Responder {
+    let params_some = web::Query::<SmallCommunityData>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id, community_id) = get_user_owner_data(&req, state, params.token.clone(), 0).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            return HttpResponse::Ok().body(body);
+        }
+        else if (user_id < 1 && community_id < 1)
+            || 
+            (community_id < 1 && params.community_id.is_none())
+             {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: Community;
+            let c_id: i32;
+            if community_id > 0 {
+                c_id = community_id;
+            }
+            else {
+                c_id = params.community_id.unwrap();
+            }
+            let owner_res = get_community(c_id);
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "community not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+                let body = serde_json::to_string(&owner.get_notify_json().unwrap();
+                HttpResponse::Ok().body(body)
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied!".to_string(),
+                }).unwrap();
+                Err(Error::BadRequest(body))
             }
         }
     }

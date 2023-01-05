@@ -46,6 +46,49 @@ pub struct ReactionData {
     pub reaction_id: Option<i32>,
 }
 
+#[derive(Deserialize)]
+pub struct TokenParams {
+    pub token: String,
+}
+
+#[derive(Serialize)]
+pub struct EditNotifyResp { 
+    pub comment:               KeyValue,
+    pub comment_reply:         KeyValue,
+    pub mention:               KeyValue,
+    pub comment_mention:       KeyValue,
+    pub repost:                KeyValue,
+    pub reactions:             KeyValue,
+    pub comment_users:         Option<Vec<CardUserJson>>;
+    pub comment_reply_users:   Option<Vec<CardUserJson>>;
+    pub mention_users:         Option<Vec<CardUserJson>>;
+    pub comment_mention_users: Option<Vec<CardUserJson>>;
+    pub repost_users:          Option<Vec<CardUserJson>>;
+    pub reactions_users:       Option<Vec<CardUserJson>>; 
+}
+
+#[derive(Deserialize)]
+pub struct SmallCommunityData {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+}
+
+#[derive(Serialize)]
+pub struct EditPrivateResp {
+    pub see_all:              KeyValue,
+    pub see_el:               KeyValue,
+    pub see_comment:          KeyValue,
+    pub create_el:            KeyValue,
+    pub create_comment:       KeyValue,
+    pub copy_el:              KeyValue,
+    pub see_all_users:        Option<Vec<CardUserJson>>;
+    pub see_el_users:         Option<Vec<CardUserJson>>;
+    pub see_comment_users:    Option<Vec<CardUserJson>>;
+    pub create_el_users:      Option<Vec<CardUserJson>>;
+    pub create_comment_users: Option<Vec<CardUserJson>>;
+    pub copy_el_users:        Option<Vec<CardUserJson>>; 
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct EditListJson {
     pub id:                   i32,
