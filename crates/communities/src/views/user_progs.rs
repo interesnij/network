@@ -6,7 +6,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_community, get_user, get_user_owner_data,
-    is_anon_user_see_community, is_user_see_community,
+    get_anon_user_permission, get_user_permission,
     ErrorParams, SmallData, TOKEN,
     EditUserPrivateResp, CardCommunityJson,
 };
@@ -539,7 +539,7 @@ pub async fn get_communities_for_list (
                     }).unwrap();
                     Err(Error::BadRequest(body))
                 }
-                else if !owner.is_anon_user_see_community(user_id) {
+                else if !owner.is_anon_user_see_community() {
                     let body = serde_json::to_string(&ErrorParams {
                         error: "Permission Denied!".to_string(),
                     }).unwrap();
@@ -631,7 +631,7 @@ pub async fn get_limit_communities (
                     }).unwrap();
                     Err(Error::BadRequest(body))
                 }
-                else if !owner.is_anon_user_see_community(user_id) {
+                else if !owner.is_anon_user_see_community() {
                     let body = serde_json::to_string(&ErrorParams {
                         error: "Permission Denied!".to_string(),
                     }).unwrap();
