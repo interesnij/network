@@ -2170,7 +2170,7 @@ pub async fn community_privates_page (
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+            if community_id > 0 || (user_id > 0 && owner.is_user_admin(user_id)) {
                 let body = serde_json::to_string(&owner.get_private_json()).unwrap();
                 HttpResponse::Ok().body(body)
             }
@@ -2232,11 +2232,11 @@ pub async fn community_notifies_page (
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+            if community_id > 0 || (user_id > 0 && owner.is_user_admin(user_id)) {
                 let body = serde_json::to_string(&owner.get_notify_json()).unwrap();
-                HttpResponse::Ok().body(body)
+                HttpResponse::Ok().body(body) 
             }
-            else {
+            else { 
                 let body = serde_json::to_string(&ErrorParams {
                     error: "Permission Denied!".to_string(),
                 }).unwrap();

@@ -213,98 +213,96 @@ impl User {
         let create_comment_users: Option<Vec<CardUserJson>>;
         let copy_el_users:        Option<Vec<CardUserJson>>; 
         
-        let private = self.get_private_model().expect("E.");
-        
-        if private.see_all == 5 || private.see_all == 9 {
+        if self.see_all == 5 || self.see_all == 9 {
             see_all_users = Some(self.get_limit_see_all_exclude_friends(Some(20), Some(0)));
         }
-        else if private.see_all == 3 || private.see_all == 11 {
+        else if self.see_all == 3 || self.see_all == 11 {
             see_all_users = Some(self.get_limit_see_all_exclude_follows(Some(20), Some(0)));
         }
-        else if private.see_all == 6 || private.see_all == 10 {
+        else if self.see_all == 6 || self.see_all == 10 {
             see_all_users = Some(self.get_limit_see_all_include_friends(Some(20), Some(0)));
         }
-        else if private.see_all == 4 || private.see_all == 12 {
+        else if self.see_all == 4 || self.see_all == 12 {
             see_all_users = Some(self.get_limit_see_all_include_follows(Some(20), Some(0)));
         }
         else {
             see_all_users = None;
         }
 
-        if private.see_el == 5 || private.see_el == 9 {
+        if self.see_el == 5 || self.see_el == 9 {
             see_el_users = Some(self.get_limit_see_el_exclude_friends(Some(20), Some(0)));
         }
-        else if private.see_el == 3 || private.see_el == 11 {
+        else if self.see_el == 3 || self.see_el == 11 {
             see_el_users = Some(self.get_limit_see_el_exclude_follows(Some(20), Some(0)));
         }
-        else if private.see_el == 6 || private.see_el == 10 {
+        else if self.see_el == 6 || self.see_el == 10 {
             see_el_users = Some(self.get_limit_see_el_include_friends(Some(20), Some(0)));
         }
-        else if private.see_el == 4 || private.see_el == 12 {
+        else if self.see_el == 4 || self.see_el == 12 {
             see_el_users = Some(self.get_limit_see_el_include_follows(Some(20), Some(0)));
         }
         else {
             see_el_users = None;
         }
 
-        if private.see_comment == 5 || private.see_comment == 9 {
+        if self.see_comment == 5 || self.see_comment == 9 {
             see_comment_users = Some(self.get_limit_see_comment_exclude_friends(Some(20), Some(0)));
         }
-        else if private.see_comment == 3 || private.see_comment == 11 {
+        else if self.see_comment == 3 || self.see_comment == 11 {
             see_comment_users = Some(self.get_limit_see_comment_exclude_follows(Some(20), Some(0)));
         }
-        else if private.see_comment == 6 || private.see_comment == 10 {
+        else if self.see_comment == 6 || self.see_comment == 10 {
             see_comment_users = Some(self.get_limit_see_comment_include_friends(Some(20), Some(0)));
         }
-        else if private.see_comment == 4 || private.see_comment == 12 {
+        else if self.see_comment == 4 || self.see_comment == 12 {
             see_comment_users = Some(self.get_limit_see_comment_include_follows(Some(20), Some(0)));
         }
         else {
             see_comment_users = None;
         }
 
-        if private.create_el == 5 || private.create_el == 9 {
+        if self.create_el == 5 || self.create_el == 9 {
             create_el_users = Some(self.get_limit_create_el_exclude_friends(Some(20), Some(0)));
         }
-        else if private.create_el == 3 || private.create_el == 11 {
+        else if self.create_el == 3 || self.create_el == 11 {
             create_el_users = Some(self.get_limit_create_el_exclude_follows(Some(20), Some(0)));
         }
-        else if private.create_el == 6 || private.create_el == 10 {
+        else if self.create_el == 6 || self.create_el == 10 {
             create_el_users = Some(self.get_limit_create_el_include_friends(Some(20), Some(0)));
         }
-        else if private.create_el == 4 || private.create_el == 12 {
+        else if self.create_el == 4 || self.create_el == 12 {
             create_el_users = Some(self.get_limit_create_el_include_follows(Some(20), Some(0)));
         }
         else {
             create_el_users = None;
         }
 
-        if private.create_comment == 5 || private.create_comment == 9 {
+        if self.create_comment == 5 || self.create_comment == 9 {
             create_comment_users = Some(self.get_limit_create_comment_exclude_friends(Some(20), Some(0)));
         }
-        else if private.create_comment == 3 || private.create_comment == 11 {
+        else if self.create_comment == 3 || self.create_comment == 11 {
             create_comment_users = Some(self.get_limit_create_comment_exclude_follows(Some(20), Some(0)));
         }
-        else if private.create_comment == 6 || private.create_comment == 10 {
+        else if self.create_comment == 6 || self.create_comment == 10 {
             create_comment_users = Some(self.get_limit_create_comment_include_friends(Some(20), Some(0)));
         }
-        else if private.create_comment == 4 || private.create_comment == 12 {
+        else if self.create_comment == 4 || self.create_comment == 12 {
             create_comment_users = Some(self.get_limit_create_comment_include_follows(Some(20), Some(0)));
         }
         else {
             create_comment_users = None;
         }
 
-        if private.copy_el == 5 || private.copy_el == 9 {
+        if self.copy_el == 5 || self.copy_el == 9 {
             copy_el_users = Some(self.get_limit_copy_el_exclude_friends(Some(20), Some(0)));
         }
-        else if private.copy_el == 3 || private.copy_el == 11 {
+        else if self.copy_el == 3 || self.copy_el == 11 {
             copy_el_users = Some(self.get_limit_copy_el_exclude_follows(Some(20), Some(0)));
         }
-        else if private.copy_el == 6 || private.copy_el == 10 {
+        else if self.copy_el == 6 || self.copy_el == 10 {
             copy_el_users = Some(self.get_limit_copy_el_include_friends(Some(20), Some(0)));
         }
-        else if private.copy_el == 4 || private.copy_el == 12 {
+        else if self.copy_el == 4 || self.copy_el == 12 {
             copy_el_users = Some(self.get_limit_copy_el_include_follows(Some(20), Some(0)));
         }
         else {

@@ -311,10 +311,10 @@ impl Community {
         }
 
         if notify.comment_mention == 6 {
-            comment_mention_users = Some(self.get_limit_comment_mention_exclude_friends(Some(20), Some(0)));
+            comment_mention_users = Some(self.get_limit_comment_mention_exclude_members(Some(20), Some(0)));
         }
         else if notify.comment_mention == 7 {
-            comment_mention_users = Some(self.get_limit_comment_mention_include_friends(Some(20), Some(0)));
+            comment_mention_users = Some(self.get_limit_comment_mention_include_members(Some(20), Some(0)));
         }
         else {
             comment_mention_users = None;
