@@ -6,6 +6,7 @@ use actix_web::{
 };
 use crate::utils::{
     get_community, get_user, get_user_owner_data,
+    is_anon_user_see_community, is_user_see_community,
     ErrorParams, SmallData, TOKEN,
     EditUserPrivateResp, CardCommunityJson,
 };
@@ -507,21 +508,51 @@ pub async fn get_communities_for_list (
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if (user_id > 0 && owner.is_user_see_community(user_id))
-            || 
-            (user_id < 1 && owner.is_anon_user_see_community()) {
-                let body = block(move || owner.get_communities_of_list(
-                    params.list_id,
-                    params.limit,
-                    params.offset,
-                )).await?;
-                Ok(Json(body))
+            if user_id > 0 {
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else if !owner.is_user_see_community(user_id) {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied!".to_string(),
+                    }).unwrap();
+                    return Err(Error::BadRequest(body));
+                }
+                else {
+                    let body = block(move || owner.get_communities_of_list (
+                        params.list_id,
+                        params.limit,
+                        params.offset,
+                    )).await?;
+                    Ok(Json(body))
+                }
             }
             else {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "Permission Denied!".to_string(),
-                }).unwrap();
-                return Err(Error::BadRequest(body));
+                let _tuple = get_anon_user_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else if !owner.is_anon_user_see_community(user_id) {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied!".to_string(),
+                    }).unwrap();
+                    return Err(Error::BadRequest(body));
+                }
+                else {
+                    let body = block(move || owner.get_communities_of_list (
+                        params.list_id,
+                        params.limit,
+                        params.offset,
+                    )).await?;
+                    Ok(Json(body))
+                }
             }
         }
     }
@@ -571,19 +602,47 @@ pub async fn get_limit_communities (
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if (user_id > 0 && owner.is_user_see_community(user_id))
-            || 
-            (user_id < 1 && owner.is_anon_user_see_community()) {
-                let body = block(move || owner.get_limit_communities (
-                    params.limit,
-                )).await?;
-                Ok(Json(body))
+            if user_id > 0 {
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else if !owner.is_user_see_community(user_id) {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied!".to_string(),
+                    }).unwrap();
+                    return Err(Error::BadRequest(body));
+                }
+                else {
+                    let body = block(move || owner.get_limit_communities (
+                        params.limit,
+                    )).await?;
+                    Ok(Json(body))
+                }
             }
             else {
-                let body = serde_json::to_string(&ErrorParams {
-                    error: "Permission Denied!".to_string(),
-                }).unwrap();
-                return Err(Error::BadRequest(body));
+                let _tuple = get_anon_user_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else if !owner.is_anon_user_see_community(user_id) {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied!".to_string(),
+                    }).unwrap();
+                    return Err(Error::BadRequest(body));
+                }
+                else {
+                    let body = block(move || owner.get_limit_communities (
+                        params.limit,
+                    )).await?;
+                    Ok(Json(body))
+                }
             }
         }
     }
