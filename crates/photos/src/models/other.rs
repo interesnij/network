@@ -407,23 +407,23 @@ pub struct NewFeaturedUserCommunitie {
 pub struct UserPhotoNotification {
     pub id:              i32,
     pub user_id:         i32,
-    pub comment:         bool,
-    pub comment_reply:   bool,
-    pub mention:         bool,
-    pub comment_mention: bool,
-    pub repost:          bool,
-    pub reactions:       bool
+    pub comment:         i16,
+    pub comment_reply:   i16,
+    pub mention:         i16,
+    pub comment_mention: i16,
+    pub repost:          i16,
+    pub reactions:       i16
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="user_photo_notifications"]
 pub struct NewUserPhotoNotification {
     pub user_id:         i32,
-    pub comment:         bool,
-    pub comment_reply:   bool,
-    pub mention:         bool,
-    pub comment_mention: bool,
-    pub repost:          bool,
-    pub reactions:       bool
+    pub comment:         i16,
+    pub comment_reply:   i16,
+    pub mention:         i16,
+    pub comment_mention: i16,
+    pub repost:          i16,
+    pub reactions:       i16
 }
 
 /////// CommunityPhotoNotification //////
@@ -431,21 +431,21 @@ pub struct NewUserPhotoNotification {
 pub struct CommunityPhotoNotification {
     pub id:              i32,
     pub community_id:    i32,
-    pub comment:         bool,
-    pub comment_reply:   bool,
-    pub mention:         bool,
-    pub comment_mention: bool,
-    pub repost:          bool,
-    pub reactions:       bool
+    pub comment:         i16,
+    pub comment_reply:   i16,
+    pub mention:         i16,
+    pub comment_mention: i16,
+    pub repost:          i16,
+    pub reactions:       i16
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="community_photo_notifications"]
 pub struct NewCommunityPhotoNotification {
     pub community_id:    i32,
-    pub comment:         bool,
-    pub comment_reply:   bool,
-    pub mention:         bool,
-    pub comment_mention: bool,
-    pub repost:          bool,
-    pub reactions:       bool
+    pub comment:         i16,
+    pub comment_reply:   i16,
+    pub mention:         i16,
+    pub comment_mention: i16,
+    pub repost:          i16,
+    pub reactions:       i16
 }
