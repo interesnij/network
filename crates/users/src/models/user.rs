@@ -13,7 +13,7 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     EditNotifyResp, LocationJson, KeyValue,
     CardUserJson, UserDetailJson, EditPrivateResp,
-    AttachUserResp,
+    AttachUserResp
 };
 use crate::schema::users;
 use crate::errors::Error;
@@ -170,7 +170,7 @@ impl User {
         &self, 
         field: &str, 
         value: i16
-    ) -> i16 {
+    ) -> EditNotifyResp {
         use crate::utils::from_i16_to_bool;
 
         let _connection = establish_connection();
@@ -186,7 +186,10 @@ impl User {
                 .expect("E."),
             _ => 0,
         };
-        return 1;
+        return EditNotifyResp {
+            connection_request:   notify.connection_request,
+            connection_confirmed: notify.connection_confirmed,
+        };
     }
     
     pub fn edit_private (
