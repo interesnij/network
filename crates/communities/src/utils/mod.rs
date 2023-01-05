@@ -193,6 +193,73 @@ pub fn get_community_permission(community: &Community, user_id: i32)
     }
 }
 
+pub fn get_user_permission(user: &User, user_id: i32)
+    -> (bool, String) {
+    
+    if user.id == user_id {
+        return (true, "Открыто".to_string());
+    }
+    let request_user = get_user(user_id).expect("E.");
+
+    if request_user.types > 30 {
+        if request_user.is_closed() {
+            return (false, "Ваш профиль заблокирован за нарушение правил сайта".to_string())
+        }
+        else if request_user.is_deleted() {
+            return (false, "Ваш профиль удален".to_string())
+        }
+        else if request_user.is_suspended() {
+            return (false, "Ваш профиль будет разморожен ".to_string() + &request_user.get_longest_penalties())
+        }
+        else { return (false, "Закрыто".to_string())}
+    }
+    else if user.types > 30 {
+        if user.is_closed() {
+            return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
+        }
+        else if user.is_deleted() {
+            return (false, user.get_full_name() + &": cтраница удалена".to_string())
+        }
+        else if user.is_suspended() {
+            return (false, user.get_full_name() + &": cтраница будет разморожена ".to_string() + &user.get_longest_penalties())
+        }
+        else { return (false, "Закрыто".to_string())}
+    }
+
+    else if user.is_user_in_block(user_id) {
+        return (false, user.get_full_name() + &": заблокировал Вас".to_string())
+    }
+    else if !user.is_user_see_all(user_id) {
+        return (false, user.get_full_name() + &": профиль закрыт, информация недоступна".to_string())
+    }
+    else {
+        return (true, "Открыто".to_string())
+    }
+}
+
+pub fn get_anon_user_permission(user: &User)
+    -> (bool, String) {
+    if user.types > 30 {
+        if user.is_closed() {
+            return (false, user.get_full_name() + &": cтраница заблокирована".to_string())
+        }
+        else if user.is_deleted() {
+            return (false, user.get_full_name() + &": cтраница удалена".to_string())
+        }
+        else if user.is_suspended() {
+            return (false, user.get_full_name() + &": cтраница будет разморожена ".to_string() + &user.get_longest_penalties())
+        }
+        else { return (false, "Закрыто".to_string());}
+    }
+    else if !user.is_anon_user_see_all() {
+        return (false, user.get_full_name() + &": Ошибка доступа".to_string())
+    }
+    else {
+        return (true, "Открыто".to_string())
+    }
+}
+
+
 pub fn get_anon_community_permission(community: &Community)
     -> (bool, String) {
 
