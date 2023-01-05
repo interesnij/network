@@ -35,23 +35,6 @@ pub struct LocationJson {
 
 ////////
 #[derive(Serialize)]
-pub struct ProfileJson {
-    pub posts:       i32,
-    pub friends:     i32,
-    pub follows:     i32,
-    pub communities: i32,
-    pub photos:      i32,
-    pub goods:       i32,
-    pub docs:        i32,
-    pub tracks:      i32,
-    pub videos:      i32,
-    pub articles:    i32,
-    pub planners:    i32,
-    pub surveys:     i32,
-}
-
-////////
-#[derive(Serialize)]
 pub struct IpsJson {
     pub ips:       Vec<IpJson>,
     pub next_page: i32,

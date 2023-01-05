@@ -395,112 +395,67 @@ impl User {
         }
     }
     pub fn get_private_json(&self) -> EditPrivateResp {
-        let see_all_exclude_friends:    Option<Vec<CardUserJson>>;
-        let see_all_exclude_follows:    Option<Vec<CardUserJson>>;
-        let see_all_include_friends:    Option<Vec<CardUserJson>>;
-        let see_all_include_follows:    Option<Vec<CardUserJson>>;
-        let see_info_exclude_friends:   Option<Vec<CardUserJson>>;
-        let see_info_exclude_follows:   Option<Vec<CardUserJson>>;
-        let see_info_include_friends:   Option<Vec<CardUserJson>>;
-        let see_info_include_follows:   Option<Vec<CardUserJson>>;
-        let see_friend_exclude_friends: Option<Vec<CardUserJson>>;
-        let see_friend_exclude_follows: Option<Vec<CardUserJson>>;
-        let see_friend_include_friends: Option<Vec<CardUserJson>>;
-        let see_friend_include_follows: Option<Vec<CardUserJson>>;
+        let see_all_users:    Option<Vec<CardUserJson>>;
+        let see_info_users:   Option<Vec<CardUserJson>>;
+        let see_friend_users: Option<Vec<CardUserJson>>;
 
         let private = self.get_private_model().expect("E.");
         
         if private.see_all == 5 || private.see_all == 9 {
-            see_all_exclude_friends = Some(self.get_limit_see_all_exclude_friends(Some(20), Some(0)));
+            see_all_users = Some(self.get_limit_see_all_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.see_all == 3 || private.see_all == 11 {
+            see_all_users = Some(self.get_limit_see_all_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.see_all == 6 || private.see_all == 10 {
+            see_all_users = Some(self.get_limit_see_all_include_friends(Some(20), Some(0)));
+        }
+        else if private.see_all == 4 || private.see_all == 12 {
+            see_all_users = Some(self.get_limit_see_all_include_follows(Some(20), Some(0)));
         }
         else {
-            see_all_exclude_friends = None;
-        }
-        if private.see_all == 3 || private.see_all == 11 {
-            see_all_exclude_follows = Some(self.get_limit_see_all_exclude_follows(Some(20), Some(0)));
-        }
-        else {
-            see_all_exclude_follows = None;
-        }
-        if private.see_all == 6 || private.see_all == 10 {
-            see_all_include_friends = Some(self.get_limit_see_all_include_friends(Some(20), Some(0)));
-        }
-        else {
-            see_all_include_friends = None;
-        }
-        if private.see_all == 4 || private.see_all == 12 {
-            see_all_include_follows = Some(self.get_limit_see_all_include_follows(Some(20), Some(0)));
-        }
-        else {
-            see_all_include_follows = None;
+            see_all_users = None;
         }
 
         if private.see_info == 5 || private.see_info == 9 {
-            see_info_exclude_friends = Some(self.get_limit_see_info_exclude_friends(Some(20), Some(0)));
+            see_info_users = Some(self.get_limit_see_info_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.see_info == 3 || private.see_info == 11 {
+            see_info_users = Some(self.get_limit_see_info_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.see_info == 6 || private.see_info == 10 {
+            see_info_users = Some(self.get_limit_see_info_include_friends(Some(20), Some(0)));
+        }
+        else if private.see_info == 4 || private.see_info == 12 {
+            see_info_users = Some(self.get_limit_see_info_include_follows(Some(20), Some(0)));
         }
         else {
-            see_info_exclude_friends = None;
-        }
-        if private.see_info == 3 || private.see_info == 11 {
-            see_info_exclude_follows = Some(self.get_limit_see_info_exclude_follows(Some(20), Some(0)));
-        }
-        else {
-            see_info_exclude_follows = None;
-        }
-        if private.see_info == 6 || private.see_info == 10 {
-            see_info_include_friends = Some(self.get_limit_see_info_include_friends(Some(20), Some(0)));
-        }
-        else {
-            see_info_include_friends = None;
-        }
-        if private.see_info == 4 || private.see_info == 12 {
-            see_info_include_follows = Some(self.get_limit_see_info_include_follows(Some(20), Some(0)));
-        }
-        else {
-            see_info_include_follows = None;
+            see_info_users = None;
         }
 
         if private.see_friend == 5 || private.see_friend == 9 {
-            see_friend_exclude_friends = Some(self.get_limit_see_friend_exclude_friends(Some(20), Some(0)));
+            see_friend_users = Some(self.get_limit_see_friend_exclude_friends(Some(20), Some(0)));
+        }
+        else if private.see_friend == 3 || private.see_friend == 11 {
+            see_friend_users = Some(self.get_limit_see_friend_exclude_follows(Some(20), Some(0)));
+        }
+        else if private.see_friend == 6 || private.see_friend == 10 {
+            see_friend_users = Some(self.get_limit_see_friend_include_friends(Some(20), Some(0)));
+        }
+        else if private.see_friend == 4 || private.see_friend == 12 {
+            see_friend_users = Some(self.get_limit_see_friend_include_follows(Some(20), Some(0)));
         }
         else {
-            see_friend_exclude_friends = None;
-        }
-        if private.see_friend == 3 || private.see_friend == 11 {
-            see_friend_exclude_follows = Some(self.get_limit_see_friend_exclude_follows(Some(20), Some(0)));
-        }
-        else {
-            see_friend_exclude_follows = None;
-        }
-        if private.see_friend == 6 || private.see_friend == 10 {
-            see_friend_include_friends = Some(self.get_limit_see_friend_include_friends(Some(20), Some(0)));
-        }
-        else {
-            see_friend_include_friends = None;
-        }
-        if private.see_friend == 4 || private.see_friend == 12 {
-            see_friend_include_follows = Some(self.get_limit_see_friend_include_follows(Some(20), Some(0)));
-        }
-        else {
-            see_friend_include_follows = None;
+            see_friend_users = None;
         }
     
         return EditPrivateResp {
-            see_all:                    User::get_private_field(private.see_all),
-            see_info:                   User::get_private_field(private.see_info),
-            see_friend:                 User::get_private_field(private.see_friend),
-            see_all_exclude_friends:    see_all_exclude_friends,
-            see_all_exclude_follows:    see_all_exclude_follows,
-            see_all_include_friends:    see_all_include_friends,
-            see_all_include_follows:    see_all_include_follows,
-            see_info_exclude_friends:   see_info_exclude_friends,
-            see_info_exclude_follows:   see_info_exclude_follows,
-            see_info_include_friends:   see_info_include_friends,
-            see_info_include_follows:   see_info_include_follows,
-            see_friend_exclude_friends: see_friend_exclude_friends,
-            see_friend_exclude_follows: see_friend_exclude_follows,
-            see_friend_include_friends: see_friend_include_friends,
-            see_friend_include_follows: see_friend_include_follows,
+            see_all:          User::get_private_field(private.see_all),
+            see_info:         User::get_private_field(private.see_info),
+            see_friend:       User::get_private_field(private.see_friend),
+            see_all_users:    see_all_friends,
+            see_info_users:   see_info_friends,
+            see_friend_users: see_friend_friends,
         };
     }
 

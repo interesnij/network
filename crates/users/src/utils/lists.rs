@@ -131,21 +131,12 @@ pub struct KeyValue {
 
 #[derive(Serialize)]
 pub struct EditPrivateResp {
-    pub see_all:                    KeyValue,
-    pub see_info:                   KeyValue,
-    pub see_friend:                 KeyValue,
-    pub see_all_exclude_friends:    Option<Vec<CardUserJson>>,
-    pub see_all_exclude_follows:    Option<Vec<CardUserJson>>,
-    pub see_all_include_friends:    Option<Vec<CardUserJson>>,
-    pub see_all_include_follows:    Option<Vec<CardUserJson>>,
-    pub see_info_exclude_friends:   Option<Vec<CardUserJson>>,
-    pub see_info_exclude_follows:   Option<Vec<CardUserJson>>,
-    pub see_info_include_friends:   Option<Vec<CardUserJson>>,
-    pub see_info_include_follows:   Option<Vec<CardUserJson>>,
-    pub see_friend_exclude_friends: Option<Vec<CardUserJson>>,
-    pub see_friend_exclude_follows: Option<Vec<CardUserJson>>,
-    pub see_friend_include_friends: Option<Vec<CardUserJson>>,
-    pub see_friend_include_follows: Option<Vec<CardUserJson>>,
+    pub see_all:          KeyValue,
+    pub see_info:         KeyValue,
+    pub see_friend:       KeyValue,
+    pub see_all_users:    Option<Vec<CardUserJson>>,
+    pub see_info_users:   Option<Vec<CardUserJson>>,
+    pub see_friend_users: Option<Vec<CardUserJson>>,
 }
 
 #[derive(Serialize)]
