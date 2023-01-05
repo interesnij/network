@@ -25,7 +25,7 @@ use crate::schema::{
     follows,
     user_visible_perms,
 };
-
+use crate::errors::Error;
 use crate::models::{Photo, PhotoList, SearchAllComments, UserPhotoNotification};
 
 /*

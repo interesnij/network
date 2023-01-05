@@ -5,7 +5,7 @@ use crate::utils::{
     CardPostJson,
     CardUserJson,
     CardPostListJson,
-    AttachOwner,
+    AttachOwner, KeyValue,
     EditPrivateResp, EditNotifyResp,
 };
 use diesel::{
@@ -22,7 +22,7 @@ use crate::schema::{
     communities_memberships,
     community_visible_perms,
 };
-
+use crate::errors::Error;
 use crate::models::{Post, PostList, SearchAllComments, CommunityPostNotification};
 
 /*
@@ -388,7 +388,7 @@ impl Community {
 
         let _connection = establish_connection();
         let notify = community_post_notifications
-            .filter(schema::community_post_notifications::user_id.eq(self.id))
+            .filter(schema::community_post_notifications::community_id.eq(self.id))
             .first(&_connection)?;
         return Ok(notify);
     }

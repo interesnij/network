@@ -5,6 +5,12 @@ use crate::models::{
 };
 
 #[derive(Serialize)]
+pub struct KeyValue {
+    pub value: i16,
+    pub info:  String,
+}
+
+#[derive(Serialize)]
 pub struct ErrorParams {
     pub error: String,
 }

@@ -6,6 +6,11 @@ use crate::models::{
 
 
 #[derive(Serialize)]
+pub struct KeyValue {
+    pub value: i16,
+    pub info:  String,
+}
+#[derive(Serialize)]
 pub struct EditPrivateResp {
     pub see_all:              KeyValue,
     pub see_el:               KeyValue,
