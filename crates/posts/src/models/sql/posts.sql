@@ -313,12 +313,12 @@ CREATE UNIQUE INDEX post_list_perms_unq ON post_list_perms (user_id, post_list_i
 CREATE TABLE user_post_notifications (
     id              SERIAL PRIMARY KEY,            -- id записи
     user_id         INT NOT NULL,                  -- id пользователя
-    comment         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых комментах
-    comment_reply   BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых ответах
-    mention         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых упоминаниях в постах
-    comment_mention BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых упоминаниях в комментах
-    repost          BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых репостах
-    reactions       BOOLEAN NOT NULL DEFAULT true  -- получать ли уведомления о новых реакциях
+    comment         SMALLINT NOT NULL, -- получать ли уведомления о новых комментах
+    comment_reply   SMALLINT NOT NULL, -- получать ли уведомления о новых ответах
+    mention         SMALLINT NOT NULL, -- получать ли уведомления о новых упоминаниях в постах
+    comment_mention SMALLINT NOT NULL, -- получать ли уведомления о новых упоминаниях в комментах
+    repost          SMALLINT NOT NULL, -- получать ли уведомления о новых репостах
+    reactions       SMALLINT NOT NULL  -- получать ли уведомления о новых реакциях
 );
 
 CREATE UNIQUE INDEX user_post_notifications_unq ON user_post_notifications (user_id, id);
@@ -327,12 +327,12 @@ CREATE UNIQUE INDEX user_post_notifications_unq ON user_post_notifications (user
 CREATE TABLE community_post_notifications (
   id              SERIAL PRIMARY KEY,            -- id записи
   community_id    INT NOT NULL,                  -- id сообщества
-  comment         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых комментах
-  comment_reply   BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых ответах
-  mention         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых упоминаниях в постах
-  comment_mention BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых упоминаниях в комментах
-  repost          BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых репостах
-  reactions       BOOLEAN NOT NULL DEFAULT true  -- получать ли уведомления о новых реакциях
+  comment         SMALLINT NOT NULL, -- получать ли уведомления о новых комментах
+  comment_reply   SMALLINT NOT NULL, -- получать ли уведомления о новых ответах
+  mention         SMALLINT NOT NULL, -- получать ли уведомления о новых упоминаниях в постах
+  comment_mention SMALLINT NOT NULL, -- получать ли уведомления о новых упоминаниях в комментах
+  repost          SMALLINT NOT NULL, -- получать ли уведомления о новых репостах
+  reactions       SMALLINT NOT NULL  -- получать ли уведомления о новых реакциях
 );
 CREATE UNIQUE INDEX community_post_notifications_unq ON community_post_notifications (id, community_id);
 

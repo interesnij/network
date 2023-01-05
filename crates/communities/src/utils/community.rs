@@ -86,8 +86,8 @@ pub struct MinimalData {
 #[derive(Serialize)]
 pub struct EditNotifyResp {
     pub community_id:       i32,
-    pub connection_request: bool,
-    pub new_member:         bool,
+    pub connection_request: i16,
+    pub new_member:         i16,
 } 
 
 #[derive(Serialize)]

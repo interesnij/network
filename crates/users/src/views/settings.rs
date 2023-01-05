@@ -781,10 +781,16 @@ pub async fn restore_account (
     }
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct NotifyData {
+    pub token: Option<String>,
+    pub field: Option<String>,
+    pub value: Option<i16>,
+}
 pub async fn edit_notify (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: Json<MinimalData>
+    data: Json<NotifyData> 
 ) -> Result<Json<EditNotifyResp>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
      if err.is_some() {
@@ -796,6 +802,18 @@ pub async fn edit_notify (
     else if user_id == 0 {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.value.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'value' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.field.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'field' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -812,7 +830,10 @@ pub async fn edit_notify (
             return Err(Error::BadRequest(body));
         }
         
-        let body = block(move || owner.get_notify_json()).await?;
+        let body = block(move || owner.edit_notify (
+            data.field.as_deref().unwrap(),
+            data.value.unwrap(),
+        )).await?;
         Ok(Json(body))
     }
 }

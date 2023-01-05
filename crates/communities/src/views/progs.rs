@@ -336,10 +336,17 @@ pub async fn edit_community_private (
     }
 }
 
+#[derive(Serialize, Deserialize)]
+pub struct NotifyData {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub field:        Option<String>,
+    pub value:        Option<i16>,
+}
 pub async fn edit_notify (
     req: HttpRequest,
     state: web::Data<AppState>, 
-    data: Json<EditCommunityPrivateData>
+    data: Json<NotifyData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
      if err.is_some() {

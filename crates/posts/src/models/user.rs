@@ -175,12 +175,12 @@ impl User {
         let _connection = establish_connection();
         let _new_notify = NewUserPostNotification {
             user_id:         self.id,
-            comment:         true,
-            comment_reply:   true,
-            mention:         true,
-            comment_mention: true,
-            repost:          true,
-            reactions:       true,
+            comment:         1,
+            comment_reply:   1,
+            mention:         1,
+            comment_mention: 1,
+            repost:          1,
+            reactions:       1,
         };
         let _notify = diesel::insert_into(schema::user_post_notifications::table)
             .values(&_new_notify)
@@ -413,30 +413,29 @@ impl User {
 
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
-        let _bool = from_i16_to_bool(value);
         let _update_field = match field {
             "comment" => diesel::update(&notify)
-                .set(schema::user_post_notifications::comment.eq(_bool))
+                .set(schema::user_post_notifications::comment.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "comment_reply" => diesel::update(&notify)
-                .set(schema::user_post_notifications::comment_reply.eq(_bool))
+                .set(schema::user_post_notifications::comment_reply.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "mention" => diesel::update(&notify)
-                .set(schema::user_post_notifications::mention.eq(_bool))
+                .set(schema::user_post_notifications::mention.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "comment_mention" => diesel::update(&notify)
-                .set(schema::user_post_notifications::comment_mention.eq(_bool))
+                .set(schema::user_post_notifications::comment_mention.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "repost" => diesel::update(&notify)
-                .set(schema::user_post_notifications::repost.eq(_bool))
+                .set(schema::user_post_notifications::repost.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "reactions" => diesel::update(&notify)
-                .set(schema::user_post_notifications::reactions.eq(_bool))
+                .set(schema::user_post_notifications::reactions.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             _ => 0,

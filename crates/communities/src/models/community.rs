@@ -291,9 +291,9 @@ impl Community {
         let _connection = establish_connection();
         let _new_notify = NewCommunityNotification {
             community_id:         self.id,
-            connection_request:   true,
-            connection_confirmed: true,
-            community_invite:     true
+            connection_request:   1,
+            connection_confirmed: 1,
+            community_invite:     1
         };
         let _notify = diesel::insert_into(schema::community_notifications::table)
             .values(&_new_notify)
@@ -326,6 +326,22 @@ impl Community {
             3 => "Персонал",
             4 => "Администраторы",
             5 => "Владелец сообщества",
+            6 => "Подписчики, кроме",
+            7 => "Некоторые подписчики",
+            _ => "Ошибка",
+        };
+        return KeyValue {
+            value: value,
+            info:  info.to_string(),
+        }
+    }
+    pub fn get_notify_field(value: i16) -> KeyValue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Подписчики",
+            3 => "Персонал",
+            4 => "Администраторы",
+            5 => "Отключено",
             6 => "Подписчики, кроме",
             7 => "Некоторые подписчики",
             _ => "Ошибка",
@@ -549,22 +565,19 @@ impl Community {
         field: &str, 
         value: i16
     ) -> i16 {
-        use crate::utils::from_i16_to_bool;
-
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
-        let _bool = from_i16_to_bool(value);
         let _update_field = match field {
             "connection_request" => diesel::update(&notify)
-                .set(schema::community_notifications::connection_request.eq(_bool))
+                .set(schema::community_notifications::connection_request.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "new_member" => diesel::update(&notify)
-                .set(schema::community_notifications::connection_confirmed.eq(_bool))
+                .set(schema::community_notifications::connection_confirmed.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "community_invite" => diesel::update(&notify)
-                .set(schema::community_notifications::community_invite.eq(_bool))
+                .set(schema::community_notifications::community_invite.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             _ => 0,
@@ -1109,9 +1122,9 @@ impl Community {
         // создаем уведомления нового сообщества
         let _community_notification = NewCommunityNotification {
             community_id:         community_id,
-            connection_request:   true,
-            connection_confirmed: true,
-            community_invite:     true,
+            connection_request:   1,
+            connection_confirmed: 1,
+            community_invite:     1,
         };
         diesel::insert_into(schema::community_notifications::table)
             .values(&_community_notification)
@@ -2398,17 +2411,17 @@ pub struct NewCommunityPrivate {
 pub struct CommunityNotification {
     pub id:                   i32,
     pub community_id:         i32,
-    pub connection_request:   bool,
-    pub connection_confirmed: bool,
-    pub community_invite:     bool,
+    pub connection_request:   i16,
+    pub connection_confirmed: i16,
+    pub community_invite:     i16,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="community_notifications"]
 pub struct NewCommunityNotification {
     pub community_id:         i32,
-    pub connection_request:   bool,
-    pub connection_confirmed: bool,
-    pub community_invite:     bool,
+    pub connection_request:   i16,
+    pub connection_confirmed: i16,
+    pub community_invite:     i16,
 }
 
 /*

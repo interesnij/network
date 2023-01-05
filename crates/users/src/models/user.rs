@@ -175,14 +175,13 @@ impl User {
 
         let _connection = establish_connection();
         let notify = self.get_notify_model().expect("E.");
-        let _bool = from_i16_to_bool(value);
         let _update_field = match field {
             "connection_request" => diesel::update(&notify)
-                .set(schema::user_notifications::connection_request.eq(_bool))
+                .set(schema::user_notifications::connection_request.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             "connection_confirmed" => diesel::update(&notify)
-                .set(schema::user_notifications::connection_confirmed.eq(_bool))
+                .set(schema::user_notifications::connection_confirmed.eq(value))
                 .execute(&_connection)
                 .expect("E."),
             _ => 0,
@@ -1734,8 +1733,8 @@ impl User {
         let _connection = establish_connection();
         let _new_notify = NewUserNotification {
             user_id:              self.id,
-            connection_request:   true,
-            connection_confirmed: true,
+            connection_request:   1,
+            connection_confirmed: 1,
         };
         let _notify = diesel::insert_into(schema::user_notifications::table)
             .values(&_new_notify)

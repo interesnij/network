@@ -150,6 +150,6 @@ pub struct EditPrivateResp {
 
 #[derive(Serialize)]
 pub struct EditNotifyResp {
-    pub connection_request:   bool,
-    pub connection_confirmed: bool,
+    pub connection_request:   i16,
+    pub connection_confirmed: i16,
 } 

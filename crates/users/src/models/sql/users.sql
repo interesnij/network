@@ -332,10 +332,10 @@ CREATE TABLE moderated_logs (
 CREATE INDEX moderated_logs_id_idx ON moderated_logs (user_id);
 
 CREATE TABLE user_notifications (
-    id                   SERIAL PRIMARY KEY,
+    id                   SERIAL PRIMARY KEY, 
     user_id              INT NOT NULL, 
-    connection_request   BOOLEAN NOT NULL DEFAULT true,
-    connection_confirmed BOOLEAN NOT NULL DEFAULT true,
+    connection_request   SMALLINT NOT NULL,
+    connection_confirmed SMALLINT NOT NULL,
 
     CONSTRAINT fk_user_notifications
          FOREIGN KEY(user_id)

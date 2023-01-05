@@ -94,13 +94,13 @@ pub struct UserLogin {
 pub struct UserNotification {
     pub id:                   i32,
     pub user_id:              i32,
-    pub connection_request:   bool,
-    pub connection_confirmed: bool,
+    pub connection_request:   i16,
+    pub connection_confirmed: i16,
 }
 #[derive(Deserialize, Insertable)]
 #[table_name="user_notifications"]
 pub struct NewUserNotification {
     pub user_id:              i32,
-    pub connection_request:   bool,
-    pub connection_confirmed: bool,
+    pub connection_request:   i16,
+    pub connection_confirmed: i16,
 } 

@@ -308,11 +308,11 @@ CREATE UNIQUE INDEX photo_list_perms_unq ON photo_list_perms (user_id, photo_lis
 CREATE TABLE user_photo_notifications (
     id              SERIAL PRIMARY KEY,
     user_id         INT NOT NULL,                  -- id пользователя
-    comment         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых комментах
-    comment_reply   BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых ответах
-    comment_mention BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых упоминаниях в комментах
-    repost          BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых репостах
-    reactions       BOOLEAN NOT NULL DEFAULT true  -- получать ли уведомления о новых реакциях
+    comment         SMALLINT NOT NULL, -- получать ли уведомления о новых комментах
+    comment_reply   SMALLINT NOT NULL, -- получать ли уведомления о новых ответах
+    comment_mention SMALLINT NOT NULL, -- получать ли уведомления о новых упоминаниях в комментах
+    repost          SMALLINT NOT NULL, -- получать ли уведомления о новых репостах
+    reactions       SMALLINT NOT NULL  -- получать ли уведомления о новых реакциях
 );
 
 CREATE UNIQUE INDEX user_photo_notifications_unq ON user_photo_notifications (user_id, id);
@@ -321,11 +321,11 @@ CREATE UNIQUE INDEX user_photo_notifications_unq ON user_photo_notifications (us
 CREATE TABLE community_photo_notifications (
   id              SERIAL PRIMARY KEY,
   community_id    INT NOT NULL,                  -- id сообщества
-  comment         BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых комментах
-  comment_reply   BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых ответах
-  comment_mention BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых упоминаниях в комментах
-  repost          BOOLEAN NOT NULL DEFAULT true, -- получать ли уведомления о новых репостах
-  reactions       BOOLEAN NOT NULL DEFAULT true  -- получать ли уведомления о новых реакциях
+  comment         SMALLINT NOT NULL, -- получать ли уведомления о новых комментах
+  comment_reply   SMALLINT NOT NULL, -- получать ли уведомления о новых ответах
+  comment_mention SMALLINT NOT NULL, -- получать ли уведомления о новых упоминаниях в комментах
+  repost          SMALLINT NOT NULL, -- получать ли уведомления о новых репостах
+  reactions       SMALLINT NOT NULL  -- получать ли уведомления о новых реакциях
 );
 CREATE UNIQUE INDEX community_photo_notifications_unq ON community_photo_notifications (id, community_id);
 

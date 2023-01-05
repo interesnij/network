@@ -170,6 +170,28 @@ impl User {
             info:  info.to_string(),
         }
     }
+    pub fn get_notify_field(value: i16) -> KeyValue {
+        let info = match value {
+            1 => "Все пользователи",
+            2 => "Все друзья и все подписчики",
+            3 => "Все друзья и подписчики, кроме",
+            4 => "Все друзья и некоторые подписчики",
+            5 => "Все подписчики и друзья, кроме",
+            6 => "Все подписчики и некоторые друзья",
+            7 => "Все друзья",
+            8 => "Все подписчики",
+            9 => "Друзья, кроме",
+            10 => "Некоторые друзья",
+            11 => "Подписчики, кроме",
+            12 => "Некоторые подписчики",
+            13 => "Отключено",
+            _ => "Ошибка",
+        };
+        return KeyValue {
+            value: value,
+            info:  info.to_string(),
+        }
+    }
     pub fn get_private_json(&self) -> EditUserPrivateResp {
         let see_community_exclude_friends:    Option<Vec<CardUserJson>>;
         let see_community_exclude_follows:    Option<Vec<CardUserJson>>;
