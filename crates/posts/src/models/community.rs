@@ -336,7 +336,7 @@ impl Community {
             comment_reply_users:   comment_reply_users,
             mention_users:         mention_users,
             comment_mention_users: comment_mention_users,
-            repost_users:          repost_users
+            repost_users:          repost_users,
             reactions_users:       reactions_users,
         };
     }

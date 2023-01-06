@@ -65,12 +65,12 @@ pub struct EditNotifyResp {
     pub comment_mention:       KeyValue,
     pub repost:                KeyValue,
     pub reactions:             KeyValue,
-    pub comment_users:         Option<Vec<CardUserJson>>;
-    pub comment_reply_users:   Option<Vec<CardUserJson>>;
-    pub mention_users:         Option<Vec<CardUserJson>>;
-    pub comment_mention_users: Option<Vec<CardUserJson>>;
-    pub repost_users:          Option<Vec<CardUserJson>>;
-    pub reactions_users:       Option<Vec<CardUserJson>>; 
+    pub comment_users:         Option<Vec<CardUserJson>>,
+    pub comment_reply_users:   Option<Vec<CardUserJson>>,
+    pub mention_users:         Option<Vec<CardUserJson>>,
+    pub comment_mention_users: Option<Vec<CardUserJson>>,
+    pub repost_users:          Option<Vec<CardUserJson>>,
+    pub reactions_users:       Option<Vec<CardUserJson>>, 
 }
 
 #[derive(Deserialize)]
@@ -87,12 +87,12 @@ pub struct UserEditPrivateResp {
     pub create_el:            KeyValue,
     pub create_comment:       KeyValue,
     pub copy_el:              KeyValue,
-    pub see_all_users:        Option<Vec<CardUserJson>>;
-    pub see_el_users:         Option<Vec<CardUserJson>>;
-    pub see_comment_users:    Option<Vec<CardUserJson>>;
-    pub create_el_users:      Option<Vec<CardUserJson>>;
-    pub create_comment_users: Option<Vec<CardUserJson>>;
-    pub copy_el_users:        Option<Vec<CardUserJson>>; 
+    pub see_all_users:        Option<Vec<CardUserJson>>,
+    pub see_el_users:         Option<Vec<CardUserJson>>,
+    pub see_comment_users:    Option<Vec<CardUserJson>>,
+    pub create_el_users:      Option<Vec<CardUserJson>>,
+    pub create_comment_users: Option<Vec<CardUserJson>>,
+    pub copy_el_users:        Option<Vec<CardUserJson>>, 
 }
 #[derive(Serialize)]
 pub struct CommunityEditPrivateResp {
