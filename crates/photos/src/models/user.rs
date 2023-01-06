@@ -308,7 +308,7 @@ impl User {
             copy_el_users = None;
         }
     
-        return EditPrivateResp {
+        return UserEditPrivateResp {
             see_all:              User::get_private_field(self.see_all),
             see_el:               User::get_private_field(self.see_el),
             see_comment:          User::get_private_field(self.see_comment),
