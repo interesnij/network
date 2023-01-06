@@ -359,15 +359,9 @@ impl User {
     }
 
     pub fn get_section(&self) -> SectionJson {
-        let communities = self.get_communities_of_list (
-            Some(self.get_selected_list_id()),
-            Some(20),
-            None
-        );
-        let lists = self.get_communities_lists(Some(20), None);
         return SectionJson {
             lists: self.get_communities_lists(Some(20), None),
-            items: self.get_communities_of_list((Some(self.get_selected_list_id())),Some(20),None),
+            items: self.get_communities_of_list(Some(self.get_selected_list_id()), Some(20), None),
         };
     }
     pub fn get_communities_lists (
