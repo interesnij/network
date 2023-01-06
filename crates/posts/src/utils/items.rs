@@ -32,7 +32,6 @@ pub struct CommunityEditPrivateResp {
     pub create_el:            KeyValue,
     pub create_comment:       KeyValue,
     pub copy_el:              KeyValue,
-    pub see_all_users:        Option<Vec<CardUserJson>>,
     pub see_el_users:         Option<Vec<CardUserJson>>,
     pub see_comment_users:    Option<Vec<CardUserJson>>,
     pub create_el_users:      Option<Vec<CardUserJson>>,

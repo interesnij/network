@@ -2148,7 +2148,7 @@ pub async fn community_privates_page (
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            HttpResponse::Ok().body(body)
         }
         else {
             let owner: Community;
@@ -2167,7 +2167,7 @@ pub async fn community_privates_page (
                 let body = serde_json::to_string(&ErrorParams {
                     error: "community not found!".to_string(),
                 }).unwrap();
-                return Err(Error::BadRequest(body));
+                return HttpResponse::Ok().body(body);
             }
             if community_id > 0 || (user_id > 0 && owner.is_user_admin(user_id)) {
                 let body = serde_json::to_string(&owner.get_private_json()).unwrap();
@@ -2177,7 +2177,7 @@ pub async fn community_privates_page (
                 let body = serde_json::to_string(&ErrorParams {
                     error: "Permission Denied!".to_string(),
                 }).unwrap();
-                Err(Error::BadRequest(body))
+                HttpResponse::Ok().body(body)
             }
         }
     }
@@ -2210,7 +2210,7 @@ pub async fn community_notifies_page (
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            HttpResponse::Ok().body(body)
         }
         else {
             let owner: Community;
@@ -2229,7 +2229,7 @@ pub async fn community_notifies_page (
                 let body = serde_json::to_string(&ErrorParams {
                     error: "community not found!".to_string(),
                 }).unwrap();
-                return Err(Error::BadRequest(body));
+                return HttpResponse::Ok().body(body);
             }
             if community_id > 0 || (user_id > 0 && owner.is_user_admin(user_id)) {
                 let body = serde_json::to_string(&owner.get_notify_json()).unwrap();
@@ -2239,7 +2239,7 @@ pub async fn community_notifies_page (
                 let body = serde_json::to_string(&ErrorParams {
                     error: "Permission Denied!".to_string(),
                 }).unwrap();
-                Err(Error::BadRequest(body))
+                HttpResponse::Ok().body(body)
             }
         }
     }
