@@ -4,9 +4,9 @@ use crate::utils::{
     get_limit_offset,
     get_limit, get_user,
     CardUserJson, KeyValue,
-    CardCommunityJson,
+    CardCommunityJson, SectionJson,
     CardCommunitiesList,
-    EditUserPrivateResp,
+    EditUserPrivateResp, CardCommunitiesList,
 };
 use diesel::{
     Queryable,
@@ -358,6 +358,43 @@ impl User {
             .load::<CardCommunityJson>(&_connection)
             .expect("E.");
     }
+
+    pub fn get_section(&self) -> SectionJson {
+        let communities = self.get_communities_of_list (
+            (Some(self.get_selected_list_id())),
+            Some(20),
+            None
+        );
+        let lists = self.get_communities_lists(Some(20), None);
+        return SectionJson {
+            lists: self.get_communities_lists(Some(20), None),
+            items: self.get_communities_of_list((Some(self.get_selected_list_id())),Some(20),None);
+        };
+    }
+    pub fn get_communities_lists (
+        &self,
+        limit:   Option<i64>,
+        offset:  Option<i64>
+    ) -> Vec<CardCommunitiesList> {
+        use crate::schema::communities_lists::dsl::communities_lists;
+  
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        return communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.id))
+            .order(schema::communities_lists::position.desc())
+            .limit(_limit)
+            .offset(_offset)
+            .select((
+                schema::communities_lists::id,
+                schema::communities_lists::name,
+                schema::communities_lists::position,
+                schema::communities_lists::count
+            ))
+            .load::<CardCommunitiesList>(&_connection)
+            .expect("E.");
+    }
+
     pub fn get_communities_of_list (
         &self,
         list_id: Option<i32>, 
@@ -373,7 +410,7 @@ impl User {
             current_list_id = list_id.unwrap();
         }
         else {
-            current_list_id = self.get_main_communities_list().id;
+            current_list_id = self.get_selected_list_id();
         }
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
@@ -1517,6 +1554,42 @@ impl User {
         return "Женский".to_string();
     }
 
+    pub fn get_selected_list_id(&self) -> i32 {
+        use crate::schema::communities_lists::dsl::communities_lists;
+
+        let _connection = establish_connection();
+        let list_id = communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
+            .filter(schema::communities_lists::types.eq(0))
+            .order(schema::communities_lists::position.desc())
+            .select(schema::communities_lists::id)
+            .first::<i32>(&_connection);
+        
+        if list_id.is_ok() {
+            return list_id.expect("E.");
+        }
+        else {
+            return self.get_main_communities_list().id;
+        }
+    }
+    pub fn get_selected_list(&self) -> CommunitiesList {
+        use crate::schema::communities_lists::dsl::communities_lists;
+
+        let _connection = establish_connection();
+        let list = communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
+            .filter(schema::communities_lists::types.eq(0))
+            .order(schema::communities_lists::position.desc())
+            .first::<i32>(&_connection);
+        
+        if list.is_ok() {
+            return list.expect("E.");
+        }
+        else {
+            return self.get_main_communities_list();
+        }
+    }
+
     pub fn get_main_communities_list(&self) -> CommunitiesList {
         use crate::schema::communities_lists::dsl::communities_lists;
 
@@ -1909,4 +1982,40 @@ pub struct NewCommunityInvite {
     pub user_id:        i32,
     pub community_id:   i32,
     pub invite_creator: i32,
+}
+
+pub fn get_section(&self) -> Vec<CardCommunityJson> {
+    use crate::schema::{
+        community_list_items::dsl::community_list_items,
+        communitys::dsl::communitys,
+    };
+    let current_list_id: i32;
+    if list_id.is_some() {
+        current_list_id = list_id.unwrap();
+    }
+    else {
+        current_list_id = self.get_main_communities_list().id;
+    }
+    let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+    let _connection = establish_connection();
+    let communities_ids = community_list_items
+        .filter(schema::community_list_items::list_id.eq(current_list_id))
+        .order(schema::community_list_items::visited.desc())
+        .select(schema::community_list_items::community_id)
+        .limit(_limit)
+        .offset(_offset)
+        .load::<i32>(&_connection)
+        .expect("E.");
+    return communitys
+        .filter(schema::communitys::id.eq_any(communities_ids))
+        .filter(schema::communitys::types.lt(20))
+        .select((
+            schema::communitys::user_id,
+            schema::communitys::name,
+            schema::communitys::link,
+            schema::communitys::s_avatar.nullable(),
+            schema::communitys::members,
+        ))
+        .load::<CardCommunityJson>(&_connection)
+        .expect("E.");
 }

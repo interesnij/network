@@ -7,7 +7,7 @@ use actix_web::{
 use crate::utils::{
     get_community, get_user, get_user_owner_data,
     get_anon_user_permission, get_user_permission,
-    ErrorParams, SmallData, TOKEN,
+    ErrorParams, SmallData, TOKEN, SectionJson,
     EditUserPrivateResp, CardCommunityJson,
 };
 use crate::AppState;
@@ -28,7 +28,8 @@ pub fn user_urls(config: &mut web::ServiceConfig) {
     config.route("/leave_community", web::post().to(leave_community));
     config.route("/get_list_communities", web::get().to(get_communities_for_list));
     config.route("/get_limit_communities", web::get().to(get_limit_communities));
-}  
+    config.route("/get_section", web::get().to(get_section));
+}
 
 pub async fn edit_user_private_page (
     req: HttpRequest,
@@ -72,7 +73,7 @@ pub async fn edit_user_private_page (
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-} 
+}
 
 #[derive(Serialize, Deserialize)]
 pub struct EditPrivateData {
@@ -641,6 +642,91 @@ pub async fn get_limit_communities (
                     let body = block(move || owner.get_limit_communities (
                         params.limit,
                     )).await?;
+                    Ok(Json(body))
+                }
+            }
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct SectionParams {
+    pub token:     Option<String>,
+    pub target_id: Option<i32>,
+}
+pub async fn get_section (
+    req: HttpRequest,
+    state: web::Data<AppState>
+) -> Result<Json<SectionJson>, Error> {
+    let params_some = web::Query::<SectionParams>::from_query(&req.query_string());
+    if params_some.is_ok() {
+        let params = params_some.unwrap();
+        let (err, user_id) = get_user_owner_data(&req, state, params.token.clone(), 31).await;
+        if err.is_some() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: err.unwrap(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else if params.target_id.is_none() {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Field 'target_id' is required!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+        else {
+            let owner: User;
+            let owner_res = get_user(params.target_id.unwrap());
+            if owner_res.is_ok() {
+                owner = owner_res.expect("E");
+            }
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "user not found!".to_string(),
+                }).unwrap();
+                return Err(Error::BadRequest(body));
+            }
+            if user_id > 0 {
+                let _tuple = get_user_permission(&owner, user_id);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else if !owner.is_user_see_community(user_id) {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied!".to_string(),
+                    }).unwrap();
+                    return Err(Error::BadRequest(body));
+                }
+                else {
+                    let body = block(move || owner.get_section()).await?;
+                    Ok(Json(body))
+                }
+            }
+            else {
+                let _tuple = get_anon_user_permission(&owner);
+                if _tuple.0 == false {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: _tuple.1.to_string(),
+                    }).unwrap();
+                    Err(Error::BadRequest(body))
+                }
+                else if !owner.is_anon_user_see_community() {
+                    let body = serde_json::to_string(&ErrorParams {
+                        error: "Permission Denied!".to_string(),
+                    }).unwrap();
+                    return Err(Error::BadRequest(body));
+                }
+                else {
+                    let body = block(move || owner.get_section()).await?;
                     Ok(Json(body))
                 }
             }

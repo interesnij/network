@@ -29,14 +29,6 @@ pub struct EditListJson {
 }
 
 #[derive(Serialize, Deserialize, Queryable)]
-pub struct CardCommunitiesList {
-    pub id:       i32,
-    pub name:     String,
-    pub position: i16,
-    pub count:    i32,
-}
-
-#[derive(Serialize, Deserialize, Queryable)]
 // это объект пользователя
 pub struct CardUserJson {
     pub id:         i32,
@@ -156,6 +148,19 @@ pub struct NewCommunityJson {
     pub link:  String,
 }
 
+
+#[derive(Serialize, Queryable)]
+pub struct SectionJson { 
+    pub lists: Vec<CardCommunitiesList>,
+    pub items: Vec<CardCommunityJson>, 
+}
+#[derive(Serialize, Deserialize, Queryable)]
+pub struct CardCommunitiesList {
+    pub id:       i32,
+    pub name:     String,
+    pub position: i16,
+    pub count:    i32,
+}
 #[derive(Serialize, Queryable)]
 pub struct CardCommunityJson { 
     pub id:      i32,
@@ -172,22 +177,6 @@ pub struct CardCommunityInviteJson {
     pub last_name:  String,
     pub link:       String,
     pub image:      String,
-}
-
-////////
-#[derive(Serialize)]
-// это объект пользователя
-pub struct CommunityInfoJson {
-    pub posts:     i16,
-    pub members:   i16,
-    pub photos:    i16,
-    pub goods:     i16,
-    pub tracks:    i16,
-    pub videos:    i16,
-    pub docs:      i16,
-    pub articles:  i16,
-    pub survey:    i16,
-    pub planners:  i16,
 }
 
 ////////
