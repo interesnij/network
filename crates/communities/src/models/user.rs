@@ -1579,7 +1579,7 @@ impl User {
             .filter(schema::communities_lists::user_id.eq(self.user_id))
             .filter(schema::communities_lists::types.eq(0))
             .order(schema::communities_lists::position.desc())
-            .first::<i32>(&_connection);
+            .first::<CommunitiesList>(&_connection);
         
         if list.is_ok() {
             return list.expect("E.");
