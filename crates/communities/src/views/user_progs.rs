@@ -794,7 +794,7 @@ pub async fn get_lists (
                     return Err(Error::BadRequest(body));
                 }
                 else {
-                    let body = block(move || owner.get_lists (
+                    let body = block(move || owner.get_communities_lists (
                         params.limit,
                         params.offset,
                     )).await?;
@@ -816,7 +816,7 @@ pub async fn get_lists (
                     return Err(Error::BadRequest(body));
                 }
                 else {
-                    let body = block(move || owner.get_lists (
+                    let body = block(move || owner.get_communities_lists (
                         params.limit,
                         params.offset,
                     )).await?;
