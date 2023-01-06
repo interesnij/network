@@ -5,7 +5,7 @@ use crate::utils::{
     CardPostJson,
     CardUserJson, EditNotifyResp,
     CardPostListJson, KeyValue,
-    AttachOwner, EditPrivateResp, 
+    AttachOwner, UserEditPrivateResp, 
 };
 use diesel::{
     Queryable,

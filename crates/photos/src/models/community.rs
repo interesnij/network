@@ -242,7 +242,7 @@ impl Community {
             copy_el_users = None;
         }
     
-        return EditPrivateResp {
+        return CommunityEditPrivateResp {
             see_el:               Community::get_private_field(self.see_el),
             see_comment:          Community::get_private_field(self.see_comment),
             create_el:            Community::get_private_field(self.create_el),

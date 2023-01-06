@@ -2062,7 +2062,7 @@ pub async fn user_privates_page (
         }
         else {
             let user: User;
-            let user_res = get_post(user_id);
+            let user_res = get_user(user_id);
             if user_res.is_ok() {
                 user = user_res.expect("E");
             }
@@ -2106,7 +2106,7 @@ pub async fn user_notifies_page (
         }
         else {
             let user: User;
-            let user_res = get_post(user_id);
+            let user_res = get_user(user_id);
             if user_res.is_ok() {
                 user = user_res.expect("E");
             }

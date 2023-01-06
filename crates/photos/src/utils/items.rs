@@ -54,7 +54,7 @@ pub struct ReactionData {
 
 #[derive(Deserialize)]
 pub struct TokenParams {
-    pub token: String,
+    pub token: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -101,12 +101,12 @@ pub struct CommunityEditPrivateResp {
     pub create_el:            KeyValue,
     pub create_comment:       KeyValue,
     pub copy_el:              KeyValue,
-    pub see_all_users:        Option<Vec<CardUserJson>>;
-    pub see_el_users:         Option<Vec<CardUserJson>>;
-    pub see_comment_users:    Option<Vec<CardUserJson>>;
-    pub create_el_users:      Option<Vec<CardUserJson>>;
-    pub create_comment_users: Option<Vec<CardUserJson>>;
-    pub copy_el_users:        Option<Vec<CardUserJson>>; 
+    pub see_all_users:        Option<Vec<CardUserJson>>,
+    pub see_el_users:         Option<Vec<CardUserJson>>,
+    pub see_comment_users:    Option<Vec<CardUserJson>>,
+    pub create_el_users:      Option<Vec<CardUserJson>>,
+    pub create_comment_users: Option<Vec<CardUserJson>>,
+    pub copy_el_users:        Option<Vec<CardUserJson>>,
 }
 
 #[derive(Serialize, Deserialize)]
