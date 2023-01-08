@@ -851,7 +851,7 @@ pub struct CreateListData {
 pub async fn create_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: CreateListData
+    data: Json<CreateListData>
 ) -> Result<Json<RespListJson>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -901,7 +901,7 @@ pub struct EditListData {
 pub async fn edit_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: EditListData
+    data: Json<EditListData>
 ) -> Result<Json<RespListJson>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -980,7 +980,7 @@ pub struct DeleteListData {
 pub async fn delete_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: DeleteListData
+    data: Json<DeleteListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1028,7 +1028,7 @@ pub async fn delete_communities_list (
 pub async fn restore_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: DeleteListData
+    data: Json<DeleteListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1083,7 +1083,7 @@ pub struct ItemListData {
 pub async fn add_community_in_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: ItemListData
+    data: Json<ItemListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1139,7 +1139,7 @@ pub async fn add_community_in_communities_list (
 pub async fn delete_community_in_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: ItemListData
+    data: Json<ItemListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {

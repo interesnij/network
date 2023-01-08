@@ -1122,7 +1122,7 @@ impl Community {
                 .expect("Error.");
         }
     }
-    pub fn plus_lists(&self, count: i16) -> bool {
+    pub fn plus_lists(&self, count: i32) -> bool {
         let _connection = establish_connection();
         let _u = diesel::update(self)
             .set(schema::communitys::lists.eq(self.lists + count))
@@ -1134,7 +1134,7 @@ impl Community {
             return false;
         }
     }
-    pub fn minus_lists(&self, count: i16) -> bool {
+    pub fn minus_lists(&self, count: i32) -> bool {
         if self.communities > 0 {
             let _connection = establish_connection();
             let _u = diesel::update(self)
@@ -1196,7 +1196,7 @@ impl Community {
             .values(&new_banned_user)
             .execute(&_connection);
         if ban_to.is_none() { 
-            user.leave_community(self.id);
+            user.leave_community(self);
         }
         if banned_user.is_ok() {
             return 1; 

@@ -949,10 +949,10 @@ impl MembershipsList {
             .filter(schema::memberships_lists::id.eq_any(ids))
             .filter(schema::memberships_lists::types.lt(31))
             .select((
-                schema::communities_lists::id,
-                schema::communities_lists::name,
-                schema::communities_lists::position,
-                schema::communities_lists::count,
+                schema::memberships_lists::id,
+                schema::memberships_lists::name,
+                schema::memberships_lists::position,
+                schema::memberships_lists::count,
             ))
             .load::<CardCommunitiesList>(&_connection)
             .expect("E.");
@@ -1152,7 +1152,7 @@ impl MembershipsList {
             name:         _name.clone(),
             community_id: community_id,
             types:        5,
-            position:     NewMembershipsList::get_new_position_for_community(community_id),
+            position:     MembershipsList::get_new_position_for_community(community_id),
             count:        0,
             repost:       0,
             see_el:       see_el,
@@ -1172,7 +1172,7 @@ impl MembershipsList {
                         list_id: new_list.id,
                         types:   11,
                     };
-                    diesel::insert_into(schema::memberships_lists::table)
+                    diesel::insert_into(schema::memberships_list_perms::table)
                         .values(&_new_exclude)
                         .execute(&_connection)
                         .expect("Error.");
@@ -1185,9 +1185,9 @@ impl MembershipsList {
                     let _new_include = NewMembershipsListPerm {
                         item_id: *item_id,
                         list_id: new_list.id,
-                        types:   1,
+                        types:   1, 
                     };
-                    diesel::insert_into(schema::memberships_lists::table)
+                    diesel::insert_into(schema::memberships_list_perms::table)
                         .values(&_new_include)
                         .execute(&_connection)
                         .expect("Error.");
