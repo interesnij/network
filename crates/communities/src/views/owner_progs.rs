@@ -321,6 +321,7 @@ pub struct AddTargetParams {
     pub token:     Option<String>,
     pub user_id:   Option<i32>,
     pub target_id: Option<i32>,
+    pub list_id:   Option<i32>,
 }
 
 // manager send!
@@ -331,6 +332,9 @@ pub async fn create_friend(data: Json<AddTargetParams>) -> Result<Json<i16>, Err
     else if data.user_id.is_none() {
         Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
     }
+    else if data.list_id.is_none() {
+        Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
+    }
     else if data.target_id.is_none() {
         Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
     }
@@ -338,6 +342,7 @@ pub async fn create_friend(data: Json<AddTargetParams>) -> Result<Json<i16>, Err
         if data.token.as_deref().unwrap() == TOKEN {
             let user = get_user(data.user_id.unwrap()).expect("E.");
             let _res = block(move || user.frend_user (
+                data.list_id.unwrap(),
                 data.target_id.unwrap(),
             )).await?;
             Ok(Json(_res))

@@ -6,7 +6,7 @@ use actix_web::{
 };
 use serde::{Deserialize, Serialize};
 use crate::utils::{
-    get_owner_data, get_community, 
+    get_owner_data, get_community, get_memberships_list,
     ErrorParams, EditCommunityPrivateResp, ObjectData,
     EditNameResp, EditLinkResp, EditNotifyResp,
     CardUserJson, RegListData, SearchRegListData,
@@ -1264,8 +1264,8 @@ pub async fn restore_memberships_list (
 #[derive(Deserialize)]
 pub struct ItemListData2 {
     pub token:        Option<String>,
-    pub list_id:      Option<String>,
-    pub community_id: Option<String>,
+    pub list_id:      Option<i32>,
+    pub community_id: Option<i32>,
 }
 pub async fn add_member_in_memberships_list (
     req: HttpRequest,

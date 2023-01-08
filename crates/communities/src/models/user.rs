@@ -147,6 +147,8 @@ pub struct NewUserJson {
     pub is_man:     Option<i16>,
     pub password:   Option<String>,
     pub link:       Option<String>,
+    pub friends_list: Option<i32>,
+    pub follows_list: Option<i32>,
 }
 
 impl User {
