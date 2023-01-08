@@ -155,7 +155,7 @@ impl CommunitiesList {
             };
         };
         if _items.is_some() && is_ie_mode {
-            for item_id in _users.unwrap().iter() {
+            for item_id in _items.unwrap().iter() {
                 let _new_perm = NewCommunityListPerm {
                     item_id: *item_id,
                     list_id: self.id,
@@ -320,7 +320,7 @@ impl CommunitiesList {
 
         let _connection = establish_connection();
         return community_list_perms
-            .filter(schema::community_list_perms::item_id.eq(user_id))
+            .filter(schema::community_list_perms::item_id.eq(item_id))
             .filter(schema::community_list_perms::list_id.eq(self.id))
             .filter(schema::community_list_perms::types.eq(types))
             .select(schema::community_list_perms::item_id)

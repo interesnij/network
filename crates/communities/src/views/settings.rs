@@ -1078,7 +1078,7 @@ pub async fn create_memberships_list (
             return Err(Error::BadRequest(body));
         }
         if community.is_user_see_settings(user_id) {
-            let body = block(move || MemnershipsList::create_list (
+            let body = block(move || MembershipsList::create_list (
                 data.name.unwrap(),
                 community.id,
                 data.see_el.unwrap(),
@@ -1498,7 +1498,7 @@ pub async fn delete_member_from_memberships_list (
         }
         if community.is_user_see_settings(user_id) || list.community_id == community_id {
             use crate::models::MembershipsListItem;
-            
+
             let body = block(move || MembershipsListItem::delete_memberships_item (
                 data.list_id.unwrap(),   
                 data.community_id.unwrap(),

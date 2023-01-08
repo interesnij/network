@@ -23,9 +23,9 @@ use diesel::{
 };
 use serde::{Serialize, Deserialize};
 use crate::utils::{
-    establish_connection, get_limit_offset,
+    establish_connection, get_limit_offset, get_limit,
     CommunityCategoryJson, CardUserJson, KeyValue,
-    CommunityPrivateJson, NewCommunityJson,
+    CommunityPrivateJson, NewCommunityJson, CardCommunitiesList,
     AttachCommunityResp, CardCommunityJson,
     CommunityDetailJson, EditNotifyResp, EditCommunityPrivateResp,
 };
@@ -321,7 +321,6 @@ impl Community {
                 schema::users::last_name,
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
-                schema::users::members,
             ))
             .load::<CardUserJson>(&_connection)
             .expect("E.");
@@ -350,8 +349,7 @@ impl Community {
                 schema::users::last_name,
                 schema::users::link,
                 schema::users::s_avatar.nullable(),
-                schema::users::members,
-            ))
+            )) 
             .load::<CardUserJson>(&_connection)
             .expect("E.");
     }
@@ -1213,7 +1211,7 @@ impl Community {
         let ban_user = community_banned_users
             .filter(schema::community_banned_users::community_id.eq(self.id))
             .filter(schema::community_banned_users::user_id.eq(user.id))
-            .first::<CommunityBannedUsers>(&_connection)
+            .first::<CommunityBannedUser>(&_connection)
             .expect("E.");
 
         let banned_user = diesel::delete (
@@ -2036,9 +2034,9 @@ impl Community {
         let _connection = establish_connection();
         return community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq(user_id))
+            .filter(schema::community_visible_perms::item_id.eq(user_id))
             .filter(schema::community_visible_perms::types.eq(types))
-            .select(schema::community_visible_perms::target_id)
+            .select(schema::community_visible_perms::item_id)
             .first::<i32>(&_connection)
             .is_ok() &&
         communities_memberships
@@ -2064,11 +2062,11 @@ impl Community {
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let items_ids = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::target_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::item_id.eq_any(self.get_members_ids()))
             .filter(schema::community_visible_perms::types.eq(types))
             .limit(_limit)
             .offset(_offset)
-            .select(schema::community_visible_perms::target_id)
+            .select(schema::community_visible_perms::item_id)
             .load::<i32>(&_connection)
             .expect("E");
 

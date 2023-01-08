@@ -1284,7 +1284,7 @@ impl User {
 
         let _connection = establish_connection();
         return user_visible_perms
-            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::user_id.eq(user_id))
             .filter(schema::user_visible_perms::item_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .select(schema::user_visible_perms::id)
@@ -1295,8 +1295,8 @@ impl User {
 
         let _connection = establish_connection();
         return user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(user_id))
-            .filter(schema::user_visible_perms::item_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::item_id.eq(user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .select(schema::user_visible_perms::id)
             .first::<i32>(&_connection).is_ok();

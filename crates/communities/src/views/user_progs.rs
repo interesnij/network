@@ -881,7 +881,7 @@ pub async fn create_communities_list (
     }
     else {
         let body = block(move || CommunitiesList::create_list (
-            data.name.as_deref().unwrap().to_string()
+            data.name.as_deref().unwrap().to_string(),
             user_id,
             data.see_el.unwrap(),
             data.users.clone(),
