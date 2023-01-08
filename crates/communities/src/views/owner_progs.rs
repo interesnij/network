@@ -592,7 +592,7 @@ pub async fn delete_friends_list(data: Json<ItemParams>) -> Result<Json<i16>, Er
         if data.token.as_deref().unwrap() == TOKEN {
             use crate::utils::get_friends_list;
 
-            let list = get_friends_list(data.id.unwrap());
+            let list = get_friends_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.delete_item()).await?;
             Ok(Json(_res))
         }

@@ -527,7 +527,7 @@ impl CommunitiesList {
             _name = c_name;
         }
 
-        diesel::update(&self)
+        diesel::update(self)
             .set((
                 schema::communities_lists::name.eq(_name.clone()),
                 schema::communities_lists::see_el.eq(see_el),
@@ -1197,7 +1197,7 @@ impl MembershipsList {
             name: _name,
         };
     }
-    pub fn edit_list ( 
+    pub fn edit_list (
         &self,
         name:     String,
         see_el:   i16,
@@ -1216,7 +1216,7 @@ impl MembershipsList {
             _name = c_name;
         }
 
-        diesel::update(&self)
+        diesel::update(self)
             .set((
                 schema::memberships_lists::name.eq(_name.clone()),
                 schema::memberships_lists::position.eq(position),

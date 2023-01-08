@@ -1019,10 +1019,11 @@ pub async fn search_moderators_settings_page (
 
 #[derive(Deserialize)]
 pub struct CreateListData {
-    pub token:  Option<String>,
-    pub name:   Option<String>,
-    pub see_el: Option<i16>,
-    pub users:  Option<Vec<i32>>,
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub name:         Option<String>,
+    pub see_el:       Option<i16>,
+    pub users:        Option<Vec<i32>>,
 } 
 pub async fn create_memberships_list (
     req: HttpRequest,
@@ -1085,17 +1086,24 @@ pub async fn create_memberships_list (
             )).await?;
             return Ok(Json(body));
         }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
     }
 }
 
 #[derive(Deserialize)]
 pub struct EditListData {
-    pub token:    Option<String>,
-    pub list_id:  Option<i32>,
-    pub name:     Option<String>,
-    pub see_el:   Option<i16>,
-    pub position: Option<i16>,
-    pub users:    Option<Vec<i32>>,
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub list_id:      Option<i32>,
+    pub name:         Option<String>,
+    pub see_el:       Option<i16>,
+    pub position:     Option<i16>,
+    pub users:        Option<Vec<i32>>,
 }
 pub async fn edit_memberships_list (
     req: HttpRequest,
@@ -1195,8 +1203,9 @@ pub async fn edit_memberships_list (
 
 #[derive(Deserialize)]
 pub struct DeleteListData {
-    pub token:   Option<String>,
-    pub list_id: Option<i32>,
+    pub token:        Option<String>,
+    pub list_id:      Option<i32>,
+    pub community_id: Option<i32>,
 }
 pub async fn delete_memberships_list (
     req: HttpRequest,
@@ -1423,7 +1432,7 @@ pub async fn add_member_in_memberships_list (
         }
     }
 }
-pub async fn delete_member_in_memberships_list (
+pub async fn delete_member_from_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<ItemListData2>
@@ -1488,7 +1497,7 @@ pub async fn delete_member_in_memberships_list (
             return Err(Error::BadRequest(body));
         }
         if community.is_user_see_settings(user_id) || list.community_id == community_id {
-            let body = block(move || MembershipsListItem::delete_memberships_item (
+            let body = block(move || MembershipsList::delete_memberships_item (
                 data.list_id.unwrap(), 
                 data.community_id.unwrap(),
             )).await?;

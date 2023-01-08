@@ -976,7 +976,7 @@ pub async fn edit_communities_list (
 #[derive(Deserialize)]
 pub struct DeleteListData {
     pub token:    Option<String>,
-    pub list_id:  Option<String>,
+    pub list_id:  Option<i32>,
 }
 pub async fn delete_communities_list (
     req: HttpRequest,
