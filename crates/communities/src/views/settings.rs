@@ -1050,7 +1050,7 @@ pub async fn create_memberships_list (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
         {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -1064,7 +1064,7 @@ pub async fn create_memberships_list (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let community_res = get_community(c_id);
         if community_res.is_ok() {
@@ -1091,7 +1091,7 @@ pub async fn create_memberships_list (
 #[derive(Deserialize)]
 pub struct EditListData {
     pub token:    Option<String>,
-    pub list_id:  Option<String>,
+    pub list_id:  Option<i32>,
     pub name:     Option<String>,
     pub see_el:   Option<i16>,
     pub position: Option<i16>,
@@ -1129,7 +1129,7 @@ pub async fn edit_memberships_list (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
         {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -1143,7 +1143,7 @@ pub async fn edit_memberships_list (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let community_res = get_community(c_id);
         if community_res.is_ok() {
@@ -1167,6 +1167,7 @@ pub async fn edit_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
+
         if community.is_user_see_settings(user_id) || list.community_id == community_id {
             let position: i16;
             if data.position.is_some() {
@@ -1176,7 +1177,6 @@ pub async fn edit_memberships_list (
                 position = 2;
             }
             let body = block(move || list.edit_list (
-                data.list_id.unwrap(),
                 data.name.unwrap(),
                 data.see_el.unwrap(),
                 position,
@@ -1218,7 +1218,7 @@ pub async fn delete_memberships_list (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
         {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -1232,7 +1232,7 @@ pub async fn delete_memberships_list (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let community_res = get_community(c_id);
         if community_res.is_ok() {
@@ -1288,7 +1288,7 @@ pub async fn restore_memberships_list (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
         {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -1302,7 +1302,7 @@ pub async fn restore_memberships_list (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let community_res = get_community(c_id);
         if community_res.is_ok() {
@@ -1371,7 +1371,7 @@ pub async fn add_member_in_memberships_list (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
         {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -1385,7 +1385,7 @@ pub async fn add_member_in_memberships_list (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let community_res = get_community(c_id);
         if community_res.is_ok() {
@@ -1449,7 +1449,7 @@ pub async fn delete_member_in_memberships_list (
     }
     else if (user_id == 0 && community_id == 0)
         || 
-        (community_id == 0 && params.community_id.is_none())
+        (community_id == 0 && data.community_id.is_none())
         {
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
@@ -1463,7 +1463,7 @@ pub async fn delete_member_in_memberships_list (
             c_id = community_id;
         }
         else {
-            c_id = params.community_id.unwrap();
+            c_id = data.community_id.unwrap();
         }
         let community_res = get_community(c_id);
         if community_res.is_ok() {

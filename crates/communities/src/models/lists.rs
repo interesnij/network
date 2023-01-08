@@ -509,14 +509,13 @@ impl CommunitiesList {
         };
     }
     pub fn edit_list (
-        list_id:  i32, 
+        &self, 
         name:     String, 
         see_el:   i16,
         position: i16,
         _users:   Option<Vec<i32>>
     ) -> RespListJson {
         use crate::schema::community_list_perms::dsl::community_list_perms;
-        use crate::utils::get_communities_list;
 
         let _connection = establish_connection();
         let _name: String;
@@ -528,9 +527,7 @@ impl CommunitiesList {
             _name = c_name;
         }
 
-        let list = get_communities_list(list_id).expect("E.");
-
-        diesel::update(&list)
+        diesel::update(&self)
             .set((
                 schema::communities_lists::name.eq(_name.clone()),
                 schema::communities_lists::see_el.eq(see_el),
@@ -544,7 +541,7 @@ impl CommunitiesList {
 
         diesel::delete (
             community_list_perms
-                .filter(schema::community_list_perms::list_id.eq(list_id))
+                .filter(schema::community_list_perms::list_id.eq(self.id))
                 .filter(schema::community_list_perms::types.ne(20))
         )
         .execute(&_connection)
@@ -555,7 +552,7 @@ impl CommunitiesList {
                 for item_id in _users.as_deref().unwrap() {
                     let _new_exclude = NewCommunityListPerm {
                         item_id: *item_id,
-                        list_id: list_id,
+                        list_id: self.id,
                         types:   11,
                     };
                     diesel::insert_into(schema::community_list_perms::table)
@@ -570,7 +567,7 @@ impl CommunitiesList {
                 for item_id in _users.as_deref().unwrap() {
                     let _new_include = NewCommunityListPerm {
                         item_id: *item_id,
-                        list_id: list_id,
+                        list_id: self.id,
                         types:   1,
                     };
                     diesel::insert_into(schema::community_list_perms::table)
@@ -582,7 +579,7 @@ impl CommunitiesList {
         }
 
         return RespListJson {
-            id:   list_id,
+            id:   self.id,
             name: _name,
         };
     }
@@ -1200,15 +1197,14 @@ impl MembershipsList {
             name: _name,
         };
     }
-    pub fn edit_list (
-        list_id:  i32,
+    pub fn edit_list ( 
+        &self,
         name:     String,
         see_el:   i16,
         position: i16,
         _users:   Option<Vec<i32>>
     ) -> RespListJson {
         use crate::schema::memberships_list_perms::dsl::memberships_list_perms;
-        use crate::utils::get_memberships_list;
 
         let _connection = establish_connection();
         let _name: String;
@@ -1219,10 +1215,8 @@ impl MembershipsList {
         else {
             _name = c_name;
         }
-        
-        let list = get_memberships_list(list_id).expect("E.");
 
-        diesel::update(&list)
+        diesel::update(&self)
             .set((
                 schema::memberships_lists::name.eq(_name.clone()),
                 schema::memberships_lists::position.eq(position),
@@ -1235,7 +1229,7 @@ impl MembershipsList {
 
         diesel::delete (
             memberships_list_perms
-                .filter(schema::memberships_list_perms::list_id.eq(list_id))
+                .filter(schema::memberships_list_perms::list_id.eq(self.id))
                 .filter(schema::memberships_list_perms::types.ne(20))
         )
         .execute(&_connection)
@@ -1246,7 +1240,7 @@ impl MembershipsList {
                 for item_id in _users.as_deref().unwrap() {
                     let _new_exclude = NewMembershipsListPerm {
                         item_id: *item_id,
-                        list_id: list_id,
+                        list_id: self.id,
                         types:   11,
                     };
                     diesel::insert_into(schema::memberships_list_perms::table)
@@ -1261,7 +1255,7 @@ impl MembershipsList {
                 for item_id in _users.as_deref().unwrap() {
                     let _new_include = NewMembershipsListPerm {
                         item_id: *item_id,
-                        list_id: list_id,
+                        list_id: self.id,
                         types:   1,
                     };
                     diesel::insert_into(schema::memberships_list_perms::table)
@@ -1273,7 +1267,7 @@ impl MembershipsList {
         }
 
         return RespListJson {
-            id:   list_id,
+            id:   self.id,
             name: _name,
         };
     }

@@ -26,12 +26,13 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     CommunityCategoryJson, CardUserJson, KeyValue,
     CommunityPrivateJson, NewCommunityJson,
-    AttachCommunityResp, CardCommunityJson, CommunitiesList,
+    AttachCommunityResp, CardCommunityJson,
     CommunityDetailJson, EditNotifyResp, EditCommunityPrivateResp,
 };
 use crate::errors::Error;
 use crate::models::{
     TokenDetailJson, TokenJson, User, MembershipsList,
+    CommunitiesList, 
 };
 
 /////// CommunityCategories //////
