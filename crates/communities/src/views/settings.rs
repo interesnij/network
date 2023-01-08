@@ -1299,7 +1299,6 @@ pub async fn restore_memberships_list (
         }
     }
 }
-}
 
 #[derive(Deserialize)]
 pub struct ItemListData2 {
