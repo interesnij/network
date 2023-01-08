@@ -1369,7 +1369,16 @@ impl User {
             .first::<FollowsList>(&_connection)
             .expect("E.");
     }
-    pub fn follow_user(&self, user_id: i32) -> i16 {
+    pub fn get_follows_list(list_id: i32) -> FollowsList {
+        use crate::schema::follows_lists::dsl::follows_lists;
+
+        let _connection = establish_connection();
+        return follows_lists
+            .filter(schema::follows_lists::list_id.eq(list_id))
+            .first::<FollowsList>(&_connection)
+            .expect("E.");
+    }
+    pub fn follow_user(&self, list_id: i32, user_id: i32) -> i16 {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return 0;
         }
@@ -1383,7 +1392,7 @@ impl User {
             .values(&_new_follow)
             .execute(&_connection);
 
-        let self_user_list = self.get_main_follows_list();
+        let self_user_list = User::get_follows_list(list_id);
         self_user_list.create_follow_item(user_id);
         if new_follow.is_ok() {
             return 1;
@@ -1445,7 +1454,16 @@ impl User {
             .first::<FriendsList>(&_connection)
             .expect("E.");
     }
-    pub fn frend_user(&self, user_id: i32) -> i16 {
+    pub fn get_friends_list(list_id: i32) -> FriendsList {
+        use crate::schema::friends_lists::dsl::friends_lists;
+
+        let _connection = establish_connection();
+        return friends_lists
+            .filter(schema::friends_lists::list_id.eq(list_id))
+            .first::<FriendsList>(&_connection)
+            .expect("E.");
+    }
+    pub fn frend_user(&self, list_id: i32, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
             return 0;
         }
@@ -1473,7 +1491,7 @@ impl User {
         FollowsListItem::delete_follows_items(target_user.get_follows_lists_ids(), self.user_id);
         
         let target_user_list = target_user.get_main_friends_list();
-        let self_user_list = self.get_main_friends_list();
+        let self_user_list = User::get_friends_list(list_id);
         target_user_list.create_friend_item(self.user_id);
         self_user_list.create_friend_item(user_id);
 

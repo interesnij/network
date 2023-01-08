@@ -1181,7 +1181,7 @@ pub async fn delete_community_in_communities_list (
             return Err(Error::BadRequest(body));
         }
         if owner.user_id == user_id {
-            let body = block(move || CommunityListItem::delete_communities_item (
+            let body = block(move || CommunityListItem::delete_community_item (
                 owner.list_id,
                 data.community_id.unwrap(),
             )).await?;

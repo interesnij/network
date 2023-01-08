@@ -1374,7 +1374,7 @@ pub async fn delete_member_in_memberships_list (
             return Err(Error::BadRequest(body));
         }
         if owner.user_id == user_id {
-            let body = block(move || MembershipsListItem::delete_membership_item (
+            let body = block(move || MembershipsListItem::delete_memberships_item (
                 owner.list_id,
                 data.community_id.unwrap(),
             )).await?;

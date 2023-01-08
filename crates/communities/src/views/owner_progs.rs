@@ -369,7 +369,7 @@ pub async fn create_follow(data: Json<AddTargetParams>) -> Result<Json<i16>, Err
                 data.list_id.unwrap(),
                 data.target_id.unwrap(),
             )).await?;
-            Ok(Json(_res))
+            Ok(Json(_res)) 
         }
         else {
             Err(Error::BadRequest("Permission Denied!".to_string()))
@@ -545,7 +545,7 @@ pub async fn delete_follows_list(data: Json<ItemParams>) -> Result<Json<i16>, Er
         if data.token.as_deref().unwrap() == TOKEN {
             use crate::utils::get_follows_list;
 
-            let list = get_follows_list(data.id.unwrap());
+            let list = get_follows_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.delete_item()).await?;
             Ok(Json(_res))
         }
@@ -566,7 +566,7 @@ pub async fn restore_follows_list(data: Json<ItemParams>) -> Result<Json<i16>, E
         if data.token.as_deref().unwrap() == TOKEN {
             use crate::utils::get_follows_list;
 
-            let list = get_follows_list(data.id.unwrap());
+            let list = get_follows_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.restore_item()).await?;
             Ok(Json(_res))
         }
@@ -608,7 +608,7 @@ pub async fn restore_friends_list(data: Json<ItemParams>) -> Result<Json<i16>, E
         if data.token.as_deref().unwrap() == TOKEN {
             use crate::utils::get_friends_list;
 
-            let list = get_friends_list(data.id.unwrap());
+            let list = get_friends_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.restore_item()).await?;
             Ok(Json(_res))
         }

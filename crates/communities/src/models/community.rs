@@ -396,7 +396,7 @@ impl Community {
 
         let _connection = establish_connection();
         let list = memberships_lists
-            .filter(schema::memberships_lists::community_id.eq(self.community_id))
+            .filter(schema::memberships_lists::community_id.eq(self.id))
             .filter(schema::memberships_lists::types.eq(0))
             .first::<MembershipsList>(&_connection);
         
@@ -408,7 +408,7 @@ impl Community {
 
             let new_list_f = NewMembershipsList { 
                 name:         "Подписчики".to_string(),
-                community_id: self.community_id,
+                community_id: self.id,
                 types:        0,
                 position:     1,
                 count:        0,
@@ -1135,7 +1135,7 @@ impl Community {
         }
     }
     pub fn minus_lists(&self, count: i32) -> bool {
-        if self.communities > 0 {
+        if self.lists > 0 {
             let _connection = establish_connection();
             let _u = diesel::update(self)
                 .set(schema::communitys::lists.eq(self.lists - count))
