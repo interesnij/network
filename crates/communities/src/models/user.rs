@@ -1939,10 +1939,10 @@ impl User {
             diesel::delete (
                 memberships_list_items
                     .filter(schema::memberships_list_items::list_id.eq(list.id))
-                    .filter(schema::memberships_list_items::user_id.eq(self.user_id))
-                    .execute(&_connection)
-                    .expect("E");
+                    .filter(schema::memberships_list_items::user_id.eq(self.id))
             )
+            .execute(&_connection)
+            .expect("E");
             diesel::update(list)
                 .set(schema::memberships_lists::count.eq(list.count - 1))
                 .execute(&_connection)
