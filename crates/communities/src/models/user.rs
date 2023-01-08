@@ -1827,7 +1827,7 @@ impl User {
         communities_list.create_community_item(community.id);
         
         let memberships_list = community.get_main_memberships_list();
-        memberships_list.create_memberships_item(self.id);
+        memberships_list.create_membership_item(self.id);
         
         CommunitiesMembership::create_membership(self.id, &community, 1);      
         self.plus_communities(1);
@@ -1899,7 +1899,7 @@ impl User {
             .expect("E");
     }
 
-    pub fn leave_community(&self, community: Community) -> i16 {
+    pub fn leave_community(&self, community: &Community) -> i16 {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             community_list_items::dsl::community_list_items,

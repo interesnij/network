@@ -469,9 +469,9 @@ pub async fn leave_community (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        
+        let community = get_community(data.community_id.unwrap()).expect("E");
         let body = block(move || owner.leave_community ( 
-            data.community_id.unwrap(),
+            &community,
         )).await?;
         Ok(Json(body))
     }

@@ -1317,8 +1317,13 @@ impl Community {
         // создаем основной список подписчиков сообщества
         use crate::models::NewMembershipsList;
         let new_list_f = NewMembershipsList {
+            name:         "Подписчики".to_string();
             community_id: community_id,
             types:        0,
+            position:     0,
+            count:        0,
+            repost:       0,
+            see_el:       1,
         };
         diesel::insert_into(schema::memberships_lists::table)
             .values(&new_list_f)

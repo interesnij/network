@@ -821,12 +821,12 @@ pub struct NewMembershipsList {
 
 impl MembershipsList {
     pub fn create_membership_item (
-        &self, community_id: i32,
+        &self, user_id: i32,
     ) -> i16 {
         let _connection = establish_connection();
         let new_item = NewMembershipsListItem {
             list_id:      self.id,
-            community_id: community_id,
+            user_id: user_id,
             visited:      0,
         };
         diesel::insert_into(schema::memberships_list_items::table)
@@ -1591,33 +1591,6 @@ impl FriendsList {
             .expect("E.");
     }
 
-    pub fn get_or_create_list(list_id: i32) -> FriendsList { 
-        use crate::schema::friends_lists::dsl::friends_lists;
-        
-        let _connection = establish_connection();
-
-        let list_res = friends_lists
-            .filter(schema::friends_lists::list_id.eq(list_id))
-            .load::<FriendsList>(&_connection);
-        
-        if list_res.is_ok() {
-            return list_res.expect("Error.");
-        }
-        else {
-            let new_list = NewFriendsList {
-                list_id: list_id,
-                user_id: user_id,
-                types:   5,
-            };
-            let _new_list = diesel::insert_into(schema::friends_lists::table)
-                .values(&new_list)
-                .get_result::<FriendsList>(&_connection)
-                .expect("Error.");
-    
-            return _new_list;
-        }
-    }
-
     pub fn create_list(list_id: i32, user_id: i32) -> i16 {
         let _connection = establish_connection();
 
@@ -1921,33 +1894,6 @@ impl FollowsList {
             .filter(schema::users::types.lt(31))
             .load::<User>(&_connection)
             .expect("E.");
-    }
-
-    pub fn get_or_create_list(list_id: i32) -> FollowsList {
-        use crate::schema::follows_lists::dsl::follows_lists;
-
-        let _connection = establish_connection();
-
-        let list_res = follows_lists
-            .filter(schema::follows_lists::list_id.eq(list_id))
-            .load::<FollowsList>(&_connection);
-        
-        if list_res.is_ok() {
-            return list_res.expect("Error.");
-        }
-        else {
-            let new_list = NewFollowsList {
-                list_id: list_id,
-                user_id: user_id,
-                types:   5,
-            };
-            let _new_list = diesel::insert_into(schema::follows_lists::table)
-                .values(&new_list)
-                .get_result::<FollowsList>(&_connection)
-                .expect("Error.");
-    
-            return _new_list;
-        }
     }
 
     pub fn create_list(list_id: i32, user_id: i32) -> i16 {
