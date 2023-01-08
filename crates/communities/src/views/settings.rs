@@ -1079,7 +1079,7 @@ pub async fn create_memberships_list (
         }
         if community.is_user_see_settings(user_id) {
             let body = block(move || MembershipsList::create_list (
-                data.name.unwrap(),
+                data.name.as_deref().unwrap().to_string(),
                 community.id,
                 data.see_el.unwrap(),
                 data.users.clone(),
