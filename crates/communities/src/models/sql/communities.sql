@@ -139,11 +139,7 @@ CREATE TABLE communities_lists (
     position       SMALLINT NOT NULL,     -- порядок следования
     count          INT NOT NULL,          -- кол-во элементов
     repost         INT NOT NULL,          -- кол-во репостов
-    see_el         SMALLINT NOT NULL,     -- кто может видеть сообщества списка
-
-    CONSTRAINT fk_communities_lists_user
-        FOREIGN KEY(user_id)
-            REFERENCES users(id)
+    see_el         SMALLINT NOT NULL      -- кто может видеть сообщества списка
 );
 CREATE INDEX communities_lists_user_id_idx ON communities_lists (user_id);
 
@@ -201,11 +197,7 @@ CREATE TABLE memberships_lists (
     position       SMALLINT NOT NULL,     -- порядок следования
     count          INT NOT NULL,          -- кол-во элементов
     repost         INT NOT NULL,          -- кол-во репостов
-    see_el         SMALLINT NOT NULL,     -- кто может видеть элементы списка
-
-    CONSTRAINT fk_memberships_lists_user
-        FOREIGN KEY(user_id)
-            REFERENCES users(id)
+    see_el         SMALLINT NOT NULL      -- кто может видеть элементы списка
 );
 CREATE INDEX memberships_lists_community_id_idx ON memberships_lists (community_id);
 
@@ -393,7 +385,7 @@ CREATE UNIQUE INDEX friends_user_target_unq ON friends (user_id, target_id);
 CREATE TABLE friends_list_items (
     id       SERIAL PRIMARY KEY,
     list_id  INT NOT NULL,
-    user_id  INT NOT NULL,
+    user_id  INT NOT NULL
 );
 CREATE UNIQUE INDEX friends_list_items_unq ON friends_list_items (user_id, list_id);
 
@@ -424,7 +416,7 @@ CREATE UNIQUE INDEX follows_user_followed_unq ON follows (user_id, target_id);
 CREATE TABLE follows_list_items (
     id       SERIAL PRIMARY KEY,
     list_id  INT NOT NULL,
-    user_id  INT NOT NULL,
+    user_id  INT NOT NULL
 );
 CREATE UNIQUE INDEX follows_list_items_unq ON follows_list_items (user_id, list_id);
 

@@ -334,7 +334,7 @@ impl Community {
         let _limit = get_limit(limit, 6);
         let _connection = establish_connection();
         let users_ids = communities_memberships
-            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .filter(schema::communities_memberships::community_id.eq(self.id))
             .order(schema::communities_memberships::visited.desc())
             .select(schema::communities_memberships::user_id)
             .limit(_limit)
@@ -360,7 +360,7 @@ impl Community {
 
         let _connection = establish_connection();
         let list_id = memberships_lists
-            .filter(schema::memberships_lists::community_id.eq(self.community_id))
+            .filter(schema::memberships_lists::community_id.eq(self.id))
             .filter(schema::memberships_lists::types.eq(0))
             .order(schema::memberships_lists::position.desc())
             .select(schema::memberships_lists::id)
@@ -378,7 +378,7 @@ impl Community {
 
         let _connection = establish_connection();
         let list = memberships_lists
-            .filter(schema::memberships_lists::community_id.eq(self.community_id))
+            .filter(schema::memberships_lists::community_id.eq(self.id))
             .filter(schema::memberships_lists::types.eq(0))
             .order(schema::memberships_lists::position.desc())
             .first::<MembershipsList>(&_connection);

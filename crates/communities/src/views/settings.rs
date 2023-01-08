@@ -1032,19 +1032,19 @@ pub async fn create_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.name.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'name' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.see_el.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'see_el' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if (user_id == 0 && community_id == 0)
         || 
@@ -1053,7 +1053,7 @@ pub async fn create_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else {
         let body = block(move || MemnershipsList::create_list (
@@ -1062,13 +1062,13 @@ pub async fn create_memberships_list (
             data.see_el.unwrap(),
             data.users.clone(),
         )).await?;
-        Ok(Json(body))
+        return Ok(Json(body));
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
 }
 
@@ -1091,25 +1091,25 @@ pub async fn edit_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.list_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'list_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.name.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'name' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.see_el.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'see_el' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if (user_id == 0 && community_id == 0)
         || 
@@ -1118,7 +1118,7 @@ pub async fn edit_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else {
         let owner: MembershipsList;
@@ -1147,20 +1147,20 @@ pub async fn edit_memberships_list (
                 position,
                 data.users.clone(),
             )).await?;
-            Ok(Json(body))
+            return Ok(Json(body));
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
         }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
 }
 
@@ -1179,13 +1179,13 @@ pub async fn delete_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.list_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'list_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if (user_id == 0 && community_id == 0)
         || 
@@ -1194,7 +1194,7 @@ pub async fn delete_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else {
         let owner: MembershipsList;
@@ -1210,20 +1210,20 @@ pub async fn delete_memberships_list (
         }
         if owner.user_id == user_id {
             let body = block(move || owner.delete_item()).await?;
-            Ok(Json(body))
+            return Ok(Json(body));
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
         }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
 }
 pub async fn restore_memberships_list (
@@ -1236,13 +1236,13 @@ pub async fn restore_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.list_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'list_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if (user_id == 0 && community_id == 0)
         || 
@@ -1251,7 +1251,7 @@ pub async fn restore_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else {
         let owner: MembershipsList;
@@ -1267,25 +1267,25 @@ pub async fn restore_memberships_list (
         }
         if owner.user_id == user_id {
             let body = block(move || owner.restore_item()).await?;
-            Ok(Json(body))
+            return Ok(Json(body));
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
         }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
 }
 
 #[derive(Deserialize)]
-pub struct ItemListData {
+pub struct ItemListData2 {
     pub token:        Option<String>,
     pub list_id:      Option<String>,
     pub community_id: Option<String>,
@@ -1293,26 +1293,26 @@ pub struct ItemListData {
 pub async fn add_member_in_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: ItemListData
+    data: ItemListData2
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.list_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'list_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.community_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'community_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if (user_id == 0 && community_id == 0)
         || 
@@ -1321,7 +1321,7 @@ pub async fn add_member_in_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else {
         let owner: MembershipsList;
@@ -1339,45 +1339,45 @@ pub async fn add_member_in_memberships_list (
             let body = block(move || owner.create_memberships_item (
                 data.community_id.unwrap(),
             )).await?;
-            Ok(Json(body))
+            return Ok(Json(body));
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
         }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
 }
 pub async fn delete_member_in_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: ItemListData
+    data: ItemListData2
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
         let body = serde_json::to_string(&ErrorParams {
             error: err.unwrap(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.list_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'list_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if data.community_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
             error: "Field 'community_id' is required!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else if (user_id == 0 && community_id == 0)
         || 
@@ -1386,7 +1386,7 @@ pub async fn delete_member_in_memberships_list (
         let body = serde_json::to_string(&ErrorParams {
             error: "Permission Denied!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
     else {
         use crate::models::MembershipsListItem;
@@ -1407,19 +1407,19 @@ pub async fn delete_member_in_memberships_list (
                 owner.list_id,
                 data.community_id.unwrap(),
             )).await?;
-            Ok(Json(body))
+            return Ok(Json(body));
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
                 error: "Permission Denied!".to_string(),
             }).unwrap();
-            Err(Error::BadRequest(body))
+            return Err(Error::BadRequest(body));
         }
     }
     else {
         let body = serde_json::to_string(&ErrorParams {
             error: "parametrs not found!".to_string(),
         }).unwrap();
-        Err(Error::BadRequest(body))
+        return Err(Error::BadRequest(body));
     }
 }
