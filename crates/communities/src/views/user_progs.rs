@@ -13,7 +13,7 @@ use crate::utils::{
     RespListJson,
 };
 use crate::AppState;
-use crate::models::{Community, User};
+use crate::models::{Community, User, CommunitiesList};
 use crate::errors::Error;
 use serde::{Deserialize, Serialize};
 
@@ -893,7 +893,7 @@ pub async fn create_communities_list (
 #[derive(Deserialize)]
 pub struct EditListData {
     pub token:    Option<String>,
-    pub list_id:  Option<String>,
+    pub list_id:  Option<i32>,
     pub name:     Option<String>,
     pub see_el:   Option<i16>,
     pub position: Option<i16>,
@@ -1137,7 +1137,7 @@ pub async fn add_community_in_communities_list (
         }
     }
 }
-pub async fn delete_community_in_communities_list (
+pub async fn delete_community_from_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<ItemListData>
