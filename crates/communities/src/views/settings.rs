@@ -1187,10 +1187,29 @@ pub async fn delete_memberships_list (
         return Err(Error::BadRequest(body));
     }
     else {
-        let owner: MembershipsList;
-        let owner_res = get_memberships_list(data.list_id.unwrap());
-        if owner_res.is_ok() {
-            owner = owner_res.expect("E");
+        let community: Community;
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = params.community_id.unwrap();
+        }
+        let community_res = get_community(c_id);
+        if community_res.is_ok() {
+            community = community_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+
+        let list: MembershipsList;
+        let list_res = get_memberships_list(data.list_id.unwrap());
+        if list_res.is_ok() {
+            list = list_res.expect("E");
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
@@ -1198,8 +1217,8 @@ pub async fn delete_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id {
-            let body = block(move || owner.delete_item()).await?;
+        if community.is_user_see_settings(user_id) || list.community == community_id {
+            let body = block(move || list.delete_item()).await?;
             return Ok(Json(body));
         }
         else {
@@ -1238,10 +1257,29 @@ pub async fn restore_memberships_list (
         return Err(Error::BadRequest(body));
     }
     else {
-        let owner: MembershipsList;
-        let owner_res = get_memberships_list(data.list_id.unwrap());
-        if owner_res.is_ok() {
-            owner = owner_res.expect("E");
+        let community: Community;
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = params.community_id.unwrap();
+        }
+        let community_res = get_community(c_id);
+        if community_res.is_ok() {
+            community = community_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+
+        let list: MembershipsList;
+        let list_res = get_memberships_list(data.list_id.unwrap());
+        if list_res.is_ok() {
+            list = list_res.expect("E");
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
@@ -1249,8 +1287,8 @@ pub async fn restore_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id {
-            let body = block(move || owner.restore_item()).await?;
+        if community.is_user_see_settings(user_id) || list.community == community_id {
+            let body = block(move || list.restore_item()).await?;
             return Ok(Json(body));
         }
         else {
@@ -1260,6 +1298,7 @@ pub async fn restore_memberships_list (
             return Err(Error::BadRequest(body));
         }
     }
+}
 }
 
 #[derive(Deserialize)]
@@ -1363,10 +1402,11 @@ pub async fn delete_member_in_memberships_list (
     else {
         use crate::models::MembershipsListItem;
 
-        let owner: MembershipsList;
-        let owner_res = get_memberships_list(data.list_id.unwrap());
-        if owner_res.is_ok() {
-            owner = owner_res.expect("E");
+
+        let list: MembershipsList;
+        let list_res = get_memberships_list(data.list_id.unwrap());
+        if list_res.is_ok() {
+            list = list_res.expect("E");
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
@@ -1376,7 +1416,7 @@ pub async fn delete_member_in_memberships_list (
         }
         if owner.user_id == user_id {
             let body = block(move || MembershipsListItem::delete_memberships_item (
-                owner.list_id,
+                data.list_id.unwrap(), 
                 data.community_id.unwrap(),
             )).await?;
             return Ok(Json(body));
