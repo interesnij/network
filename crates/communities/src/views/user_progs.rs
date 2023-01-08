@@ -955,9 +955,8 @@ pub async fn edit_communities_list (
             else {
                 position = 2;
             }
-            let body = block(move || owner.edit_list (
-                data.list_id.unwrap(),
-                data.name.unwrap(),
+            let body = block(move || owner.edit_list ( 
+                data.name.unwrap().clone(),
                 data.see_el.unwrap(),
                 position,
                 data.users.clone(),
@@ -1124,7 +1123,7 @@ pub async fn add_community_in_communities_list (
             return Err(Error::BadRequest(body));
         }
         if owner.user_id == user_id {
-            let body = block(move || owner.create_communities_item (
+            let body = block(move || owner.create_community_item (
                 data.community_id.unwrap(),
             )).await?;
             Ok(Json(body))
@@ -1183,7 +1182,7 @@ pub async fn delete_community_from_communities_list (
         }
         if owner.user_id == user_id {
             let body = block(move || CommunityListItem::delete_community_item (
-                owner.list_id,
+                owner.id, 
                 data.community_id.unwrap(),
             )).await?;
             Ok(Json(body))
