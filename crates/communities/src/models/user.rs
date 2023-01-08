@@ -840,7 +840,7 @@ impl User {
         let _connection = establish_connection();
         return user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::item_id.eq(user_id))
             .filter(schema::user_visible_perms::types.eq(types))
             .select(schema::user_visible_perms::id)
             .first::<i32>(&_connection)
@@ -867,7 +867,7 @@ impl User {
         let _connection = establish_connection();
         return user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-            .filter(schema::user_visible_perms::target_id.eq(user_id))
+            .filter(schema::user_visible_perms::item_id.eq(user_id))
             .filter(schema::user_visible_perms::types.eq(types))
             .select(schema::user_visible_perms::id)
             .first::<i32>(&_connection)
@@ -895,11 +895,11 @@ impl User {
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let items_ids = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_friends_ids()))
+            .filter(schema::user_visible_perms::item_id.eq_any(self.get_friends_ids()))
             .filter(schema::user_visible_perms::types.eq(types))
             .limit(_limit)
             .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
+            .select(schema::user_visible_perms::item_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -932,11 +932,11 @@ impl User {
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let items_ids = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-            .filter(schema::user_visible_perms::target_id.eq_any(self.get_follows_ids()))
+            .filter(schema::user_visible_perms::item_id.eq_any(self.get_follows_ids()))
             .filter(schema::user_visible_perms::types.eq(types))
             .limit(_limit)
             .offset(_offset)
-            .select(schema::user_visible_perms::target_id)
+            .select(schema::user_visible_perms::item_id)
             .load::<i32>(&_connection)
             .expect("E");
 
@@ -1285,7 +1285,7 @@ impl User {
         let _connection = establish_connection();
         return user_visible_perms
             .filter(schema::user_visible_perms::target_id.eq(user_id))
-            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::item_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .select(schema::user_visible_perms::id)
             .first::<i32>(&_connection).is_ok();
@@ -1296,7 +1296,7 @@ impl User {
         let _connection = establish_connection();
         return user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(user_id))
-            .filter(schema::user_visible_perms::target_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::item_id.eq(self.user_id))
             .filter(schema::user_visible_perms::types.eq(20))
             .select(schema::user_visible_perms::id)
             .first::<i32>(&_connection).is_ok();
@@ -1537,7 +1537,7 @@ impl User {
 
         let target_user = get_user(user_id).expect("E.");
         FriendsListItem::delete_friends_items(target_user.get_friends_lists_ids(), self.user_id);
-        FriendsListItem::delete_friends_items(sels.get_friends_lists_ids(), user_id);
+        FriendsListItem::delete_friends_items(self.get_friends_lists_ids(), user_id);
         
         let self_user_list = self.get_main_follows_list();
         self_user_list.create_follow_item(user_id);
@@ -1571,7 +1571,7 @@ impl User {
                 .expect("E");
 
             FriendsListItem::delete_friends_items(target_user.get_friends_lists_ids(), self.user_id);
-            FriendsListItem::delete_friends_items(sels.get_friends_lists_ids(), user_id);
+            FriendsListItem::delete_friends_items(self.get_friends_lists_ids(), user_id);
         }
         else if self.is_followers_user_with_id(user_id) {
             use crate::schema::follows::dsl::follows;
@@ -1584,7 +1584,7 @@ impl User {
                 )
                 .execute(&_connection)
                 .expect("E");
-            FollowsListItem::delete_follows_items(sels.get_follows_lists_ids(), user_id);
+            FollowsListItem::delete_follows_items(self.get_follows_lists_ids(), user_id);
         }
         else if self.is_following_user_with_id(user_id) {
             use crate::schema::follows::dsl::follows;
@@ -1622,8 +1622,8 @@ impl User {
         let del = diesel::delete (
             user_visible_perms
                 .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                .filter(schema::user_visible_perms::target_id.eq(user_id))
-            )
+                .filter(schema::user_visible_perms::item_id.eq(user_id))
+            ) 
             .execute(&_connection);
 
         if del.is_ok() {

@@ -881,7 +881,7 @@ pub async fn create_communities_list (
     }
     else {
         let body = block(move || CommunitiesList::create_list (
-            data.name.unwrap(),
+            data.name.as_deref().unwrap().to_string()
             user_id,
             data.see_el.unwrap(),
             data.users.clone(),
@@ -956,7 +956,7 @@ pub async fn edit_communities_list (
                 position = 2;
             }
             let body = block(move || owner.edit_list ( 
-                data.name.unwrap().clone(),
+                data.name.as_deref().unwrap().to_string(), 
                 data.see_el.unwrap(),
                 position,
                 data.users.clone(),

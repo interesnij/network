@@ -323,12 +323,12 @@ impl CommunitiesList {
             .filter(schema::community_list_perms::item_id.eq(user_id))
             .filter(schema::community_list_perms::list_id.eq(self.id))
             .filter(schema::community_list_perms::types.eq(types))
-            .select(schema::community_list_perms::user_id)
+            .select(schema::community_list_perms::item_id)
             .first::<i32>(&_connection)
             .is_ok() &&
         friends 
             .filter(schema::friends::target_id.eq(self.user_id))
-            .filter(schema::friends::user_id.eq(user_id))
+            .filter(schema::friends::user_id.eq(item_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection)
             .is_ok();
@@ -350,12 +350,12 @@ impl CommunitiesList {
             .filter(schema::community_list_perms::item_id.eq(item_id))
             .filter(schema::community_list_perms::list_id.eq(self.id))
             .filter(schema::community_list_perms::types.eq(types))
-            .select(schema::community_list_perms::user_id)
+            .select(schema::community_list_perms::item_id)
             .first::<i32>(&_connection)
             .is_ok() &&
         follows
             .filter(schema::follows::target_id.eq(self.user_id))
-            .filter(schema::follows::user_id.eq(user_id))
+            .filter(schema::follows::user_id.eq(item_id))
             .select(schema::follows::id)
             .first::<i32>(&_connection)
             .is_ok();
@@ -900,8 +900,8 @@ impl MembershipsList {
         use crate::schema::communitys::dsl::communitys;
 
         let _connection = establish_connection();
-        return Ok(users
-            .filter(schema::communitys::community_id.eq(self.community_id))
+        return Ok(communitys
+            .filter(schema::communitys::id.eq(self.id))
             .first::<Community>(&_connection)?);
     }
     pub fn get_edit_list_json(&self) -> Result<EditListJson, Error> {
@@ -1008,7 +1008,7 @@ impl MembershipsList {
             .load::<i32>(&_connection)
             .expect("E.");
 
-        return communitys
+        return users
             .filter(schema::users::user_id.eq_any(ids))
             .filter(schema::users::types.lt(31))
             .load::<User>(&_connection)
@@ -1048,7 +1048,6 @@ impl MembershipsList {
         return memberships_list_items
             .filter(schema::memberships_list_items::user_id.eq(user_id))
             .filter(schema::memberships_list_items::list_id.eq(self.id))
-            .filter(schema::memberships_list_items::types.eq(types))
             .select(schema::memberships_list_items::user_id)
             .first::<i32>(&_connection)
             .is_ok() &&
@@ -1078,7 +1077,7 @@ impl MembershipsList {
             .filter(schema::memberships_list_perms::types.eq(types))
             .limit(_limit)
             .offset(_offset)
-            .select(schema::memberships_list_perms::user_id)
+            .select(schema::memberships_list_perms::item_id)
             .load::<i32>(&_connection) 
             .expect("E");
 
@@ -1235,7 +1234,7 @@ impl MembershipsList {
         .execute(&_connection)
         .expect("E");
 
-        if exclude_vec.iter().any(|&i| i==list.see_el) {
+        if exclude_vec.iter().any(|&i| i==self.see_el) {
             if _users.is_some() {
                 for item_id in _users.as_deref().unwrap() {
                     let _new_exclude = NewMembershipsListPerm {
@@ -1250,7 +1249,7 @@ impl MembershipsList {
                 }
             }
         }
-        else if include_vec.iter().any(|&i| i==list.see_el) {
+        else if include_vec.iter().any(|&i| i==self.see_el) {
             if _users.is_some() {
                 for item_id in _users.as_deref().unwrap() {
                     let _new_include = NewMembershipsListPerm {
@@ -1553,7 +1552,7 @@ impl FriendsList {
         let _connection = establish_connection();
         return friends_list_items
             .filter(schema::friends_list_items::list_id.eq(self.list_id))
-            .select(schema::friends_list_items::users_id)
+            .select(schema::friends_list_items::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
     }
@@ -1570,7 +1569,7 @@ impl FriendsList {
 
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
-        let ids = friends
+        let ids = friends_list_items
             .filter(schema::friends_list_items::list_id.eq(self.list_id))
             .select(schema::friends_list_items::user_id)
             .limit(_limit)
@@ -1858,7 +1857,7 @@ impl FollowsList {
         let _connection = establish_connection();
         return follows_list_items
             .filter(schema::follows_list_items::list_id.eq(self.list_id))
-            .select(schema::follows_list_items::users_id)
+            .select(schema::follows_list_items::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
     }
@@ -1875,7 +1874,7 @@ impl FollowsList {
 
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
-        let ids = follows
+        let ids = follows_list_items
             .filter(schema::follows_list_items::list_id.eq(self.list_id))
             .select(schema::follows_list_items::user_id)
             .limit(_limit)

@@ -1185,7 +1185,7 @@ pub async fn edit_memberships_list (
                 position = 2;
             }
             let body = block(move || list.edit_list (
-                data.name.as_deref().unwrap(), 
+                data.name.as_deref().unwrap().to_string(), 
                 data.see_el.unwrap(),
                 position,
                 data.users.clone(),
@@ -1497,8 +1497,10 @@ pub async fn delete_member_from_memberships_list (
             return Err(Error::BadRequest(body));
         }
         if community.is_user_see_settings(user_id) || list.community_id == community_id {
+            use crate::models::MembershipsListItem;
+            
             let body = block(move || MembershipsListItem::delete_memberships_item (
-                data.list_id.unwrap(), 
+                data.list_id.unwrap(),   
                 data.community_id.unwrap(),
             )).await?;
             return Ok(Json(body));
