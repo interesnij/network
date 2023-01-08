@@ -1017,15 +1017,15 @@ pub async fn search_moderators_settings_page (
 
 #[derive(Deserialize)]
 pub struct CreateListData {
-    pub token:    Option<String>,
-    pub name:     Option<String>,
-    pub see_el:   Option<i16>,
-    pub users:    Option<Vec<i32>>,
-}
+    pub token:  Option<String>,
+    pub name:   Option<String>,
+    pub see_el: Option<i16>,
+    pub users:  Option<Vec<i32>>,
+} 
 pub async fn create_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: CreateListData
+    data: Json<CreateListData>
 ) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1078,7 +1078,7 @@ pub struct EditListData {
 pub async fn edit_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: EditListData
+    data: Json<EditListData>
 ) -> Result<Json<RespListJson>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1160,7 +1160,7 @@ pub struct DeleteListData {
 pub async fn delete_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: DeleteListData
+    data: Json<DeleteListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1211,7 +1211,7 @@ pub async fn delete_memberships_list (
 pub async fn restore_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: DeleteListData
+    data: Json<DeleteListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1269,7 +1269,7 @@ pub struct ItemListData2 {
 pub async fn add_member_in_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: ItemListData2
+    data: Json<ItemListData2>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1328,7 +1328,7 @@ pub async fn add_member_in_memberships_list (
 pub async fn delete_member_in_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: ItemListData2
+    data: Json<ItemListData2>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {

@@ -1356,6 +1356,30 @@ impl Community {
         );
     }
 
+    pub fn count_lists(&self) -> i32 {
+        return self.lists;
+    }
+    pub fn count_lists_ru(&self) -> String {
+        use crate::utils::get_count_for_ru;
+
+        return get_count_for_ru (
+            self.count_lists(),
+            " список".to_string(),
+            " списка".to_string(),
+            " списков".to_string(),
+        );
+    }
+    pub fn count_lists_ru_alt(&self) -> String {
+        use crate::utils::get_count_for_ru_alt;
+
+        return get_count_for_ru_alt (
+            self.count_lists(),
+            " список".to_string(),
+            " списка".to_string(),
+            " списков".to_string(),
+        );
+    }
+
     pub fn create_administrator(&self, user_id: i32) -> i16 {
         use crate::schema::communities_memberships::dsl::communities_memberships;
 
