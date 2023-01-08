@@ -887,12 +887,6 @@ pub async fn create_communities_list (
         )).await?;
         Ok(Json(body))
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
 }
 
 #[derive(Deserialize)]
@@ -976,12 +970,6 @@ pub async fn edit_communities_list (
             Err(Error::BadRequest(body))
         }
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
 }
 
 #[derive(Deserialize)]
@@ -1036,12 +1024,6 @@ pub async fn delete_communities_list (
             Err(Error::BadRequest(body))
         }
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
 }
 pub async fn restore_communities_list (
     req: HttpRequest,
@@ -1089,12 +1071,6 @@ pub async fn restore_communities_list (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
     }
 }
 
@@ -1159,12 +1135,6 @@ pub async fn add_community_in_communities_list (
             Err(Error::BadRequest(body))
         }
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
-    }
 }
 pub async fn delete_community_in_communities_list (
     req: HttpRequest,
@@ -1223,11 +1193,5 @@ pub async fn delete_community_in_communities_list (
             }).unwrap();
             Err(Error::BadRequest(body))
         }
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        Err(Error::BadRequest(body))
     }
 }
