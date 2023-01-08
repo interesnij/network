@@ -4,6 +4,7 @@ use actix_web::{
     web::Json,
     HttpRequest,
 };
+use serde::{Deserialize, Serialize};
 use crate::utils::{
     get_owner_data, get_community, 
     ErrorParams, EditCommunityPrivateResp, ObjectData,

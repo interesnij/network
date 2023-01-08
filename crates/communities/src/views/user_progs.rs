@@ -1167,7 +1167,7 @@ pub async fn delete_community_in_communities_list (
         Err(Error::BadRequest(body))
     }
     else {
-        use crate::models::CommunitiesListItem;
+        use crate::models::CommunityListItem;
 
         let owner: CommunitiesList;
         let owner_res = get_communities_list(data.list_id.unwrap());
@@ -1181,7 +1181,7 @@ pub async fn delete_community_in_communities_list (
             return Err(Error::BadRequest(body));
         }
         if owner.user_id == user_id {
-            let body = block(move || CommunitiesListItem::delete_communities_item (
+            let body = block(move || CommunityListItem::delete_communities_item (
                 owner.list_id,
                 data.community_id.unwrap(),
             )).await?;

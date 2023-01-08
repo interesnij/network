@@ -11,7 +11,7 @@ use diesel::{
 use crate::schema;
 use crate::models::{
     Community, User, CommunitiesList,
-    Owner, Moderated, MenbershipsList,
+    Owner, Moderated, MembershipsList,
     FollowsList, FriendsList,
 };
 use crate::errors::Error;
