@@ -622,12 +622,12 @@ impl Community {
     }
     pub fn edit_private (
         &self, 
-        field:  &str, 
-        value:  i16, 
-        _users: Option<Vec<i32>>
+        field:     &str, 
+        value:     i16, 
+        items_ids: Option<Vec<i32>>
     ) -> i16 { 
         let is_ie_mode = vec![6,7].iter().any(|&i| i==value);
-        if value < 1 || value > 7 || (is_ie_mode && _users.is_none()) {
+        if value < 1 || value > 120 || (is_ie_mode && items_ids.is_none()) {
             return 0;
         }
 
@@ -752,11 +752,11 @@ impl Community {
                 _ => 0,
             };
         };
-        if _users.is_some() && is_ie_mode {
-            for user_id in _users.unwrap().iter() {
+        if items_ids.is_some() && is_ie_mode {
+            for item_id in items_ids.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.community_id,
-                    target_id:    *user_id,
+                    item_id:      *item_id,
                     types:        value,
                 };
                 diesel::insert_into(schema::community_visible_perms::table)

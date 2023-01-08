@@ -137,7 +137,7 @@ CREATE TABLE communities_lists (
     user_id        INT NOT NULL,          -- id пользователя (которое выше)
     types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
     position       SMALLINT NOT NULL,     -- порядок следования
-    count          INT NOT NULL,          -- кол-во фото
+    count          INT NOT NULL,          -- кол-во элементов
     repost         INT NOT NULL,          -- кол-во репостов
     see_el         SMALLINT NOT NULL,     -- кто может видеть сообщества списка
 
@@ -148,19 +148,22 @@ CREATE TABLE communities_lists (
 CREATE INDEX communities_lists_user_id_idx ON communities_lists (user_id);
 
 /*
-включения и исключения для пользователей касательно конкретного списка сообществ -------
+включения и исключения для пользователей / списков касательно конкретного списка сообществ -------
 ниже цифра поля types, которая означает какое либо включение или
 исключение:
-1 может видеть сообщества 
-11 не может видеть сообщества
+1 пользователь может видеть список 
+11 пользователь не может видеть список
+
+101 список может видеть список 
+111 список не может видеть список
 */
 CREATE TABLE community_list_perms (
     id      SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,       -- id пользователя
+    item_id INT NOT NULL,       -- id пользователя / списка, включенного или исключенного
     list_id INT NOT NULL,       -- id списка 
     types   SMALLINT NOT NULL   -- статус доступа
 );
-CREATE UNIQUE INDEX community_list_perms_unq ON community_list_perms (user_id, list_id);
+CREATE UNIQUE INDEX community_list_perms_unq ON community_list_perms (item_id, list_id);
 
 
 CREATE TABLE communitys (
@@ -172,6 +175,7 @@ CREATE TABLE communitys (
     s_avatar    VARCHAR(100),           -- маленький аватар
     category_id INT NOT NULL,           -- id категории
     user_id     INT NOT NULL,           -- id создателя 
+    lists       INT NOT NULL,
     members     INT NOT NULL,
 
     UNIQUE(link)
@@ -188,6 +192,25 @@ CREATE TABLE community_list_items (
 CREATE UNIQUE INDEX community_list_items_unq ON community_list_items (community_id, list_id);
 
 
+-- списки подписчиков сообщества для группировки и групповых прав и событий
+CREATE TABLE memberships_lists (
+    id             SERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL, -- название
+    community_id   INT NOT NULL,          -- id пользователя (которое выше)
+    types          SMALLINT NOT NULL,     -- тип (активен, удален, закрыт...)
+    position       SMALLINT NOT NULL,     -- порядок следования
+    count          INT NOT NULL,          -- кол-во элементов
+    repost         INT NOT NULL,          -- кол-во репостов
+    see_el         SMALLINT NOT NULL,     -- кто может видеть элементы списка
+
+    CONSTRAINT fk_memberships_lists_user
+        FOREIGN KEY(user_id)
+            REFERENCES users(id)
+);
+CREATE INDEX memberships_lists_community_id_idx ON memberships_lists (community_id);
+
+---------------------------------------------
+---------------------------------------------
 /*
 Члены сообщества -------
 1 подписчик
@@ -199,15 +222,41 @@ CREATE UNIQUE INDEX community_list_items_unq ON community_list_items (community_
 6 забанен - нужен для инфы о заблокированном пользователе, есил он не состоит в 
 подписчиках. Также для бана людей без их изгнания из сообщества
 */
-CREATE TABLE communities_memberships (
-    id                SERIAL PRIMARY KEY,          -- id объекта
+CREATE TABLE communities_memberships ( 
+    id                SERIAL PRIMARY KEY,
     user_id           INT NOT NULL,                -- id пользователя
     community_id      INT NOT NULL,                -- id сообщества
     level             SMALLINT NOT NULL DEFAULT 1, -- уровень доступа
     created           TIMESTAMP NOT NULL,          -- Создано
-    visited           SMALLINT NOT NULL DEFAULT 0       -- Визиты в сообщество
+    visited           SMALLINT NOT NULL DEFAULT 0  -- Визиты в сообщество
 );
 CREATE UNIQUE INDEX communities_memberships_unq ON communities_memberships (user_id, community_id);
+
+/*
+включения и исключения для пользователей касательно конкретного списка подписчиков -------
+ниже цифра поля types, которая означает какое либо включение или
+исключение:
+1 может видеть список 
+11 не может видеть список
+*/
+CREATE TABLE memberships_list_perms (
+    id       SERIAL PRIMARY KEY,
+    item_id  INT NOT NULL, 
+    list_id  INT NOT NULL,
+    types    SMALLINT NOT NULL
+);
+CREATE UNIQUE INDEX memberships_list_perms_unq ON memberships_list_perms (item_id, list_id);
+
+CREATE TABLE memberships_list_items (
+    id       SERIAL PRIMARY KEY,
+    list_id  INT NOT NULL,
+    user_id  INT NOT NULL,
+    visited  INT NOT NULL 
+);
+CREATE UNIQUE INDEX memberships_list_items_unq ON memberships_list_items (user_id, list_id);
+
+---------------------------------------------
+---------------------------------------------
 
 -- информация пользователей -------
 CREATE TABLE community_infos (
@@ -297,10 +346,10 @@ CREATE UNIQUE INDEX community_invites_unq ON community_invites (user_id, communi
 CREATE TABLE community_visible_perms (
     id           SERIAL PRIMARY KEY,
     community_id INT NOT NULL,
-    target_id    INT NOT NULL,
+    item_id      INT NOT NULL,
     types        SMALLINT NOT NULL
 );
-CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (target_id, community_id);
+CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (item_id, community_id);
 
 /*
 включения и исключения для пользователей касательно конкретного пользоватетеля
@@ -315,14 +364,25 @@ CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (targ
 */
 
 CREATE TABLE user_visible_perms (
-  id         SERIAL PRIMARY KEY,
-  user_id    INT NOT NULL,
-  target_id  INT NOT NULL,
-  types      SMALLINT NOT NULL
+  id       SERIAL PRIMARY KEY,
+  user_id  INT NOT NULL,
+  item_id  INT NOT NULL,
+  types    SMALLINT NOT NULL
 );
-CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, target_id);
+CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, item_id);
 
+
+-----------------------------
+-----------------------------
 -- друзья пользователей -------
+CREATE TABLE friends_lists (
+    id       SERIAL PRIMARY KEY,
+    list_id  INT NOT NULL,
+    user_id  INT NOT NULL,
+    types    SMALLINT NOT NULL
+);
+CREATE INDEX friends_lists_id_idx ON friends_lists (user_id);
+
 CREATE TABLE friends (
     id        SERIAL PRIMARY KEY,
     user_id   INT NOT NULL,
@@ -330,13 +390,54 @@ CREATE TABLE friends (
 );
 CREATE UNIQUE INDEX friends_user_target_unq ON friends (user_id, target_id);
 
+CREATE TABLE friends_list_items (
+    id       SERIAL PRIMARY KEY,
+    list_id  INT NOT NULL,
+    user_id  INT NOT NULL,
+);
+CREATE UNIQUE INDEX friends_list_items_unq ON friends_list_items (user_id, list_id);
+
+CREATE TABLE friends_list_perms (
+    id       SERIAL PRIMARY KEY,
+    item_id  INT NOT NULL, 
+    list_id  INT NOT NULL,
+    types    SMALLINT NOT NULL
+);
+CREATE UNIQUE INDEX friends_list_perms_unq ON friends_list_perms (item_id, list_id);
+
 -- подписчики пользователей -------
+CREATE TABLE follows_lists (
+    id       SERIAL PRIMARY KEY,
+    list_id  INT NOT NULL,  -- поле нужно для записи id списка подписчиков с сервиса пользователей.
+    user_id  INT NOT NULL,
+    types    SMALLINT NOT NULL
+);
+CREATE INDEX follows_lists_id_idx ON follows_lists (user_id);
+
 CREATE TABLE follows (
     id        SERIAL PRIMARY KEY,
     user_id   INT NOT NULL,
     target_id INT NOT NULL
 );
 CREATE UNIQUE INDEX follows_user_followed_unq ON follows (user_id, target_id);
+
+CREATE TABLE follows_list_items (
+    id       SERIAL PRIMARY KEY,
+    list_id  INT NOT NULL,
+    user_id  INT NOT NULL,
+);
+CREATE UNIQUE INDEX follows_list_items_unq ON follows_list_items (user_id, list_id);
+
+CREATE TABLE follows_list_perms (
+    id       SERIAL PRIMARY KEY,
+    item_id  INT NOT NULL, 
+    list_id  INT NOT NULL,
+    types    SMALLINT NOT NULL
+);
+CREATE UNIQUE INDEX follows_list_perms_unq ON follows_list_perms (item_id, list_id);
+
+-----------------------------
+-----------------------------
 
 -- рекомендованные друзья -------
 CREATE TABLE featured_communities (

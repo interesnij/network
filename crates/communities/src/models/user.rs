@@ -25,7 +25,10 @@ use crate::schema::{
     community_follows,
     community_invites,
 };
-use crate::models::{CommunitiesList, Community};
+use crate::models::{
+    CommunitiesList, FollowsList, FriendsList,
+    Community
+};
 
 /*
 Типы пользоватетеля
@@ -419,7 +422,7 @@ impl User {
             .filter(schema::communitys::id.eq_any(communities_ids))
             .filter(schema::communitys::types.lt(20))
             .select((
-                schema::communitys::user_id,
+                schema::communitys::id,
                 schema::communitys::name,
                 schema::communitys::link,
                 schema::communitys::s_avatar.nullable(),
@@ -434,12 +437,12 @@ impl User {
             communitys::dsl::communitys,
         };
 
-        let _limit = get_limit(limit, 20);
+        let _limit = get_limit(limit, 6);
         let _connection = establish_connection();
         let communities_ids = communities_memberships
             .filter(schema::communities_memberships::user_id.eq(self.id))
             .order(schema::communities_memberships::visited.desc())
-            .select(schema::communities_memberships::user_id)
+            .select(schema::communities_memberships::community_id)
             .limit(_limit)
             .load::<i32>(&_connection)
             .expect("E.");
@@ -530,12 +533,12 @@ impl User {
 
     pub fn edit_private (
         &self, 
-        field:  &str, 
-        value:  i16, 
-        _users: Option<Vec<i32>>
+        field:     &str, 
+        value:     i16, 
+        items_ids: Option<Vec<i32>>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
-        if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
+        if value < 1 || value > 130 || (is_ie_mode && items_ids.is_none()) {
             return 0; 
         }
 
@@ -605,12 +608,12 @@ impl User {
                 _ => 0,
             };
         };
-        if _users.is_some() && is_ie_mode {
-            for user_id in _users.unwrap().iter() {
+        if items_ids.is_some() && is_ie_mode {
+            for item_id in items_ids.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
-                    user_id:   self.user_id,
-                    target_id: *user_id,
-                    types:     value,
+                    user_id: self.user_id,
+                    item_id: *item_id,
+                    types:   value,
                 };
                 diesel::insert_into(schema::user_visible_perms::table)
                     .values(&_new_perm)
@@ -754,13 +757,15 @@ impl User {
     }
 
     pub fn create_user (
-        user_id:    i32,
-        first_name: String,
-        last_name:  String,
-        types:      i16,
-        is_man:     bool,
-        password:   String,
-        link:       String,
+        user_id:      i32,
+        first_name:   String,
+        last_name:    String,
+        types:        i16,
+        is_man:       bool,
+        password:     String,
+        link:         String,
+        friends_list: i32,
+        follows_list: i32,
     ) -> i16 {
         use crate::schema::users::dsl::users;
 
@@ -772,6 +777,9 @@ impl User {
             .is_ok() {
                 return 0;
         }
+
+        use crate::models::{CommunitiesList, FollowsList, FriendsList};
+
         let new_form = NewUser {
             user_id:       user_id,
             first_name:    first_name.clone(),
@@ -793,21 +801,10 @@ impl User {
             .execute(&_connection)
             .expect("E.");
 
-        use crate::models::NewCommunitiesList;
+        CommunitiesList::create_list("Сообщества".to_string(), user_id, 1, None);
+        FollowsList::create_list(follows_list, user_id);
+        FriendsList::create_list(follows_list, user_id);
 
-        let new_list_f = NewCommunitiesList {
-            name:     "Сообщества".to_string(),
-            user_id:  user_id,
-            types:    0,
-            position: 1,
-            count:    0,
-            repost:   0, 
-            see_el:   1
-        };
-        diesel::insert_into(schema::communities_lists::table)
-            .values(&new_list_f)
-            .execute(&_connection)
-            .expect("Error.");
         return 1;
     }
     pub fn get_full_name(&self) -> String {
@@ -1351,6 +1348,27 @@ impl User {
     pub fn is_anon_user_see_all(&self) -> bool {
         return self.see_all == 1;
     }
+
+    pub fn get_follows_lists_ids(&self) -> Vec<i32> {
+        use crate::schema::follows_lists::dsl::follows_lists;
+
+        let _connection = establish_connection();
+        return follows_lists
+            .filter(schema::follows_lists::user_id.eq(self.user_id))
+            .select(schema::follows_lists::list_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+    }
+    pub fn get_main_follows_list(&self) -> FollowsList {
+        use crate::schema::follows_lists::dsl::follows_lists;
+
+        let _connection = establish_connection();
+        return follows_lists
+            .filter(schema::follows_lists::user_id.eq(self.user_id))
+            .filter(schema::follows_lists::types.eq(0))
+            .first::<FollowsList>(&_connection)
+            .expect("E.");
+    }
     pub fn follow_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || self.is_self_user_in_block(user_id) || self.is_followers_user_with_id(user_id) || self.is_following_user_with_id(user_id) {
             return 0;
@@ -1364,6 +1382,9 @@ impl User {
         let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
             .execute(&_connection);
+
+        let self_user_list = self.get_main_follows_list();
+        self_user_list.create_follow_item(user_id);
         if new_follow.is_ok() {
             return 1;
         }
@@ -1376,8 +1397,11 @@ impl User {
             return 0;
         }
         use crate::schema::follows::dsl::follows;
+        use crate::models::FollowsListItem;
 
         let _connection = establish_connection();
+        FollowsListItem::delete_follows_items(self.get_follows_lists_ids(), user_id);
+
         if follows
             .filter(schema::follows::user_id.eq(self.user_id))
             .filter(schema::follows::target_id.eq(user_id))
@@ -1401,24 +1425,57 @@ impl User {
         }
     }
 
+    pub fn get_friends_lists_ids(&self) -> Vec<i32> {
+        use crate::schema::friends_lists::dsl::friends_lists;
+
+        let _connection = establish_connection();
+        return friends_lists
+            .filter(schema::friends_lists::user_id.eq(self.user_id))
+            .select(schema::friends_lists::list_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+    }
+    pub fn get_main_friends_list(&self) -> FriendsList {
+        use crate::schema::friends_lists::dsl::friends_lists;
+
+        let _connection = establish_connection();
+        return friends_lists
+            .filter(schema::friends_lists::user_id.eq(self.user_id))
+            .filter(schema::friends_lists::types.eq(0))
+            .first::<FriendsList>(&_connection)
+            .expect("E.");
+    }
     pub fn frend_user(&self, user_id: i32) -> i16 {
-        // тут друзья создаются всего в одном экземпляре, где
-        // self.user_id - это id создающего, а user_id -
-        // id создаваемого. Это нужно для фильтрации приватности по
-        // друзьям.
         if self.user_id == user_id || !self.is_followers_user_with_id(user_id) {
             return 0;
         }
         use crate::schema::follows::dsl::follows;
+        use crate::models::FollowsListItem;
 
         let _connection = establish_connection();
-        let _new_friend = NewFriend {
+        
+        let _new_form = NewFriend {
             user_id:   self.user_id,
             target_id: user_id,
         };
-        let new_friend = diesel::insert_into(schema::friends::table)
-            .values(&_new_friend)
+        let _new_friend = diesel::insert_into(schema::friends::table)
+            .values(&_new_form)
             .execute(&_connection);
+        let _new_form = NewFriend {
+            user_id:   user_id,
+            target_id: self.user_id,
+        };
+        let _new_friend = diesel::insert_into(schema::friends::table)
+            .values(&_new_form)
+            .execute(&_connection);
+
+        let target_user = get_user(user_id).expect("E.");
+        FollowsListItem::delete_follows_items(target_user.get_follows_lists_ids(), self.user_id);
+        
+        let target_user_list = target_user.get_main_friends_list();
+        let self_user_list = self.get_main_friends_list();
+        target_user_list.create_friend_item(self.user_id);
+        self_user_list.create_friend_item(user_id);
 
         let del = diesel::delete (
             follows
@@ -1429,25 +1486,24 @@ impl User {
             )
             .execute(&_connection);
 
-        if del.is_ok() && new_friend.is_ok() {
-            return 1;
-        }
-        else {
-            return 0;
-        }
+        return 1;
+        
     }
     pub fn unfrend_user(&self, user_id: i32) -> i16 {
         if self.user_id == user_id || !self.is_connected_with_user_with_id(user_id) {
             return 0;
         }
         use crate::schema::friends::dsl::friends;
+        use crate::models::FriendsListItem;
 
         let _connection = establish_connection();
 
         let del = diesel::delete (
             friends
                 .filter(schema::friends::user_id.eq(self.user_id))
-                .filter(schema::friends::target_id.eq(user_id))
+                .or_filter(schema::friends::user_id.eq(user_id))
+                .filter(schema::friends::target_id.eq(self.user_id))
+                .or_filter(schema::friends::target_id.eq(user_id))      
             )
             .execute(&_connection);
 
@@ -1458,6 +1514,13 @@ impl User {
         let new_follow = diesel::insert_into(schema::follows::table)
             .values(&_new_follow)
             .execute(&_connection);
+
+        let target_user = get_user(user_id).expect("E.");
+        FriendsListItem::delete_friends_items(target_user.get_friends_lists_ids(), self.user_id);
+        FriendsListItem::delete_friends_items(sels.get_friends_lists_ids(), user_id);
+        
+        let self_user_list = self.get_main_follows_list();
+        self_user_list.create_follow_item(user_id);
 
         if del.is_ok() && new_follow.is_ok() {
             return 1;
@@ -1471,18 +1534,29 @@ impl User {
             return 0;
         }
         let _connection = establish_connection();
+        let target_user = get_user(user_id).expect("E.");
 
         if self.is_connected_with_user_with_id(user_id) {
             use crate::schema::friends::dsl::friends;
+            use crate::models::FriendsListItem;
+
             diesel::delete (
                 friends
                     .filter(schema::friends::user_id.eq(self.user_id))
-                    .filter(schema::friends::target_id.eq(user_id)))
-                    .execute(&_connection)
-                    .expect("E");
+                    .or_filter(schema::friends::user_id.eq(user_id))
+                    .filter(schema::friends::target_id.eq(self.user_id))
+                    .or_filter(schema::friends::target_id.eq(user_id))      
+                )
+                .execute(&_connection)
+                .expect("E");
+
+            FriendsListItem::delete_friends_items(target_user.get_friends_lists_ids(), self.user_id);
+            FriendsListItem::delete_friends_items(sels.get_friends_lists_ids(), user_id);
         }
         else if self.is_followers_user_with_id(user_id) {
             use crate::schema::follows::dsl::follows;
+            use crate::models::FollowsListItem;
+
             diesel::delete (
                 follows
                     .filter(schema::follows::target_id.eq(self.user_id))
@@ -1490,9 +1564,12 @@ impl User {
                 )
                 .execute(&_connection)
                 .expect("E");
+            FollowsListItem::delete_follows_items(sels.get_follows_lists_ids(), user_id);
         }
         else if self.is_following_user_with_id(user_id) {
             use crate::schema::follows::dsl::follows;
+            use crate::models::FollowsListItem;
+
             diesel::delete (
                 follows
                     .filter(schema::follows::user_id.eq(self.user_id))
@@ -1500,12 +1577,14 @@ impl User {
                 )
                 .execute(&_connection)
                 .expect("E");
+
+            FollowsListItem::delete_follows_items(target_user.get_follows_lists_ids(), self.user_id);
         }
 
         let _user_block = NewUserVisiblePerm {
-            user_id:   self.user_id,
-            target_id: user_id,
-            types:     20,
+            user_id: self.user_id,
+            item_id: user_id,
+            types:   20,
         };
         diesel::insert_into(schema::user_visible_perms::table)
             .values(&_user_block)
@@ -1707,7 +1786,7 @@ impl User {
 
     pub fn join_community(&self, community: Community) -> i16 {
         use crate::models::{
-            NewCommunitiesMembership,
+            CommunitiesMembership,
         };
 
         if self.is_member_of_community(community.id) || self.is_user_in_ban(community.id) {
@@ -1744,21 +1823,15 @@ impl User {
                 .expect("E");
         }
 
-        let new_member = NewCommunitiesMembership {
-            user_id:      self.user_id,
-            community_id: community.id,
-            level:        1,
-            created:      chrono::Local::now().naive_utc(),
-            visited:      1, 
-        };
-        diesel::insert_into(schema::communities_memberships::table)
-            .values(&new_member)
-            .execute(&_connection)
-            .expect("Error.");
+        let communities_list = self.get_main_communities_list();
+        communities_list.create_community_item(community.id);
+        
+        let memberships_list = community.get_main_memberships_list();
+        memberships_list.create_memberships_item(self.id);
+        
+        CommunitiesMembership::create_membership(self.id, &community, 1);      
         self.plus_communities(1);
 
-        let list = self.get_main_communities_list();
-        list.create_community_item(community.id);
         return 1;
     }
     pub fn is_member_of_community(&self, community_id: i32) -> bool {
@@ -1826,30 +1899,32 @@ impl User {
             .expect("E");
     }
 
-    pub fn leave_community(&self, community_id: i32) -> i16 {
+    pub fn leave_community(&self, community: Community) -> i16 {
         use crate::schema::{
             communities_memberships::dsl::communities_memberships,
             community_list_items::dsl::community_list_items,
+            memberships_list_items::dsl::memberships_list_items,
         };
 
-        if !self.is_member_of_community(community_id) {
+        if !self.is_member_of_community(community.id) {
             return 0;
         }
         let _connection = establish_connection();
         diesel::delete ( 
             communities_memberships
                 .filter(schema::communities_memberships::user_id.eq(self.user_id))
-                .filter(schema::communities_memberships::community_id.eq(community_id))
+                .filter(schema::communities_memberships::community_id.eq(community.id))
             )
             .execute(&_connection)
             .expect("E");
         self.minus_communities(1);
+        community.minus_members(1);
 
         for list in self.get_communities_lists_obj().iter() {
             diesel::delete (
                 community_list_items
                     .filter(schema::community_list_items::list_id.eq(list.id))
-                    .filter(schema::community_list_items::community_id.eq(community_id))
+                    .filter(schema::community_list_items::community_id.eq(community.id))
             )
             .execute(&_connection)
             .expect("E");
@@ -1859,6 +1934,21 @@ impl User {
                 .execute(&_connection)
                 .expect("E.");
         }
+        
+        for list in community.get_memberships_lists_obj().iter() {
+            diesel::delete (
+                memberships_list_items
+                    .filter(schema::memberships_list_items::list_id.eq(list.id))
+                    .filter(schema::memberships_list_items::user_id.eq(self.user_id))
+                    .execute(&_connection)
+                    .expect("E");
+            )
+            diesel::update(list)
+                .set(schema::memberships_lists::count.eq(list.count - 1))
+                .execute(&_connection)
+                .expect("E.");
+        }
+
         return 1;
     }
 }
@@ -1914,18 +2004,18 @@ pub struct NewFollow {
 */
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct UserVisiblePerm {
-    pub id:        i32,
-    pub user_id:   i32,
-    pub target_id: i32,
-    pub types:     i16,
+    pub id:      i32,
+    pub user_id: i32,
+    pub item_id: i32,
+    pub types:   i16,
 }
 
 #[derive(Deserialize, Insertable)]
 #[table_name="user_visible_perms"]
 pub struct NewUserVisiblePerm {
-    pub user_id:   i32,
-    pub target_id: i32,
-    pub types:     i16,
+    pub user_id: i32,
+    pub item_id: i32,
+    pub types:   i16,
 }
 
 /////// CommunityFollow //////

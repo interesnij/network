@@ -26,12 +26,12 @@ use crate::utils::{
     establish_connection, get_limit_offset,
     CommunityCategoryJson, CardUserJson, KeyValue,
     CommunityPrivateJson, NewCommunityJson,
-    AttachCommunityResp, CardCommunityJson,
+    AttachCommunityResp, CardCommunityJson, CommunitiesList,
     CommunityDetailJson, EditNotifyResp, EditCommunityPrivateResp,
 };
 use crate::errors::Error;
 use crate::models::{
-    TokenDetailJson, TokenJson, User,
+    TokenDetailJson, TokenJson, User, MembershipsList,
 };
 
 /////// CommunityCategories //////
@@ -236,6 +236,7 @@ pub struct Community {
     pub s_avatar:    Option<String>,
     pub category_id: i32,
     pub user_id:     i32,
+    pub lists:       i32,
     pub members:     i32,
 }
 #[derive(Deserialize, Insertable)]
@@ -246,10 +247,184 @@ pub struct NewCommunity {
     pub link:        String,
     pub category_id: i32,
     pub user_id:     i32,
+    pub lists:       i32,
     pub members:     i32,
 }
 
 impl Community {
+    pub fn get_memberships_lists (
+        &self,
+        limit:   Option<i64>,
+        offset:  Option<i64>
+    ) -> Vec<CardCommunitiesList> {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+  
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        return memberships_lists
+            .filter(schema::memberships_lists::community_id.eq(self.id))
+            .order(schema::memberships_lists::position.desc())
+            .limit(_limit)
+            .offset(_offset)
+            .select((
+                schema::memberships_lists::id,
+                schema::memberships_lists::name,
+                schema::memberships_lists::position,
+                schema::memberships_lists::count
+            ))
+            .load::<CardCommunitiesList>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_memberships_lists_obj(&self) -> Vec<MembershipsList> {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+  
+        let _connection = establish_connection();
+        return memberships_lists
+            .filter(schema::memberships_lists::community_id.eq(self.id))
+            .load::<MembershipsList>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_memberships_of_list (
+        &self,
+        list_id: Option<i32>, 
+        limit:   Option<i64>,
+        offset:  Option<i64>
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            memberships_list_items::dsl::memberships_list_items,
+            users::dsl::users,
+        };
+        let current_list_id: i32;
+        if list_id.is_some() {
+            current_list_id = list_id.unwrap();
+        }
+        else {
+            current_list_id = self.get_selected_list_id();
+        }
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let users_ids = memberships_list_items
+            .filter(schema::memberships_list_items::list_id.eq(current_list_id))
+            .order(schema::memberships_list_items::visited.desc())
+            .select(schema::memberships_list_items::user_id)
+            .limit(_limit)
+            .offset(_offset)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        return users
+            .filter(schema::users::id.eq_any(users_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::user_id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+                schema::users::members,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+    }
+    pub fn get_limit_members(&self, limit: Option<i64>) -> Vec<CardUserJson> {
+        use crate::schema::{
+            communities_memberships::dsl::communities_memberships,
+            users::dsl::users,
+        };
+
+        let _limit = get_limit(limit, 6);
+        let _connection = establish_connection();
+        let users_ids = communities_memberships
+            .filter(schema::communities_memberships::user_id.eq(self.id))
+            .order(schema::communities_memberships::visited.desc())
+            .select(schema::communities_memberships::user_id)
+            .limit(_limit)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        return users
+            .filter(schema::users::id.eq_any(users_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::user_id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar.nullable(),
+                schema::users::members,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+    }
+
+    pub fn get_selected_list_id(&self) -> i32 {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+
+        let _connection = establish_connection();
+        let list_id = memberships_lists
+            .filter(schema::memberships_lists::community_id.eq(self.community_id))
+            .filter(schema::memberships_lists::types.eq(0))
+            .order(schema::memberships_lists::position.desc())
+            .select(schema::memberships_lists::id)
+            .first::<i32>(&_connection);
+        
+        if list_id.is_ok() {
+            return list_id.expect("E.");
+        }
+        else {
+            return self.get_main_memberships_list().id;
+        }
+    }
+    pub fn get_selected_list(&self) -> MembershipsList {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+
+        let _connection = establish_connection();
+        let list = memberships_lists
+            .filter(schema::memberships_lists::community_id.eq(self.community_id))
+            .filter(schema::memberships_lists::types.eq(0))
+            .order(schema::memberships_lists::position.desc())
+            .first::<MembershipsList>(&_connection);
+        
+        if list.is_ok() {
+            return list.expect("E.");
+        }
+        else {
+            return self.get_main_memberships_list();
+        }
+    }
+
+    pub fn get_main_memberships_list(&self) -> MembershipsList {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+
+        let _connection = establish_connection();
+        let list = memberships_lists
+            .filter(schema::memberships_lists::community_id.eq(self.community_id))
+            .filter(schema::memberships_lists::types.eq(0))
+            .first::<MembershipsList>(&_connection);
+        
+        if list.is_ok() {
+            return list.expect("E.");
+        }
+        else {
+            use crate::models::NewMembershipsList;
+
+            let new_list_f = NewMembershipsList { 
+                name:         "Подписчики".to_string(),
+                community_id: self.community_id,
+                types:        0,
+                position:     1,
+                count:        0,
+                repost:       0, 
+                see_el:       1
+            };
+            let new_list = diesel::insert_into(schema::memberships_lists::table)
+                .values(&new_list_f)
+                .get_result::<MembershipsList>(&_connection)
+                .expect("Error.");
+            
+            self.plus_lists(1);
+            return new_list;
+        }
+    }
+
     pub fn edit_name(&self, name: &str) -> i16 {
         let _connection = establish_connection();
         let _o = diesel::update(self)
@@ -564,10 +739,10 @@ impl Community {
         &self, 
         field:     &str, 
         value:     i16, 
-        users_ids: Option<Vec<i32>>
+        items_ids: Option<Vec<i32>>
     ) -> i16 {
         let is_ie_mode = vec![6,7].iter().any(|&i| i==value);
-        if value < 1 || value > 7 || is_ie_mode && users_ids.is_none() {
+        if value < 1 || value > 120 || is_ie_mode && items_ids.is_none() {
             return 0;
         }
 
@@ -599,7 +774,7 @@ impl Community {
 
         // нужно удалить из списка тех, кто был туда внесен
         // с противоположными правами.
-        if is_ie_mode && is_ie_mode {
+        if is_ie_mode {
             use crate::schema::community_visible_perms::dsl::community_visible_perms;
 
             match value {
@@ -677,11 +852,11 @@ impl Community {
             };
         }
 
-        if users_ids.is_some() {
-            for user_id in users_ids.unwrap().iter() {
+        if items_ids.is_some() {
+            for item_id in items_ids.unwrap().iter() {
                 let _new_perm = NewCommunityVisiblePerm {
                     community_id: self.id,
-                    target_id:    *user_id,
+                    item_id:      *item_id,
                     types:        value,
                 };
                 diesel::insert_into(schema::community_visible_perms::table)
@@ -947,6 +1122,33 @@ impl Community {
                 .expect("Error.");
         }
     }
+    pub fn plus_lists(&self, count: i16) -> bool {
+        let _connection = establish_connection();
+        let _u = diesel::update(self)
+            .set(schema::communitys::lists.eq(self.lists + count))
+            .execute(&_connection);
+        if _u.is_ok() {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    pub fn minus_lists(&self, count: i16) -> bool {
+        if self.communities > 0 {
+            let _connection = establish_connection();
+            let _u = diesel::update(self)
+                .set(schema::communitys::lists.eq(self.lists - count))
+                .execute(&_connection);
+            if _u.is_ok() {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        return false;
+    }
     pub fn is_deleted(&self) -> bool {
         return self.types > 20 || self.types < 40;
     }
@@ -973,7 +1175,6 @@ impl Community {
     }
 
     pub fn create_banned_user(&self, user: User, ban_types: i16) -> i16 {
-        use crate::models::CommunityListItem;
         use chrono::Duration;
 
         let ban_to: Option<chrono::NaiveDateTime> = match ban_types {
@@ -995,7 +1196,6 @@ impl Community {
             .values(&new_banned_user)
             .execute(&_connection);
         if ban_to.is_none() { 
-            CommunityListItem::delete_community_items(user.get_communities_lists_ids(), self.id);
             user.leave_community(self.id);
         }
         if banned_user.is_ok() {
@@ -1009,6 +1209,12 @@ impl Community {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
+        let ban_user = community_banned_users
+            .filter(schema::community_banned_users::community_id.eq(self.id))
+            .filter(schema::community_banned_users::user_id.eq(user.id))
+            .first::<CommunityBannedUsers>(&_connection)
+            .expect("E.");
+
         let banned_user = diesel::delete (
             community_banned_users
                 .filter(schema::community_banned_users::community_id.eq(self.id))
@@ -1016,8 +1222,6 @@ impl Community {
             )
             .execute(&_connection);
 
-        let list = user.get_main_communities_list();
-        list.create_community_item(self.id);
         if banned_user.is_ok() {
             return 1;
         }
@@ -1052,6 +1256,7 @@ impl Community {
             link:        link,
             category_id: category_id,
             user_id:     user_id,
+            lists:       0,
             members:     0,
         };
         let new_community = diesel::insert_into(schema::communitys::table)
@@ -1096,7 +1301,7 @@ impl Community {
             community_id:         community_id,
             connection_request:   1,
             connection_confirmed: 1,
-            community_invite:     1,
+            community_invite:     1, 
         };
         diesel::insert_into(schema::community_notifications::table)
             .values(&_community_notification)
@@ -1108,6 +1313,18 @@ impl Community {
             &new_community,
             5,
         );
+
+        // создаем основной список подписчиков сообщества
+        use crate::models::NewMembershipsList;
+        let new_list_f = NewMembershipsList {
+            community_id: community_id,
+            types:        0,
+        };
+        diesel::insert_into(schema::memberships_lists::table)
+            .values(&new_list_f)
+            .execute(&_connection)
+            .expect("Error.");
+
         return NewCommunityJson {
             name:  new_community.name.clone(),
             types: new_community.types,
@@ -2413,7 +2630,7 @@ pub struct NewCommunityNotification {
 pub struct CommunityVisiblePerm {
     pub id:           i32,
     pub community_id: i32, // какое сообщество добавляет
-    pub target_id:    i32, // кокого пользователя добавляет
+    pub item_id:      i32, // кокого пользователя добавляет
     pub types:        i16,
 }
 
@@ -2421,7 +2638,7 @@ pub struct CommunityVisiblePerm {
 #[table_name="community_visible_perms"]
 pub struct NewCommunityVisiblePerm {
     pub community_id: i32,
-    pub target_id:    i32,
+    pub item_id:      i32,
     pub types:        i16,
 }
 

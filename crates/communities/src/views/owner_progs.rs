@@ -7,11 +7,13 @@ use actix_web::{
 use serde::{Deserialize, Serialize};
 use crate::models::{
     TokenDetailJson, TokenJson, Community, Owner, OwnerService,
-    NewUserJson, User, 
+    NewUserJson, User, FollowsList, FriendsList,
 };
 use crate::utils::{ 
     get_user_owner_data, 
     get_community, 
+    get_friends_list,
+    get_follows_list,
     get_owner, 
     get_user, 
     ErrorParams, ObjectData, SmallData,
@@ -41,11 +43,19 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/edit_user_link", web::post().to(edit_user_link));
     config.route("/edit_user_avatar", web::post().to(edit_user_avatar));
     config.route("/edit_user_password", web::post().to(edit_user_password)); 
+
     config.route("/create_friend", web::post().to(create_friend));
     config.route("/create_follow", web::post().to(create_follow));
-    config.route("/create_block_user", web::post().to(create_block_user));
     config.route("/delete_friend", web::post().to(delete_friend));
     config.route("/delete_follow", web::post().to(delete_follow));
+    config.route("/create_friends_list", web::post().to(create_friends_list));
+    config.route("/create_follows_list", web::post().to(create_follows_list));
+    config.route("/delete_friends_list", web::post().to(delete_friends_list));
+    config.route("/delete_follows_list", web::post().to(delete_follows_list));
+    config.route("/restore_friends_list", web::post().to(restore_friends_list));
+    config.route("/restore_follows_list", web::post().to(restore_follows_list));
+
+    config.route("/create_block_user", web::post().to(create_block_user));
     config.route("/delete_block_user", web::post().to(delete_block_user));
 }
 
@@ -56,13 +66,6 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
  */
 
  static TOKEN: &str = "111";
-
-#[derive(Deserialize)]
-pub struct AddTargetParams {
-    pub token:     Option<String>,
-    pub user_id:   Option<i32>,
-    pub target_id: Option<i32>,
-}
 
 // manager send!
 // создаем пользователя сервиса, создателя списков, постов, комментов
@@ -91,6 +94,12 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
     else if data.link.is_none() {
         Err(Error::BadRequest("Field 'link' is required!".to_string()))
     }
+    else if data.friends_list.is_none() {
+        Err(Error::BadRequest("Field 'friends_list' is required!".to_string()))
+    }
+    else if data.follows_list.is_none() {
+        Err(Error::BadRequest("Field 'follows_list' is required!".to_string()))
+    }
     else {
         let is_man: bool;
         if data.is_man.unwrap() != 1 {
@@ -108,6 +117,8 @@ pub async fn create_user(data: Json<NewUserJson>) -> Result<Json<i16>, Error> {
                 is_man,
                 data.password.as_deref().unwrap().to_string(),
                 data.link.as_deref().unwrap().to_string(),
+                data.friends_list.unwrap(),
+                data.follows_list.unwrap(),
             )).await?;
             Ok(Json(_res))
         }
@@ -305,6 +316,12 @@ pub async fn edit_user_password(data: Json<UserPasswordParams>) -> Result<Json<i
     }
 }
 
+#[derive(Deserialize)]
+pub struct AddTargetParams {
+    pub token:     Option<String>,
+    pub user_id:   Option<i32>,
+    pub target_id: Option<i32>,
+}
 
 // manager send!
 pub async fn create_friend(data: Json<AddTargetParams>) -> Result<Json<i16>, Error> {
@@ -339,6 +356,9 @@ pub async fn create_follow(data: Json<AddTargetParams>) -> Result<Json<i16>, Err
     else if data.user_id.is_none() {
         Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
     }
+    else if data.list_id.is_none() {
+        Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
+    }
     else if data.target_id.is_none() {
         Err(Error::BadRequest("Field 'target_id' is required!".to_string()))
     }
@@ -346,6 +366,7 @@ pub async fn create_follow(data: Json<AddTargetParams>) -> Result<Json<i16>, Err
         if data.token.as_deref().unwrap() == TOKEN {
             let user = get_user(data.user_id.unwrap()).expect("E.");
             let _res = block(move || user.follow_user (
+                data.list_id.unwrap(),
                 data.target_id.unwrap(),
             )).await?;
             Ok(Json(_res))
@@ -448,6 +469,147 @@ pub async fn delete_block_user(data: Json<AddTargetParams>) -> Result<Json<i16>,
             let _res = block(move || user.unblock_user (
                 data.target_id.unwrap(),
             )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct AddListParams {
+    pub token:   Option<String>,
+    pub user_id: Option<i32>,
+    pub list_id: Option<i32>,
+}
+// manager send!
+pub async fn create_friends_list(data: Json<AddListParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.list_id.is_none() {
+        Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let _res = block(move || FriendsList::create_list (
+                data.list_id.unwrap(),
+                data.user_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn create_follows_list(data: Json<AddListParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.user_id.is_none() {
+        Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
+    }
+    else if data.list_id.is_none() {
+        Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            let _res = block(move || FollowsList::create_list (
+                data.list_id.unwrap(),
+                data.user_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+
+// manager send!
+pub async fn delete_follows_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            use crate:utils::get_follows_list;
+
+            let list = get_follows_list(data.id.unwrap());
+            let _res = block(move || list.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn restore_follows_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            use crate:utils::get_follows_list;
+
+            let list = get_follows_list(data.id.unwrap());
+            let _res = block(move || list.restore_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn delete_friends_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            use crate:utils::get_friends_list;
+
+            let list = get_friends_list(data.id.unwrap());
+            let _res = block(move || list.delete_item()).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn restore_friends_list(data: Json<ItemParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.id.is_none() {
+        Err(Error::BadRequest("Field 'id' is required!".to_string()))
+    }
+    else {
+        if data.token.as_deref().unwrap() == TOKEN {
+            use crate:utils::get_friends_list;
+
+            let list = get_friends_list(data.id.unwrap());
+            let _res = block(move || list.restore_item()).await?;
             Ok(Json(_res))
         }
         else {

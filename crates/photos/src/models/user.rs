@@ -714,12 +714,12 @@ impl User {
     }
     pub fn edit_private ( 
         &self, 
-        field:  &str, 
-        value:  i16, 
-        _users: Option<Vec<i32>>
+        field:     &str, 
+        value:     i16, 
+        items_ids: Option<Vec<i32>>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
-        if value < 1 || value > 13 || (is_ie_mode && _users.is_none()) {
+        if value < 1 || value > 130 || (is_ie_mode && items_ids.is_none()) {
             return 0;
         }
 
@@ -859,12 +859,12 @@ impl User {
                 _ => 0,
             };
         };
-        if _users.is_some() && is_ie_mode {
-            for user_id in _users.unwrap().iter() {
+        if items_ids.is_some() && is_ie_mode {
+            for item_id in items_ids.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
-                    user_id:   self.user_id,
-                    target_id: *user_id,
-                    types:     value,
+                    user_id: self.user_id,
+                    item_id: *item_id,
+                    types:   value,
                 };
                 diesel::insert_into(schema::user_visible_perms::table)
                     .values(&_new_perm)

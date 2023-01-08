@@ -7,8 +7,7 @@ use actix_web::{
 use crate::utils::{
     get_owner_data, get_community, get_user,
     ErrorParams, SmallData, MinimalData, EditCommunityPrivateData,
-    EditNotifyResp, COMMUNITIES_SERVICES, TOKEN,
-    ObjectData,
+    COMMUNITIES_SERVICES, TOKEN, ObjectData,
 };
 use crate::AppState;
 use crate::models::{Community, User};

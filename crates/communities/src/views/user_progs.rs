@@ -9,6 +9,7 @@ use crate::utils::{
     get_anon_user_permission, get_user_permission,
     ErrorParams, SmallData, TOKEN, SectionJson,
     EditUserPrivateResp, CardCommunityJson, CardCommunitiesList,
+    RespListJson,
 };
 use crate::AppState;
 use crate::models::{Community, User};
@@ -30,6 +31,13 @@ pub fn user_urls(config: &mut web::ServiceConfig) {
     config.route("/get_limit_communities", web::get().to(get_limit_communities));
     config.route("/get_section", web::get().to(get_section));
     config.route("/get_lists", web::get().to(get_lists));
+
+    config.route("/settings/create_communities_list/", web::post().to(create_communities_list));
+    config.route("/settings/edit_communities_list/", web::post().to(edit_communities_list));
+    config.route("/settings/delete_communities_list/", web::post().to(delete_communities_list));
+    config.route("/settings/restore_communities_list/", web::post().to(restore_communities_list));
+    config.route("/settings/add_community_in_communities_list/", web::post().to(add_community_in_communities_list));    
+    config.route("/settings/delete_community_from_communities_list/", web::post().to(delete_community_from_communities_list));
 }
 
 pub async fn edit_user_private_page (
@@ -832,3 +840,394 @@ pub async fn get_lists (
         Err(Error::BadRequest(body))
     }
 } 
+
+#[derive(Deserialize)]
+pub struct CreateListData {
+    pub token:    Option<String>,
+    pub name:     Option<String>,
+    pub see_el:   Option<i16>,
+    pub users:    Option<Vec<i32>>,
+}
+pub async fn create_communities_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: CreateListData
+) -> Result<Json<RespListJson>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.name.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'name' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.see_el.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'see_el' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let body = block(move || CommunitiesList::create_list (
+            data.name.unwrap(),
+            user_id,
+            data.see_el.unwrap(),
+            data.users.clone(),
+        )).await?;
+        Ok(Json(body))
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct EditListData {
+    pub token:    Option<String>,
+    pub list_id:  Option<String>,
+    pub name:     Option<String>,
+    pub see_el:   Option<i16>,
+    pub position: Option<i16>,
+    pub users:    Option<Vec<i32>>,
+}
+pub async fn edit_communities_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: EditListData
+) -> Result<Json<RespListJson>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.list_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'list_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.name.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'name' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.see_el.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'see_el' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: CommunitiesList;
+        let owner_res = get_communities_list(data.list_id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "communities list not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            let position: i16;
+            if data.position.is_some() {
+                position = data.position.unwrap();
+            }
+            else {
+                position = 2;
+            }
+            let body = block(move || owner.edit_list (
+                data.list_id.unwrap(),
+                data.name.unwrap(),
+                data.see_el.unwrap(),
+                position,
+                data.users.clone(),
+            )).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct DeleteListData {
+    pub token:    Option<String>,
+    pub list_id:  Option<String>,
+}
+pub async fn delete_communities_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: DeleteListData
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.list_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'list_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: CommunitiesList;
+        let owner_res = get_communities_list(data.list_id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "communities list not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            let body = block(move || owner.delete_item()).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+pub async fn restore_communities_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: DeleteListData
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.list_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'list_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: CommunitiesList;
+        let owner_res = get_communities_list(data.list_id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "communities list not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            let body = block(move || owner.restore_item()).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+
+#[derive(Deserialize)]
+pub struct ItemListData {
+    pub token:        Option<String>,
+    pub list_id:      Option<String>,
+    pub community_id: Option<String>,
+}
+pub async fn add_community_in_communities_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: ItemListData
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.list_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'list_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.community_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'community_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        let owner: CommunitiesList;
+        let owner_res = get_communities_list(data.list_id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "communities list not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            let body = block(move || owner.create_communities_item (
+                data.community_id.unwrap(),
+            )).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}
+pub async fn delete_community_in_communities_list (
+    req: HttpRequest,
+    state: web::Data<AppState>,
+    data: ItemListData
+) -> Result<Json<i16>, Error> {
+    let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
+    if err.is_some() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: err.unwrap(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.list_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'list_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if data.community_id.is_none() {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Field 'community_id' is required!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else if user_id < 1 {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "Permission Denied!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+    else {
+        use crate::models::CommunitiesListItem;
+
+        let owner: CommunitiesList;
+        let owner_res = get_communities_list(data.list_id.unwrap());
+        if owner_res.is_ok() {
+            owner = owner_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "communities list not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if owner.user_id == user_id {
+            let body = block(move || CommunitiesListItem::delete_communities_item (
+                owner.list_id,
+                data.community_id.unwrap(),
+            )).await?;
+            Ok(Json(body))
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
+        }
+    }
+    else {
+        let body = serde_json::to_string(&ErrorParams {
+            error: "parametrs not found!".to_string(),
+        }).unwrap();
+        Err(Error::BadRequest(body))
+    }
+}

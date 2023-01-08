@@ -195,10 +195,10 @@ impl User {
         &self, 
         field:     &str, 
         value:     i16, 
-        users_ids: Option<Vec<i32>>
+        items_ids: Option<Vec<i32>>
     ) -> i16 {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
-        if value < 1 || value > 13 || is_ie_mode && users_ids.is_none() {
+        if value < 1 || value > 130 || is_ie_mode && items_ids.is_none() {
             return 0;
         }
 
@@ -272,13 +272,13 @@ impl User {
             };
         }
 
-        if users_ids.is_some() {
+        if items_ids.is_some() {
             use crate::models::NewUserVisiblePerm;
-            for user_id in users_ids.unwrap().iter() {
+            for item_id in items_ids.unwrap().iter() {
                 let _new_perm = NewUserVisiblePerm {
-                    user_id:   self.id,
-                    target_id: *user_id,
-                    types:     value,
+                    user_id: self.id,
+                    item_id: *item_id,
+                    types:   value,
                 };
                 diesel::insert_into(schema::user_visible_perms::table)
                     .values(&_new_perm)

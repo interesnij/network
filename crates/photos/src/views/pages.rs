@@ -62,6 +62,8 @@ pub fn pages_routes(config: &mut web::ServiceConfig) {
     config.route("/user_privates", web::get().to(user_privates_page));
     config.route("/community_notifies", web::get().to(community_notifies_page));
     config.route("/community_privates", web::get().to(community_privates_page));
+
+    config.route("/community_privates", web::get().to(community_privates_page));
 }
 
 pub async fn index_page() -> impl Responder {

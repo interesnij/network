@@ -11,7 +11,8 @@ use diesel::{
 use crate::schema;
 use crate::models::{
     Community, User, CommunitiesList,
-    Owner, Moderated,
+    Owner, Moderated, MenbershipsList,
+    FollowsList, FriendsList,
 };
 use crate::errors::Error;
 pub use self::{
@@ -130,6 +131,26 @@ pub fn get_communities_list(id: i32) -> Result<CommunitiesList, Error> {
     let connection = establish_connection();
     return Ok(communities_lists
         .filter(schema::communities_lists::id.eq(id))
+        .first(&connection)?);
+}pub fn get_friends_list(id: i32) -> Result<FriendsList, Error> {
+    use crate::schema::friends_lists::dsl::friends_lists;
+    let connection = establish_connection();
+    return Ok(friends_lists
+        .filter(schema::friends_lists::id.eq(id))
+        .first(&connection)?);
+}
+pub fn get_follows_list(id: i32) -> Result<FollowsList, Error> {
+    use crate::schema::follows_lists::dsl::follows_lists;
+    let connection = establish_connection();
+    return Ok(follows_lists
+        .filter(schema::follows_lists::id.eq(id))
+        .first(&connection)?);
+}
+pub fn get_memberships_list(id: i32) -> Result<MembershipsList, Error> {
+    use crate::schema::memberships_lists::dsl::memberships_lists;
+    let connection = establish_connection();
+    return Ok(memberships_lists
+        .filter(schema::memberships_lists::id.eq(id))
         .first(&connection)?);
 }
 pub fn get_owner(id: i32) -> Result<Owner, Error> {
