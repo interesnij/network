@@ -1058,9 +1058,28 @@ pub async fn create_memberships_list (
         return Err(Error::BadRequest(body));
     }
     else {
+        let community: Community;
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = params.community_id.unwrap();
+        }
+        let community_res = get_community(c_id);
+        if community_res.is_ok() {
+            community = community_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+        if community.is_user_see_settings(user_id) {
         let body = block(move || MemnershipsList::create_list (
             data.name.unwrap(),
-            user_id,
+            community.id,
             data.see_el.unwrap(),
             data.users.clone(),
         )).await?;
@@ -1117,10 +1136,29 @@ pub async fn edit_memberships_list (
         return Err(Error::BadRequest(body));
     }
     else {
-        let owner: MembershipsList;
-        let owner_res = get_memberships_list(data.list_id.unwrap());
-        if owner_res.is_ok() {
-            owner = owner_res.expect("E");
+        let community: Community;
+        let c_id: i32;
+        if community_id > 0 {
+            c_id = community_id;
+        }
+        else {
+            c_id = params.community_id.unwrap();
+        }
+        let community_res = get_community(c_id);
+        if community_res.is_ok() {
+            community = community_res.expect("E");
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "community not found!".to_string(),
+            }).unwrap();
+            return Err(Error::BadRequest(body));
+        }
+
+        let list: MembershipsList;
+        let list_res = get_memberships_list(data.list_id.unwrap());
+        if list_res.is_ok() {
+            list = list_res.expect("E");
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
@@ -1128,7 +1166,7 @@ pub async fn edit_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if owner.user_id == user_id {
+        if community.is_user_see_settings(user_id) || list.community_id == community_id {
             let position: i16;
             if data.position.is_some() {
                 position = data.position.unwrap();
@@ -1136,7 +1174,7 @@ pub async fn edit_memberships_list (
             else {
                 position = 2;
             }
-            let body = block(move || owner.edit_list (
+            let body = block(move || list.edit_list (
                 data.list_id.unwrap(),
                 data.name.unwrap(),
                 data.see_el.unwrap(),
@@ -1217,7 +1255,7 @@ pub async fn delete_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-        if community.is_user_see_settings(user_id) || list.community == community_id {
+        if community.is_user_see_settings(user_id) || list.community_id == community_id {
             let body = block(move || list.delete_item()).await?;
             return Ok(Json(body));
         }
