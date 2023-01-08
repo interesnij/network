@@ -10,9 +10,10 @@ use crate::utils::{
     ErrorParams, EditCommunityPrivateResp, ObjectData,
     EditNameResp, EditLinkResp, EditNotifyResp,
     CardUserJson, RegListData, SearchRegListData,
+    RespListJson,
 };
 use crate::AppState;
-use crate::models::Community;
+use crate::models::{Community, MembershipsList};
 use crate::errors::Error;
 
 
@@ -1155,8 +1156,8 @@ pub async fn edit_memberships_list (
 
 #[derive(Deserialize)]
 pub struct DeleteListData {
-    pub token:    Option<String>,
-    pub list_id:  Option<String>,
+    pub token:   Option<String>,
+    pub list_id: Option<i32>,
 }
 pub async fn delete_memberships_list (
     req: HttpRequest,

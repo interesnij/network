@@ -7,6 +7,7 @@ use actix_web::{
 use crate::utils::{
     get_community, get_user, get_user_owner_data,
     get_anon_user_permission, get_user_permission,
+    get_communities_list,
     ErrorParams, SmallData, TOKEN, SectionJson,
     EditUserPrivateResp, CardCommunityJson, CardCommunitiesList,
     RespListJson,
@@ -1077,8 +1078,8 @@ pub async fn restore_communities_list (
 #[derive(Deserialize)]
 pub struct ItemListData {
     pub token:        Option<String>,
-    pub list_id:      Option<String>,
-    pub community_id: Option<String>,
+    pub list_id:      Option<i32>,
+    pub community_id: Option<i32>,
 }
 pub async fn add_community_in_communities_list (
     req: HttpRequest,
