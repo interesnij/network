@@ -1185,7 +1185,7 @@ pub async fn edit_memberships_list (
                 position = 2;
             }
             let body = block(move || list.edit_list (
-                data.name.unwrap().clone(), 
+                data.name.as_deref().unwrap(), 
                 data.see_el.unwrap(),
                 position,
                 data.users.clone(),
