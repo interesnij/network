@@ -1317,7 +1317,7 @@ impl Community {
         // создаем основной список подписчиков сообщества
         use crate::models::NewMembershipsList;
         let new_list_f = NewMembershipsList {
-            name:         "Подписчики".to_string();
+            name:         "Подписчики".to_string(),
             community_id: community_id,
             types:        0,
             position:     0,
