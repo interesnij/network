@@ -1064,12 +1064,6 @@ pub async fn create_memberships_list (
         )).await?;
         return Ok(Json(body));
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        return Err(Error::BadRequest(body));
-    }
 }
 
 #[derive(Deserialize)]
@@ -1156,12 +1150,6 @@ pub async fn edit_memberships_list (
             return Err(Error::BadRequest(body));
         }
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        return Err(Error::BadRequest(body));
-    }
 }
 
 #[derive(Deserialize)]
@@ -1219,12 +1207,6 @@ pub async fn delete_memberships_list (
             return Err(Error::BadRequest(body));
         }
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        return Err(Error::BadRequest(body));
-    }
 }
 pub async fn restore_memberships_list (
     req: HttpRequest,
@@ -1275,12 +1257,6 @@ pub async fn restore_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        return Err(Error::BadRequest(body));
     }
 }
 
@@ -1348,12 +1324,6 @@ pub async fn add_member_in_memberships_list (
             return Err(Error::BadRequest(body));
         }
     }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        return Err(Error::BadRequest(body));
-    }
 }
 pub async fn delete_member_in_memberships_list (
     req: HttpRequest,
@@ -1415,11 +1385,5 @@ pub async fn delete_member_in_memberships_list (
             }).unwrap();
             return Err(Error::BadRequest(body));
         }
-    }
-    else {
-        let body = serde_json::to_string(&ErrorParams {
-            error: "parametrs not found!".to_string(),
-        }).unwrap();
-        return Err(Error::BadRequest(body));
     }
 }
