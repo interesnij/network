@@ -1077,13 +1077,14 @@ pub async fn create_memberships_list (
             return Err(Error::BadRequest(body));
         }
         if community.is_user_see_settings(user_id) {
-        let body = block(move || MemnershipsList::create_list (
-            data.name.unwrap(),
-            community.id,
-            data.see_el.unwrap(),
-            data.users.clone(),
-        )).await?;
-        return Ok(Json(body));
+            let body = block(move || MemnershipsList::create_list (
+                data.name.unwrap(),
+                community.id,
+                data.see_el.unwrap(),
+                data.users.clone(),
+            )).await?;
+            return Ok(Json(body));
+        }
     }
 }
 
