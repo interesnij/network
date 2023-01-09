@@ -106,7 +106,7 @@ impl CommunitiesList {
         for id in communities_ids.iter() {
             let new_item = NewCommunityListItem {
                 list_id:      self.id,
-                community_id: id,
+                community_id: *id,
                 visited:      0,
             };
             diesel::insert_into(schema::community_list_items::table)
@@ -870,7 +870,7 @@ impl MembershipsList {
         for id in user_ids.iter() {
             let new_item = NewMembershipsListItem {
                 list_id: self.id,
-                user_id: id,
+                user_id: *id,
                 visited: 0,
             };
             diesel::insert_into(schema::memberships_list_items::table)

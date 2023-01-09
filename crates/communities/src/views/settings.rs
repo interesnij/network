@@ -1350,9 +1350,10 @@ pub async fn restore_memberships_list (
 
 #[derive(Deserialize)]
 pub struct ItemListData2 {
-    pub token:     Option<String>,
-    pub list_id:   Option<i32>,
-    pub users_ids: Option<Vec<i32>>,
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub list_id:      Option<i32>,
+    pub users_ids:    Option<Vec<i32>>,
 }
 pub async fn add_items_in_memberships_list (
     req: HttpRequest,
