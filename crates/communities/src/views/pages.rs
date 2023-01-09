@@ -866,18 +866,19 @@ pub async fn include_members_load (
                     5 => community.get_limit_see_stat_include_members(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
-                IEFriendsResponse {
+                IEMembersResponse {
                     users:   _users,
-                    members: _user.get_members(params.friends_limit, params.friends_offset),
+                    members: _user.get_members(params.members_limit, params.members_offset),
                 }
                 }).await?;
                 Ok(Json(_res))
             }
-        else {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Permission Denied!".to_string(),
-            }).unwrap();
-            Err(Error::BadRequest(body))
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied!".to_string(),
+                }).unwrap();
+                Err(Error::BadRequest(body))
+            }
         }
     }
     else {
@@ -948,19 +949,19 @@ pub async fn exclude_members_load (
                     15 => community.get_limit_see_stat_exclude_members(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
-                IEFriendsResponse {
+                IEMembersResponse {
                     users:   _users,
-                    members: _user.get_members(params.friends_limit, params.friends_offset),
+                    members: _user.get_members(params.members_limit, params.members_offset),
                 }
                 }).await?;
                 Ok(Json(_res))
             }
-        }
-        else {
-            let body = serde_json::to_string(&ErrorParams {
-                error: "Permission Denied!".to_string(),
-            }).unwrap();
-            Err(Error::BadRequest(body))
+            else {
+                let body = serde_json::to_string(&ErrorParams {
+                    error: "Permission Denied!".to_string(),
+                }).unwrap();
+                Err(Error::BadRequest(body))
+            }
         }
     }
     else {
