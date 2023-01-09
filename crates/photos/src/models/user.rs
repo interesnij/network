@@ -1618,6 +1618,68 @@ impl User {
         return self.see_comment == 1;
     }
 
+    pub fn get_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            friends::dsl::friends,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+
+        let _connection = establish_connection();
+        let friend_ids = friends
+            .filter(schema::friends::user_id.eq(self.id))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::friends::target_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let _friends = users
+            .filter(schema::users::id.eq_any(friend_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _friends;
+    }
+
+    pub fn get_followers(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        use crate::schema::{
+            users::dsl::users,
+            follows::dsl::follows,
+        };
+
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let _connection = establish_connection();
+        let followers = follows
+            .filter(schema::follows::target_id.eq(self.id))
+            .order(schema::follows::visited.desc())
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::follows::user_id)
+            .load::<i32>(&_connection)
+            .expect("E.");
+        let _users = users
+            .filter(schema::users::id.eq_any(followers))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E.");
+        return _users;
+    }
+
     pub fn get_friends_ids(&self) -> Vec<i32> {
         // в местные таблицы друзей и подписчиков мы записываем
         // id пользователей с сервиса пользователей, чтобы было

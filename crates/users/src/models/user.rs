@@ -480,7 +480,7 @@ impl User {
         let _connection = establish_connection();
         return Ok(users
             .filter(schema::users::phone.eq(phone))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .first::<User>(&_connection)?);
     }
     pub fn get_user_detail_json(&self) -> UserDetailJson {
@@ -969,7 +969,7 @@ impl User {
             .expect("E");
         let blocked_users = users
             .filter(schema::users::id.eq_any(all_user_blocks))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1001,7 +1001,7 @@ impl User {
             .expect("E");
         let blocked_users = users
             .filter(schema::users::id.eq_any(all_user_blocks))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .select((
@@ -1147,7 +1147,7 @@ impl User {
             .expect("E.");
         let _friends = users
             .filter(schema::users::id.eq_any(friend_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1178,7 +1178,7 @@ impl User {
             .expect("E.");
         let _friends = users
             .filter(schema::users::id.eq_any(friend_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1211,7 +1211,7 @@ impl User {
             .expect("E.");
         let _friends = users
             .filter(schema::users::id.eq_any(friend_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .select((
@@ -1233,7 +1233,7 @@ impl User {
         let _connection = establish_connection();
         let _friends = users
             .filter(schema::users::id.eq_any(self.get_6_friends_ids()))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1265,7 +1265,7 @@ impl User {
 
         let _users = users
             .filter(schema::users::id.eq_any(friend_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::last_activity.gt(chrono::Local::now().naive_utc() - Duration::seconds(300)))
             .select((
                 schema::users::id,
@@ -1302,7 +1302,7 @@ impl User {
 
         let _users = users
             .filter(schema::users::id.eq_any(friend_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::last_activity.gt(chrono::Local::now().naive_utc() - Duration::seconds(300)))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
@@ -1337,7 +1337,7 @@ impl User {
 
         let _users = users
             .filter(schema::users::id.eq_any(friend_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::last_activity.gt(chrono::Local::now().naive_utc() - Duration::seconds(300)))
             .select((
                 schema::users::id,
@@ -1369,7 +1369,7 @@ impl User {
             .expect("E.");
         let _users = users
             .filter(schema::users::id.eq_any(followers))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1404,7 +1404,7 @@ impl User {
             .expect("E.");
         let _users = users
             .filter(schema::users::id.eq_any(followers))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .select((
@@ -1433,9 +1433,9 @@ impl User {
             .select(schema::follows::user_id)
             .load::<i32>(&_connection)
             .expect("E.");
-        let _users = users
+        let _users = users 
             .filter(schema::users::id.eq_any(followers))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1452,7 +1452,7 @@ impl User {
 
         let _connection = establish_connection();
         return users
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .select(schema::users::id)
             .load::<i32>(&_connection)
             .expect("E.")
@@ -1465,7 +1465,7 @@ impl User {
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let _users = users
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .limit(_limit)
             .offset(_offset)
             .select((
@@ -1490,7 +1490,7 @@ impl User {
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
         let _connection = establish_connection();
         let _users = users
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
@@ -1525,7 +1525,7 @@ impl User {
             .expect("E.");
         let _users = users
             .filter(schema::users::id.eq_any(followers))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::id,
                 schema::users::first_name,
@@ -1560,7 +1560,7 @@ impl User {
             .expect("E.");
         let _users = users
             .filter(schema::users::id.eq_any(followers))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .select((
@@ -1590,7 +1590,7 @@ impl User {
         }
         let _users = users
             .filter(schema::users::id.eq_any(stack))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .limit(_limit)
             .offset(_offset)
             .select((
@@ -1625,7 +1625,7 @@ impl User {
         }
         let _users = users
             .filter(schema::users::id.eq_any(stack))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .filter(schema::users::first_name.ilike(&q))
             .or_filter(schema::users::last_name.ilike(&q))
             .limit(_limit)
@@ -1656,7 +1656,7 @@ impl User {
         }
         let _users = users
             .filter(schema::users::id.eq_any(stack))
-            .filter(schema::users::types.lt(11))
+            .filter(schema::users::types.lt(31))
             .limit(6)
             .select((
                 schema::users::id,

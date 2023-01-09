@@ -54,6 +54,10 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/delete_follows_list", web::post().to(delete_follows_list));
     config.route("/restore_friends_list", web::post().to(restore_friends_list));
     config.route("/restore_follows_list", web::post().to(restore_follows_list));
+    config.route("/settings/add_user_in_friends_list/", web::post().to(add_user_in_friends_list));    
+    config.route("/settings/delete_user_from_friends_list/", web::post().to(delete_user_from_friends_list));
+    config.route("/settings/add_user_in_follows_list/", web::post().to(add_user_in_follows_list));    
+    config.route("/settings/delete_user_from_follows_list/", web::post().to(delete_user_from_follows_list));
 
     config.route("/create_block_user", web::post().to(create_block_user));
     config.route("/delete_block_user", web::post().to(delete_block_user));

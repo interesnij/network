@@ -2072,7 +2072,7 @@ impl Community {
 
         return users
             .filter(schema::users::id.eq_any(items_ids))
-            .filter(schema::users::types.lt(30))
+            .filter(schema::users::types.lt(31))
             .select((
                 schema::users::user_id,
                 schema::users::first_name,
