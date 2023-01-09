@@ -1076,9 +1076,10 @@ pub async fn restore_communities_list (
 
 #[derive(Deserialize)]
 pub struct ItemListData {
-    pub token:        Option<String>,
-    pub list_id:      Option<i32>,
+    pub token:           Option<String>,
+    pub list_id:         Option<i32>,
     pub communities_ids: Option<Vec<i32>>,
+    pub community_id:    Option<i32>,
 }
 pub async fn add_items_in_communities_list (
     req: HttpRequest,
