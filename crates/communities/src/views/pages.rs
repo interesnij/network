@@ -6,7 +6,7 @@ use actix_web::{
     web::block,
     web::Json,
 };
-
+use serde::{Deserialize, Serialize};
 use crate::AppState;
 use crate::errors::Error;
 use crate::models::Community;
@@ -868,10 +868,16 @@ pub async fn include_members_load (
                 };
                 IEFriendsResponse {
                     users:   _users,
-                    friends: _user.get_members(params.friends_limit, params.friends_offset),
+                    members: _user.get_members(params.friends_limit, params.friends_offset),
                 }
-            }).await?;
-            Ok(Json(_res))
+                }).await?;
+                Ok(Json(_res))
+            }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
         }
     }
     else {
@@ -944,10 +950,17 @@ pub async fn exclude_members_load (
                 };
                 IEFriendsResponse {
                     users:   _users,
-                    friends: _user.get_members(params.friends_limit, params.friends_offset),
+                    members: _user.get_members(params.friends_limit, params.friends_offset),
                 }
-            }).await?;
-            Ok(Json(_res))
+                }).await?;
+                Ok(Json(_res))
+            }
+        }
+        else {
+            let body = serde_json::to_string(&ErrorParams {
+                error: "Permission Denied!".to_string(),
+            }).unwrap();
+            Err(Error::BadRequest(body))
         }
     }
     else {
