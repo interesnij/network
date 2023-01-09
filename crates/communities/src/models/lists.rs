@@ -1085,7 +1085,7 @@ impl MembershipsList {
     pub fn is_members_perm_exists (
         &self,
         user_id: i32,
-        types:   i16, 
+        //types:   i16, 
     ) -> bool {
         // проверяем, если ли пользователь в вкл/искл списках пользователя 
         // и дружит ли он с self
@@ -1095,7 +1095,7 @@ impl MembershipsList {
         };
 
         let _connection = establish_connection();
-        return memberships_list_items
+        return memberships_list_items 
             .filter(schema::memberships_list_items::user_id.eq(user_id))
             .filter(schema::memberships_list_items::list_id.eq(self.id))
             .select(schema::memberships_list_items::user_id)
@@ -1269,6 +1269,7 @@ impl MembershipsList {
             .set((
                 schema::memberships_lists::name.eq(_name.clone()),
                 schema::memberships_lists::position.eq(position),
+                schema::memberships_lists::see_el.eq(see_el),
             ))
             .execute(&_connection)
             .expect("Error.");

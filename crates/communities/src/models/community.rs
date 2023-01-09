@@ -1208,11 +1208,11 @@ impl Community {
         use crate::schema::community_banned_users::dsl::community_banned_users;
 
         let _connection = establish_connection();
-        let ban_user = community_banned_users
-            .filter(schema::community_banned_users::community_id.eq(self.id))
-            .filter(schema::community_banned_users::user_id.eq(user.id))
-            .first::<CommunityBannedUser>(&_connection)
-            .expect("E.");
+        //let ban_user = community_banned_users
+        //    .filter(schema::community_banned_users::community_id.eq(self.id))
+        //    .filter(schema::community_banned_users::user_id.eq(user.id))
+        //    .first::<CommunityBannedUser>(&_connection)
+        //    .expect("E.");
 
         let banned_user = diesel::delete (
             community_banned_users

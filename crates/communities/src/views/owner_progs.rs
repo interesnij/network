@@ -551,8 +551,6 @@ pub async fn delete_follows_list(data: Json<ItemParams>) -> Result<Json<i16>, Er
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            use crate::utils::get_follows_list;
-
             let list = get_follows_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.delete_item()).await?;
             Ok(Json(_res))
@@ -572,8 +570,6 @@ pub async fn restore_follows_list(data: Json<ItemParams>) -> Result<Json<i16>, E
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            use crate::utils::get_follows_list;
-
             let list = get_follows_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.restore_item()).await?;
             Ok(Json(_res))
@@ -593,8 +589,6 @@ pub async fn delete_friends_list(data: Json<ItemParams>) -> Result<Json<i16>, Er
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            use crate::utils::get_friends_list;
-
             let list = get_friends_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.delete_item()).await?;
             Ok(Json(_res))
@@ -639,8 +633,6 @@ pub async fn add_items_in_friends_list(data: Json<CItemVecData>) -> Result<Json<
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            use crate::utils::get_friends_list;
-
             let list = get_friends_list(data.list_id.unwrap()).expect("E.");
             let _res = block(move || list.create_friend_items (
                 data.users_ids.as_deref().unwrap().to_vec(),
@@ -665,8 +657,6 @@ pub async fn add_items_in_follows_list(data: Json<CItemVecData>) -> Result<Json<
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            use crate::utils::get_follows_list;
-
             let list = get_follows_list(data.list_id.unwrap()).expect("E.");
             let _res = block(move || list.create_follow_items (
                 data.users_ids.as_deref().unwrap().to_vec(),

@@ -780,8 +780,6 @@ impl User {
                 return 0;
         }
 
-        use crate::models::{CommunitiesList, FollowsList, FriendsList};
-
         let new_form = NewUser {
             user_id:       user_id,
             first_name:    first_name.clone(),
@@ -805,7 +803,7 @@ impl User {
 
         CommunitiesList::create_list("Сообщества".to_string(), user_id, 1, None);
         FollowsList::create_list(follows_list, user_id);
-        FriendsList::create_list(follows_list, user_id);
+        FriendsList::create_list(friends_list, user_id);
 
         return 1;
     }
@@ -1497,7 +1495,7 @@ impl User {
         target_user_list.create_friend_item(self.user_id);
         self_user_list.create_friend_item(user_id);
 
-        let del = diesel::delete (
+        let _del = diesel::delete (
             follows
                 .filter(schema::follows::user_id.eq(user_id))
                 .or_filter(schema::follows::target_id.eq(self.user_id))
