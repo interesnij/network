@@ -608,8 +608,6 @@ pub async fn restore_friends_list(data: Json<ItemParams>) -> Result<Json<i16>, E
     }
     else {
         if data.token.as_deref().unwrap() == TOKEN {
-            use crate::utils::get_friends_list;
-
             let list = get_friends_list(data.id.unwrap()).expect("E.");
             let _res = block(move || list.restore_item()).await?;
             Ok(Json(_res))

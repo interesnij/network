@@ -67,6 +67,17 @@ see_all see_community
 11 Подписчики, кроме
 12 Некоторые подписчики
 13 Только я
+
+31 Все друзья и списки подписчиков, кроме
+32 Все друзья и некоторые списки подписчиков
+33 Все подписчики и списки друзей, кроме
+34 Все подписчики и некоторые списки друзей
+35 Списки друзей, кроме
+36 Некоторые списки друзей
+37 Списки подписчиков, кроме
+38 Некоторые списки подписчиков
+
+
 */
 CREATE TABLE users (
     id            SERIAL PRIMARY KEY,
@@ -129,7 +140,16 @@ CREATE TABLE community_subcategorys (
 10 Некоторые друзья
 11 Подписчики, кроме
 12 Некоторые подписчики
-13 Только я
+13 Только я 
+
+31 Все друзья и списки подписчиков, кроме 
+32 Все друзья и некоторые списки подписчиков
+33 Все подписчики и списки друзей, кроме
+34 Все подписчики и некоторые списки друзей
+35 Списки друзей, кроме
+36 Некоторые списки друзей
+37 Списки подписчиков, кроме
+38 Некоторые списки подписчиков
 */
 CREATE TABLE communities_lists (
     id             SERIAL PRIMARY KEY,
@@ -230,6 +250,9 @@ CREATE UNIQUE INDEX communities_memberships_unq ON communities_memberships (user
 исключение:
 1 может видеть список 
 11 не может видеть список
+
+101 список может видеть список 
+111 список не может видеть список
 */
 CREATE TABLE memberships_list_perms (
     id       SERIAL PRIMARY KEY,
@@ -334,6 +357,17 @@ CREATE UNIQUE INDEX community_invites_unq ON community_invites (user_id, communi
 13 не может видеть настройки
 14 не может видеть логи
 15 не может видеть статистику
+
+101 может видеть подписчиков
+102 может видеть информацию
+103 может видеть настройки
+104 может видеть логи
+105 может видеть статистику
+111 не может видеть подписчиков
+112 не может видеть информацию
+113 не может видеть настройки
+114 не может видеть логи
+115 не может видеть статистику
 */
 CREATE TABLE community_visible_perms (
     id           SERIAL PRIMARY KEY,
@@ -353,6 +387,11 @@ CREATE UNIQUE INDEX community_visible_perms_unq ON community_visible_perms (item
 11 не может видеть сообщества
 12 не может приглашать в сообщества
 20 пользователь заблокирован у владельца блока сообществ
+
+101 список может видеть сообщества
+102 список может приглашать в сообщества
+111 список не может видеть сообщества
+112 список не может приглашать в сообщества
 */
 
 CREATE TABLE user_visible_perms (
@@ -389,6 +428,13 @@ CREATE TABLE friends_list_items (
 );
 CREATE UNIQUE INDEX friends_list_items_unq ON friends_list_items (user_id, list_id);
 
+/*
+friends_list_perms
+1 пользователь может видеть список 
+11 пользователь не может видеть список
+101 список может видеть список 
+111 список не может видеть список
+*/
 CREATE TABLE friends_list_perms (
     id       SERIAL PRIMARY KEY,
     item_id  INT NOT NULL, 
@@ -420,6 +466,13 @@ CREATE TABLE follows_list_items (
 );
 CREATE UNIQUE INDEX follows_list_items_unq ON follows_list_items (user_id, list_id);
 
+/*
+follows_list_perms
+1 пользователь может видеть список 
+11 пользователь не может видеть список
+101 список может видеть список 
+111 список не может видеть список
+*/
 CREATE TABLE follows_list_perms (
     id       SERIAL PRIMARY KEY,
     item_id  INT NOT NULL, 

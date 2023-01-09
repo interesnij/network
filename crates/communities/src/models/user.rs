@@ -542,7 +542,7 @@ impl User {
         let is_ie_mode = vec![3,4,5,6,9,10,11,12].iter().any(|&i| i==value);
         if value < 1 || value > 130 || (is_ie_mode && items_ids.is_none()) {
             return 0; 
-        }
+        } 
 
         let _connection = establish_connection();
         let _update_field = match field {
@@ -2079,6 +2079,11 @@ pub struct NewFollow {
 11 не может видеть сообщества
 12 не может приглашать в сообщества
 20 пользователь заблокирован у владельца блока сообществ
+
+101 список может видеть сообщества
+102 список может приглашать в сообщества
+111 список не может видеть сообщества
+112 список не может приглашать в сообщества
 */
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct UserVisiblePerm {

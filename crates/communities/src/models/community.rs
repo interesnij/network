@@ -32,7 +32,6 @@ use crate::utils::{
 use crate::errors::Error;
 use crate::models::{
     TokenDetailJson, TokenJson, User, MembershipsList,
-    CommunitiesList, 
 };
 
 /////// CommunityCategories //////
@@ -2653,6 +2652,17 @@ pub struct NewCommunityNotification {
 13 не может видеть настройки
 14 не может видеть логи
 15 не может видеть статистику
+
+101 список может видеть подписчиков
+102 список может видеть информацию
+103 список может видеть настройки
+104 список может видеть логи
+105 список может видеть статистику
+111 список не может видеть подписчиков
+112 список не может видеть информацию
+113 список не может видеть настройки
+114 список не может видеть логи
+115 список не может видеть статистику
 */
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct CommunityVisiblePerm {
