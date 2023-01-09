@@ -37,8 +37,8 @@ pub fn user_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/edit_communities_list/", web::post().to(edit_communities_list));
     config.route("/settings/delete_communities_list/", web::post().to(delete_communities_list));
     config.route("/settings/restore_communities_list/", web::post().to(restore_communities_list));
-    config.route("/settings/add_community_in_communities_list/", web::post().to(add_community_in_communities_list));    
-    config.route("/settings/delete_community_from_communities_list/", web::post().to(delete_community_from_communities_list));
+    config.route("/settings/add_items_in_communities_list/", web::post().to(add_items_in_communities_list));    
+    config.route("/settings/delete_item_from_communities_list/", web::post().to(delete_item_from_communities_list));
 }
 
 pub async fn edit_user_private_page (
@@ -1078,9 +1078,9 @@ pub async fn restore_communities_list (
 pub struct ItemListData {
     pub token:        Option<String>,
     pub list_id:      Option<i32>,
-    pub community_id: Option<i32>,
+    pub communities_ids: Option<Vec<i32>>,
 }
-pub async fn add_community_in_communities_list (
+pub async fn add_items_in_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<ItemListData>
@@ -1098,9 +1098,9 @@ pub async fn add_community_in_communities_list (
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if data.community_id.is_none() {
+    else if data.communities_ids.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "Field 'communities_ids' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -1123,10 +1123,10 @@ pub async fn add_community_in_communities_list (
             return Err(Error::BadRequest(body));
         }
         if owner.user_id == user_id {
-            let body = block(move || owner.create_community_item (
-                data.community_id.unwrap(),
+            let body = block(move || owner.create_community_items (
+                data.communities_ids.as_deref().unwrap().to_vec(),
             )).await?;
-            Ok(Json(body))
+            Ok(Json(body)) 
         }
         else {
             let body = serde_json::to_string(&ErrorParams {
@@ -1136,7 +1136,7 @@ pub async fn add_community_in_communities_list (
         }
     }
 }
-pub async fn delete_community_from_communities_list (
+pub async fn delete_item_from_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<ItemListData>

@@ -38,8 +38,8 @@ pub fn settings_urls(config: &mut web::ServiceConfig) {
     config.route("/settings/edit_memberships_list/", web::post().to(edit_memberships_list));
     config.route("/settings/delete_memberships_list/", web::post().to(delete_memberships_list));
     config.route("/settings/restore_memberships_list/", web::post().to(restore_memberships_list));
-    config.route("/settings/add_member_in_memberships_list/", web::post().to(add_member_in_memberships_list));    
-    config.route("/settings/delete_member_from_memberships_list/", web::post().to(delete_member_from_memberships_list));
+    config.route("/settings/add_items_in_memberships_list/", web::post().to(add_items_in_memberships_list));    
+    config.route("/settings/delete_item_from_memberships_list/", web::post().to(delete_item_from_memberships_list));
 }  
 
 pub async fn edit_notifies_page (
@@ -1350,11 +1350,11 @@ pub async fn restore_memberships_list (
 
 #[derive(Deserialize)]
 pub struct ItemListData2 {
-    pub token:        Option<String>,
-    pub list_id:      Option<i32>,
-    pub community_id: Option<i32>,
+    pub token:     Option<String>,
+    pub list_id:   Option<i32>,
+    pub users_ids: Option<Vec<i32>>,
 }
-pub async fn add_member_in_memberships_list (
+pub async fn add_items_in_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<ItemListData2>
@@ -1372,9 +1372,9 @@ pub async fn add_member_in_memberships_list (
         }).unwrap();
         return Err(Error::BadRequest(body));
     }
-    else if data.community_id.is_none() {
+    else if data.users_ids.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "Field 'users_ids' is required!".to_string(),
         }).unwrap();
         return Err(Error::BadRequest(body));
     }
@@ -1417,11 +1417,11 @@ pub async fn add_member_in_memberships_list (
             error: "memberships list not found!".to_string(),
         }).unwrap();
             return Err(Error::BadRequest(body));
-        }
+        } 
         if community.is_user_see_settings(user_id) || list.community_id == community_id {
-            let body = block(move || list.create_membership_item (
-                data.community_id.unwrap(),
-            )).await?;
+            let body = block(move || list.create_membership_items (
+                data.users_ids.as_deref().unwrap().to_vec(),
+            )).await?; 
             return Ok(Json(body));
         }
         else {
@@ -1432,7 +1432,7 @@ pub async fn add_member_in_memberships_list (
         }
     }
 }
-pub async fn delete_member_from_memberships_list (
+pub async fn delete_item_from_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
     data: Json<ItemListData2>

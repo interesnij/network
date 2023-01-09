@@ -78,22 +78,27 @@ pub struct NewCommunitiesList {
 }
 
 impl CommunitiesList {
-    pub fn create_community_item (
-        &self, community_id: i32,
-    ) -> i16 {
+    pub fn create_community_items (
+        &self, communities_ids: Vec<i32>,
+    ) -> i16 { 
         let _connection = establish_connection();
-        let new_item = NewCommunityListItem {
-            list_id: self.id,
-            community_id: community_id,
-            visited: 0,
-        };
-        diesel::insert_into(schema::community_list_items::table)
-            .values(&new_item)
-            .execute(&_connection)
-            .expect("Error.");
+        let mut count = 0;
+        for id in communities_ids.iter() {
+            let new_item = NewCommunityListItem {
+                list_id:      self.id,
+                community_id: id,
+                visited:      0,
+            };
+            diesel::insert_into(schema::community_list_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+
+            count += 1;
+        }
         
         diesel::update(self)
-            .set(schema::communities_lists::count.eq(self.count + 1))
+            .set(schema::communities_lists::count.eq(self.count + count))
             .execute(&_connection)
             .expect("E.");
         return 1;
@@ -817,22 +822,27 @@ pub struct NewMembershipsList {
 }
 
 impl MembershipsList {
-    pub fn create_membership_item (
-        &self, user_id: i32,
+    pub fn create_membership_items (
+        &self, user_ids: Vec<i32>,
     ) -> i16 {
         let _connection = establish_connection();
-        let new_item = NewMembershipsListItem {
-            list_id:      self.id,
-            user_id: user_id,
-            visited:      0,
-        };
-        diesel::insert_into(schema::memberships_list_items::table)
-            .values(&new_item)
-            .execute(&_connection)
-            .expect("Error.");
+        let mut count = 0;
+        for id in user_ids.iter() {
+            let new_item = NewMembershipsListItem {
+                list_id: self.id,
+                user_id: id,
+                visited: 0,
+            };
+            diesel::insert_into(schema::memberships_list_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+            
+            count += 1;
+        }
         
         diesel::update(self)
-            .set(schema::memberships_lists::count.eq(self.count + 1))
+            .set(schema::memberships_lists::count.eq(self.count + count))
             .execute(&_connection)
             .expect("E.");
         return 1;
