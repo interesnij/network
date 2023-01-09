@@ -10,7 +10,7 @@ use crate::utils::{
     get_communities_list,
     ErrorParams, SmallData, TOKEN, SectionJson,
     EditUserPrivateResp, CardCommunityJson, CardCommunitiesList,
-    RespListJson,
+    RespListJson, UItemVecData, PListData,
 };
 use crate::AppState;
 use crate::models::{Community, User, CommunitiesList};
@@ -1074,17 +1074,10 @@ pub async fn restore_communities_list (
     }
 }
 
-#[derive(Deserialize)]
-pub struct ItemListData {
-    pub token:           Option<String>,
-    pub list_id:         Option<i32>,
-    pub communities_ids: Option<Vec<i32>>,
-    pub community_id:    Option<i32>,
-}
 pub async fn add_items_in_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: Json<ItemListData>
+    data: Json<UItemVecData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1140,7 +1133,7 @@ pub async fn add_items_in_communities_list (
 pub async fn delete_item_from_communities_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: Json<ItemListData>
+    data: Json<PListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id) = get_user_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1155,9 +1148,9 @@ pub async fn delete_item_from_communities_list (
         }).unwrap();
         Err(Error::BadRequest(body))
     }
-    else if data.community_id.is_none() {
+    else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "Field 'item_id' is required!".to_string(),
         }).unwrap();
         Err(Error::BadRequest(body))
     }
@@ -1184,7 +1177,7 @@ pub async fn delete_item_from_communities_list (
         if owner.user_id == user_id {
             let body = block(move || CommunityListItem::delete_community_item (
                 owner.id, 
-                data.community_id.unwrap(),
+                data.item_id.unwrap(),
             )).await?;
             Ok(Json(body))
         }

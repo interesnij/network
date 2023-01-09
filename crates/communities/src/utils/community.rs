@@ -10,6 +10,29 @@ pub const COMMUNITIES_SERVICES: &'static [&'static str] = &[
     "194.58.90.123:9004", // сервис фотографий
 ];
 
+#[derive(Deserialize)]
+pub struct CItemVecData {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub list_id:      Option<i32>,
+    pub users_ids: Option<Vec<i32>>,
+}
+#[derive(Deserialize)]
+pub struct PListData {
+    pub token:        Option<String>,
+    pub list_id:      Option<i32>,
+    pub community_id: Option<i32>,
+    pub item_id:      Option<i32>,
+}
+
+#[derive(Deserialize)]
+pub struct UItemVecData {
+    pub token:        Option<String>,
+    pub community_id: Option<i32>,
+    pub list_id:      Option<i32>,
+    pub communities_ids: Option<Vec<i32>>,
+}
+
 #[derive(Serialize, Queryable)]
 pub struct AttachCommunityResp {
     pub community_id: i32, 

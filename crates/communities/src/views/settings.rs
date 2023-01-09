@@ -10,7 +10,7 @@ use crate::utils::{
     ErrorParams, EditCommunityPrivateResp, ObjectData,
     EditNameResp, EditLinkResp, EditNotifyResp,
     CardUserJson, RegListData, SearchRegListData,
-    RespListJson,
+    RespListJson, CItemVecData, PListData,
 };
 use crate::AppState;
 use crate::models::{Community, MembershipsList};
@@ -1348,17 +1348,10 @@ pub async fn restore_memberships_list (
     }
 }
 
-#[derive(Deserialize)]
-pub struct ItemListData2 {
-    pub token:        Option<String>,
-    pub community_id: Option<i32>,
-    pub list_id:      Option<i32>,
-    pub users_ids:    Option<Vec<i32>>,
-}
 pub async fn add_items_in_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: Json<ItemListData2>
+    data: Json<CItemVecData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1436,7 +1429,7 @@ pub async fn add_items_in_memberships_list (
 pub async fn delete_item_from_memberships_list (
     req: HttpRequest,
     state: web::Data<AppState>,
-    data: Json<ItemListData2>
+    data: Json<PListData>
 ) -> Result<Json<i16>, Error> {
     let (err, user_id, community_id) = get_owner_data(&req, state, data.token.clone(), 31).await;
     if err.is_some() {
@@ -1451,9 +1444,9 @@ pub async fn delete_item_from_memberships_list (
         }).unwrap();
         return Err(Error::BadRequest(body));
     }
-    else if data.community_id.is_none() {
+    else if data.item_id.is_none() {
         let body = serde_json::to_string(&ErrorParams {
-            error: "Field 'community_id' is required!".to_string(),
+            error: "Field 'item_id' is required!".to_string(),
         }).unwrap();
         return Err(Error::BadRequest(body));
     }
@@ -1502,7 +1495,7 @@ pub async fn delete_item_from_memberships_list (
 
             let body = block(move || MembershipsListItem::delete_memberships_item (
                 data.list_id.unwrap(),   
-                data.community_id.unwrap(),
+                data.item_id.unwrap(),
             )).await?;
             return Ok(Json(body));
         }
