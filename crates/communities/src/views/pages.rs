@@ -579,6 +579,7 @@ pub struct IEFollowsData {
 #[derive(Deserialize)]
 pub struct IEMembersData {
     pub token:          Option<String>,
+    pub community_id:   Option<i16>,
     pub types:          Option<i16>,
     pub users_limit:    Option<i64>,
     pub users_offset:   Option<i64>,
@@ -739,9 +740,9 @@ pub async fn include_follows_load (
                     2 => _user.get_limit_invite_include_follows(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
-                IEFriendsResponse {
+                IEFollowsResponse {
                     users:   _users,
-                    friends: _user.get_follows(params.friends_limit, params.friends_offset),
+                    follows: _user.get_followers(params.follows_limit, params.follows_offset),
                 }
             }).await?;
             Ok(Json(_res))
@@ -790,9 +791,9 @@ pub async fn exclude_follows_load (
                     12 => _user.get_limit_invite_exclude_follows(params.users_limit, params.users_offset),
                     _ => Vec::new(),
                 };
-                IEFriendsResponse {
+                IEFollowsResponse {
                     users:   _users,
-                    friends: _user.get_follows(params.friends_limit, params.friends_offset),
+                    follows: _user.get_followers(params.follows_limit, params.follows_offset),
                 }
             }).await?;
             Ok(Json(_res))
