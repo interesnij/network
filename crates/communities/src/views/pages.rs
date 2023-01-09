@@ -937,7 +937,7 @@ pub async fn exclude_members_load (
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+            if community_id > 0 || (user_id > 0 && community.is_user_see_settings(user_id)) {
                 let _res = block(move || {
                 let _users = match params.types.unwrap() {
                     11 => community.get_limit_see_member_exclude_members(params.users_limit, params.users_offset),
