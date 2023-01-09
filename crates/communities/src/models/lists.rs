@@ -1559,15 +1559,16 @@ impl FriendsList {
         let _connection = establish_connection();
         for id in user_ids.iter() {
             let new_item = NewFriendsListItem {
-                list_id: id,
+                list_id: *id,
                 user_id: user_id,
             };
             diesel::insert_into(schema::friends_list_items::table)
                 .values(&new_item)
                 .execute(&_connection)
                 .expect("Error.");
-            return 1;
+            
         }
+        return 1;
     }
     pub fn create_friend_item (
         &self, user_id: i32,
@@ -1880,15 +1881,15 @@ impl FollowsList {
         let _connection = establish_connection();
         for id in user_ids.iter() {
             let new_item = NewFollowsListItem {
-                list_id: id,
+                list_id: *id,
                 user_id: user_id,
             };
             diesel::insert_into(schema::follows_list_items::table)
                 .values(&new_item)
                 .execute(&_connection)
                 .expect("Error.");
-            return 1;
         }
+        return 1;
     }
     pub fn create_follow_item (
         &self, user_id: i32,
