@@ -1559,8 +1559,8 @@ impl FriendsList {
         let _connection = establish_connection();
         for id in user_ids.iter() {
             let new_item = NewFriendsListItem {
-                list_id: *id,
-                user_id: user_id,
+                list_id: self.id,
+                user_id: *id,
             };
             diesel::insert_into(schema::friends_list_items::table)
                 .values(&new_item)
@@ -1881,8 +1881,8 @@ impl FollowsList {
         let _connection = establish_connection();
         for id in user_ids.iter() {
             let new_item = NewFollowsListItem {
-                list_id: *id,
-                user_id: user_id,
+                list_id: self.id,
+                user_id: *id,
             };
             diesel::insert_into(schema::follows_list_items::table)
                 .values(&new_item)
