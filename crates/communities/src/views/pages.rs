@@ -579,7 +579,7 @@ pub struct IEFollowsData {
 #[derive(Deserialize)]
 pub struct IEMembersData {
     pub token:          Option<String>,
-    pub community_id:   Option<i16>,
+    pub community_id:   Option<i32>,
     pub types:          Option<i16>,
     pub users_limit:    Option<i64>,
     pub users_offset:   Option<i64>,
@@ -837,7 +837,7 @@ pub async fn include_members_load (
             Err(Error::BadRequest(body))
         }
         else {
-            let owner: Community;
+            let community: Community;
             let c_id: i32;
             if community_id > 0 {
                 c_id = community_id;
@@ -845,9 +845,9 @@ pub async fn include_members_load (
             else {
                 c_id = params.community_id.unwrap();
             }
-            let owner_res = get_community(c_id);
-            if owner_res.is_ok() {
-                owner = owner_res.expect("E");
+            let community_res = get_community(c_id);
+            if community_res.is_ok() {
+                community = community_res.expect("E");
             }
             else {
                 let body = serde_json::to_string(&ErrorParams {
@@ -855,9 +855,8 @@ pub async fn include_members_load (
                 }).unwrap();
                 return Err(Error::BadRequest(body));
             }
-            if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
+            if community_id > 0 || (user_id > 0 && community.is_user_see_settings(user_id)) {
                 let _res = block(move || {
-                let community = get_community(community.id).expect("E.");
 
                 let _users = match params.types.unwrap() {
                     1 => community.get_limit_see_member_include_members(params.users_limit, params.users_offset),
@@ -869,7 +868,7 @@ pub async fn include_members_load (
                 };
                 IEMembersResponse {
                     users:   _users,
-                    members: _user.get_members(params.members_limit, params.members_offset),
+                    members: community.get_members(params.members_limit, params.members_offset),
                 }
                 }).await?;
                 Ok(Json(_res))
@@ -920,7 +919,7 @@ pub async fn exclude_members_load (
             Err(Error::BadRequest(body))
         }
         else {
-            let owner: Community;
+            let community: Community;
             let c_id: i32;
             if community_id > 0 {
                 c_id = community_id;
@@ -928,9 +927,9 @@ pub async fn exclude_members_load (
             else {
                 c_id = params.community_id.unwrap();
             }
-            let owner_res = get_community(c_id);
-            if owner_res.is_ok() {
-                owner = owner_res.expect("E");
+            let community_res = get_community(c_id);
+            if community_res.is_ok() {
+                community = community_res.expect("E");
             }
             else {
                 let body = serde_json::to_string(&ErrorParams {
@@ -940,8 +939,6 @@ pub async fn exclude_members_load (
             }
             if community_id > 0 || (user_id > 0 && owner.is_user_see_settings(user_id)) {
                 let _res = block(move || {
-                let community = get_community(community.id).expect("E.");
-
                 let _users = match params.types.unwrap() {
                     11 => community.get_limit_see_member_exclude_members(params.users_limit, params.users_offset),
                     12 => community.get_limit_see_info_exclude_members(params.users_limit, params.users_offset),
@@ -952,7 +949,7 @@ pub async fn exclude_members_load (
                 };
                 IEMembersResponse {
                     users:   _users,
-                    members: _user.get_members(params.members_limit, params.members_offset),
+                    members: community.get_members(params.members_limit, params.members_offset),
                 }
                 }).await?;
                 Ok(Json(_res))

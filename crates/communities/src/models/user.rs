@@ -2012,7 +2012,6 @@ impl User {
         let _connection = establish_connection();
         let followers = follows
             .filter(schema::follows::target_id.eq(self.id))
-            .order(schema::follows::visited.desc())
             .limit(_limit)
             .offset(_offset)
             .select(schema::follows::user_id)
