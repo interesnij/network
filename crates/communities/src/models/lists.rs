@@ -90,40 +90,64 @@ impl CommunitiesList {
     pub fn create_community_item (
         &self, community_id: i32,
     ) -> i16 {
+        use crate::schema::community_list_items::dsl::community_list_items;
+
         let _connection = establish_connection();
-        let new_item = NewCommunityListItem {
-            list_id: self.id,
-            community_id: community_id,
-            visited: 0,
-        };
-        diesel::insert_into(schema::community_list_items::table)
-            .values(&new_item)
-            .execute(&_connection)
-            .expect("Error.");
-        
-        diesel::update(self)
-            .set(schema::communities_lists::count.eq(self.count + 1))
-            .execute(&_connection)
-            .expect("E.");
-        return 1;
-    }
-    pub fn create_community_items (
-        &self, communities_ids: Vec<i32>,
-    ) -> i16 { 
-        let _connection = establish_connection();
-        let mut count = 0;
-        for id in communities_ids.iter() {
+
+        if community_list_items
+            .filter(schema::community_list_items::list_id.eq(self.id))
+            .filter(schema::community_list_items::community_id.eq(community_id))
+            .select(schema::community_list_items::id)
+            .first::<i32>(&_connection)
+            .is_err()
+            {
             let new_item = NewCommunityListItem {
                 list_id:      self.id,
-                community_id: *id,
+                community_id: community_id,
                 visited:      0,
             };
             diesel::insert_into(schema::community_list_items::table)
                 .values(&new_item)
                 .execute(&_connection)
                 .expect("Error.");
+                
+            diesel::update(self)
+                .set(schema::communities_lists::count.eq(self.count + 1))
+                .execute(&_connection)
+                .expect("E.");
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    pub fn create_community_items (
+        &self, communities_ids: Vec<i32>,
+    ) -> i16 { 
+        use crate::schema::community_list_items::dsl::community_list_items;
 
-            count += 1;
+        let _connection = establish_connection();
+        let mut count = 0;
+        for id in communities_ids.iter() {
+            if community_list_items
+                .filter(schema::community_list_items::list_id.eq(self.id))
+                .filter(schema::community_list_items::community_id.eq(*id))
+                .select(schema::community_list_items::id)
+                .first::<i32>(&_connection)
+                .is_err()
+                {
+                let new_item = NewCommunityListItem {
+                    list_id:      self.id,
+                    community_id: *id,
+                    visited:      0,
+                };
+                diesel::insert_into(schema::community_list_items::table)
+                    .values(&new_item)
+                    .execute(&_connection)
+                    .expect("Error.");
+
+                count += 1;
+            }
         }
         
         diesel::update(self)
@@ -744,6 +768,7 @@ impl CommunityListItem {
         list_id: i32, community_id: i32,
     ) -> i16 { 
         use crate::schema::community_list_items::dsl::community_list_items;
+        use crate::utils::get_communities_list;
 
         let _connection = establish_connection();
         diesel::delete (
@@ -754,22 +779,21 @@ impl CommunityListItem {
         .execute(&_connection)
         .expect("E.");
 
+        let list = get_communities_list(list_id).expect("E.");
+        diesel::update(&list)
+            .set(schema::communities_lists::count.eq(self.count - 1))
+            .execute(&_connection)
+            .expect("E.");
+
         return 1;
     }
     pub fn delete_community_items (
         list_ids: Vec<i32>, community_id: i32,
     ) -> i16 { 
-        use crate::schema::community_list_items::dsl::community_list_items;
-
         let _connection = establish_connection();
-        diesel::delete (
-            community_list_items
-                .filter(schema::community_list_items::list_id.eq_any(list_ids))
-                .filter(schema::community_list_items::community_id.eq(community_id))
-        )
-        .execute(&_connection)
-        .expect("E.");
-
+        for i in list_ids.iter() {
+            CommunityListItem::delete_community_item(i, community_id);
+        }
         return 1;
     }
     pub fn plus_visited(&self) -> () {

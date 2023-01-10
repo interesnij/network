@@ -275,6 +275,17 @@ impl Community {
             .load::<CardCommunitiesList>(&_connection)
             .expect("E.");
     }
+    pub fn is_have_memberships_lists(&self) -> usize {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+
+        let _connection = establish_connection();
+        return memberships_lists
+            .filter(schema::memberships_lists::community_id.eq(self.id))
+            .filter(schema::memberships_lists::types.eq(5))
+            .select(schema::memberships_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
     pub fn get_memberships_lists_obj(&self) -> Vec<MembershipsList> {
         use crate::schema::memberships_lists::dsl::memberships_lists;
   

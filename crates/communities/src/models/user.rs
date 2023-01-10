@@ -1680,6 +1680,42 @@ impl User {
         }
     }
 
+    pub fn is_have_friends_lists(&self) -> usize {
+        // нужно ли показывать в приватности опцию выбора списков?
+        // если созданных списков друзей нет, то и показывать опции необязательно
+        use crate::schema::friends_lists::dsl::friends_lists;
+
+        let _connection = establish_connection();
+        return friends_lists
+            .filter(schema::friends_lists::user_id.eq(self.user_id))
+            .filter(schema::friends_lists::types.eq(5))
+            .select(schema::friends_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_have_follows_lists(&self) -> usize {
+        use crate::schema::follows_lists::dsl::follows_lists;
+
+        let _connection = establish_connection();
+        return follows_lists
+            .filter(schema::follows_lists::user_id.eq(self.user_id))
+            .filter(schema::follows_lists::types.eq(5))
+            .select(schema::follows_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_have_communities_lists(&self) -> usize {
+        use crate::schema::communities_lists::dsl::communities_lists;
+
+        let _connection = establish_connection();
+        return communities_lists
+            .filter(schema::communities_lists::user_id.eq(self.user_id))
+            .filter(schema::communities_lists::types.eq(5))
+            .select(schema::communities_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
     pub fn get_main_communities_list(&self) -> CommunitiesList {
         use crate::schema::communities_lists::dsl::communities_lists;
 
