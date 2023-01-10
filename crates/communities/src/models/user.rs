@@ -915,7 +915,7 @@ impl User {
         // который могут что то делать или не делать (types)
         use crate::schema::{
             user_visible_perms::dsl::user_visible_perms,
-            friends::dsl::friends,
+            follows::dsl::follows,
         };
 
         let _connection = establish_connection();
@@ -1803,7 +1803,7 @@ impl User {
             .is_ok();
     }
 
-    pub fn is_user_in_follows_list(&self, list_ids: Vec<i32>) -> bool {
+    pub fn is_user_in_follows_lists(&self, list_ids: Vec<i32>) -> bool {
         use crate::schema::follows_lists::dsl::follows_lists;
 
         let _connection = establish_connection();
