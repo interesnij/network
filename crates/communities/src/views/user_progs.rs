@@ -10,7 +10,7 @@ use crate::utils::{
     get_communities_list,
     ErrorParams, SmallData, TOKEN, SectionJson,
     EditUserPrivateResp, CardCommunityJson, CardList,
-    RespListJson, UItemVecData, PListData,
+    RespListJson, UItemVecData, PListData, PermList,
 };
 use crate::AppState;
 use crate::models::{Community, User, CommunitiesList};
