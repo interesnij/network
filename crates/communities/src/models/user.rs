@@ -1716,6 +1716,29 @@ impl User {
             .is_ok();
     }
 
+    pub fn is_user_in_follows_lists(&self, list_id: i32) -> bool {
+        use crate::schema::follows_lists::dsl::follows_lists;
+
+        let _connection = establish_connection();
+        return follows_lists
+            .filter(schema::follows_lists::user_id.eq(self.user_id))
+            .filter(schema::follows_lists::list_id.eq(list_id))
+            .select(schema::follows_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+    pub fn is_user_in_friends_lists(&self, list_id: i32) -> bool {
+        use crate::schema::friends_lists::dsl::friends_lists;
+
+        let _connection = establish_connection();
+        return friends_lists
+            .filter(schema::friends_lists::user_id.eq(self.user_id))
+            .filter(schema::friends_lists::list_id.eq(list_id))
+            .select(schema::friends_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
+
     pub fn get_main_communities_list(&self) -> CommunitiesList {
         use crate::schema::communities_lists::dsl::communities_lists;
 

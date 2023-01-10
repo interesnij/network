@@ -286,6 +286,17 @@ impl Community {
             .first::<i32>(&_connection)
             .is_ok();
     }
+    pub fn is_user_in_memberships_lists(&self, list_id: i32) -> bool {
+        use crate::schema::memberships_lists::dsl::memberships_lists;
+
+        let _connection = establish_connection();
+        return memberships_lists
+            .filter(schema::memberships_lists::user_id.eq(self.user_id))
+            .filter(schema::memberships_lists::list_id.eq(list_id))
+            .select(schema::memberships_lists::id)
+            .first::<i32>(&_connection)
+            .is_ok();
+    }
     pub fn get_memberships_lists_obj(&self) -> Vec<MembershipsList> {
         use crate::schema::memberships_lists::dsl::memberships_lists;
   
