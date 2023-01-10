@@ -234,6 +234,39 @@ impl User {
         else {
             invite_users = None;
         }
+
+
+        if self.see_community == 33 || self.see_community == 35 {
+            see_community_lists = Some(self.get_see_community_exclude_friends_lists(Some(20), Some(0)));
+        }
+        else if self.see_community == 31 || self.see_community == 37 {
+            see_community_lists = Some(self.get_see_community_exclude_follows_lists(Some(20), Some(0)));
+        }
+        else if self.see_community == 34 || self.see_community == 36 {
+            see_community_lists = Some(self.get_see_community_include_friends_lists(Some(20), Some(0)));
+        }
+        else if self.see_community == 32 || self.see_community == 38 {
+            see_community_lists = Some(self.get_see_community_include_follows_lists(Some(20), Some(0)));
+        }
+        else {
+            see_community_lists = None;
+        }
+
+        if self.invite == 33 || self.invite == 35 {
+            invite_lists = Some(self.get_invite_exclude_friends_lists(Some(20), Some(0)));
+        }
+        else if self.invite == 31 || self.invite == 37 {
+            invite_lists = Some(self.get_invite_exclude_follows_lists(Some(20), Some(0)));
+        }
+        else if self.invite == 34 || self.invite == 36 {
+            invite_lists = Some(self.get_invite_include_friends_lists(Some(20), Some(0)));
+        }
+        else if self.invite == 32 || self.invite == 38 {
+            invite_lists = Some(self.get_invite_include_follows_lists(Some(20), Some(0)));
+        }
+        else {
+            invite_lists = None;
+        }
     
         return EditUserPrivateResp {
             see_community:       User::get_private_field(self.see_community),
@@ -1110,7 +1143,7 @@ impl User {
 
         return follows_lists
             .filter(schema::follows_lists::id.eq_any(lists_ids))
-            .select((
+            .select(( 
                 schema::follows_lists::id,
                 schema::follows_lists::name,
             ))
@@ -1155,6 +1188,46 @@ impl User {
     }
     pub fn get_limit_invite_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_friends_for_types(2, limit, offset); 
+    }
+
+
+    pub fn get_see_all_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_lists_for_types(110, limit, offset); 
+    }
+    pub fn get_see_all_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_lists_for_types(100, limit, offset); 
+    }
+    pub fn get_see_all_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_lists_for_types(110, limit, offset); 
+    }
+    pub fn get_see_all_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_lists_for_types(100, limit, offset); 
+    }
+
+    pub fn get_see_community_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_lists_for_types(111, limit, offset); 
+    }
+    pub fn get_see_community_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_lists_for_types(101, limit, offset); 
+    }
+    pub fn get_see_community_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_lists_for_types(111, limit, offset); 
+    }
+    pub fn get_see_community_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_lists_for_types(101, limit, offset); 
+    }
+
+    pub fn get_invite_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_lists_for_types(112, limit, offset); 
+    }
+    pub fn get_invite_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_follows_lists_for_types(102, limit, offset); 
+    }
+    pub fn get_invite_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_lists_for_types(112, limit, offset); 
+    }
+    pub fn get_invite_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+        return self.get_ie_friends_lists_for_types(102, limit, offset); 
     }
 
     pub fn is_user_see_community(&self, user_id: i32) -> bool {
