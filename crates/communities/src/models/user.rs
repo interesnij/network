@@ -827,7 +827,7 @@ impl User {
         &self,
         user_id: i32,
         types:   i16, 
-    ) -> bool {
+    ) -> bool { 
         // проверяем, если ли пользователь в вкл/искл списках пользователя 
         // и дружит ли он с self
         use crate::schema::{
@@ -850,6 +850,36 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
+    pub fn is_friend_list_perm_exists (
+        &self,
+        item_id: i32,
+        types:   i16, 
+    ) -> bool { 
+        // проверяем, если ли пользователь в списке друзей,
+        // который могут что то делать или не делать (types)
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            friends::dsl::friends,
+        };
+
+        let _connection = establish_connection();
+        let list_id_res = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::item_id.eq(item_id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .select(schema::user_visible_perms::id)
+            .first::<i32>(&_connection);
+        if friends 
+            .filter(schema::friends::target_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(user_id))
+            .select(schema::friends::id)
+            .first::<i32>(&_connection)
+            .is_err() || list_id_res.is_err() {
+            return false;
+        };
+        return self.is_user_in_friends_list(list_id_res.expect("E."));
+    }
+
     pub fn is_follow_perm_exists (
         &self,
         user_id: i32,
@@ -876,6 +906,34 @@ impl User {
             .select(schema::follows::id)
             .first::<i32>(&_connection)
             .is_ok();
+    }
+    pub fn is_follow_list_perm_exists (
+        &self,
+        item_id: i32,
+        types:   i16, 
+    ) -> bool { 
+        // проверяем, если ли пользователь в списке друзей,
+        // который могут что то делать или не делать (types)
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            friends::dsl::friends,
+        };
+
+        let _connection = establish_connection();
+        let list_id_res = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::item_id.eq(item_id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .select(schema::user_visible_perms::id)
+            .first::<i32>(&_connection);
+        if follows
+            .filter(schema::follows::target_id.eq(self.user_id))
+            .filter(schema::follows::user_id.eq(user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection).is_err() || list_id_res.is_err() {
+            return false;
+        };
+        return self.is_user_in_follows_list(list_id_res.expect("E."));
     }
 
     pub fn get_ie_friends_for_types (
@@ -1008,13 +1066,23 @@ impl User {
             10 => self.is_friend_perm_exists(user_id, 1),
             11 => !self.is_follow_perm_exists(user_id, 11),
             12 => self.is_follow_perm_exists(user_id, 1),
+            13 => false,
+
+            31 => self.is_connected_with_user_with_id(user_id) || !self.is_follow_list_perm_exists(user_id, 111),
+            32 => self.is_connected_with_user_with_id(user_id) || self.is_follow_list_perm_exists(user_id, 101),
+            33 => self.is_self_followers_user_with_id(user_id) || !self.is_friend_list_perm_exists(user_id, 111),
+            34 => self.is_self_followers_user_with_id(user_id) || self.is_friend_list_perm_exists(user_id, 101),
+            35 => !self.is_friend_list_perm_exists(user_id, 111),
+            36 => self.is_friend_list_perm_exists(user_id, 101),
+            37 => !self.is_follow_list_perm_exists(user_id, 111),
+            38 => self.is_follow_list_perm_exists(user_id, 101),
             _ => false,
         };
     }
 
     pub fn is_user_see_all(&self, user_id: i32) -> bool {
         if self.user_id == user_id {
-            return true;
+            return true; 
         }
         return match self.see_all {
             1 => true,
@@ -1029,6 +1097,16 @@ impl User {
             10 => self.is_friend_perm_exists(user_id, 0),
             11 => !self.is_follow_perm_exists(user_id, 10),
             12 => self.is_follow_perm_exists(user_id, 0),
+            13 => false,
+
+            31 => self.is_connected_with_user_with_id(user_id) || !self.is_follow_list_perm_exists(user_id, 110),
+            32 => self.is_connected_with_user_with_id(user_id) || self.is_follow_list_perm_exists(user_id, 100),
+            33 => self.is_self_followers_user_with_id(user_id) || !self.is_friend_list_perm_exists(user_id, 110),
+            34 => self.is_self_followers_user_with_id(user_id) || self.is_friend_list_perm_exists(user_id, 100),
+            35 => !self.is_friend_list_perm_exists(user_id, 110),
+            36 => self.is_friend_list_perm_exists(user_id, 100),
+            37 => !self.is_follow_list_perm_exists(user_id, 110),
+            38 => self.is_follow_list_perm_exists(user_id, 100),
             _ => false,
         };
     }
@@ -1049,6 +1127,16 @@ impl User {
             10 => self.is_friend_perm_exists(user_id, 2),
             11 => !self.is_follow_perm_exists(user_id, 12),
             12 => self.is_follow_perm_exists(user_id, 2),
+            13 => false,
+
+            31 => self.is_connected_with_user_with_id(user_id) || !self.is_follow_list_perm_exists(user_id, 112),
+            32 => self.is_connected_with_user_with_id(user_id) || self.is_follow_list_perm_exists(user_id, 102),
+            33 => self.is_self_followers_user_with_id(user_id) || !self.is_friend_list_perm_exists(user_id, 112),
+            34 => self.is_self_followers_user_with_id(user_id) || self.is_friend_list_perm_exists(user_id, 102),
+            35 => !self.is_friend_list_perm_exists(user_id, 112),
+            36 => self.is_friend_list_perm_exists(user_id, 102),
+            37 => !self.is_follow_list_perm_exists(user_id, 112),
+            38 => self.is_follow_list_perm_exists(user_id, 102),
             _ => false,
         };
     }
@@ -1716,7 +1804,7 @@ impl User {
             .is_ok();
     }
 
-    pub fn is_user_in_follows_lists(&self, list_id: i32) -> bool {
+    pub fn is_user_in_follows_list(&self, list_id: i32) -> bool {
         use crate::schema::follows_lists::dsl::follows_lists;
 
         let _connection = establish_connection();
@@ -1727,7 +1815,7 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_user_in_friends_lists(&self, list_id: i32) -> bool {
+    pub fn is_user_in_friends_list(&self, list_id: i32) -> bool {
         use crate::schema::friends_lists::dsl::friends_lists;
 
         let _connection = establish_connection();
@@ -1737,7 +1825,7 @@ impl User {
             .select(schema::friends_lists::id)
             .first::<i32>(&_connection)
             .is_ok();
-    }
+    } 
 
     pub fn get_main_communities_list(&self) -> CommunitiesList {
         use crate::schema::communities_lists::dsl::communities_lists;

@@ -286,7 +286,7 @@ impl Community {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_user_in_memberships_lists(&self, list_id: i32) -> bool {
+    pub fn is_user_in_memberships_list(&self, list_id: i32) -> bool {
         use crate::schema::memberships_lists::dsl::memberships_lists;
 
         let _connection = establish_connection();

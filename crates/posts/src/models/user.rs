@@ -1771,6 +1771,7 @@ impl User {
             10 => self.is_friend_perm_exists(user_id, 5),
             11 => !self.is_follow_perm_exists(user_id, 15),
             12 => self.is_follow_perm_exists(user_id, 5),
+            13 => false,
             _ => false,
         };
     }
