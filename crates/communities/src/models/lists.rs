@@ -906,6 +906,7 @@ impl MembershipsList {
                 .execute(&_connection)
                 .expect("E.");
             return 1;
+        }
         else {
             return 0;
         }
