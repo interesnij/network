@@ -852,7 +852,7 @@ impl User {
     }
     pub fn is_friend_list_perm_exists (
         &self,
-        item_id: i32,
+        user_id: i32,
         types:   i16, 
     ) -> bool { 
         // проверяем, если ли пользователь в списке друзей,
@@ -863,12 +863,11 @@ impl User {
         };
 
         let _connection = establish_connection();
-        let list_id_res = user_visible_perms
+        let list_ids = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::item_id.eq(item_id))
             .filter(schema::user_visible_perms::types.eq(types))
             .select(schema::user_visible_perms::id)
-            .first::<i32>(&_connection);
+            .load::<i32>(&_connection);
         if friends 
             .filter(schema::friends::target_id.eq(self.user_id))
             .filter(schema::friends::user_id.eq(user_id))
@@ -877,7 +876,7 @@ impl User {
             .is_err() || list_id_res.is_err() {
             return false;
         };
-        return self.is_user_in_friends_list(list_id_res.expect("E."));
+        return self.is_user_in_friends_lists(list_ids.expect("E."));
     }
 
     pub fn is_follow_perm_exists (
@@ -909,8 +908,8 @@ impl User {
     }
     pub fn is_follow_list_perm_exists (
         &self,
-        item_id: i32,
-        types:   i16, 
+        user_id: i32,
+        types: i16
     ) -> bool { 
         // проверяем, если ли пользователь в списке друзей,
         // который могут что то делать или не делать (types)
@@ -920,12 +919,12 @@ impl User {
         };
 
         let _connection = establish_connection();
-        let list_id_res = user_visible_perms
+        let list_ids = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
             .filter(schema::user_visible_perms::item_id.eq(item_id))
             .filter(schema::user_visible_perms::types.eq(types))
             .select(schema::user_visible_perms::id)
-            .first::<i32>(&_connection);
+            .load::<i32>(&_connection);
         if follows
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
@@ -933,7 +932,7 @@ impl User {
             .first::<i32>(&_connection).is_err() || list_id_res.is_err() {
             return false;
         };
-        return self.is_user_in_follows_list(list_id_res.expect("E."));
+        return self.is_user_in_follows_lists(list_ids.expect("E."));
     }
 
     pub fn get_ie_friends_for_types (
@@ -1804,24 +1803,24 @@ impl User {
             .is_ok();
     }
 
-    pub fn is_user_in_follows_list(&self, list_id: i32) -> bool {
+    pub fn is_user_in_follows_list(&self, list_ids: Vec<i32>) -> bool {
         use crate::schema::follows_lists::dsl::follows_lists;
 
         let _connection = establish_connection();
         return follows_lists
             .filter(schema::follows_lists::user_id.eq(self.user_id))
-            .filter(schema::follows_lists::list_id.eq(list_id))
+            .filter(schema::friends_lists::list_id.eq_any(list_ids))
             .select(schema::follows_lists::id)
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_user_in_friends_list(&self, list_id: i32) -> bool {
+    pub fn is_user_in_friends_lists(&self, list_ids: Vec<i32>) -> bool {
         use crate::schema::friends_lists::dsl::friends_lists;
 
         let _connection = establish_connection();
         return friends_lists
             .filter(schema::friends_lists::user_id.eq(self.user_id))
-            .filter(schema::friends_lists::list_id.eq(list_id))
+            .filter(schema::friends_lists::list_id.eq_any(list_ids))
             .select(schema::friends_lists::id)
             .first::<i32>(&_connection)
             .is_ok();
