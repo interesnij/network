@@ -2081,7 +2081,7 @@ impl Community {
         };
 
         let _connection = establish_connection();
-        let list_ids = user_visible_perms
+        let list_ids = community_visible_perms
             .filter(schema::community_visible_perms::community_id.eq(self.id))
             .filter(schema::community_visible_perms::types.eq(types))
             .select(schema::community_visible_perms::id)

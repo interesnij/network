@@ -481,7 +481,7 @@ impl CommunitiesList {
             .is_err() || list_ids.is_err() {
             return false;
         };
-        return self.is_user_in_friends_lists(list_ids.expect("E."));
+        return list_ids.expect("E.").iter().any(|&i| i==self.id);
     }
     pub fn is_follow_list_perm_exists (
         &self,
@@ -508,7 +508,7 @@ impl CommunitiesList {
             .first::<i32>(&_connection).is_err() || list_ids.is_err() {
             return false;
         };
-        return self.is_user_in_follows_lists(list_ids.expect("E."));
+        return list_ids.expect("E.").iter().any(|&i| i==self.id);
     }
 
     pub fn get_limit_see_el_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
@@ -1257,7 +1257,7 @@ impl MembershipsList {
             return false;
         }; 
         return list_ids.expect("E.").iter().any(|&i| i==self.id);
-    }
+    } 
 
     pub fn get_ie_users_for_types (
         &self, 
