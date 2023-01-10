@@ -881,40 +881,62 @@ impl MembershipsList {
     pub fn create_membership_item (
         &self, user_id: i32,
     ) -> i16 {
+        use crate::schema::memberships_list_items::dsl::memberships_list_items;
+
         let _connection = establish_connection();
-        let new_item = NewMembershipsListItem {
-            list_id:      self.id,
-            user_id: user_id,
-            visited:      0,
-        };
-        diesel::insert_into(schema::memberships_list_items::table)
-            .values(&new_item)
-            .execute(&_connection)
-            .expect("Error.");
-        
-        diesel::update(self)
-            .set(schema::memberships_lists::count.eq(self.count + 1))
-            .execute(&_connection)
-            .expect("E.");
-        return 1;
-    }
-    pub fn create_membership_items (
-        &self, user_ids: Vec<i32>,
-    ) -> i16 {
-        let _connection = establish_connection();
-        let mut count = 0;
-        for id in user_ids.iter() {
+        if memberships_list_items
+            .filter(schema::memberships_list_items::list_id.eq(self.id))
+            .filter(schema::memberships_list_items::user_id.eq(user_id))
+            .select(schema::memberships_list_items::id)
+            .first::<i32>(&_connection)
+            .is_err()
+            {
             let new_item = NewMembershipsListItem {
                 list_id: self.id,
-                user_id: *id,
+                user_id: user_id,
                 visited: 0,
             };
             diesel::insert_into(schema::memberships_list_items::table)
                 .values(&new_item)
                 .execute(&_connection)
                 .expect("Error.");
+        
+            diesel::update(self)
+                .set(schema::memberships_lists::count.eq(self.count + 1))
+                .execute(&_connection)
+                .expect("E.");
+            return 1;
+        else {
+            return 0;
+        }
+    }
+    pub fn create_membership_items (
+        &self, user_ids: Vec<i32>,
+    ) -> i16 {
+        use crate::schema::memberships_list_items::dsl::memberships_list_items;
+
+        let _connection = establish_connection();
+        let mut count = 0;
+        for id in user_ids.iter() {
+            if memberships_list_items
+                .filter(schema::memberships_list_items::list_id.eq(self.id))
+                .filter(schema::memberships_list_items::user_id.eq(*id))
+                .select(schema::memberships_list_items::id)
+                .first::<i32>(&_connection)
+                .is_err()
+                {
+                let new_item = NewMembershipsListItem {
+                    list_id: self.id,
+                    user_id: *id,
+                    visited: 0,
+                };
+                diesel::insert_into(schema::memberships_list_items::table)
+                    .values(&new_item)
+                    .execute(&_connection)
+                    .expect("Error.");
             
-            count += 1;
+                count += 1;
+            }
         }
         
         diesel::update(self)
@@ -1482,23 +1504,16 @@ impl MembershipsListItem {
     pub fn delete_memberships_items (
         list_ids: Vec<i32>, user_id: i32,
     ) -> i16 { 
-        use crate::schema::memberships_list_items::dsl::memberships_list_items;
-
-        let _connection = establish_connection();
-        diesel::delete (
-            memberships_list_items
-                .filter(schema::memberships_list_items::list_id.eq_any(list_ids))
-                .filter(schema::memberships_list_items::user_id.eq(user_id))
-        )
-        .execute(&_connection)
-        .expect("E.");
-
+        for i in list_ids.iter() {
+            CommunityListItem::delete_memberships_item(*i, user_id);
+        }
         return 1;
     }
     pub fn delete_memberships_item (
         list_id: i32, user_id: i32,
     ) -> i16 { 
         use crate::schema::memberships_list_items::dsl::memberships_list_items;
+        use crate::utils::get_memberships_list;
 
         let _connection = establish_connection();
         diesel::delete (
@@ -1509,6 +1524,11 @@ impl MembershipsListItem {
         .execute(&_connection)
         .expect("E.");
 
+        let list = get_memberships_list(list_id).expect("E.");
+        diesel::update(&list)
+            .set(schema::memberships_lists::count.eq(list.count - 1))
+            .execute(&_connection)
+            .expect("E.");
         return 1;
     }
     pub fn plus_visited(&self) -> () {
@@ -1605,32 +1625,51 @@ impl FriendsList {
     pub fn create_friend_items (
         &self, user_ids: Vec<i32>,
     ) -> i16 {
+        use crate::schema::friends_list_items::dsl::friends_list_items;
+
         let _connection = establish_connection();
         for id in user_ids.iter() {
-            let new_item = NewFriendsListItem {
-                list_id: self.id,
-                user_id: *id,
-            };
-            diesel::insert_into(schema::friends_list_items::table)
-                .values(&new_item)
-                .execute(&_connection)
-                .expect("Error.");
-            
+            if friends_list_items
+                .filter(schema::friends_list_items::list_id.eq(self.id))
+                .filter(schema::friends_list_items::user_id.eq(*id))
+                .select(schema::friends_list_items::id)
+                .first::<i32>(&_connection)
+                .is_err()
+                {
+                let new_item = NewFriendsListItem {
+                    list_id: self.id,
+                    user_id: *id,
+                };
+                diesel::insert_into(schema::friends_list_items::table)
+                    .values(&new_item)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
         }
         return 1;
     }
     pub fn create_friend_item (
         &self, user_id: i32,
     ) -> i16 {
+        use crate::schema::friends_list_items::dsl::friends_list_items;
+
         let _connection = establish_connection();
-        let new_item = NewFriendsListItem {
-            list_id: self.list_id,
-            user_id: user_id,
-        };
-        diesel::insert_into(schema::friends_list_items::table)
-            .values(&new_item)
-            .execute(&_connection)
-            .expect("Error.");
+        if friends_list_items
+            .filter(schema::friends_list_items::list_id.eq(self.id))
+            .filter(schema::friends_list_items::user_id.eq(user_id))
+            .select(schema::friends_list_items::id)
+            .first::<i32>(&_connection)
+            .is_err()
+            {
+            let new_item = NewFriendsListItem {
+                list_id: self.list_id,
+                user_id: user_id,
+            };
+            diesel::insert_into(schema::friends_list_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
         return 1;
     }
     
@@ -1830,23 +1869,14 @@ impl FriendsListItem {
         )
         .execute(&_connection)
         .expect("E.");
-
         return 1;
     }
     pub fn delete_friends_items (
         list_ids: Vec<i32>, user_id: i32,
     ) -> i16 { 
-        use crate::schema::friends_list_items::dsl::friends_list_items;
-
-        let _connection = establish_connection();
-        diesel::delete (
-            friends_list_items
-                .filter(schema::friends_list_items::list_id.eq_any(list_ids))
-                .filter(schema::friends_list_items::user_id.eq(user_id))
-        )
-        .execute(&_connection)
-        .expect("E.");
-
+        for i in list_ids.iter() {
+            FriendsListItem::delete_friends_item(*i, user_id);
+        }
         return 1;
     }
 }
@@ -1938,31 +1968,51 @@ impl FollowsList {
     pub fn create_follow_items (
         &self, user_ids: Vec<i32>,
     ) -> i16 {
+        use crate::schema::follows_list_items::dsl::follows_list_items;
+
         let _connection = establish_connection();
         for id in user_ids.iter() {
-            let new_item = NewFollowsListItem {
-                list_id: self.id,
-                user_id: *id,
-            };
-            diesel::insert_into(schema::follows_list_items::table)
-                .values(&new_item)
-                .execute(&_connection)
-                .expect("Error.");
+            if follows_list_items
+                .filter(schema::follows_list_items::list_id.eq(self.id))
+                .filter(schema::follows_list_items::user_id.eq(*id))
+                .select(schema::follows_list_items::id)
+                .first::<i32>(&_connection)
+                .is_err()
+                {
+                let new_item = NewFollowsListItem {
+                    list_id: self.id,
+                    user_id: *id,
+                };
+                diesel::insert_into(schema::follows_list_items::table)
+                    .values(&new_item)
+                    .execute(&_connection)
+                    .expect("Error.");
+            }
         }
         return 1;
     }
     pub fn create_follow_item (
         &self, user_id: i32,
     ) -> i16 {
+        use crate::schema::follows_list_items::dsl::follows_list_items;
+
         let _connection = establish_connection();
-        let new_item = NewFollowsListItem {
-            list_id: self.list_id,
-            user_id: user_id,
-        };
-        diesel::insert_into(schema::follows_list_items::table)
-            .values(&new_item)
-            .execute(&_connection)
-            .expect("Error.");
+        if follows_list_items
+            .filter(schema::follows_list_items::list_id.eq(self.id))
+            .filter(schema::follows_list_items::user_id.eq(user_id))
+            .select(schema::follows_list_items::id)
+            .first::<i32>(&_connection)
+            .is_err()
+            {
+            let new_item = NewFollowsListItem {
+                list_id: self.list_id,
+                user_id: user_id,
+            };
+            diesel::insert_into(schema::follows_list_items::table)
+                .values(&new_item)
+                .execute(&_connection)
+                .expect("Error.");
+        }
         return 1;
     }
     
