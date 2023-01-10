@@ -1506,7 +1506,7 @@ impl MembershipsListItem {
         list_ids: Vec<i32>, user_id: i32,
     ) -> i16 { 
         for i in list_ids.iter() {
-            CommunityListItem::delete_memberships_item(*i, user_id);
+            MembershipsListItem::delete_memberships_item(*i, user_id);
         }
         return 1;
     }
