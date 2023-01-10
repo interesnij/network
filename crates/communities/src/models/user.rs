@@ -921,7 +921,6 @@ impl User {
         let _connection = establish_connection();
         let list_ids = user_visible_perms
             .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::item_id.eq(item_id))
             .filter(schema::user_visible_perms::types.eq(types))
             .select(schema::user_visible_perms::id)
             .load::<i32>(&_connection);
