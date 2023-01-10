@@ -174,18 +174,18 @@ pub struct NewCommunityJson {
 
 #[derive(Serialize, Queryable)]
 pub struct SectionJson { 
-    pub lists: Vec<CardList>,
+    pub lists: Vec<PermList>,
     pub items: Vec<CardCommunityJson>, 
 }
 #[derive(Serialize, Deserialize, Queryable)]
-pub struct CardList {
+pub struct PermList {
     pub id:       i32,
     pub name:     String,
     pub position: i16,
     pub count:    i32,
 }
 #[derive(Serialize, Deserialize, Queryable)]
-pub struct CardEditList {
+pub struct CardEditPermList {
     pub id:   i32,
     pub name: String,
 }
@@ -291,6 +291,8 @@ pub struct EditUserPrivateResp {
     pub invite:              KeyValue,
     pub see_community_users: Option<Vec<CardUserJson>>,
     pub invite_users:        Option<Vec<CardUserJson>>,
+    pub see_community_lists: Option<Vec<CardEditPermList>>,
+    pub invite_lists:        Option<Vec<CardEditPermList>>,
 }
 
 #[derive(Serialize)]

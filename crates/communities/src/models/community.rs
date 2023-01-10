@@ -25,7 +25,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection, get_limit_offset, get_limit,
     CommunityCategoryJson, CardUserJson, KeyValue,
-    CommunityPrivateJson, NewCommunityJson, CardList,
+    CommunityPrivateJson, NewCommunityJson, PermList,
     AttachCommunityResp, CardCommunityJson,
     CommunityDetailJson, EditNotifyResp, EditCommunityPrivateResp,
 };
@@ -256,7 +256,7 @@ impl Community {
         &self,
         limit:   Option<i64>,
         offset:  Option<i64>
-    ) -> Vec<CardList> {
+    ) -> Vec<PermList> {
         use crate::schema::memberships_lists::dsl::memberships_lists;
   
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
@@ -272,7 +272,7 @@ impl Community {
                 schema::memberships_lists::position,
                 schema::memberships_lists::count
             ))
-            .load::<CardList>(&_connection)
+            .load::<PermList>(&_connection)
             .expect("E.");
     }
     pub fn is_have_memberships_lists(&self) -> bool {

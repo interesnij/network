@@ -759,7 +759,7 @@ pub struct GetListsParams {
 pub async fn get_lists (
     req: HttpRequest,
     state: web::Data<AppState>
-) -> Result<Json<Vec<CardList>>, Error> {
+) -> Result<Json<Vec<PermList>>, Error> {
     let params_some = web::Query::<GetListsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();

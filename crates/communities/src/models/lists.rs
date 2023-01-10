@@ -17,7 +17,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     get_limit_offset,
-    EditListJson, CardList,
+    EditListJson, PermList,
     RespListJson, CardUserJson, 
 };
 
@@ -269,7 +269,7 @@ impl CommunitiesList {
             return "".to_string()
         }
     }
-    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<CardList> {
+    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<PermList> {
         // выдача инфы для прикрепления списков сообществ
         // по запросу API
         use crate::schema::communities_lists::dsl::communities_lists;
@@ -284,7 +284,7 @@ impl CommunitiesList {
                 schema::communities_lists::position,
                 schema::communities_lists::count,
             ))
-            .load::<CardList>(&_connection)
+            .load::<PermList>(&_connection)
             .expect("E.");
     }
 
@@ -1110,7 +1110,7 @@ impl MembershipsList {
             return "".to_string()
         }
     }
-    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<CardList> {
+    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<PermList> {
         // выдача инфы для прикрепления списков сообществ
         // по запросу API
         use crate::schema::memberships_lists::dsl::memberships_lists;
@@ -1125,7 +1125,7 @@ impl MembershipsList {
                 schema::memberships_lists::position,
                 schema::memberships_lists::count,
             ))
-            .load::<CardList>(&_connection)
+            .load::<PermList>(&_connection)
             .expect("E.");
     }
 

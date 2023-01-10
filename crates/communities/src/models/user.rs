@@ -5,7 +5,8 @@ use crate::utils::{
     get_limit, get_user,
     CardUserJson, KeyValue,
     CardCommunityJson, SectionJson,
-    EditUserPrivateResp, CardList,
+    EditUserPrivateResp, PermList,
+    CardEditPermList,
 };
 use diesel::{
     Queryable,
@@ -199,6 +200,8 @@ impl User {
     pub fn get_private_json(&self) -> EditUserPrivateResp {
         let see_community_users: Option<Vec<CardUserJson>>;
         let invite_users:        Option<Vec<CardUserJson>>;
+        let see_community_lists: Option<Vec<PermList>>;
+        let invite_lists:        Option<Vec<PermList>>;
         
         if self.see_community == 5 || self.see_community == 9 {
             see_community_users = Some(self.get_limit_see_community_exclude_friends(Some(20), Some(0)));
@@ -373,7 +376,7 @@ impl User {
         &self,
         limit:   Option<i64>,
         offset:  Option<i64>
-    ) -> Vec<CardList> {
+    ) -> Vec<PermList> {
         use crate::schema::communities_lists::dsl::communities_lists;
   
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
@@ -389,7 +392,7 @@ impl User {
                 schema::communities_lists::position,
                 schema::communities_lists::count
             ))
-            .load::<CardList>(&_connection)
+            .load::<PermList>(&_connection)
             .expect("E.");
     }
 
@@ -604,6 +607,48 @@ impl User {
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
                         .filter(schema::user_visible_perms::types.eq(2))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                100 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(101))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                101 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(111))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                102 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(112))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                101 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(100))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                111 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(101))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                112 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(102))
                     )
                     .execute(&_connection)
                     .expect("E"),
@@ -972,6 +1017,38 @@ impl User {
             .expect("E");
     }
 
+    pub fn get_ie_friends_lists_for_types (
+        &self, 
+        types:  i16,
+        limit:  Option<i64>, 
+        offset: Option<i64>,
+    ) -> Vec<CardEditPermList> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            friends_lists::dsl::friends_lists,
+        };
+
+        let _connection = establish_connection();
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let lists_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::item_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+        return friends_lists
+            .filter(schema::friends_lists::id.eq_any(lists_ids))
+            .select((
+                schema::friends_lists::id,
+                schema::friends_lists::name,
+            ))
+            .load::<CardEditPermList>(&_connection)
+            .expect("E");
+    }
+
     pub fn get_ie_follows_for_types (
         &self, 
         types:  i16,
@@ -1006,6 +1083,38 @@ impl User {
                 schema::users::s_avatar,
             ))
             .load::<CardUserJson>(&_connection)
+            .expect("E");
+    }
+
+    pub fn get_ie_follows_lists_for_types (
+        &self, 
+        types:  i16,
+        limit:  Option<i64>, 
+        offset: Option<i64>,
+    ) -> Vec<CardEditPermList> {
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            follows_lists::dsl::follows_lists,
+        };
+
+        let _connection = establish_connection();
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let lists_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::user_visible_perms::item_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+        return follows_lists
+            .filter(schema::follows_lists::id.eq_any(lists_ids))
+            .select((
+                schema::follows_lists::id,
+                schema::follows_lists::name,
+            ))
+            .load::<CardEditPermList>(&_connection)
             .expect("E");
     }
 
