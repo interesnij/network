@@ -275,7 +275,7 @@ impl Community {
             .load::<CardCommunitiesList>(&_connection)
             .expect("E.");
     }
-    pub fn is_have_memberships_lists(&self) -> usize {
+    pub fn is_have_memberships_lists(&self) -> bool {
         use crate::schema::memberships_lists::dsl::memberships_lists;
 
         let _connection = establish_connection();

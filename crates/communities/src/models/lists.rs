@@ -781,7 +781,7 @@ impl CommunityListItem {
 
         let list = get_communities_list(list_id).expect("E.");
         diesel::update(&list)
-            .set(schema::communities_lists::count.eq(self.count - 1))
+            .set(schema::communities_lists::count.eq(list.count - 1))
             .execute(&_connection)
             .expect("E.");
 
@@ -792,7 +792,7 @@ impl CommunityListItem {
     ) -> i16 { 
         let _connection = establish_connection();
         for i in list_ids.iter() {
-            CommunityListItem::delete_community_item(i, community_id);
+            CommunityListItem::delete_community_item(*i, community_id);
         }
         return 1;
     }

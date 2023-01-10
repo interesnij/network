@@ -1680,7 +1680,7 @@ impl User {
         }
     }
 
-    pub fn is_have_friends_lists(&self) -> usize {
+    pub fn is_have_friends_lists(&self) -> bool {
         // нужно ли показывать в приватности опцию выбора списков?
         // если созданных списков друзей нет, то и показывать опции необязательно
         use crate::schema::friends_lists::dsl::friends_lists;
@@ -1693,7 +1693,7 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_have_follows_lists(&self) -> usize {
+    pub fn is_have_follows_lists(&self) -> bool {
         use crate::schema::follows_lists::dsl::follows_lists;
 
         let _connection = establish_connection();
@@ -1704,7 +1704,7 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_have_communities_lists(&self) -> usize {
+    pub fn is_have_communities_lists(&self) -> bool {
         use crate::schema::communities_lists::dsl::communities_lists;
 
         let _connection = establish_connection();
