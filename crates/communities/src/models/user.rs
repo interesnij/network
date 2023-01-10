@@ -5,7 +5,7 @@ use crate::utils::{
     get_limit, get_user,
     CardUserJson, KeyValue,
     CardCommunityJson, SectionJson,
-    EditUserPrivateResp, CardCommunitiesList,
+    EditUserPrivateResp, CardList,
 };
 use diesel::{
     Queryable,
@@ -373,7 +373,7 @@ impl User {
         &self,
         limit:   Option<i64>,
         offset:  Option<i64>
-    ) -> Vec<CardCommunitiesList> {
+    ) -> Vec<CardList> {
         use crate::schema::communities_lists::dsl::communities_lists;
   
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
@@ -389,7 +389,7 @@ impl User {
                 schema::communities_lists::position,
                 schema::communities_lists::count
             ))
-            .load::<CardCommunitiesList>(&_connection)
+            .load::<CardList>(&_connection)
             .expect("E.");
     }
 
@@ -850,34 +850,6 @@ impl User {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_friend_list_perm_exists (
-        &self,
-        user_id: i32,
-        types:   i16, 
-    ) -> bool { 
-        // проверяем, если ли пользователь в списке друзей,
-        // который могут что то делать или не делать (types)
-        use crate::schema::{
-            user_visible_perms::dsl::user_visible_perms,
-            friends::dsl::friends,
-        };
-
-        let _connection = establish_connection();
-        let list_ids = user_visible_perms
-            .filter(schema::user_visible_perms::user_id.eq(self.id))
-            .filter(schema::user_visible_perms::types.eq(types))
-            .select(schema::user_visible_perms::id)
-            .load::<i32>(&_connection);
-        if friends 
-            .filter(schema::friends::target_id.eq(self.user_id))
-            .filter(schema::friends::user_id.eq(user_id))
-            .select(schema::friends::id)
-            .first::<i32>(&_connection)
-            .is_err() || list_ids.is_err() {
-            return false;
-        };
-        return self.is_user_in_friends_lists(list_ids.expect("E."));
-    }
 
     pub fn is_follow_perm_exists (
         &self,
@@ -905,6 +877,35 @@ impl User {
             .select(schema::follows::id)
             .first::<i32>(&_connection)
             .is_ok();
+    }
+
+    pub fn is_friend_list_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool { 
+        // проверяем, если ли пользователь в списке друзей,
+        // который могут что то делать или не делать (types)
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            friends::dsl::friends,
+        };
+
+        let _connection = establish_connection();
+        let list_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .select(schema::user_visible_perms::id)
+            .load::<i32>(&_connection);
+        if friends 
+            .filter(schema::friends::target_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(user_id))
+            .select(schema::friends::id)
+            .first::<i32>(&_connection)
+            .is_err() || list_ids.is_err() {
+            return false;
+        };
+        return self.is_user_in_friends_lists(list_ids.expect("E."));
     }
     pub fn is_follow_list_perm_exists (
         &self,

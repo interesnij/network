@@ -25,7 +25,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection, get_limit_offset, get_limit,
     CommunityCategoryJson, CardUserJson, KeyValue,
-    CommunityPrivateJson, NewCommunityJson, CardCommunitiesList,
+    CommunityPrivateJson, NewCommunityJson, CardList,
     AttachCommunityResp, CardCommunityJson,
     CommunityDetailJson, EditNotifyResp, EditCommunityPrivateResp,
 };
@@ -256,7 +256,7 @@ impl Community {
         &self,
         limit:   Option<i64>,
         offset:  Option<i64>
-    ) -> Vec<CardCommunitiesList> {
+    ) -> Vec<CardList> {
         use crate::schema::memberships_lists::dsl::memberships_lists;
   
         let (_limit, _offset) = get_limit_offset(limit, offset, 20);
@@ -272,7 +272,7 @@ impl Community {
                 schema::memberships_lists::position,
                 schema::memberships_lists::count
             ))
-            .load::<CardCommunitiesList>(&_connection)
+            .load::<CardList>(&_connection)
             .expect("E.");
     }
     pub fn is_have_memberships_lists(&self) -> bool {
@@ -286,7 +286,7 @@ impl Community {
             .first::<i32>(&_connection)
             .is_ok();
     }
-    pub fn is_user_in_memberships_list(&self, list_ids: Vec<i32>) -> bool {
+    pub fn is_user_in_memberships_lists(&self, list_ids: Vec<i32>) -> bool {
         use crate::schema::memberships_lists::dsl::memberships_lists;
 
         let _connection = establish_connection();
@@ -2068,6 +2068,35 @@ impl Community {
             .is_ok();
     }
 
+    pub fn is_user_list_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool { 
+        // проверяем, если ли пользователь в списке подписчиков,
+        // который могут что то делать или не делать (types)
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            communities_memberships::dsl::communities_memberships,
+        };
+
+        let _connection = establish_connection();
+        let list_ids = user_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::types.eq(types))
+            .select(schema::community_visible_perms::id)
+            .load::<i32>(&_connection);
+        if communities_memberships 
+            .filter(schema::communities_memberships::community_id.eq(self.id))
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection)
+            .is_err() || list_ids.is_err() {
+            return false;
+        };
+        return self.is_user_in_memberships_lists(list_ids.expect("E."));
+    }
+
     pub fn get_ie_members_for_types (
         &self, 
         types:  i16,
@@ -2147,6 +2176,8 @@ impl Community {
               5 => self.user_id == user_id,
               6 => !self.is_user_perm_exists(user_id, 12),
               7 => self.is_user_perm_exists(user_id, 2),
+              8 => !self.is_user_list_perm_exists(user_id, 112),
+              9 => self.is_user_list_perm_exists(user_id, 102),
               _ => false},
           Err(_) => false,
         };
@@ -2163,6 +2194,8 @@ impl Community {
               5 => self.user_id == user_id,
               6 => !self.is_user_perm_exists(user_id, 11),
               7 => self.is_user_perm_exists(user_id, 1),
+              8 => !self.is_user_list_perm_exists(user_id, 111),
+              9 => self.is_user_list_perm_exists(user_id, 101),
               _ => false},
           Err(_) => false,
         };
@@ -2178,6 +2211,8 @@ impl Community {
               5 => self.user_id == user_id,
               6 => !self.is_user_perm_exists(user_id, 13),
               7 => self.is_user_perm_exists(user_id, 3),
+              8 => !self.is_user_list_perm_exists(user_id, 113),
+              9 => self.is_user_list_perm_exists(user_id, 103),
               _ => false},
           Err(_) => false,
         };
@@ -2193,6 +2228,8 @@ impl Community {
               5 => self.user_id == user_id,
               6 => !self.is_user_perm_exists(user_id, 14),
               7 => self.is_user_perm_exists(user_id, 4),
+              8 => !self.is_user_list_perm_exists(user_id, 114),
+              9 => self.is_user_list_perm_exists(user_id, 104),
               _ => false},
           Err(_) => false,
         };
@@ -2208,6 +2245,8 @@ impl Community {
               5 => self.user_id == user_id,
               6 => !self.is_user_perm_exists(user_id, 15),
               7 => self.is_user_perm_exists(user_id, 5),
+              8 => !self.is_user_list_perm_exists(user_id, 115),
+              9 => self.is_user_list_perm_exists(user_id, 105),
               _ => false},
           Err(_) => false,
         };
@@ -2258,35 +2297,41 @@ impl Community {
 
         return match private {
           Ok(_ok) => {
-             let bool_see_info = match _ok.see_info {
-                 1 => true,
-                 2 => self.is_user_member(user_id),
-                 3 => self.is_user_staff(user_id),
-                 4 => self.is_user_admin(user_id),
-                 5 => self.user_id == user_id,
-                 6 => !self.is_user_perm_exists(user_id, 12),
-                 7 => self.is_user_perm_exists(user_id, 2),
-                  _ => false
+            let bool_see_info = match _ok.see_info {
+                1 => true,
+                2 => self.is_user_member(user_id),
+                3 => self.is_user_staff(user_id),
+                4 => self.is_user_admin(user_id),
+                5 => self.user_id == user_id,
+                6 => !self.is_user_perm_exists(user_id, 12),
+                7 => self.is_user_perm_exists(user_id, 2),
+                8 => !self.is_user_list_perm_exists(user_id, 112),
+                9 => self.is_user_list_perm_exists(user_id, 102),
+                _ => false
              };
              let bool_see_member = match _ok.see_member {
-                 1 => true,
-                 2 => self.is_user_member(user_id),
-                 3 => self.is_user_staff(user_id),
-                 4 => self.is_user_admin(user_id),
-                 5 => self.user_id == user_id,
-                 6 => !self.is_user_perm_exists(user_id, 11),
-                 7 => self.is_user_perm_exists(user_id, 1),
-                  _ => false
+                1 => true,
+                2 => self.is_user_member(user_id),
+                3 => self.is_user_staff(user_id),
+                4 => self.is_user_admin(user_id),
+                5 => self.user_id == user_id,
+                6 => !self.is_user_perm_exists(user_id, 11),
+                7 => self.is_user_perm_exists(user_id, 1),
+                8 => !self.is_user_list_perm_exists(user_id, 111),
+                9 => self.is_user_list_perm_exists(user_id, 101),
+                _ => false
              };
              let bool_see_settings = match _ok.see_settings {
-                 1 => true,
-                 2 => self.is_user_member(user_id),
-                 3 => self.is_user_staff(user_id),
-                 4 => self.is_user_admin(user_id),
-                 5 => self.user_id == user_id,
-                 6 => !self.is_user_perm_exists(user_id, 13),
-                 7 => self.is_user_perm_exists(user_id, 3),
-                 _ => false
+                1 => true,
+                2 => self.is_user_member(user_id),
+                3 => self.is_user_staff(user_id),
+                4 => self.is_user_admin(user_id),
+                5 => self.user_id == user_id,
+                6 => !self.is_user_perm_exists(user_id, 13),
+                7 => self.is_user_perm_exists(user_id, 3),
+                8 => !self.is_user_list_perm_exists(user_id, 113),
+                9 => self.is_user_list_perm_exists(user_id, 103),
+                _ => false
             };
             let bool_see_log = match _ok.see_log {
                 1 => true,
@@ -2296,7 +2341,9 @@ impl Community {
                 5 => self.user_id == user_id,
                 6 => !self.is_user_perm_exists(user_id, 14),
                 7 => self.is_user_perm_exists(user_id, 4),
-                 _ => false
+                8 => !self.is_user_list_perm_exists(user_id, 114),
+                9 => self.is_user_list_perm_exists(user_id, 104),
+                _ => false
             };
 
             let bool_see_stat = match _ok.see_stat {

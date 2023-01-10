@@ -17,7 +17,7 @@ use serde::{Serialize, Deserialize};
 use crate::utils::{
     establish_connection,
     get_limit_offset,
-    EditListJson, CardCommunitiesList,
+    EditListJson, CardList,
     RespListJson, CardUserJson, 
 };
 
@@ -269,7 +269,7 @@ impl CommunitiesList {
             return "".to_string()
         }
     }
-    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<CardCommunitiesList> {
+    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<CardList> {
         // выдача инфы для прикрепления списков сообществ
         // по запросу API
         use crate::schema::communities_lists::dsl::communities_lists;
@@ -284,7 +284,7 @@ impl CommunitiesList {
                 schema::communities_lists::position,
                 schema::communities_lists::count,
             ))
-            .load::<CardCommunitiesList>(&_connection)
+            .load::<CardList>(&_connection)
             .expect("E.");
     }
 
@@ -404,7 +404,7 @@ impl CommunitiesList {
         };
 
         let _connection = establish_connection();
-        return community_list_perms
+        return community_list_perms 
             .filter(schema::community_list_perms::item_id.eq(item_id))
             .filter(schema::community_list_perms::list_id.eq(self.id))
             .filter(schema::community_list_perms::types.eq(types))
@@ -455,6 +455,62 @@ impl CommunitiesList {
             .expect("E");
     }
 
+    pub fn is_friend_list_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool { 
+        // проверяем, если ли пользователь в списке друзей,
+        // который могут что то делать или не делать (types)
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            friends::dsl::friends,
+        };
+
+        let _connection = establish_connection();
+        let list_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .select(schema::user_visible_perms::id)
+            .load::<i32>(&_connection);
+        if friends 
+            .filter(schema::friends::target_id.eq(self.user_id))
+            .filter(schema::friends::user_id.eq(user_id))
+            .select(schema::friends::id)
+            .first::<i32>(&_connection)
+            .is_err() || list_ids.is_err() {
+            return false;
+        };
+        return self.is_user_in_friends_lists(list_ids.expect("E."));
+    }
+    pub fn is_follow_list_perm_exists (
+        &self,
+        user_id: i32,
+        types: i16
+    ) -> bool { 
+        // проверяем, если ли пользователь в списке друзей,
+        // который могут что то делать или не делать (types)
+        use crate::schema::{
+            user_visible_perms::dsl::user_visible_perms,
+            follows::dsl::follows,
+        };
+
+        let _connection = establish_connection();
+        let list_ids = user_visible_perms
+            .filter(schema::user_visible_perms::user_id.eq(self.id))
+            .filter(schema::user_visible_perms::types.eq(types))
+            .select(schema::user_visible_perms::id)
+            .load::<i32>(&_connection);
+        if follows
+            .filter(schema::follows::target_id.eq(self.user_id))
+            .filter(schema::follows::user_id.eq(user_id))
+            .select(schema::follows::id)
+            .first::<i32>(&_connection).is_err() || list_ids.is_err() {
+            return false;
+        };
+        return self.is_user_in_follows_lists(list_ids.expect("E."));
+    }
+
     pub fn get_limit_see_el_exclude_users(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
         return self.get_ie_users_for_types(11, limit, offset); 
     }
@@ -472,16 +528,25 @@ impl CommunitiesList {
         return match private_field {
             1 => true,
             2 => creator.is_connected_with_user_with_id(user_id) || creator.is_self_followers_user_with_id(user_id),
-            3 => !self.is_follow_perm_exists(user_id, 11),
-            4 => self.is_follow_perm_exists(user_id, 1),
-            5 => !self.is_friend_perm_exists(user_id, 11),
-            6 => self.is_friend_perm_exists(user_id, 1),
+            3 => creator.is_connected_with_user_with_id(user_id) || !creator.is_follow_perm_exists(user_id, 11),
+            4 => creator.is_connected_with_user_with_id(user_id) || creator.is_follow_perm_exists(user_id, 1),
+            5 => creator.is_self_followers_user_with_id(user_id) || !creator.is_friend_perm_exists(user_id, 11),
+            6 => creator.is_self_followers_user_with_id(user_id) || creator.is_friend_perm_exists(user_id, 1),
             7 => creator.is_connected_with_user_with_id(user_id),
             8 => creator.is_self_followers_user_with_id(user_id),
-            9 => !self.is_friend_perm_exists(user_id, 11),
-            10 => self.is_friend_perm_exists(user_id, 1),
-            11 => !self.is_follow_perm_exists(user_id, 11),
-            12 => self.is_follow_perm_exists(user_id, 1),
+            9 => !creator.is_friend_perm_exists(user_id, 11),
+            10 => creator.is_friend_perm_exists(user_id, 1),
+            11 => !creator.is_follow_perm_exists(user_id, 11),
+            12 => creator.is_follow_perm_exists(user_id, 1),
+            13 => false,
+            31 => creator.is_connected_with_user_with_id(user_id) || !self.is_follow_list_perm_exists(user_id, 111),
+            32 => creator.is_connected_with_user_with_id(user_id) || self.is_follow_list_perm_exists(user_id, 101),
+            33 => creator.is_self_followers_user_with_id(user_id) || !self.is_friend_list_perm_exists(user_id, 111),
+            34 => creator.is_self_followers_user_with_id(user_id) || self.is_friend_list_perm_exists(user_id, 101),
+            35 => !self.is_friend_list_perm_exists(user_id, 111),
+            36 => self.is_friend_list_perm_exists(user_id, 101),
+            37 => !self.is_follow_list_perm_exists(user_id, 111),
+            38 => self.is_follow_list_perm_exists(user_id, 101),
             _ => false,
         };
     }
@@ -1045,7 +1110,7 @@ impl MembershipsList {
             return "".to_string()
         }
     }
-    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<CardCommunitiesList> {
+    pub fn get_lists_for_attach(ids: Vec<i32>) -> Vec<CardList> {
         // выдача инфы для прикрепления списков сообществ
         // по запросу API
         use crate::schema::memberships_lists::dsl::memberships_lists;
@@ -1060,7 +1125,7 @@ impl MembershipsList {
                 schema::memberships_lists::position,
                 schema::memberships_lists::count,
             ))
-            .load::<CardCommunitiesList>(&_connection)
+            .load::<CardList>(&_connection)
             .expect("E.");
     }
 
@@ -1168,6 +1233,43 @@ impl MembershipsList {
             .is_ok();
     }
 
+    pub fn get_ie_members_for_types (
+        &self, 
+        types:  i16,
+        limit:  Option<i64>, 
+        offset: Option<i64>,
+    ) -> Vec<CardUserJson> {
+        use crate::schema::{
+            community_visible_perms::dsl::community_visible_perms,
+            users::dsl::users,
+        };
+
+        let _connection = establish_connection();
+        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
+        let items_ids = community_visible_perms
+            .filter(schema::community_visible_perms::community_id.eq(self.id))
+            .filter(schema::community_visible_perms::item_id.eq_any(self.get_members_ids()))
+            .filter(schema::community_visible_perms::types.eq(types))
+            .limit(_limit)
+            .offset(_offset)
+            .select(schema::community_visible_perms::item_id)
+            .load::<i32>(&_connection)
+            .expect("E");
+
+        return users
+            .filter(schema::users::id.eq_any(items_ids))
+            .filter(schema::users::types.lt(31))
+            .select((
+                schema::users::user_id,
+                schema::users::first_name,
+                schema::users::last_name,
+                schema::users::link,
+                schema::users::s_avatar,
+            ))
+            .load::<CardUserJson>(&_connection)
+            .expect("E");
+    }
+
     pub fn get_ie_users_for_types (
         &self, 
         types:  i16,
@@ -1219,9 +1321,11 @@ impl MembershipsList {
             3 => community.is_user_staff(user_id),
             4 => community.is_user_admin(user_id),
             5 => community.user_id == user_id,
-            6 => !community.is_user_perm_exists(user_id, 16),
-            7 => community.is_user_perm_exists(user_id, 6),
-            _ => false
+            6 => !community.is_user_perm_exists(user_id, 11),
+            7 => community.is_user_perm_exists(user_id, 1),
+            8 => !community.is_user_list_perm_exists(user_id, 111),
+            9 => community.is_user_list_perm_exists(user_id, 101),
+            _ => false 
         };
     }
 

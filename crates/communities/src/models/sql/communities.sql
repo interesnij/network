@@ -182,6 +182,17 @@ CREATE TABLE community_list_perms (
 CREATE UNIQUE INDEX community_list_perms_unq ON community_list_perms (item_id, list_id);
 
 
+/*
+1 Все пользователи
+2 Подписчики
+3 Персонал
+4 Администраторы
+5 Владелец сообщества
+6 Подписчики, кроме
+7 Некоторые подписчики
+8 списки подписчиков, кроме
+9 Некоторые списки подписчиков
+*/
 CREATE TABLE communitys (
     id          SERIAL PRIMARY KEY,     -- id объекта
     name        VARCHAR(100) NOT NULL,  -- название
@@ -295,6 +306,8 @@ CREATE UNIQUE INDEX community_infos_unq ON community_infos (community_id, id);
 5 Владелец сообщества
 6 Подписчики, кроме
 7 Некоторые подписчики
+8 списки подписчиков, кроме
+9 Некоторые списки подписчиков
 */
 CREATE TABLE community_privates (
     id           SERIAL PRIMARY KEY,

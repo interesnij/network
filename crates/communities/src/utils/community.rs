@@ -174,15 +174,20 @@ pub struct NewCommunityJson {
 
 #[derive(Serialize, Queryable)]
 pub struct SectionJson { 
-    pub lists: Vec<CardCommunitiesList>,
+    pub lists: Vec<CardList>,
     pub items: Vec<CardCommunityJson>, 
 }
 #[derive(Serialize, Deserialize, Queryable)]
-pub struct CardCommunitiesList {
+pub struct CardList {
     pub id:       i32,
     pub name:     String,
     pub position: i16,
     pub count:    i32,
+}
+#[derive(Serialize, Deserialize, Queryable)]
+pub struct CardEditList {
+    pub id:   i32,
+    pub name: String,
 }
 #[derive(Serialize, Queryable)]
 pub struct CardCommunityJson { 

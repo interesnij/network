@@ -9,7 +9,7 @@ use crate::utils::{
     get_anon_user_permission, get_user_permission,
     get_communities_list,
     ErrorParams, SmallData, TOKEN, SectionJson,
-    EditUserPrivateResp, CardCommunityJson, CardCommunitiesList,
+    EditUserPrivateResp, CardCommunityJson, CardList,
     RespListJson, UItemVecData, PListData,
 };
 use crate::AppState;
@@ -759,7 +759,7 @@ pub struct GetListsParams {
 pub async fn get_lists (
     req: HttpRequest,
     state: web::Data<AppState>
-) -> Result<Json<Vec<CardCommunitiesList>>, Error> {
+) -> Result<Json<Vec<CardList>>, Error> {
     let params_some = web::Query::<GetListsParams>::from_query(&req.query_string());
     if params_some.is_ok() {
         let params = params_some.unwrap();
