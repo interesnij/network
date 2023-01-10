@@ -1206,68 +1206,57 @@ impl MembershipsList {
             " подписчик".to_string(),
         );
     }
-    pub fn is_members_perm_exists (
+    pub fn is_user_perm_exists (
         &self,
         user_id: i32,
-        //types:   i16, 
+        types:   i16, 
     ) -> bool {
-        // проверяем, если ли пользователь в вкл/искл списках пользователя 
-        // и дружит ли он с self
         use crate::schema::{
-            memberships_list_items::dsl::memberships_list_items,
+            memberships_list_perms::dsl::memberships_list_perms,
             communities_memberships::dsl::communities_memberships,
         };
 
         let _connection = establish_connection();
-        return memberships_list_items 
-            .filter(schema::memberships_list_items::user_id.eq(user_id))
-            .filter(schema::memberships_list_items::list_id.eq(self.id))
-            .select(schema::memberships_list_items::user_id)
+        return memberships_list_perms
+            .filter(schema::memberships_list_perms::list_id.eq(self.id))
+            .filter(schema::memberships_list_perms::item_id.eq(user_id))
+            .filter(schema::memberships_list_perms::types.eq(types))
+            .select(schema::memberships_list_perms::item_id)
             .first::<i32>(&_connection)
             .is_ok() &&
-        communities_memberships 
-            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+        communities_memberships
             .filter(schema::communities_memberships::user_id.eq(user_id))
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
             .select(schema::communities_memberships::id)
             .first::<i32>(&_connection)
             .is_ok();
     }
 
-    pub fn get_ie_members_for_types (
-        &self, 
-        types:  i16,
-        limit:  Option<i64>, 
-        offset: Option<i64>,
-    ) -> Vec<CardUserJson> {
+    pub fn is_user_list_perm_exists (
+        &self,
+        user_id: i32,
+        types:   i16, 
+    ) -> bool { 
         use crate::schema::{
-            community_visible_perms::dsl::community_visible_perms,
-            users::dsl::users,
+            memberships_list_perms::dsl::memberships_list_perms,
+            communities_memberships::dsl::communities_memberships,
         };
 
         let _connection = establish_connection();
-        let (_limit, _offset) = get_limit_offset(limit, offset, 20);
-        let items_ids = community_visible_perms
-            .filter(schema::community_visible_perms::community_id.eq(self.id))
-            .filter(schema::community_visible_perms::item_id.eq_any(self.get_members_ids()))
-            .filter(schema::community_visible_perms::types.eq(types))
-            .limit(_limit)
-            .offset(_offset)
-            .select(schema::community_visible_perms::item_id)
-            .load::<i32>(&_connection)
-            .expect("E");
-
-        return users
-            .filter(schema::users::id.eq_any(items_ids))
-            .filter(schema::users::types.lt(31))
-            .select((
-                schema::users::user_id,
-                schema::users::first_name,
-                schema::users::last_name,
-                schema::users::link,
-                schema::users::s_avatar,
-            ))
-            .load::<CardUserJson>(&_connection)
-            .expect("E");
+        let list_ids = memberships_list_perms
+            .filter(schema::memberships_list_perms::list_id.eq(self.id))
+            .filter(schema::memberships_list_perms::types.eq(types))
+            .select(schema::memberships_list_perms::id)
+            .load::<i32>(&_connection);
+        if communities_memberships 
+            .filter(schema::communities_memberships::community_id.eq(self.community_id))
+            .filter(schema::communities_memberships::user_id.eq(user_id))
+            .select(schema::communities_memberships::id)
+            .first::<i32>(&_connection)
+            .is_err() || list_ids.is_err() {
+            return false;
+        };
+        return self.is_user_in_memberships_lists(list_ids.expect("E."));
     }
 
     pub fn get_ie_users_for_types (
