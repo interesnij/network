@@ -1255,8 +1255,8 @@ impl MembershipsList {
             .first::<i32>(&_connection)
             .is_err() || list_ids.is_err() {
             return false;
-        };
-        return self.is_user_in_memberships_lists(list_ids.expect("E."));
+        }; 
+        return list_ids.expect("E.").iter().any(|&i| i==self.id);
     }
 
     pub fn get_ie_users_for_types (
