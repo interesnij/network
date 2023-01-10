@@ -273,6 +273,8 @@ impl User {
             invite:              User::get_private_field(self.invite),
             see_community_users: see_community_users,
             invite_users:        invite_users,
+            see_community_lists: see_community_lists,
+            invite_lists:        invite_lists,
         };
     }
     pub fn get_common_friends_of_community (
