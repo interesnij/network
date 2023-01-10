@@ -873,7 +873,7 @@ impl User {
             .filter(schema::friends::user_id.eq(user_id))
             .select(schema::friends::id)
             .first::<i32>(&_connection)
-            .is_err() || list_id_res.is_err() {
+            .is_err() || list_ids.is_err() {
             return false;
         };
         return self.is_user_in_friends_lists(list_ids.expect("E."));
@@ -929,7 +929,7 @@ impl User {
             .filter(schema::follows::target_id.eq(self.user_id))
             .filter(schema::follows::user_id.eq(user_id))
             .select(schema::follows::id)
-            .first::<i32>(&_connection).is_err() || list_id_res.is_err() {
+            .first::<i32>(&_connection).is_err() || list_ids.is_err() {
             return false;
         };
         return self.is_user_in_follows_lists(list_ids.expect("E."));
