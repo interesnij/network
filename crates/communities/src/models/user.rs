@@ -200,8 +200,8 @@ impl User {
     pub fn get_private_json(&self) -> EditUserPrivateResp {
         let see_community_users: Option<Vec<CardUserJson>>;
         let invite_users:        Option<Vec<CardUserJson>>;
-        let see_community_lists: Option<Vec<PermList>>;
-        let invite_lists:        Option<Vec<PermList>>;
+        let see_community_lists: Option<Vec<CardEditPermList>>;
+        let invite_lists:        Option<Vec<CardEditPermList>>;
         
         if self.see_community == 5 || self.see_community == 9 {
             see_community_users = Some(self.get_limit_see_community_exclude_friends(Some(20), Some(0)));
@@ -1191,42 +1191,42 @@ impl User {
     }
 
 
-    pub fn get_see_all_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_all_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(110, limit, offset); 
     }
-    pub fn get_see_all_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_all_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(100, limit, offset); 
     }
-    pub fn get_see_all_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_all_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(110, limit, offset); 
     }
-    pub fn get_see_all_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_all_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(100, limit, offset); 
     }
 
-    pub fn get_see_community_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_community_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(111, limit, offset); 
     }
-    pub fn get_see_community_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_community_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(101, limit, offset); 
     }
-    pub fn get_see_community_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_community_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(111, limit, offset); 
     }
-    pub fn get_see_community_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_see_community_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(101, limit, offset); 
     }
 
-    pub fn get_invite_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_invite_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(112, limit, offset); 
     }
-    pub fn get_invite_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_invite_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(102, limit, offset); 
     }
-    pub fn get_invite_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_invite_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(112, limit, offset); 
     }
-    pub fn get_invite_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardUserJson> {
+    pub fn get_invite_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(102, limit, offset); 
     }
 
