@@ -1809,7 +1809,7 @@ impl User {
         let _connection = establish_connection();
         return follows_lists
             .filter(schema::follows_lists::user_id.eq(self.user_id))
-            .filter(schema::friends_lists::list_id.eq_any(list_ids))
+            .filter(schema::friends_lists::id.eq_any(list_ids))
             .select(schema::follows_lists::id)
             .first::<i32>(&_connection)
             .is_ok();
@@ -1820,7 +1820,7 @@ impl User {
         let _connection = establish_connection();
         return friends_lists
             .filter(schema::friends_lists::user_id.eq(self.user_id))
-            .filter(schema::friends_lists::list_id.eq_any(list_ids))
+            .filter(schema::friends_lists::id.eq_any(list_ids))
             .select(schema::friends_lists::id)
             .first::<i32>(&_connection)
             .is_ok();

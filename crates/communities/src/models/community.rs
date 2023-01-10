@@ -292,7 +292,7 @@ impl Community {
         let _connection = establish_connection();
         return memberships_lists
             .filter(schema::memberships_lists::user_id.eq(self.user_id))
-            .filter(schema::memberships_lists::list_id.eq_any(list_ids))
+            .filter(schema::memberships_lists::id.eq_any(list_ids))
             .select(schema::memberships_lists::id)
             .first::<i32>(&_connection)
             .is_ok();
