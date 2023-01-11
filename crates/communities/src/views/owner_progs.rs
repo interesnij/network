@@ -534,7 +534,7 @@ pub async fn edit_friends_list(data: Json<AddListParams>) -> Result<Json<i16>, E
         Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
     }
     else {
-        let list = get_friends_list(list_id.unwrap()).expect("E.");
+        let list = get_friends_list(data.list_id.unwrap()).expect("E.");
         if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || list.edit_list (
                 data.name.as_deref().unwrap().to_string(),
@@ -587,7 +587,7 @@ pub async fn edit_follows_list(data: Json<AddListParams>) -> Result<Json<i16>, E
         Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
     }
     else {
-        let list = get_follows_list(list_id.unwrap()).expect("E.");
+        let list = get_follows_list(data.list_id.unwrap()).expect("E.");
         if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || list.edit_list (
                 data.name.as_deref().unwrap().to_string(),
