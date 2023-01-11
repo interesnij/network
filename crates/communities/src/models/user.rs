@@ -882,8 +882,8 @@ impl User {
             .expect("E.");
 
         CommunitiesList::create_list("Сообщества".to_string(), user_id, 1, None);
-        FollowsList::create_list(follows_list, user_id);
-        FriendsList::create_list(friends_list, user_id);
+        FollowsList::create_list("Подписчики".to_string(), follows_list, user_id);
+        FriendsList::create_list("Друзья".to_string(), friends_list, user_id);
 
         return 1;
     }

@@ -2069,8 +2069,8 @@ pub struct NewFriendsListPerm {
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct FollowsList {
-    pub name:    String,
     pub id:      i32,
+    pub name:    String,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
