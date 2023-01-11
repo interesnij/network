@@ -421,6 +421,7 @@ CREATE UNIQUE INDEX user_visible_perms_unq ON user_visible_perms (user_id, item_
 -- друзья пользователей -------
 CREATE TABLE friends_lists (
     id       SERIAL PRIMARY KEY,
+    name     VARCHAR(100) NOT NULL, -- название
     list_id  INT NOT NULL,
     user_id  INT NOT NULL,
     types    SMALLINT NOT NULL
@@ -459,7 +460,8 @@ CREATE UNIQUE INDEX friends_list_perms_unq ON friends_list_perms (item_id, list_
 -- подписчики пользователей -------
 CREATE TABLE follows_lists (
     id       SERIAL PRIMARY KEY,
-    list_id  INT NOT NULL,  -- поле нужно для записи id списка подписчиков с сервиса пользователей.
+    name     VARCHAR(100) NOT NULL, -- название
+    list_id  INT NOT NULL,          -- поле нужно для записи id списка подписчиков с сервиса пользователей.
     user_id  INT NOT NULL,
     types    SMALLINT NOT NULL
 );

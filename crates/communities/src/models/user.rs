@@ -1079,7 +1079,7 @@ impl User {
             .select((
                 schema::friends_lists::id,
                 schema::friends_lists::name,
-            ))
+            )) 
             .load::<CardEditPermList>(&_connection)
             .expect("E");
     }
@@ -1219,16 +1219,16 @@ impl User {
         return self.get_ie_friends_lists_for_types(101, limit, offset); 
     }
 
-    pub fn get_invite_exclude_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
+    pub fn get_invite_exclude_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(112, limit, offset); 
     }
-    pub fn get_invite_include_follows(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
+    pub fn get_invite_include_follows_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_follows_lists_for_types(102, limit, offset); 
     }
-    pub fn get_invite_exclude_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
+    pub fn get_invite_exclude_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(112, limit, offset); 
     }
-    pub fn get_invite_include_friends(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
+    pub fn get_invite_include_friends_lists(&self, limit: Option<i64>, offset: Option<i64>) -> Vec<CardEditPermList> {
         return self.get_ie_friends_lists_for_types(102, limit, offset); 
     }
 

@@ -47,7 +47,9 @@ pub fn owner_urls(config: &mut web::ServiceConfig) {
     config.route("/delete_friend", web::post().to(delete_friend));
     config.route("/delete_follow", web::post().to(delete_follow));
     config.route("/create_friends_list", web::post().to(create_friends_list));
+    config.route("/edit_friends_list", web::post().to(edit_friends_list));
     config.route("/create_follows_list", web::post().to(create_follows_list));
+    config.route("/edit_follows_list", web::post().to(edit_follows_list));
     config.route("/delete_friends_list", web::post().to(delete_friends_list));
     config.route("/delete_follows_list", web::post().to(delete_follows_list));
     config.route("/restore_friends_list", web::post().to(restore_friends_list));
@@ -488,6 +490,7 @@ pub async fn delete_block_user(data: Json<AddTargetParams>) -> Result<Json<i16>,
 #[derive(Deserialize)]
 pub struct AddListParams {
     pub token:   Option<String>,
+    pub name:    Option<String>,
     pub user_id: Option<i32>,
     pub list_id: Option<i32>,
 }
@@ -495,6 +498,9 @@ pub struct AddListParams {
 pub async fn create_friends_list(data: Json<AddListParams>) -> Result<Json<i16>, Error> {
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Field 'name' is required!".to_string()))
     }
     else if data.user_id.is_none() {
         Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
@@ -505,8 +511,33 @@ pub async fn create_friends_list(data: Json<AddListParams>) -> Result<Json<i16>,
     else {
         if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || FriendsList::create_list (
+                data.name.as_deref().unwrap().to_string(),
                 data.list_id.unwrap(),
                 data.user_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn edit_friends_list(data: Json<AddListParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Field 'name' is required!".to_string()))
+    }
+    else if data.list_id.is_none() {
+        Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
+    }
+    else {
+        let list = get_friends_list(list_id.unwrap()).expect("E.");
+        if data.token.as_deref().unwrap() == TOKEN {
+            let _res = block(move || list.edit_list (
+                data.name.as_deref().unwrap().to_string(),
             )).await?;
             Ok(Json(_res))
         }
@@ -521,6 +552,9 @@ pub async fn create_follows_list(data: Json<AddListParams>) -> Result<Json<i16>,
     if data.token.is_none() {
         Err(Error::BadRequest("Field 'token' is required!".to_string()))
     }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Field 'name' is required!".to_string()))
+    }
     else if data.user_id.is_none() {
         Err(Error::BadRequest("Field 'user_id' is required!".to_string()))
     }
@@ -530,8 +564,33 @@ pub async fn create_follows_list(data: Json<AddListParams>) -> Result<Json<i16>,
     else {
         if data.token.as_deref().unwrap() == TOKEN {
             let _res = block(move || FollowsList::create_list (
+                data.name.as_deref().unwrap().to_string(),
                 data.list_id.unwrap(),
                 data.user_id.unwrap(),
+            )).await?;
+            Ok(Json(_res))
+        }
+        else {
+            Err(Error::BadRequest("Permission Denied!".to_string()))
+        }
+    }
+}
+// manager send!
+pub async fn edit_follows_list(data: Json<AddListParams>) -> Result<Json<i16>, Error> {
+    if data.token.is_none() {
+        Err(Error::BadRequest("Field 'token' is required!".to_string()))
+    }
+    else if data.name.is_none() {
+        Err(Error::BadRequest("Field 'name' is required!".to_string()))
+    }
+    else if data.list_id.is_none() {
+        Err(Error::BadRequest("Field 'list_id' is required!".to_string()))
+    }
+    else {
+        let list = get_follows_list(list_id.unwrap()).expect("E.");
+        if data.token.as_deref().unwrap() == TOKEN {
+            let _res = block(move || list.edit_list (
+                data.name.as_deref().unwrap().to_string(),
             )).await?;
             Ok(Json(_res))
         }

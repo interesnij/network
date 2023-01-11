@@ -1703,6 +1703,7 @@ pub struct NewMembershipsListPerm {
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct FriendsList {
     pub id:      i32,
+    pub name:    i32,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
@@ -1710,6 +1711,7 @@ pub struct FriendsList {
 #[derive(Deserialize, Insertable)]
 #[table_name="friends_lists"]
 pub struct NewFriendsList {
+    pub name:    i32,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
@@ -1833,10 +1835,15 @@ impl FriendsList {
             .expect("E.");
     }
 
-    pub fn create_list(list_id: i32, user_id: i32) -> i16 {
+    pub fn create_list (
+        name: String,
+        list_id: i32,
+        user_id: i32
+    ) -> i16 {
         let _connection = establish_connection();
 
         let new_list = NewFriendsList {
+            name:    name,
             list_id: list_id,
             user_id: user_id,
             types:   5,
@@ -1846,6 +1853,23 @@ impl FriendsList {
             .get_result::<FriendsList>(&_connection)
             .expect("Error.");
 
+        return 1;
+    }
+    pub fn edit_list(&self, name: String) -> i16 {
+        let _connection = establish_connection();
+        let _name: String;
+        let c_name = name.clone();
+        if c_name.len() > 99 {
+            _name = c_name[..100].to_string();
+        }
+        else {
+            _name = c_name;
+        }
+
+        diesel::update(self)
+            .set(schema::friends_lists::name.eq(_name.clone()))
+            .execute(&_connection)
+            .expect("Error.");
         return 1;
     }
 
@@ -2045,6 +2069,7 @@ pub struct NewFriendsListPerm {
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct FollowsList {
+    pub name:    i32,
     pub id:      i32,
     pub list_id: i32,
     pub user_id: i32,
@@ -2053,6 +2078,7 @@ pub struct FollowsList {
 #[derive(Deserialize, Insertable)]
 #[table_name="follows_lists"]
 pub struct NewFollowsList {
+    pub name:    i32,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
@@ -2176,10 +2202,15 @@ impl FollowsList {
             .expect("E.");
     }
 
-    pub fn create_list(list_id: i32, user_id: i32) -> i16 {
+    pub fn create_list (
+        name:    String,
+        list_id: i32, 
+        user_id: i32
+    ) -> i16 {
         let _connection = establish_connection();
 
         let new_list = NewFollowsList {
+            name:    name,
             list_id: list_id,
             user_id: user_id,
             types:   5,
@@ -2189,6 +2220,23 @@ impl FollowsList {
             .get_result::<FollowsList>(&_connection)
             .expect("Error.");
 
+        return 1;
+    }
+    pub fn edit_list(&self, name: String) -> i16 {
+        let _connection = establish_connection();
+        let _name: String;
+        let c_name = name.clone();
+        if c_name.len() > 99 {
+            _name = c_name[..100].to_string();
+        }
+        else {
+            _name = c_name;
+        }
+
+        diesel::update(self)
+            .set(schema::follows_lists::name.eq(_name.clone()))
+            .execute(&_connection)
+            .expect("Error.");
         return 1;
     }
 

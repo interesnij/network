@@ -9,7 +9,7 @@ use crate::utils::{
     get_anon_user_permission, get_user_permission,
     get_communities_list,
     ErrorParams, SmallData, TOKEN, SectionJson,
-    EditUserPrivateResp, CardCommunityJson, CardList,
+    EditUserPrivateResp, CardCommunityJson, 
     RespListJson, UItemVecData, PListData, PermList,
 };
 use crate::AppState;
