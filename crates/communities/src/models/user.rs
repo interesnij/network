@@ -648,7 +648,7 @@ impl User {
                 100 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
-                        .filter(schema::user_visible_perms::types.eq(101))
+                        .filter(schema::user_visible_perms::types.eq(110))
                     )
                     .execute(&_connection)
                     .expect("E"),
@@ -666,7 +666,7 @@ impl User {
                     )
                     .execute(&_connection)
                     .expect("E"),
-                101 => diesel::delete (
+                110 => diesel::delete (
                     user_visible_perms
                         .filter(schema::user_visible_perms::user_id.eq(self.user_id))
                         .filter(schema::user_visible_perms::types.eq(100))

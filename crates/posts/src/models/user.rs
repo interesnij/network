@@ -991,6 +991,90 @@ impl User {
                     )
                     .execute(&_connection)
                     .expect("E"),
+                100 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(110))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                101 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(111))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                102 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(112))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                103 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(113))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                104 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(114))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                105 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(115))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                110 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(100))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                111 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(101))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                112 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(102))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                113 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(103))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                114 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(104))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                115 => diesel::delete (
+                    user_visible_perms
+                        .filter(schema::user_visible_perms::user_id.eq(self.user_id))
+                        .filter(schema::user_visible_perms::types.eq(105))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
                 _ => 0,
             };
         };

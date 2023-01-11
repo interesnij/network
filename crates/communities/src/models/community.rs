@@ -868,6 +868,76 @@ impl Community {
                     )
                     .execute(&_connection)
                     .expect("E"),
+                101 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(111))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                102 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(112))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                103 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(113))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                104 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(114))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                105 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(115))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                111 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(101))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                112 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(102))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                113 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(103))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                114 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(104))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                115 => diesel::delete (
+                    community_visible_perms
+                        .filter(schema::community_visible_perms::community_id.eq(self.id))
+                        .filter(schema::community_visible_perms::types.eq(105))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
                 _ => 0,
             };
         }

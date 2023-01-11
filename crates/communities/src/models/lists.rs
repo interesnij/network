@@ -1050,6 +1050,20 @@ impl MembershipsList {
                     )
                     .execute(&_connection)
                     .expect("E"),
+                101 => diesel::delete (
+                    memberships_list_perms
+                        .filter(schema::memberships_list_perms::list_id.eq(self.id))
+                        .filter(schema::memberships_list_perms::types.eq(111))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
+                111 => diesel::delete (
+                    memberships_list_perms
+                        .filter(schema::memberships_list_perms::list_id.eq(self.id))
+                        .filter(schema::memberships_list_perms::types.eq(101))
+                    )
+                    .execute(&_connection)
+                    .expect("E"),
                 _ => 0,
             };
         };
