@@ -1703,7 +1703,7 @@ pub struct NewMembershipsListPerm {
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct FriendsList {
     pub id:      i32,
-    pub name:    i32,
+    pub name:    String,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
@@ -1711,7 +1711,7 @@ pub struct FriendsList {
 #[derive(Deserialize, Insertable)]
 #[table_name="friends_lists"]
 pub struct NewFriendsList {
-    pub name:    i32,
+    pub name:    String,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
@@ -2069,7 +2069,7 @@ pub struct NewFriendsListPerm {
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Identifiable)]
 pub struct FollowsList {
-    pub name:    i32,
+    pub name:    String,
     pub id:      i32,
     pub list_id: i32,
     pub user_id: i32,
@@ -2078,7 +2078,7 @@ pub struct FollowsList {
 #[derive(Deserialize, Insertable)]
 #[table_name="follows_lists"]
 pub struct NewFollowsList {
-    pub name:    i32,
+    pub name:    String,
     pub list_id: i32,
     pub user_id: i32,
     pub types:   i16,
